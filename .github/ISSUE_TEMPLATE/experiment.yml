@@ -1,0 +1,41 @@
+name: Experimento de engenharia
+description: Registrar hipótese verificável para o port nativo de Perfect World
+title: "[Research] "
+labels: []
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hipótese técnica
+      description: O que pode ser falsificado neste experimento?
+      placeholder: A função/módulo X pode compilar para WASM sem Win32...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Fontes, versões e dependências
+      description: Repo, commit, versão cliente, engine, protocolo, asset e direitos envolvidos
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Procedimento
+      description: Comandos, ambiente e instrumentos
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critério de aceite
+      description: Medição/log/artefato que comprovará a conclusão
+    validations:
+      required: true
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Risco jurídico e de terceiros
+      options:
+        - label: Analisei docs/LEGAL.md e não incluirei código/assets não autorizados no repo
+          required: true

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#081426">
+  <meta name="description" content="PW Web — fundação de renderização WebGL 2 e WebAssembly para pesquisa em MMORPG no navegador.">
+  <title>PW Web • Engenharia do Port</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark">PW<span class="brand-web">/WEB</span></span><span class="eyebrow">BRASALABS6 · ENGINE RESEARCH</span></div>
+      <span class="status-pill">M0 · BOOTSTRAP</span>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="copy">
+          <p class="kicker">NATIVE BROWSER ENGINEERING</p>
+          <h1>O próximo mundo<br><em>começa no navegador.</em></h1>
+          <p class="lead">Estamos construindo a base técnica para executar um MMORPG 3D localmente no browser com WebAssembly, WebGL 2 e protocolos em tempo real.</p>
+          <p class="disclaimer"><strong>Protótipo da plataforma.</strong> Esta página não executa Perfect World, não contém assets originais e não é um cliente jogável.</p>
+          <a class="doc-link" href="https://github.com/brasalabs6/pw-web">Repositório e documentação <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="scene">
+          <div class="scene-top"><span>01 / GRAPHICS PROBE</span><span id="graphics-state">INICIALIZANDO</span></div>
+          <canvas id="viewport" aria-label="Demonstração técnica WebGL 2 renderizando geometria gerada por código"></canvas>
+          <div class="scene-bottom"><span>WebGL 2 · sem assets externos</span><span id="fps">— FPS</span></div>
+        </div>
+      </section>
+      <section class="metrics" aria-label="Diagnóstico da plataforma">
+        <div class="metric"><span>GRAPHICS API</span><strong id="webgl">Verificando</strong><small>GPU no dispositivo local</small></div>
+        <div class="metric"><span>CORE RUNTIME</span><strong id="wasm">Verificando</strong><small id="wasm-detail">Compilação opcional via emcc</small></div>
+        <div class="metric"><span>BROWSER CAPABILITY</span><strong id="gpu">Verificando</strong><small>WebGPU opcional (não utilizado)</small></div>
+        <div class="metric"><span>PROJECT STATUS</span><strong>Pesquisa &amp; bootstrap</strong><small>Não jogável</small></div>
+      </section>
+      <footer>PW Web é um ambiente independente de pesquisa técnica. Nomes e recursos do jogo original pertencem aos respectivos titulares.</footer>
+    </main>
+  </div>
+</body>
+</html>

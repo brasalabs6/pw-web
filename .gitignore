@@ -1,0 +1,49 @@
+# System / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+
+# Local development
+.env
+.env.*
+!.env.example
+.cache/
+dist/
+build/
+out/
+tmp/
+*.log
+__pycache__/
+*.pyc
+node_modules/
+
+# Emscripten and native build output
+web/wasm/*.wasm
+web/wasm/*.mjs
+web/wasm/*.js
+web/wasm/*.data
+*.o
+*.obj
+*.a
+*.lib
+*.exe
+*.dll
+*.pdb
+*.ilk
+
+# Third-party licensed game data: NEVER commit
+assets/original/
+data/original/
+game-data/
+*.pck
+*.pkx
+*.ecm
+*.bon
+*.ski
+*.smd
+*.dds
+*.hmap
