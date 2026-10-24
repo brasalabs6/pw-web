@@ -32,7 +32,7 @@ def parse_review(result_file: Path, changed_files: list[str]) -> dict:
         raise ValueError("Missing Grok text in JSON envelope")
     raw = envelope["text"].strip()
     if raw.startswith("```"):
-        raw = re.sub(r"^\`\`\`(?:json)?\s*|\s*\`\`\`$", "", raw).strip()
+        raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw).strip()
     if len(raw) > 90000:
         raise ValueError("Review result too long")
     review = json.loads(raw)
@@ -89,7 +89,7 @@ def status(reviews: dict, ci: str, round_number: int, loop_enabled: bool, max_ro
 def format_comment(reviews: dict, sha: str, round_number: int, ci: str, decision: str, run_id: str) -> str:
     marker = f"<!-- pw-agent-review sha={sha} round={round_number} -->"
     out = [marker, f"## Revisão automática dupla — rodada {round_number}",
-           f"**Commit:** \`{sha}\` · **CI:** \`{ci}\` · **Próxima ação:** \`{decision}\`",
+           f"**Commit:** `{sha}` · **CI:** `{ci}` · **Próxima ação:** `{decision}`",
            f"**Evidências:** workflow run #{run_id} (artefatos por revisor).",
            "Estas são análises de agentes, não aprovações formais do GitHub."]
     for role in ROLES:
@@ -103,10 +103,10 @@ def format_comment(reviews: dict, sha: str, round_number: int, ci: str, decision
             out.append("Nenhum finding acionável reportado.")
         for n, f in enumerate(data["findings"], 1):
             loc = f["path"] + (f":{f['line']}" if f["line"] else "")
-            out.append(f"{n}. **[{f['severity']}]** \`{loc}\` — {f['title'].replace('@','@\u200b')}\n   {f['detail'].replace('@','@\u200b')}\n   **Correção/teste:** {f['recommendation'].replace('@','@\u200b')}")
-        if data["tests_assessed"]:
+            out.append(f"{n}. **[{f['severity']}]** `{loc}` — {f['title'].replace('@','@\u200b')}\n   {f['detail'].replace('@','@\u200b')}\n   **Correção/teste:** {f['recommendation'].replace('@','@\u200b')}")
+        if data.get("tests_assessed"):
             out.append("**Testes analisados:** " + "; ".join(x.replace("@","@\u200b") for x in data["tests_assessed"]))
-        if data["residual_risks"]:
+        if data.get("residual_risks"):
             out.append("**Riscos:** " + "; ".join(x.replace("@","@\u200b") for x in data["residual_risks"]))
     return "\n\n".join(out)[:64000] + "\n"
 
