@@ -65,7 +65,7 @@ jobs:
           command -v grok
           grok --version
           grok --help > /tmp/grok-help.txt
-          for flag in --sandbox --always-approve --max-turns --output-format --prompt-file --agent; do
+          for flag in --sandbox --always-approve --max-turns --output-format --prompt-file --agent --json-schema; do
             grep -F -- "$flag" /tmp/grok-help.txt >/dev/null || {
               echo "Missing required Grok Build CLI argument: $flag" >&2
               exit 1

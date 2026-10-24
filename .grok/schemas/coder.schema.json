@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PW Web GLM 5.3 coder completion v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "agent",
+    "status",
+    "summary",
+    "files_changed",
+    "tests_run",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "agent": {
+      "type": "string",
+      "const": "coder"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "working",
+        "final"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1800
+    },
+    "files_changed": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "string",
+        "maxLength": 512
+      }
+    },
+    "tests_run": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "result"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "blocked"
+            ]
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "maxLength": 750
+      }
+    }
+  }
+}

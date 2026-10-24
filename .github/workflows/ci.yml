@@ -51,3 +51,51 @@ jobs:
           path: artifacts/ci/
           if-no-files-found: warn
           retention-days: 30
+
+  chrome-rendering-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chrome for Testing
+        uses: browser-actions/setup-chrome@v2
+        id: chrome
+        with:
+          chrome-version: stable
+          install-dependencies: true
+      - name: Install pinned Playwright-core and Chrome DevTools MCP (no model credential)
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw-browser" --no-audit --no-fund \
+            playwright-core@1.56.0 chrome-devtools-mcp@1.12.0
+          echo "$RUNNER_TEMP/pw-browser/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Validate Chrome DevTools MCP executable and browser executable
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          "$CHROME_BIN" --version
+          chrome-devtools-mcp --help > /tmp/pw-mcp-help.txt
+          for flag in --headless --isolated --executablePath --allowedUrlPattern; do
+            grep -F -- "$flag" /tmp/pw-mcp-help.txt >/dev/null
+          done
+      - name: Verify actual WebGL2 render in desktop and mobile Chrome, capture evidence
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          PW_BROWSER_MODULE_DIR: ${{ runner.temp }}/pw-browser
+          PW_BROWSER_ARTIFACTS: artifacts/browser
+        run: bash scripts/browser-smoke.sh
+      - name: Upload independent browser screenshot and measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-chrome-render-evidence
+          path: artifacts/browser/
+          if-no-files-found: warn
+          retention-days: 30

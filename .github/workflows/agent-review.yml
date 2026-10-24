@@ -119,6 +119,28 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/grok-build" --no-audit --no-fund "@xai-official/grok@1.0.70"
           echo "$RUNNER_TEMP/grok-build/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Install headless Chrome for browser inspection in review
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+          install-dependencies: true
+      - name: Install pinned Chrome DevTools MCP (no model credential)
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw-browser" --no-audit --no-fund chrome-devtools-mcp@1.12.0
+          echo "$RUNNER_TEMP/pw-browser/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Provide localhost-only page to the reviewer
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          mkdir -p policy/artifacts/browser
+          nohup python3 -m http.server 8080 --bind 127.0.0.1 --directory source/web > policy/artifacts/browser/http.log 2>&1 &
+          echo $! > policy/artifacts/browser/server.pid
+          for i in $(seq 1 25); do
+            curl -fsS http://127.0.0.1:8080/ >/dev/null && break
+            sleep 0.2
+          done
+          echo "CHROME_BIN=$CHROME_BIN" >> "$GITHUB_ENV"
       - name: Install all 8 proxy model aliases in isolated user config
         env:
           GROK_HOME: ${{ runner.temp }}/pw-grok-${{ matrix.role }}
@@ -131,6 +153,7 @@ jobs:
           GROK_AGENT_PROFILE: ${{ github.workspace }}/policy/.grok/agents/${{ matrix.profile }}
           GROK_SANDBOX: read-only
           GROK_MAX_TURNS: '28'
+          GROK_SCHEMA_ROLE: ${{ matrix.role }}
           ROLE: ${{ matrix.role }}
         run: |
           cd source
@@ -142,7 +165,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pw-dual-review-${{ matrix.role }}-${{ github.run_id }}
-          path: policy/artifacts/reviews/
+          path: |
+            policy/artifacts/reviews/
+            policy/artifacts/browser/
           retention-days: 30
           if-no-files-found: warn
 
