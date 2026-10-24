@@ -3,21 +3,21 @@
 ## O que REALMENTE funciona
 - `Agent Execute` é iniciado manualmente por `workflow_dispatch` com `epic`, `workorder` e `attempt=1`.
 - O contrato JSON versionado fornece descrição, escopo, testes e aceite; IDs arbitrários são recusados.
-- Job **coder** (read-only para GitHub) usa `openai/codex-action@v1` com `OPENAI_API_KEY`, produz patch e anota diagnóstico.
-- Job **publish** (write de GitHub, sem `OPENAI_API_KEY`) verifica patch contra allowlist de caminhos e cria draft PR.
+- Job **coder** (read-only para GitHub) usa `@xai-official/grok@1.0.70` em modo headless com `XAI_API_KEY`, produz patch e anota diagnóstico.
+- Job **publish** (write de GitHub, sem `XAI_API_KEY`) verifica patch contra allowlist de caminhos e cria draft PR.
 - Publica explicitamente `workflow_dispatch` do `Bootstrap CI` na branch do agente, pois PR criado com `GITHUB_TOKEN` pode não acionar eventos normais.
 - CI salva `artifacts/ci/verify.log` e `report.json` (artefatos + resumo).
 - `Agent CI Feedback` acompanha `workflow_run` para branches `agent/...`, comenta resultado e **só** se `AGENT_AUTONOMY_ENABLED=true`, quando CI falha, agenda reparação 2 ou 3. Após 3 tentativas para; quando passa, aguarda revisão humana.
 - Atualizações na branch ficam disponíveis para inspeção via PR. **Este chat não fica conectado em execução contínua:** posso ler resultados do GitHub durante uma sessão ou quando você voltar, enquanto a automação segue no GitHub por conta própria.
 
 ## Requisitos de configuração (ação humana)
-1. Em GitHub repo Settings → Secrets and variables → Actions → Secrets, cadastrar `OPENAI_API_KEY` (chave API da sua organização, com limite de orçamento).
+1. Em GitHub repo Settings → Secrets and variables → Actions → Secrets, cadastrar `XAI_API_KEY` (chave API da sua organização, com limite de orçamento).
 2. Em Actions → General → Workflow permissions, permitir operações necessárias a `contents:write`, `pull-requests:write`, `actions:write` e PRs criados por Actions, conforme política do repositório.
 3. Rodar manualmente `Bootstrap CI` e conferir artefatos.
 4. Rodar **primeiro** um workorder `automation: true` baixo risco via Actions → Agent Execute → Run workflow.
 5. Verificar PR/diff/artefatos, ação por ação.
 6. Quando estiver satisfeito, definir repo variable `AGENT_AUTONOMY_ENABLED=true` para habilitar **apenas** retry automático por falha (até 3 tentativas). Default ausente = desligado.
-7. Definir regras de proteção de `main` com revisão humana + `Bootstrap CI` obrigatório, e limites de uso do Actions/OpenAI.
+7. Definir regras de proteção de `main` com revisão humana + `Bootstrap CI` obrigatório, e limites de uso do Actions/xAI.
 
 ## O que NÃO automatizamos nesta fase
 - Merge, deploy público, download de conteúdo proprietário, decisões jurídicas, credenciais, pagamentos, releases, alteração de workflows do próprio agente, leitura/escrita de servers de produção.
@@ -26,7 +26,7 @@
 
 ## Modelo de estados
 ```text
-workorder autorizado -> dispatch attempt1 -> Codex (read-only token, patch)
+workorder autorizado -> dispatch attempt1 -> Grok Build (read-only token, patch)
   -> patch validation (isolated write job) -> draft PR -> CI dispatch
   -> artifacts (log, report.json) -> workflow_run feedback
        ├─ success -> comment + human review
@@ -37,8 +37,8 @@ workorder autorizado -> dispatch attempt1 -> Codex (read-only token, patch)
 ## Threat model
 - O modelo pode propor mudanças maliciosas/incorretas: patch é untrusted input. Validação em job separado com caminho, tamanho, tipo, symlink e quantidade limitados; CI independente.
 - Workorders e validator vêm da `main`, e mudanças neles não são permitidas automaticamente.
-- Não interpolar corpo de issue ou comentários em shell/codex prompt. Inputs são IDs validados por regex e resolvidos localmente.
-- GitHub token de write só no publish job; chave OpenAI só no coder job, processada por action oficial. `drop-sudo`.
+- Não interpolar corpo de issue ou comentários em shell/Grok Build prompt. Inputs são IDs validados por regex e resolvidos localmente.
+- GitHub token de write só no publish job; chave xAI só no coder job, injetada somente na execução do Grok Build; usar sandbox estrito (`--sandbox strict`), com limite de 35 turnos e sem acesso do modelo ao token de escrita do GitHub.
 - Não considerar testes verdes garantia de segurança. PR exige code review.
 - GitHub Actions tem cobrança/cotas; máximo 3 tentativas, timeout por job, concurrency por workorder e ausência de auto-merge.
 - Scripts de build da branch PR rodam CI **sem segredo** e podem ser maliciosos; colaboradores externos não devem ganhar write ao repositório.
@@ -63,3 +63,15 @@ Use `Agent Execute` com `dry_run=true`, `epic=e01-agent-orchestration-v1`, `work
 ## Execução programada da fila
 
 `Agent Backlog Scheduler` é opt-in independente via variável `AGENT_BACKLOG_ENABLED=true`, e é documentado em `docs/AGENT_BACKLOG.md`. O scheduler seleciona workorders com dependências concluídas e nenhuma outra PR de agente pendente. `AGENT_AUTONOMY_ENABLED` habilita só retries quando CI falha, não habilita agendamento.
+
+## Executor Grok Build (substituição do executor anterior)
+
+- Instalamos `@xai-official/grok@1.0.70` em um diretório temporário, **sem** expor `XAI_API_KEY` ao npm/postinstall.
+- Executamos `scripts/run-grok-workorder.sh` usando `grok --no-auto-update --sandbox strict --always-approve --no-memory --disable-web-search --max-turns 35 -p '<prompt>' --output-format json`.
+- O valor de `-p` é o conteúdo do prompt gerado localmente a partir de `.agents/epics/.../workorders/*.json`; nenhuma issue externa instrui o agente.
+- O shell do job *coder* não recebe `contents: write`, `pull-requests: write` nem um token GH com acesso de escrita. A chave `XAI_API_KEY` existe apenas no step Grok e fica fora dos logs de shell. A execução retorna JSON em `artifacts/agent/final.json` e um diff, a serem revisados isoladamente pelo job privilegiado.
+- Sandbox `strict` limita filesystem e rede de processos-filhos no Linux, mas **não impede** o próprio agente de consultar a API do modelo. Não tratar sandbox como prova absoluta de isolamento: análise de prompts, revisão de dependências e gates do PR continuam obrigatórios.
+- `--always-approve` é usado apenas em ambiente de execução limitado e headless; nunca significa aprovação de PR, licença ou release.
+- Documentação oficial: https://docs.x.ai/build/overview e https://docs.x.ai/build/cli/headless-scripting.
+- Seu plano/assinatura Grok Build local **não garante** que um runner GitHub Actions tenha acesso; a execução hospedada precisa da API key gerada em https://console.x.ai/ e pode ter cobrança independente. Se preferir um runner próprio autenticado, desenhar uma integração separada com armazenamento seguro de credenciais, sem copiar tokens de login para GitHub.
+- O workflow de prova `Agent Controller Smoke` deve validar CLI instalada e teste com *mock* que não envia prompt à xAI. Somente o piloto real com segredo poderá atestar execução do modelo.

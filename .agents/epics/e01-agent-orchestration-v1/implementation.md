@@ -18,7 +18,7 @@
 4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
 5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
 
-**Artefato esperado:** Codex patch artifact, teste correspondente e relatório de evidência.
+**Artefato esperado:** Grok Build patch artifact, teste correspondente e relatório de evidência.
 **Sinal de bloqueio:** chave API exposta a código não confiável.
 
 ### WO-03 — Implementar controlador CI/feedback, limites de retries e parada segura
@@ -59,7 +59,7 @@
 
 ## Integração entre subsistemas
 - `workorder JSON + allowlist`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `Codex patch artifact`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
+- `Grok Build patch artifact`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
 - `CI report.json`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
 - `PR comments e controladores workflow_run`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
 

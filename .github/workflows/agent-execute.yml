@@ -106,24 +106,32 @@ jobs:
           python3 .agents/automation/build_prompt.py \
             --epic "$EPIC" --workorder "$WO" --attempt "$ATTEMPT" \
             --ci-log artifacts/agent/prior-ci.log --output artifacts/agent/prompt.md
-          chmod -R a+rwX "$GITHUB_WORKSPACE"
-      - name: Fail clearly if OpenAI secret is not configured
+      - name: Install pinned Grok Build CLI (without secrets)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Grok Build from official npm distribution
         env:
-          KEY_CONFIGURED: ${{ secrets.OPENAI_API_KEY != '' }}
+          GROK_BUILD_VERSION: '1.0.70'
         run: |
-          if [ "$KEY_CONFIGURED" != 'true' ]; then
-            echo "::error::Missing OPENAI_API_KEY repository Actions secret. See docs/AUTONOMY.md."
+          npm install --prefix "$RUNNER_TEMP/grok-build" --no-audit --no-fund "@xai-official/grok@$GROK_BUILD_VERSION"
+          echo "$RUNNER_TEMP/grok-build/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Verify installed Grok Build version
+        run: grok --version
+      - name: Ensure xAI API key is configured
+        env:
+          XAI_KEY_CONFIGURED: ${{ secrets.XAI_API_KEY != '' }}
+        run: |
+          if [ "$XAI_KEY_CONFIGURED" != 'true' ]; then
+            echo "::error::Missing XAI_API_KEY in Actions secrets. See docs/AUTONOMY.md."
             exit 1
           fi
-      - name: Run sandboxed Codex (API key never used in following publish job)
-        id: codex
-        uses: openai/codex-action@v1
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: artifacts/agent/prompt.md
-          safety-strategy: drop-sudo
-          permission-profile: ":workspace"
-          output-file: artifacts/agent/final.txt
+      - name: Run Grok Build headlessly in strict sandbox (no write token)
+        id: grok
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          bash scripts/run-grok-workorder.sh artifacts/agent/prompt.md artifacts/agent/final.json
       - name: Serialize patch and diagnostics
         if: success()
         run: |

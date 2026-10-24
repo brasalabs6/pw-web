@@ -18,7 +18,7 @@ A conversão para WebAssembly requer validação progressiva de compatibilidade,
 
 ## Contratos de saída obrigatórios
 - workorder JSON + allowlist
-- Codex patch artifact
+- Grok Build patch artifact
 - CI report.json
 - PR comments e controladores workflow_run
 
