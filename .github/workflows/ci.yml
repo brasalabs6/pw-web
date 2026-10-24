@@ -91,6 +91,8 @@ jobs:
           PW_BROWSER_MODULE_DIR: ${{ runner.temp }}/pw-browser
           PW_BROWSER_ARTIFACTS: artifacts/browser
         run: bash scripts/browser-smoke.sh
+        env:
+          PW_WEB_PORT: '8480'
       - name: Upload independent browser screenshot and measurements
         if: always()
         uses: actions/upload-artifact@v4

@@ -134,13 +134,14 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
         run: |
           mkdir -p policy/artifacts/browser
-          nohup python3 -m http.server 8080 --bind 127.0.0.1 --directory source/web > policy/artifacts/browser/http.log 2>&1 &
+          nohup python3 -m http.server 8480 --bind 127.0.0.1 --directory source/web > policy/artifacts/browser/http.log 2>&1 &
           echo $! > policy/artifacts/browser/server.pid
           for i in $(seq 1 25); do
-            curl -fsS http://127.0.0.1:8080/ >/dev/null && break
+            curl -fsS http://127.0.0.1:8480/ >/dev/null && break
             sleep 0.2
           done
           echo "CHROME_BIN=$CHROME_BIN" >> "$GITHUB_ENV"
+          echo "PW_WEB_PORT=8480" >> "$GITHUB_ENV"
       - name: Install all 8 proxy model aliases in isolated user config
         env:
           GROK_HOME: ${{ runner.temp }}/pw-grok-${{ matrix.role }}

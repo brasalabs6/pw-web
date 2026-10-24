@@ -84,3 +84,6 @@ A alteração de draft para ready via `GITHUB_TOKEN` pode não desencadear event
 
 ## JSON estruturado e provas de navegador
 Cada agente possui um schema versionado em `.grok/schemas/*.schema.json` e o runner invoca `grok --output-format json --json-schema <arquivo>`. O controlador usa exclusivamente `structuredOutput`, exige `stopReason=end_turn` e valida status final + contrato + findings. Texto livre nunca é interpretado como JSON confiável. Chrome DevTools MCP está em `.grok/config.toml` com wrapper em `scripts/chrome-mcp-launch.sh`; veja [BROWSER_TESTING.md](BROWSER_TESTING.md). A CI contém um teste independente no Chrome com screenshots e relatório por viewport.
+
+### Porta do WebGL no navegador
+O servidor de demonstração e o Chrome DevTools MCP usam **8480** por padrão; configure `PW_WEB_PORT` para sobrepor quando necessário. A POC-001 usa 8481. Não usar a porta 8080, reservada para outro serviço no ambiente de desenvolvimento. [Diagnóstico Chrome](BROWSER_TESTING.md).

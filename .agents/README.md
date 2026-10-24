@@ -7,7 +7,7 @@ Antes de executar e02–e06, consultar [POC-001](../docs/POC-ANGELICA.md) e
 P1 é o próximo pacote autocontido para Grok/GLM. As workorders genéricas abaixo
 não substituem seus contratos; o catálogo/scheduler não foi alterado por esta prova.
 
-**20 épicos** versionados em `.agents/epics/<slug>-v1/`, cada um com charter, requisitos, arquitetura, implementação, testes, riscos, `tasks.md`, `task.md` e cinco workorders em JSON e Markdown. **Total: 100 workorders.**
+**20 épicos** versionados em `.agents/epics/<slug>-v1/`, cada um com charter, requisitos, arquitetura, implementação, testes, riscos, `tasks.md`, `task.md` workorders em JSON e Markdown, conforme o catálogo de cada épico. **Total: 135 workorders após a expansão e02–e06 do PR #15 (WIP).**
 
 Use `python3 .agents/automation/epic_check.py` para validar contratos/dependências. Use `docs/AUTONOMY.md` para runbook Grok Build/GitHub Actions. Somente workorders com `automation: true` são elegíveis para disparo automático; todos os PRs exigem revisão humana. Direitos de terceiros são gate independente.
 
