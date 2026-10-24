@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EPICS = ROOT / ".agents" / "epics"
 ID = re.compile(r"^[a-z][a-z0-9-]{2,70}$")
-DENIED = (".github/", ".agents/", "references/", "assets/original/", "data/original/", "game-data/", ".git/", "scripts/verify.sh", ".gitmodules", "AGENTS.md", "SECURITY.md", ".env", "LICENSE")
+DENIED = (".github/", ".agents/", ".grok/", "references/", "assets/original/", "data/original/", "game-data/", ".git/", "scripts/verify.sh", ".gitmodules", "AGENTS.md", "SECURITY.md", ".env", "LICENSE")
 
 def read(epic: str, workorder: str) -> dict:
     if not ID.fullmatch(epic) or not ID.fullmatch(workorder):

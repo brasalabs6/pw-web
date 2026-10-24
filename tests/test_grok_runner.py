@@ -24,12 +24,13 @@ class GrokBuildRunnerTests(unittest.TestCase):
     def test_forwards_prompt_and_sandbox_controls(self):
         with tempfile.TemporaryDirectory() as td:
             self.mock_runner(td)
+            (pathlib.Path(td) / "config.toml").write_text("[models]\\ndefault = \\"cf-glm-5.3\\"\\n")
             prompt = pathlib.Path(td) / "prompt.md"
             result = pathlib.Path(td) / "result.json"
             trace = pathlib.Path(td) / "args.json"
             prompt.write_text("Implement safe fixture with tests.")
             env = {**os.environ, "PATH": td + os.pathsep + os.environ.get("PATH", ""),
-                   "XAI_API_KEY": "test-key-not-real", "TEST_GROK_ARGS": str(trace)}
+                   "CF_PROXY_API_KEY": "test-key-not-real", "GROK_HOME": td, "TEST_GROK_ARGS": str(trace)}
             proc = subprocess.run(["bash", str(RUNNER), str(prompt), str(result)],
                                   env=env, cwd=ROOT, capture_output=True, text=True)
             self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -41,7 +42,7 @@ class GrokBuildRunnerTests(unittest.TestCase):
             self.assertIn("--disable-web-search", args)
             self.assertIn("--no-memory", args)
             self.assertEqual(args[args.index("--max-turns")+1], "35")
-            self.assertEqual(args[args.index("-p")+1], prompt.read_text())
+            self.assertEqual(args[args.index("-p")+1], prompt.read_text())\n            self.assertEqual(args[args.index("-m")+1], "cf-glm-5.3")\n            self.assertIn("--agent-profile",args)\n            self.assertIn("coder.md",args[args.index("--agent-profile")+1])
             self.assertEqual(json.loads(result.read_text())["text"], "Mock Grok Build output")
             self.assertNotIn("test-key-not-real", proc.stdout+proc.stderr)
 
@@ -50,12 +51,12 @@ class GrokBuildRunnerTests(unittest.TestCase):
             self.mock_runner(td)
             prompt = pathlib.Path(td) / "p"
             prompt.write_text("hello")
-            env = {**os.environ, "PATH": td + os.pathsep + os.environ.get("PATH", "")}
-            env.pop("XAI_API_KEY", None)
+            env = {**os.environ, "PATH": td + os.pathsep + os.environ.get("PATH", ""), "GROK_HOME": td}
+            env.pop("CF_PROXY_API_KEY", None)
             proc = subprocess.run(["bash", str(RUNNER), str(prompt), str(pathlib.Path(td)/"r")],
                                   env=env, capture_output=True, text=True)
             self.assertNotEqual(proc.returncode, 0)
-            self.assertIn("XAI_API_KEY", proc.stderr)
+            self.assertIn("CF_PROXY_API_KEY", proc.stderr)
 
 if __name__ == "__main__":
     unittest.main()

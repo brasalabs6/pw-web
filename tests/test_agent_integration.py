@@ -37,7 +37,7 @@ class AgentIntegrationTests(unittest.TestCase):
     def test_disallow_unbounded_retry_and_manual_work(self):
         with tempfile.TemporaryDirectory() as td:
             out = pathlib.Path(td) / "outputs.txt"
-            for attempt in ("0", "4", "100"):
+            for attempt in ("0", "31", "100"):
                 result = self.call("validate_dispatch.py",
                                    "--epic", "e01-agent-orchestration-v1",
                                    "--workorder", "wo-01", "--attempt", attempt,
