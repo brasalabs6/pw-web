@@ -146,3 +146,20 @@ Evidência estática da configuração `Release|Win32` de `ElementClient.vcproj`
 
 Próximo passo: seguir o [método de port incremental](ANGELICA-PORTING-METHOD.md).
 Ele define o que Grok/GLM podem executar agora e os gates anteriores à integração.
+
+## Reprodução automatizada da etapa de browser (opt-in local)
+
+A prova original **não roda automaticamente na CI pública** porque depende da referência Angelica e de toolchains em ambiente autorizado. A CI verifica o comparador com fixtures sintéticas usando `node --test tests/probes/compare.test.mjs`; isso **não recompila ARandomGen**.
+
+Após `./scripts/probe-angelica.sh` no laboratório autorizado, use:
+
+```bash
+# Chrome for Testing e Playwright-core instalados localmente
+export CHROME_BIN=/path/to/chrome
+export PW_BROWSER_MODULE_DIR=/path/to/pw-browser-deps
+bash scripts/probe-angelica-browser.sh
+```
+
+O runner mantém a porta **8481** apenas em `127.0.0.1` e grava em `artifacts/angelica-probe/`: `browser-positive.png`, `browser-negative.png` e `browser-proof.json`. O teste positivo exige 4.096 uniformes, 256 gaussianos, 1.922 triângulos, pixel lido e ABI WASM32; o negativo adultera a resposta de `native.json` **em memória no Chrome**, e exige FAIL. Um erro de JS encerra a prova com falha.
+
+O runner não publica binários, fontes, screenshots nem dados derivados no GitHub e não consulta serviços externos. O resultado só pode ser denominado **POC recompilada e verificada** se o comando realmente for executado; indisponibilidade de referência, Emscripten ou Chrome é `BLOCKED`. Para levar essa execução a uma CI privada autorizada, provisionar as ferramentas e a referência sob controle de acesso, definir política de direitos, e nunca transformar o artefato em download público por padrão.

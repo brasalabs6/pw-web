@@ -23,7 +23,9 @@ jobs:
           python3 -m compileall -q .agents/automation tests
           python3 .agents/automation/epic_check.py
       - name: Test Angelica POC comparison logic without upstream code or assets
-        run: node --test tests/probes/compare.test.mjs
+        run: |
+          node --test tests/probes/compare.test.mjs
+          node --check tests/probes/browser-proof.cjs
       - name: Verify bootstrap, tests and portable C++ (capture evidence)
         id: checks
         shell: bash
