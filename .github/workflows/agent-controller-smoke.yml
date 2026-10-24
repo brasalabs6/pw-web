@@ -38,7 +38,7 @@ jobs:
           {
             echo '### Agent Controller Smoke'
             echo '- Validated workorder schema, dependency gate, dispatch contract, agent prompt and tests.'
-            echo '- No Codex call, token exposure, code patch, PR or game content used.'
+            echo '- No Grok Build model call, token exposure, code patch, PR or game content used.'
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload controller smoke evidence
         if: always()

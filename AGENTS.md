@@ -50,3 +50,7 @@ P0: comprovar bootstrap, compilar WASM trivial e selecionar cliente/engine Windo
 P1: modelo real legalmente autorizado + pipeline gráfico.
 P2: gateway/protocolo e entrada no mundo.
 P3: gameplay completo e otimizações.
+
+## Executor de IA: Grok Build
+
+O executor no GitHub Actions é Grok Build, pela CLI oficial `grok -p` e segredo `XAI_API_KEY`. O GitHub Actions é o orquestrador; Grok é o agente de código, não um serviço de deploy ou merge automático. Consulte `docs/GROK_BUILD.md`, `docs/AUTONOMY.md` e `scripts/run-grok-workorder.sh`. Qualquer mudança de executor/versão exige PR e tests de integração.

@@ -2,7 +2,7 @@
 
 **20 épicos** versionados em `.agents/epics/<slug>-v1/`, cada um com charter, requisitos, arquitetura, implementação, testes, riscos, `tasks.md`, `task.md` e cinco workorders em JSON e Markdown. **Total: 100 workorders.**
 
-Use `python3 .agents/automation/epic_check.py` para validar contratos/dependências. Use `docs/AUTONOMY.md` para runbook Codex/GitHub Actions. Somente workorders com `automation: true` são elegíveis para disparo automático; todos os PRs exigem revisão humana. Direitos de terceiros são gate independente.
+Use `python3 .agents/automation/epic_check.py` para validar contratos/dependências. Use `docs/AUTONOMY.md` para runbook Grok Build/GitHub Actions. Somente workorders com `automation: true` são elegíveis para disparo automático; todos os PRs exigem revisão humana. Direitos de terceiros são gate independente.
 
 ## Ordem de evolução
 1. [e00-rights-governance-v1](epics/e00-rights-governance-v1/README.md) — Direitos, proveniência, licenciamento e decisões de produto
