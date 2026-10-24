@@ -81,3 +81,6 @@ A alteração de draft para ready via `GITHUB_TOKEN` pode não desencadear event
 - https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-agent/README.md
 
 **Prompts longos:** o runner usa `grok --prompt-file` em vez de `-p "$(cat ...)"`, evitando o limite de tamanho dos argumentos do sistema operacional e a exposição do texto completo no comando do processo. O diff de revisão tem limite de 240 KB; PR maior exige segmentação/revisão humana.
+
+## JSON estruturado e provas de navegador
+Cada agente possui um schema versionado em `.grok/schemas/*.schema.json` e o runner invoca `grok --output-format json --json-schema <arquivo>`. O controlador usa exclusivamente `structuredOutput`, exige `stopReason=end_turn` e valida status final + contrato + findings. Texto livre nunca é interpretado como JSON confiável. Chrome DevTools MCP está em `.grok/config.toml` com wrapper em `scripts/chrome-mcp-launch.sh`; veja [BROWSER_TESTING.md](BROWSER_TESTING.md). A CI contém um teste independente no Chrome com screenshots e relatório por viewport.

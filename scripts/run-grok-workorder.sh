@@ -2,6 +2,7 @@
 # Grok Build worker: model/proxy auth from isolated user-level config, no GitHub write credential.
 set -euo pipefail
 if [ "$#" -ne 2 ]; then echo "Usage: $0 <prompt.md> <result.json>" >&2; exit 2; fi
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 prompt="$1"; output="$2"
 if [ ! -s "$prompt" ]; then echo "Prompt missing or empty" >&2; exit 2; fi
 if ! command -v grok >/dev/null 2>&1; then echo "Official grok CLI not installed" >&2; exit 1; fi
@@ -13,9 +14,9 @@ profile="${GROK_AGENT_PROFILE:-.grok/agents/coder.md}"
 sandbox="${GROK_SANDBOX:-strict}"
 turns="${GROK_MAX_TURNS:-35}"
 role="${GROK_SCHEMA_ROLE:-coder}"
-schema="${GROK_SCHEMA:-.grok/schemas/${role}.schema.json}"
-if [ "$role" = "deepseek" ]; then schema="${GROK_SCHEMA:-.grok/schemas/reviewer-deepseek.schema.json}"; fi
-if [ "$role" = "glm-flash" ]; then schema="${GROK_SCHEMA:-.grok/schemas/reviewer-glm-flash.schema.json}"; fi
+schema="${GROK_SCHEMA:-$ROOT_DIR/.grok/schemas/${role}.schema.json}"
+if [ "$role" = "deepseek" ]; then schema="${GROK_SCHEMA:-$ROOT_DIR/.grok/schemas/reviewer-deepseek.schema.json}"; fi
+if [ "$role" = "glm-flash" ]; then schema="${GROK_SCHEMA:-$ROOT_DIR/.grok/schemas/reviewer-glm-flash.schema.json}"; fi
 case "$role" in coder|deepseek|glm-flash) ;; *) echo "Invalid schema role" >&2; exit 2;; esac
 if [ ! -s "$schema" ]; then echo "Missing agent schema: $schema" >&2; exit 2; fi
 case "$model" in
@@ -31,4 +32,4 @@ grok --no-auto-update --sandbox "$sandbox" --always-approve \
   --no-memory --disable-web-search --max-turns "$turns" \
   --agent "$profile" -m "$model" \
   --prompt-file "$prompt" --output-format json --json-schema "$schema" > "$output"
-python3 .agents/automation/validate_grok_output.py --input "$output" --role "$role"
+python3 "$ROOT_DIR/.agents/automation/validate_grok_output.py" --input "$output" --role "$role"
