@@ -51,3 +51,13 @@ git submodule update --init references/server-rust
 5. Substituir código dependente de licença incerta por implementações originais/permitidas, se necessário.
 
 Propriedade do scaffold de pesquisa: projeto brasalabs6. **Não há licença open-source global concedida neste repositório**; direitos de contribuições e referências são tratados separadamente.
+
+## Agentes e programação de trabalho
+
+- [Programa de 20 épicos (100 workorders)](.agents/README.md): requisitos, arquitetura, specs, testes, riscos e `tasks.md` por etapa.
+- [Autonomia assistida por GitHub Actions](docs/AUTONOMY.md): Codex → patch isolado → PR → CI → evidências → reparo até 3 tentativas.
+- [Scheduler do backlog (opt-in)](docs/AGENT_BACKLOG.md): dispara uma workorder elegível sem PR ativo, até duas vezes ao dia quando habilitado.
+- **Prova sem credenciais:** Actions → **Agent Execute** → epic `e01-agent-orchestration-v1`, workorder `wo-01`, attempt `1` e `dry_run=true`. Não usa OpenAI API, não grava código e não cria PR.
+- **Execução real:** requer secret `OPENAI_API_KEY` e autorização do GitHub Actions para criar PR. Default seguro: sem auto-merge e loop opcional desligado.
+
+Os relatórios permanecem nos comentários de PR e artefatos de Actions; não se deve prometer que esta conversa observará novos eventos continuamente.

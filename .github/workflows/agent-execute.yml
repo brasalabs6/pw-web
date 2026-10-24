@@ -10,6 +10,11 @@ on:
         description: "Workorder ID from epic/workorders (e.g. wo-01)"
         required: true
         type: string
+      dry_run:
+        description: "Validate workflow without API key, code changes or PR"
+        required: true
+        default: false
+        type: boolean
       attempt:
         description: "Bounded attempt 1..3 (1 = new PR, 2/3 = fix failed CI)"
         required: true
@@ -67,6 +72,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" > /dev/null
 
   coder:
+    if: inputs.dry_run != true
     needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -101,6 +107,14 @@ jobs:
             --epic "$EPIC" --workorder "$WO" --attempt "$ATTEMPT" \
             --ci-log artifacts/agent/prior-ci.log --output artifacts/agent/prompt.md
           chmod -R a+rwX "$GITHUB_WORKSPACE"
+      - name: Fail clearly if OpenAI secret is not configured
+        env:
+          KEY_CONFIGURED: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: |
+          if [ "$KEY_CONFIGURED" != 'true' ]; then
+            echo "::error::Missing OPENAI_API_KEY repository Actions secret. See docs/AUTONOMY.md."
+            exit 1
+          fi
       - name: Run sandboxed Codex (API key never used in following publish job)
         id: codex
         uses: openai/codex-action@v1
@@ -127,6 +141,7 @@ jobs:
           retention-days: 14
 
   publish:
+    if: inputs.dry_run != true
     needs: [prepare, coder]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -187,3 +202,34 @@ jobs:
           echo "Patch published: $BRANCH" >> "$GITHUB_STEP_SUMMARY"
           echo "Dispatching CI explicitly; GITHUB_TOKEN-created PRs do not trigger usual PR events." >> "$GITHUB_STEP_SUMMARY"
           gh workflow run ci.yml --ref "$BRANCH"
+
+  dry-run:
+    if: inputs.dry_run == true
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: false
+          persist-credentials: false
+      - name: Prove workorder selection, constraints, generated prompt and tests
+        env:
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/dry-run
+          python3 .agents/automation/epic_check.py | tee artifacts/dry-run/catalog.json
+          python3 .agents/automation/build_prompt.py \
+            --epic "$EPIC" --workorder "$WO" --attempt 1 \
+            --output artifacts/dry-run/prompt.md
+          bash scripts/verify.sh 2>&1 | tee artifacts/dry-run/verify.log
+          echo "Dry-run: policy and local tests passed. No model call, patch or PR was created." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pw-agent-dry-run-${{ github.run_id }}
+          path: artifacts/dry-run/
+          retention-days: 14

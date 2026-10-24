@@ -55,3 +55,11 @@ workorder autorizado -> dispatch attempt1 -> Codex (read-only token, patch)
 
 ## Limites importantes
 Este workflow é infraestrutura para fazer PRs assistidos por IA e seus testes, não autonomia ilimitada e não um serviço que mantém uma sessão do ChatGPT aberta. Nenhuma chave, assinatura de serviço, token pessoal ou configuração externa é criada automaticamente.
+
+## Validação integrada sem API key
+
+Use `Agent Execute` com `dry_run=true`, `epic=e01-agent-orchestration-v1`, `workorder=wo-01`, `attempt=1`. O job `prepare` valida workorder e dependências; o job `dry-run` gera prompt (sem executar modelo), roda o verificador e grava artefatos com catalog, prompt e log. Isso comprova a ligação do controlador com contratos sem criar código/PR. **Não comprova geração por IA.**
+
+## Execução programada da fila
+
+`Agent Backlog Scheduler` é opt-in independente via variável `AGENT_BACKLOG_ENABLED=true`, e é documentado em `docs/AGENT_BACKLOG.md`. O scheduler seleciona workorders com dependências concluídas e nenhuma outra PR de agente pendente. `AGENT_AUTONOMY_ENABLED` habilita só retries quando CI falha, não habilita agendamento.
