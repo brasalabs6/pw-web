@@ -1,0 +1,12 @@
+[submodule "references/client-153"]
+	path = references/client-153
+	url = https://github.com/WolfsCore/Source-Cliente-1.5.3.git
+	branch = main
+[submodule "references/client-152-modern"]
+	path = references/client-152-modern
+	url = https://github.com/coussiraty/PWClient-152.git
+	branch = main
+[submodule "references/server-rust"]
+	path = references/server-rust
+	url = https://github.com/mur1ll0/pw-universal-server.git
+	branch = main
