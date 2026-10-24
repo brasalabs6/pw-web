@@ -36,14 +36,14 @@ class GrokBuildRunnerTests(unittest.TestCase):
             self.assertEqual(proc.returncode, 0, proc.stderr)
             args = json.loads(trace.read_text())
             for flag in ("--sandbox", "--always-approve", "--no-auto-update",
-                         "--disable-web-search", "--no-memory", "--agent-profile"):
+                         "--disable-web-search", "--no-memory", "--agent"):
                 self.assertIn(flag, args)
             self.assertEqual(args[args.index("--sandbox")+1], "strict")
             self.assertEqual(args[args.index("--max-turns")+1], "35")
             self.assertIn("--prompt-file", args)
             self.assertEqual(args[args.index("--prompt-file")+1], str(prompt))
             self.assertEqual(args[args.index("-m")+1], "cf-glm-5.3")
-            self.assertIn("coder.md", args[args.index("--agent-profile")+1])
+            self.assertIn("coder.md", args[args.index("--agent")+1])
             self.assertEqual(json.loads(result.read_text())["text"], "Mock Grok Build output")
             self.assertNotIn("test-placeholder-not-real", proc.stdout+proc.stderr)
 

@@ -23,7 +23,7 @@ mkdir -p "$(dirname "$output")"
 # Profile contains system instructions. No output to CI logs from model output.
 grok --no-auto-update --sandbox "$sandbox" --always-approve \
   --no-memory --disable-web-search --max-turns "$turns" \
-  --agent-profile "$profile" -m "$model" \
+  --agent "$profile" -m "$model" \
   --prompt-file "$prompt" --output-format json > "$output"
 python3 - "$output" <<'PY'
 import json, pathlib, sys
