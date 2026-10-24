@@ -64,4 +64,11 @@ jobs:
         run: |
           command -v grok
           grok --version
-          echo 'Official Grok Build CLI installed without API credentials. No inference requested.' >> "$GITHUB_STEP_SUMMARY"
+          grok --help > /tmp/grok-help.txt
+          for flag in --sandbox --always-approve --max-turns --output-format; do
+            grep -F -- "$flag" /tmp/grok-help.txt >/dev/null || {
+              echo "Missing required Grok Build CLI argument: $flag" >&2
+              exit 1
+            }
+          done
+          echo 'Official Grok Build CLI installed, required flags verified, no API credentials or model call.' >> "$GITHUB_STEP_SUMMARY"

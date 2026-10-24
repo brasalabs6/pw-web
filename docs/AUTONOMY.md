@@ -3,7 +3,7 @@
 ## O que REALMENTE funciona
 - `Agent Execute` é iniciado manualmente por `workflow_dispatch` com `epic`, `workorder` e `attempt=1`.
 - O contrato JSON versionado fornece descrição, escopo, testes e aceite; IDs arbitrários são recusados.
-- Job **coder** (read-only para GitHub) usa ``@xai-official/grok@1.0.70` em modo headless` com `XAI_API_KEY`, produz patch e anota diagnóstico.
+- Job **coder** (read-only para GitHub) usa `@xai-official/grok@1.0.70` em modo headless com `XAI_API_KEY`, produz patch e anota diagnóstico.
 - Job **publish** (write de GitHub, sem `XAI_API_KEY`) verifica patch contra allowlist de caminhos e cria draft PR.
 - Publica explicitamente `workflow_dispatch` do `Bootstrap CI` na branch do agente, pois PR criado com `GITHUB_TOKEN` pode não acionar eventos normais.
 - CI salva `artifacts/ci/verify.log` e `report.json` (artefatos + resumo).
