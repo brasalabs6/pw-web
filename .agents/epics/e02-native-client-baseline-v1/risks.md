@@ -1,25 +1,30 @@
-# Registro de riscos — Baseline do cliente Windows e seleção validada da Angelica
+# Riscos — Baseline do cliente Windows e seleção validada da Angelica
 
-## Riscos específicos
+## Estado e proveniência
 
-| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
-| --- | --- | --- | --- | --- | --- |
-| R-1 | repositório incompleto | Alto / validar gravidade | Expor cenário negativo e observável | Construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2 | Bloquear trabalho dependente, ADR ou fallback |
-| R-2 | SDK legado indisponível | Alto / validar gravidade | Expor cenário negativo e observável | Criar matriz de compatibilidade D3D8/9, headers, ABI, asset e protocolo por versão | Bloquear trabalho dependente, ADR ou fallback |
-| R-3 | cliente não autentica em servidor atual | Alto / validar gravidade | Expor cenário negativo e observável | Compilar cliente e engine em ambiente Windows autorizado com logs reproduzíveis | Bloquear trabalho dependente, ADR ou fallback |
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Legenda da tabela
-Formato: ID | risco | gravidade inicial | sinal de falha | primeira mitigação | contingency.
+## Riscos e incertezas
 
-## Riscos transversais
-| Categoria | Sinal | Tratamento |
-| --- | --- | --- |
-| Direitos | licença titular desconhecido | manter fora de artefatos distribuídos |
-| Integridade | checks verdes sem funcionalidade real | evidência E2E específica e gate humano |
-| Segurança do agente | mudança em workflows/segredos | rejeitar patch antes de write-token |
-| Compatibilidade | assets/protocolos de versões diferentes | matriz de versão e validação por commit |
-| Performance | stutter/memória e download excessivo | perf budgets, tracing e opções de fallback |
-| Operação | falta de credenciais/servidor/SDK | bloquear honestamente, não simular sucesso |
+- [HIGH][Confirmed] VS2005/SDKs não disponíveis no host da POC; build Windows ainda não demonstrado.
+- [HIGH][Confirmed] Configurações misturam caminhos Angelica2/Angelica2.2; escolher Release Win32 coerente.
+- [HIGH][Possible] Bibliotecas encontradas pelo nome podem ter ABI/CRT incompatíveis.
 
-## Registro de incidente e decisão
-Cada risco precisa de dono, impacto, likelihood revisada, evidência, mitigação, prazo de revisão e critério de encerramento. Erros críticos exigem suspensão de release e workorder de correção.
+(HUMAN) Provisionar Windows/SDKs e recursos autorizados (WO-06/09); decidir versão/direitos no gate WO-05. Bloqueia laboratório e seleção, não matemática própria.
+
+## Contratos
+
+- [docs/VALIDATION.md](../../../docs/VALIDATION.md)
+- [docs/DECISIONS/ADR-0003-version-selection.md](../../../docs/DECISIONS/ADR-0003-version-selection.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.
+
+
+## Condições de parada
+
+Não inferir schema, autorização ou paridade. Manter as tarefas independentes
+executáveis enquanto a parte dependente fica BLOCKED. Retomar com evidência da
+pré-condição; não remover gates apenas para alimentar o scheduler.

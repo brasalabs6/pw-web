@@ -1,25 +1,30 @@
-# Registro de riscos — Toolchain C++/Emscripten e runtime WebAssembly
+# Riscos — Toolchain C++/Emscripten e runtime WebAssembly
 
-## Riscos específicos
+## Estado e proveniência
 
-| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
-| --- | --- | --- | --- | --- | --- |
-| R-1 | builds diferentes por emsdk | Alto / validar gravidade | Expor cenário negativo e observável | Fixar versão/flags da toolchain Emscripten e matriz debug/release | Bloquear trabalho dependente, ADR ou fallback |
-| R-2 | OOM e pointers inválidos | Alto / validar gravidade | Expor cenário negativo e observável | Implementar binding ABI simples com typed buffers e error codes | Bloquear trabalho dependente, ADR ou fallback |
-| R-3 | browser bloqueia SharedArrayBuffer | Alto / validar gravidade | Expor cenário negativo e observável | Criar loop cooperativo requestAnimationFrame com pause/resume | Bloquear trabalho dependente, ADR ou fallback |
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Legenda da tabela
-Formato: ID | risco | gravidade inicial | sinal de falha | primeira mitigação | contingency.
+## Riscos e incertezas
 
-## Riscos transversais
-| Categoria | Sinal | Tratamento |
-| --- | --- | --- |
-| Direitos | licença titular desconhecido | manter fora de artefatos distribuídos |
-| Integridade | checks verdes sem funcionalidade real | evidência E2E específica e gate humano |
-| Segurança do agente | mudança em workflows/segredos | rejeitar patch antes de write-token |
-| Compatibilidade | assets/protocolos de versões diferentes | matriz de versão e validação por commit |
-| Performance | stutter/memória e download excessivo | perf budgets, tracing e opções de fallback |
-| Operação | falta de credenciais/servidor/SDK | bloquear honestamente, não simular sucesso |
+- [HIGH][Confirmed] Build .wasm não prova import, execução ou lifecycle no browser.
+- [HIGH][Likely] memory.grow invalida views retidas; dispose com callback tardio pode reativar módulo.
+- [MEDIUM][Confirmed] POC rodou em SwiftShader, não comprova desempenho em GPU física.
 
-## Registro de incidente e decisão
-Cada risco precisa de dono, impacto, likelihood revisada, evidência, mitigação, prazo de revisão e critério de encerramento. Erros críticos exigem suspensão de release e workorder de correção.
+(HUMAN) Provisionar ferramentas no ambiente de execução se ausentes; mudanças de workflow/provider continuam fora das scopes destes jobs.
+
+## Contratos
+
+- [docs/POC-ANGELICA.md](../../../docs/POC-ANGELICA.md)
+- [docs/ANGELICA-PORTING-METHOD.md](../../../docs/ANGELICA-PORTING-METHOD.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.
+
+
+## Condições de parada
+
+Não inferir schema, autorização ou paridade. Manter as tarefas independentes
+executáveis enquanto a parte dependente fica BLOCKED. Retomar com evidência da
+pré-condição; não remover gates apenas para alimentar o scheduler.

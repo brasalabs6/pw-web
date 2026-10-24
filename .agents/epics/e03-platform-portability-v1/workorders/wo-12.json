@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e03-platform-portability-v1",
+  "id": "wo-12",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Auditar closure portátil com compilação e sanitizers",
+  "objective": "Isolar as dependências de plataforma da primeira fatia e provar tipos, matemática, leitura e input com testes nativo/WASM. Nesta workorder: Auditar closure portátil com compilação e sanitizers. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P0",
+  "risk": "Caso sentinela em teste isolado demonstra que o harness detecta erro; sentinela não entra em produção.",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e03-platform-portability-v1/wo-03",
+    "e03-platform-portability-v1/wo-06",
+    "e01-agent-orchestration-v1/wo-05"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    ".agents/epics/e06-render-webgl2-v1/contracts/render-r0.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: scripts/test-platform-sanitizers.sh; docs/evidence/portable-closure.md",
+    "WI-01: Compilar os módulos novos com warnings-as-errors e gerar dependências pelo compilador.",
+    "WI-02: Rodar ASan/UBSan nativo nos cenários de buffer, índice e transformação, sem desabilitar diagnósticos para passar.",
+    "WI-03: Comparar includes alcançados com o inventário e registrar qualquer fronteira Windows remanescente.",
+    "WI-04: Guardar comandos e resultado, distinguindo sanitizer indisponível de suite sem erros."
+  ],
+  "acceptance": [
+    "A closure nova compila sem Windows/D3D e as suites não produzem violações de memória/UB.",
+    "Caso negativo obrigatório: Caso sentinela em teste isolado demonstra que o harness detecta erro; sentinela não entra em produção.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "./scripts/test-platform-sanitizers.sh (criar nesta WO)",
+    "Positivo: A closure nova compila sem Windows/D3D e as suites não produzem violações de memória/UB.",
+    "Negativo: Caso sentinela em teste isolado demonstra que o harness detecta erro; sentinela não entra em produção.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "docs/evidence/",
+    "scripts/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: validação. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de scripts/test-platform-sanitizers.sh; docs/evidence/portable-closure.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

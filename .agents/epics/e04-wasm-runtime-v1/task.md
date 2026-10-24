@@ -1,11 +1,10 @@
 # Task master — e04-wasm-runtime-v1
 
-Resumo operacional (detalhamento completo em [tasks.md](tasks.md)). A unidade de execução automatizável é uma workorder, não o épico inteiro.
+Entregar toolchain reproduzível, binding, bootstrap e loop cooperativo, testados no WASM real com falhas observáveis.
 
-- [ ] [WO-01](workorders/wo-01.md): Fixar versão/flags da toolchain Emscripten e matriz debug/release
-- [ ] [WO-02](workorders/wo-02.md): Implementar binding ABI simples com typed buffers e error codes
-- [ ] [WO-03](workorders/wo-03.md): Criar loop cooperativo requestAnimationFrame com pause/resume
-- [ ] [WO-04](workorders/wo-04.md): Medir memória, exceções, heap growth, threads e COOP/COEP opt-in
-- [ ] [WO-05](workorders/wo-05.md): Criar testes WASM automatizados em browser e comparação nativo↔WASM
+Usar [tasks.md](tasks.md) para os 40 workitems e [README](README.md) para
+a matriz de 10 workorders. IDs wo-01..05 são preservados; executar pelo
+DAG. Não interpretar este resumo como permissão para fazer todas as tarefas numa
+única alteração. Cada trabalho tem inputs, scopes, negativo e comando específico.
 
-**Regras:** validar dependências, código de terceiros/direitos e critérios de aceite antes de despachar. Configuração/execução dos agentes em `docs/AUTONOMY.md`. Revisão humana obrigatória antes de merge.
+(HUMAN) Provisionar ferramentas no ambiente de execução se ausentes; mudanças de workflow/provider continuam fora das scopes destes jobs.

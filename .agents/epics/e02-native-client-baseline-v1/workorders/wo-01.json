@@ -2,68 +2,68 @@
   "schema_version": 1,
   "epic": "e02-native-client-baseline-v1",
   "id": "wo-01",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "planned",
-  "title": "Construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2",
-  "objective": "Medir build real do cliente 1.5.3 D3D8 versus alternativa 1.5.2 D3D9, registrar dependências, inicialização, cena, login e decisão por evidência técnica e direitos. Nesta workorder: Construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "title": "Construir inventário estático de solutions, arquivos e bibliotecas 1.5.3/1.5.2",
+  "objective": "Obter uma baseline Windows reproduzível e evidência suficiente para selecionar versão, SDKs, assets e realm sem misturar candidatos. Nesta workorder: Construir inventário estático de solutions, arquivos e bibliotecas 1.5.3/1.5.2. Concluir somente este recorte e registrar a evidência específica.",
   "priority": "P0",
-  "risk": "repositório incompleto",
-  "automation": true,
+  "risk": "Projeto com path ausente, macro e case diferente produz três classificações distintas; nenhum é silenciosamente descartado.",
+  "automation": false,
   "requires_human_review": true,
-  "dependencies": [
-    "e01-agent-orchestration-v1/wo-05"
-  ],
+  "dependencies": [],
   "inputs": [
-    "references/client-153",
-    "references/client-152-modern",
-    "documentos de build Windows",
-    "testes de comparação",
-    "docs/ARCHITECTURE.md",
-    "Contrato matriz de compiladores e SDK"
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    "docs/VALIDATION.md",
+    "docs/DECISIONS/ADR-0003-version-selection.md"
   ],
   "deliverables": [
-    "Contrato e implementação rastreáveis para construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2",
-    "Teste positivo e negativo para matriz de compiladores e SDK com fixture sintética ou autorizada",
-    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
-    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+    "Arquivos/áreas desta entrega: scripts/research/inventory_client.py; tests/test_client_inventory.py; docs/evidence/client-inventory.md",
+    "WI-01: Ler soluções e projetos como dados; registrar SHA e configuração, sem executar binários da referência.",
+    "WI-02: Resolver paths Windows sem sensibilidade a case; distinguir arquivo ausente de nome em outra capitalização e macro não resolvida.",
+    "WI-03: Separar fontes, SDKs, bibliotecas compiladas, assets e intermediários; contar fontes de terceiros sem chamá-las de gameplay exclusivo.",
+    "WI-04: Testar scanner com projetos XML sintéticos e emitir inventário sanitizado dos dois candidatos."
   ],
   "acceptance": [
-    "Demonstrar construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2 dentro dos limites licenciados",
-    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por matriz de compiladores e SDK",
-    "Executar teste unitário determinístico verificando matriz de compiladores e sdk com entrada válida e anexar log",
-    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para matriz de compiladores e sdk e anexar log",
-    "Submeter PR isolado, alterações apenas em docs/, tests/, nenhuma alteração em workflows ou segredos"
+    "Inventário identifica os 21 projetos das soluções principais 1.5.3 e explica dependências por configuração, sem inferir sucesso do linker.",
+    "Caso negativo obrigatório: Projeto com path ausente, macro e case diferente produz três classificações distintas; nenhum é silenciosamente descartado.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
   ],
   "tests": [
-    "Teste unitário determinístico verificando matriz de compiladores e SDK com entrada válida",
-    "Teste de rejeição de dados inválidos, limites e fallback seguro para matriz de compiladores e SDK",
-    "Integração isolada: validar construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2 com mocks locais e regressão",
-    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+    "python3 -m unittest discover -s tests -p 'test_client_inventory.py' -v",
+    "Positivo: Inventário identifica os 21 projetos das soluções principais 1.5.3 e explica dependências por configuração, sem inferir sucesso do linker.",
+    "Negativo: Projeto com path ausente, macro e case diferente produz três classificações distintas; nenhum é silenciosamente descartado.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
   ],
   "write_scopes": [
-    "docs/",
+    "docs/evidence/",
+    "scripts/research/",
     "tests/"
   ],
   "forbidden": [
     ".github/",
-    ".agents/automation/",
+    ".agents/",
     "references/",
-    "assets originais",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
     "segredos",
     "produção"
   ],
   "evidence": {
     "requires_ci": true,
     "requires_local_test": true,
-    "requires_browser_e2e": false,
+    "requires_browser_e2e": true,
     "requires_rights_review": false
   },
-  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
   "execution": {
     "max_attempts": 3,
     "max_changed_files": 24,
     "max_patch_bytes": 256000,
     "merge_policy": "manual"
   },
-  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+  "notes": "Tipo: pesquisa. Prontidão: Pronta para pesquisa local; referências opcionais precisam estar presentes. Não integra código proprietário. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de scripts/research/inventory_client.py; tests/test_client_inventory.py; docs/evidence/client-inventory.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
 }

@@ -1,69 +1,29 @@
-# Plano de implementação — Baseline do cliente Windows e seleção validada da Angelica
+# Implementação — Baseline do cliente Windows e seleção validada da Angelica
 
-## Ordem das workorders (cada uma corresponde a PR/uma prova)
-### WO-01 — Construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+Solutions/configuração → inventário de fontes/SDKs → laboratório limpo → bibliotecas → linker → executável por SHA → cena/handshake → ADR. O relatório pertence ao pw-web; o laboratório fornece a evidência, e as referências continuam imutáveis.
 
-**Artefato esperado:** matriz de compiladores e SDK, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** repositório incompleto.
+## Ordem
 
-### WO-02 — Criar matriz de compatibilidade D3D8/9, headers, ABI, asset e protocolo por versão
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+Seguir o DAG do JSON, não a ordem numérica dos arquivos. IDs antigos são estáveis;
+WO-05 continua sendo gate terminal mesmo quando depende de WO-06 ou posteriores.
+Implementação espera o contrato da dependência e ferramenta real disponível.
 
-**Artefato esperado:** log/sha de executável, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** SDK legado indisponível.
+| WO | Entrega | Automação | Dependências |
+| --- | --- | --- | --- |
+| [WO-01](workorders/wo-01.md) | Construir inventário estático de solutions, arquivos e bibliotecas 1.5.3/1.5.2 | assistida |  |
+| [WO-02](workorders/wo-02.md) | Criar matriz cliente, SDK, ABI, assets e protocolo por versão | assistida | e02-native-client-baseline-v1/wo-01 |
+| [WO-03](workorders/wo-03.md) | Compilar cliente Windows limpo contra engine e bibliotecas verificadas | assistida | e02-native-client-baseline-v1/wo-07, e02-native-client-baseline-v1/wo-08 |
+| [WO-04](workorders/wo-04.md) | Validar inicialização, cena e handshake da baseline Windows | assistida | e02-native-client-baseline-v1/wo-03, e02-native-client-baseline-v1/wo-09 |
+| [WO-05](workorders/wo-05.md) | Decidir seleção de versão com evidência, fallback e bloqueios | assistida | e02-native-client-baseline-v1/wo-04, e02-native-client-baseline-v1/wo-10, e00-rights-governance-v1/wo-02 |
+| [WO-06](workorders/wo-06.md) | Provisionar matriz reproduzível de VS2005 e SDKs no laboratório | assistida | e02-native-client-baseline-v1/wo-02 |
+| [WO-07](workorders/wo-07.md) | Reconstruir bibliotecas Angelica/Common na ordem de dependência | assistida | e02-native-client-baseline-v1/wo-06 |
+| [WO-08](workorders/wo-08.md) | Resolver paths de build, exports e closure de link de Release Win32 | assistida | e02-native-client-baseline-v1/wo-07 |
+| [WO-09](workorders/wo-09.md) | Identificar recursos autorizados e realm da baseline | assistida | e02-native-client-baseline-v1/wo-02, e00-rights-governance-v1/wo-02 |
+| [WO-10](workorders/wo-10.md) | Comparar alternativa 1.5.2 moderna sem misturar árvores | assistida | e02-native-client-baseline-v1/wo-01 |
 
-### WO-03 — Compilar cliente e engine em ambiente Windows autorizado com logs reproduzíveis
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+## Processo
 
-**Artefato esperado:** matriz client↔assets↔protocol↔server, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** cliente não autentica em servidor atual.
-
-### WO-04 — Verificar inicialização, carregamento da cena, handshake e comportamento visual
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
-
-**Artefato esperado:** matriz de compiladores e SDK, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** repositório incompleto.
-
-### WO-05 — Registrar ADR de seleção final, fallback e bloqueios por componente
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
-
-**Artefato esperado:** log/sha de executável, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** SDK legado indisponível.
-
-## Estratégia de entrega incremental
-- Primeiro mocks/test doubles e formatos neutros/sintéticos; segundo interfaces; terceiro prova real autorizada; quarto comparação; quinto hardening.
-- Cada arquivo alterado precisa estar dentro do `write_scopes` da workorder; `.github`, `.agents/automation`, `references/` e secrets são áreas protegidas.
-- PR descreve explicitamente o que funciona, o que está faltando e como provar.
-- Falha em qualquer gate leva a reparo limitado (máximo 3 tentativas), depois triagem humana.
-
-## Integração entre subsistemas
-- `matriz de compiladores e SDK`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `log/sha de executável`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `matriz client↔assets↔protocol↔server`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-
-## Critério de finalização
-- reprodução com toolchain documentada
-- 0 erros não documentados no build qualificado
-- versão por screenshot/hash/protocolo
-Não liberar produção nem assinalar progressão real do MMO sem teste no cliente/servidor autorizado e revisão de titularidade.
+Ler o JSON da tarefa e seus inputs; executar WI-01 a WI-04; escrever teste RED para
+comportamento novo; implementar GREEN; revisar diff e anexar evidência. Nunca alterar
+o controller/testes para fabricar sucesso. Follow @implementation-loop e @code-review.
+Apenas o mantenedor atualiza checkboxes/manifesto após homologação com evidência.

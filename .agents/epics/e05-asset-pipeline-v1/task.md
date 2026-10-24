@@ -1,11 +1,10 @@
 # Task master — e05-asset-pipeline-v1
 
-Resumo operacional (detalhamento completo em [tasks.md](tasks.md)). A unidade de execução automatizável é uma workorder, não o épico inteiro.
+Preparar uma variante de asset confirmada, com parsing limitado, manifesto íntegro e preload assíncrono antes do uso.
 
-- [ ] [WO-01](workorders/wo-01.md): Catalogar magic/versionamento e limites de PCK/PKX e famílias de arquivos
-- [ ] [WO-02](workorders/wo-02.md): Especificar parsing streaming e GBK→Unicode sem confiar em nomes de caminho
-- [ ] [WO-03](workorders/wo-03.md): Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada
-- [ ] [WO-04](workorders/wo-04.md): Gerar manifestos versionados com hashes, tamanhos, offsets e dependências
-- [ ] [WO-05](workorders/wo-05.md): Validar casos reais apenas com assets autorizados e decisão de distribuição
+Usar [tasks.md](tasks.md) para os 48 workitems e [README](README.md) para
+a matriz de 12 workorders. IDs wo-01..05 são preservados; executar pelo
+DAG. Não interpretar este resumo como permissão para fazer todas as tarefas numa
+única alteração. Cada trabalho tem inputs, scopes, negativo e comando específico.
 
-**Regras:** validar dependências, código de terceiros/direitos e critérios de aceite antes de despachar. Configuração/execução dos agentes em `docs/AUTONOMY.md`. Revisão humana obrigatória antes de merge.
+(HUMAN) Fornecer assets autorizados e decidir uso/distribuição em WO-05. Testes sintéticos não aprovam direitos nem compatibilidade de versão.

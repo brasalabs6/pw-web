@@ -3,6 +3,19 @@
 ## Regra
 Nenhum cliente foi aprovado definitivamente. Candidata 1.5.3 tem Angelica2 com D3D8; variante 1.5.2 moderna tem Angelica2.2/D3D9. Favoritismo inicial NÃO substitui teste.
 
+## Evidência local — 2026-10-24
+
+| Gate | Resultado observado |
+| --- | --- |
+| G0 plataforma | PASS local: bootstrap, core WASM executado e WebGL2 no Chrome 152 |
+| G1 código original completo | Pendente: não houve build Windows; probe direta de A3DEngine para WASM falha em Windows.h |
+| G2 licenças | Pendente; experimento isolado não aprova integração/distribuição |
+| G3 componente WASM | PASS restrito ao ARandomGen original: 4.096 uniformes exatos e 256 gaussianos dentro da tolerância |
+| G4 render original / G5 rede / G6 multiplayer | Não demonstrados |
+
+Comandos, versões, limites e teste negativo: [POC-001](POC-ANGELICA.md).
+A malha procedural da prova usa renderer próprio, portanto não satisfaz G4.
+
 ## Matriz de seleção (evidência obrigatória por campo)
 | Critério | 1.5.3 Angelica2 | 1.5.2 Angelica2.2 | Como validar |
 | --- | --- | --- | --- |

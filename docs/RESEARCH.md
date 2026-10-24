@@ -30,5 +30,21 @@ H3: um adaptador D3D8→backend WebGL2 para o subconjunto realmente utilizado te
 H4: cliente 1.5.3 pode se conectar a um realm escolhido após adaptação de wire format.
 H5: streaming de assets e OPFS evitam download inicial do jogo inteiro.
 
+## Experimento POC-001 — 2026-10-24
+
+[Relatório reproduzível](POC-ANGELICA.md): ARandomGen do commit 1.5.3 fixado foi
+compilado diretamente da referência, sem alteração, com GCC 16.2.1 e Emscripten
+6.0.13. No Chrome 152, 4.096 uniformes coincidiram exatamente e 256 gaussianos
+ficaram dentro da tolerância relativa/absoluta definida. A saída WASM alimentou
+uma malha procedural de 1.922 triângulos num renderer WebGL2 próprio do teste.
+
+H2 tem evidência positiva **somente para esse componente**. H1, H3, H4 e H5
+continuam abertas. A compilação direta de A3DEngine para WASM falhou em Windows.h.
+DWORD/unsigned long tem 8 bytes no Linux nativo e 4 no WASM; layouts binários
+precisam de validação independente. Nenhuma referência foi atualizada.
+
+Direção de adaptação e contratos iniciais: [ADR-0004](DECISIONS/ADR-0004-incremental-port-method.md)
+e [método para executores](ANGELICA-PORTING-METHOD.md).
+
 ## Procedimento de atualização
 Atualizações de upstream são PRs específicos com SHA antigo/novo, diff relevante, impacto de licença e novos testes. NÃO executar `git submodule update --remote` em automações.

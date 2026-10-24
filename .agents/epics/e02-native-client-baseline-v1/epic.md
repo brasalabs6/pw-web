@@ -1,42 +1,35 @@
-# Epic Charter: Baseline do cliente Windows e seleção validada da Angelica
+# Epic — Baseline do cliente Windows e seleção validada da Angelica
 
-- **Identificador:** `e02-native-client-baseline-v1`
-- **Versão:** 1.0.0 (alterações semânticas exigem PR + ADR)
-- **Status:** planned
-- **Objetivo mensurável:** Medir build real do cliente 1.5.3 D3D8 versus alternativa 1.5.2 D3D9, registrar dependências, inicialização, cena, login e decisão por evidência técnica e direitos.
-- **Principal dependência:** `e01-agent-orchestration-v1`, salvo workorders independentes documentados
-- **Proprietário da decisão:** Tech Lead do PW Web; gates jurídicos pelo responsável de IP.
+Obter uma baseline Windows reproduzível e evidência suficiente para selecionar versão, SDKs, assets e realm sem misturar candidatos.
 
-## Contexto e razão de existir
-A conversão para WebAssembly requer validação progressiva de compatibilidade, direitos, API de plataforma, recursos originais, cliente e realm. Este épico reduz especificamente os riscos de **repositório incompleto; SDK legado indisponível; cliente não autentica em servidor atual**. A execução não significa entrega do jogo inteiro: separa componentes demonstráveis de conjecturas.
+## Resultado esperado
 
-## Entradas e artefatos
-- references/client-153
-- references/client-152-modern
-- documentos de build Windows
-- testes de comparação
+Baseline, inventário, matriz SDK/ABI/recursos e ADR de seleção; não entrega o port browser.
 
-## Contratos de saída obrigatórios
-- matriz de compiladores e SDK
-- log/sha de executável
-- matriz client↔assets↔protocol↔server
+## Limites
 
-## Critérios executivos de sucesso
-- reprodução com toolchain documentada
-- 0 erros não documentados no build qualificado
-- versão por screenshot/hash/protocolo
+Uma workorder por patch/PR. Artefatos de laboratório ficam em artifacts; evidência
+sanitizada fica em docs/evidence. Não alterar executor, referências fixadas ou
+contratos de outros repositórios. POC e scene sintética não são gameplay real.
 
-## Fora do escopo
-- Distribuir código/assets de terceiros sem permissão documentada.
-- Substituir testes por declarações verbais ou prints sem contexto.
-- Liberar alterações diretamente em produção; workorders entram em PR, com revisão e CI.
-- Tratar fixtures sintéticas como prova da funcionalidade integral do Perfect World.
+## Estado e proveniência
 
-## Dependências e desbloqueio
-- Referência de cliente/engine/protocolo explicitamente identificada em testes.
-- Contratos e controles em `AGENTS.md` seguidos integralmente.
-- Ambientes de desenvolvimento isolados e artefatos reproduzíveis.
-- Decisões de mudança de stack, versão ou direitos documentadas em ADR.
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Definition of done
-Cinco workorders com evidência verificável; aceitação e limites documentados; matriz de riscos atualizada; testes unitários/integrados pertinentes executados; revisão técnica e, quando aplicável, revisão jurídica.
+## Riscos e incertezas
+
+- [HIGH][Confirmed] VS2005/SDKs não disponíveis no host da POC; build Windows ainda não demonstrado.
+- [HIGH][Confirmed] Configurações misturam caminhos Angelica2/Angelica2.2; escolher Release Win32 coerente.
+- [HIGH][Possible] Bibliotecas encontradas pelo nome podem ter ABI/CRT incompatíveis.
+
+(HUMAN) Provisionar Windows/SDKs e recursos autorizados (WO-06/09); decidir versão/direitos no gate WO-05. Bloqueia laboratório e seleção, não matemática própria.
+
+## Contratos
+
+- [docs/VALIDATION.md](../../../docs/VALIDATION.md)
+- [docs/DECISIONS/ADR-0003-version-selection.md](../../../docs/DECISIONS/ADR-0003-version-selection.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.

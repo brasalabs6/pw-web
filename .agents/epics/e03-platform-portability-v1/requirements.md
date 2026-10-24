@@ -1,38 +1,24 @@
 # Requisitos — Desacoplamento de Win32, SDK e Direct3D
 
-## Requisitos funcionais (RF)
-- **RF-01**: Automatizar inventário de includes/API macros e grafo de módulos originais. Deve expor contrato testável e permitir falha controlada.
-- **RF-02**: Especificar contratos de plataforma e stubs sem comportamento de jogo. Deve expor contrato testável e permitir falha controlada.
-- **RF-03**: Implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais. Deve expor contrato testável e permitir falha controlada.
-- **RF-04**: Separar input/scheduler/threads e renderer por injeção de interfaces. Deve expor contrato testável e permitir falha controlada.
-- **RF-05**: Criar testes cruzados e checklist de migração com limites Win32 remanescentes. Deve expor contrato testável e permitir falha controlada.
+Cada requisito abaixo tem uma workorder proprietária. Resultado mensurável prevalece
+sobre presença de arquivos. Schema ou ambiente ausente mantém a tarefa bloqueada.
 
-## Interfaces e estados esperados
-- **API-1 IClock:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-2 IFileSystem:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-3 IWindowInput:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-4 IRenderDevice:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-5 INetworkTransport:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
+- **RF-01 / WO-01:** O inventário identifica acessos D3D fora de A3DDevice e não trata contagem textual como call graph completo.
+- **RF-02 / WO-02:** WO-07 a WO-10 recebem assinaturas/fixtures fechadas e falhas explícitas; não existe retorno success sem efeito.
+- **RF-03 / WO-03:** Bytes carregados antes do tick produzem o mesmo resultado nativo/WASM e recursos são liberados ao finalizar.
+- **RF-04 / WO-04:** Pressionar, perder foco e retornar gera snapshots e deltas definidos, com um único tick por frame.
+- **RF-05 / WO-05:** Gate wo-05 libera apenas a plataforma testada e registra capacidades não suportadas com evidência.
+- **RF-06 / WO-06:** Todos os valores esperados em R0 coincidem com tolerância 1e-6; índices/cores são exatos e layout tem 16 bytes.
+- **RF-07 / WO-07:** A sequência conhecida de timestamps produz os deltas exatos e o reset especificado.
+- **RF-08 / WO-08:** Caminho lógico permitido mantém identidade estável; nenhuma entrada consegue escapar do namespace de assets.
+- **RF-09 / WO-09:** Uma sequência press/move/release gera snapshot esperado sem duplicação entre frames.
+- **RF-10 / WO-10:** Leituras parciais válidas retornam bytes/cursor esperados nativo/WASM, sem fetch dentro do parser.
+- **RF-11 / WO-11:** Cada recurso tem um único owner e momento de liberação; nenhuma API depende de estado global oculto.
+- **RF-12 / WO-12:** A closure nova compila sem Windows/D3D e as suites não produzem violações de memória/UB.
 
-## Requisitos não funcionais (RNF)
-- **Compatibilidade:** browser sem acesso a Win32/Direct3D/TCP raw; identificar plataforma alvo e protocolo exatos.
-- **Performance:** medir sem criar números falsos; budgets definidos e aprovados antes de otimizações. Instrumentar zero includes Windows no core; testes de equivalência nativa e browser; matriz APIs substituídas por módulo.
-- **Confiabilidade:** operação repetível, sem vazamento de recursos, retry idempotente, tratamento de dados inconsistentes, queda de contexto e timeouts.
-- **Segurança:** entrada externa não confiável, bounds checking, saneamento de caminhos, rate limiting quando houver rede, segredos só no lado apropriado.
-- **Qualidade:** testes com fixtures sintéticas/permitidas, ambiente e hash de commit anotados, evidências anexadas ao PR.
-- **Licenciamento:** conteúdo de terceiros só após gate de direitos; submódulos são referências não integradas automaticamente.
-- **Observabilidade:** telemetria com eventos de erro e performance, sem capturar senhas, tokens, chats privados ou conteúdo protegido desnecessariamente.
+## Requisitos transversais
 
-## Restrições e não objetivos
-- Mitigar risco de dependências ocultas em headers transversais
-- Mitigar risco de ABI packing e UTF/GBK
-- Mitigar risco de semântica de threads/cancelamento divergente
-- Não propor funcionalidades não verificadas como implementadas.
-- Não acoplar endpoints de produção a testes de laboratório.
-- Não extrapolar qualidade de WebGL procedural para cliente real.
-
-## Evidências mínimas
-- Comando de build/teste e plataforma.
-- Fixture esperada e obtida, junto ao commit exato.
-- Resultado pass/fail/blocked, logs e comparação, orçamento/limites quando relevante.
-- Lista de divergências persistentes e próximo experimento testável.
+- Sem fontes/assets proprietários no build público sem decisão documentada.
+- Mesmo caso reproduzível no ambiente declarado; todos os testes obrigatórios contam.
+- Input inválido, lifetime e limites tratados antes de efeitos irreversíveis.
+- Comandos planejados não são evidência; saída real com versão/SHA é obrigatória.

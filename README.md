@@ -6,6 +6,13 @@ Objetivo: construir um **cliente de MMORPG executado localmente no navegador**, 
 
 > **Estado: fundação e provas de viabilidade (não jogável).** A demo em `web/` usa geometria procedimental e NÃO contém Perfect World nem seus assets.
 
+**Primeira prova executada:** um componente original da Angelica (`ARandomGen`)
+foi compilado sem alterações para WASM e validado no navegador contra a execução
+nativa: 4.096 valores uniformes idênticos e 256 gaussianos dentro da tolerância.
+Uma malha procedural usa essa saída em WebGL 2. Isso ainda não é o renderer da
+Angelica nem o cliente completo. Veja [resultado e reprodução local](docs/POC-ANGELICA.md)
+e o [método de implementação para Grok/GLM](docs/ANGELICA-PORTING-METHOD.md).
+
 ## Início rápido
 
 ```bash

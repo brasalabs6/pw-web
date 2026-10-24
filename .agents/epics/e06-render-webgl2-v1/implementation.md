@@ -1,71 +1,35 @@
-# Plano de implementação — Renderer WebGL2 da engine Angelica
+# Implementação — Renderer WebGL2 da engine Angelica
 
-## Ordem das workorders (cada uma corresponde a PR/uma prova)
-### WO-01 — Inventariar render states realmente usados na Angelica2 e dependências D3D8
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+DrawView validado → backend C++ GLES3/Emscripten → WebGL2 → readPixels. R0 define unlit/indexed; R1 fecha textura/sampler/targets antes de implementação. Caller mantém dados durante consumo; backend possui recursos GPU e os invalida em context loss.
 
-**Artefato esperado:** IRenderDevice, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** semântica D3D↔GL divergente.
+## Ordem
 
-### WO-02 — Definir tabelas de equivalência de vertex formats e estados blend/cull/depth
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+Seguir o DAG do JSON, não a ordem numérica dos arquivos. IDs antigos são estáveis;
+WO-05 continua sendo gate terminal mesmo quando depende de WO-06 ou posteriores.
+Implementação espera o contrato da dependência e ferramenta real disponível.
 
-**Artefato esperado:** ITexture, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** shaders D3DX indisponíveis.
+| WO | Entrega | Automação | Dependências |
+| --- | --- | --- | --- |
+| [WO-01](workorders/wo-01.md) | Inventariar estados D3D e escapes usados pela primeira fatia | assistida | e03-platform-portability-v1/wo-01 |
+| [WO-02](workorders/wo-02.md) | Fechar equivalência de vertex formats, matrizes e estados | assistida | e06-render-webgl2-v1/wo-01, e03-platform-portability-v1/wo-06 |
+| [WO-03](workorders/wo-03.md) | Implementar P2: primeiro desenho indexado GLES3/WebGL2 | sim, após gates | e03-platform-portability-v1/wo-06, e04-wasm-runtime-v1/wo-01, e01-agent-orchestration-v1/wo-05 |
+| [WO-04](workorders/wo-04.md) | Integrar materiais, texturas, transparência e render targets | sim, após gates | e06-render-webgl2-v1/wo-08, e06-render-webgl2-v1/wo-09, e06-render-webgl2-v1/wo-11, e06-render-webgl2-v1/wo-12, e06-render-webgl2-v1/wo-15, e01-agent-orchestration-v1/wo-05 |
+| [WO-05](workorders/wo-05.md) | Homologar paridade visual contra baseline Windows autorizada | assistida | e06-render-webgl2-v1/wo-04, e06-render-webgl2-v1/wo-14, e06-render-webgl2-v1/wo-16, e02-native-client-baseline-v1/wo-04, e05-asset-pipeline-v1/wo-05 |
+| [WO-06](workorders/wo-06.md) | Definir matriz de capacidades suportadas e erros do backend | sim, após gates | e06-render-webgl2-v1/wo-03, e01-agent-orchestration-v1/wo-05 |
+| [WO-07](workorders/wo-07.md) | Especificar R1 de textura RGBA8 e sampler mínimo | sim, após gates | e06-render-webgl2-v1/wo-03, e06-render-webgl2-v1/wo-06, e01-agent-orchestration-v1/wo-05 |
+| [WO-08](workorders/wo-08.md) | Implementar upload e desenho texturizado de R1 | sim, após gates | e06-render-webgl2-v1/wo-07, e01-agent-orchestration-v1/wo-05 |
+| [WO-09](workorders/wo-09.md) | Implementar blend, alpha test, cull e depth do subconjunto aprovado | sim, após gates | e06-render-webgl2-v1/wo-02, e06-render-webgl2-v1/wo-06, e06-render-webgl2-v1/wo-08, e01-agent-orchestration-v1/wo-05 |
+| [WO-10](workorders/wo-10.md) | Especificar render targets e attachments da primeira fatia | sim, após gates | e06-render-webgl2-v1/wo-06, e01-agent-orchestration-v1/wo-05 |
+| [WO-11](workorders/wo-11.md) | Implementar variantes GLSL explícitas do material mínimo | sim, após gates | e06-render-webgl2-v1/wo-08, e06-render-webgl2-v1/wo-09, e01-agent-orchestration-v1/wo-05 |
+| [WO-12](workorders/wo-12.md) | Implementar framebuffer, resize e readback conforme R1 | sim, após gates | e06-render-webgl2-v1/wo-10, e06-render-webgl2-v1/wo-08, e01-agent-orchestration-v1/wo-05 |
+| [WO-13](workorders/wo-13.md) | Fechar dependências do primeiro draw original da Angelica | assistida | e06-render-webgl2-v1/wo-01, e06-render-webgl2-v1/wo-03, e02-native-client-baseline-v1/wo-03 |
+| [WO-14](workorders/wo-14.md) | Adaptar o primeiro draw original para o backend browser | assistida | e06-render-webgl2-v1/wo-13, e06-render-webgl2-v1/wo-02, e06-render-webgl2-v1/wo-03, e00-rights-governance-v1/wo-02 |
+| [WO-15](workorders/wo-15.md) | Implementar restauração de contexto e descarte de recursos | sim, após gates | e06-render-webgl2-v1/wo-03, e06-render-webgl2-v1/wo-06, e01-agent-orchestration-v1/wo-05 |
+| [WO-16](workorders/wo-16.md) | Medir renderer e preparar gate visual com evidência reproduzível | sim, após gates | e06-render-webgl2-v1/wo-04, e01-agent-orchestration-v1/wo-05 |
 
-### WO-03 — Implementar backend WebGL2 incremental com shaders do subconjunto utilizado
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+## Processo
 
-**Artefato esperado:** IMeshBuffer, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** perda do contexto GPU e leaking buffers.
-
-### WO-04 — Integrar materiais, texturas, render targets, transparência e context restoration
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
-
-**Artefato esperado:** IPipelineState, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** semântica D3D↔GL divergente.
-
-### WO-05 — Validar paridade visual com screenshot Windows e GPU capture autorizados
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
-
-**Artefato esperado:** IMaterial, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** shaders D3DX indisponíveis.
-
-## Estratégia de entrega incremental
-- Primeiro mocks/test doubles e formatos neutros/sintéticos; segundo interfaces; terceiro prova real autorizada; quarto comparação; quinto hardening.
-- Cada arquivo alterado precisa estar dentro do `write_scopes` da workorder; `.github`, `.agents/automation`, `references/` e secrets são áreas protegidas.
-- PR descreve explicitamente o que funciona, o que está faltando e como provar.
-- Falha em qualquer gate leva a reparo limitado (máximo 3 tentativas), depois triagem humana.
-
-## Integração entre subsistemas
-- `IRenderDevice`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `ITexture`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `IMeshBuffer`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `IPipelineState`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `IMaterial`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-
-## Critério de finalização
-- golden images com tolerância registrada
-- frametime e draw calls
-- recursos GPU liberados sem vazamento
-Não liberar produção nem assinalar progressão real do MMO sem teste no cliente/servidor autorizado e revisão de titularidade.
+Ler o JSON da tarefa e seus inputs; executar WI-01 a WI-04; escrever teste RED para
+comportamento novo; implementar GREEN; revisar diff e anexar evidência. Nunca alterar
+o controller/testes para fabricar sucesso. Follow @implementation-loop e @code-review.
+Apenas o mantenedor atualiza checkboxes/manifesto após homologação com evidência.

@@ -1,48 +1,39 @@
 # Arquitetura — Renderer WebGL2 da engine Angelica
 
-## Contexto no monorepo
-- `engine/render` — módulo de responsabilidade de implementação/controle
-- `web/renderer` — módulo de responsabilidade de implementação/controle
-- `tests/render` — módulo de responsabilidade de implementação/controle
+DrawView validado → backend C++ GLES3/Emscripten → WebGL2 → readPixels. R0 define unlit/indexed; R1 fecha textura/sampler/targets antes de implementação. Caller mantém dados durante consumo; backend possui recursos GPU e os invalida em context loss.
 
-## Fluxo de dados e controles
-```text
-workorder versionado → contrato/interface → implementação isolada
-       ↓                     ↓                  ↓
-   gates direitos      testes unitários    testes integração
-       └─────────────→ relatório CI ←────────────┘
-                           ↓
-                      PR para revisão
-```
+## Donos e consumidores
 
-## Interfaces propostas e invariantes
-### 1. IRenderDevice
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+Backend sintético e, condicionado aos gates, primeiro draw original comparado; e07 só consome WO-05 homologada. O pw-web é dono dos novos contratos de plataforma; o servidor
+é dono do wire format; referências são evidência, não dependências automáticas do
+build público. Recursos possuem owner/lifetime explícitos; erro não é sucesso vazio.
 
-### 2. ITexture
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+## Caminhos de falha
 
-### 3. IMeshBuffer
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+- WO-01: Estado observado fora da fatia não é implementado por especulação, nem ignorado se for alcançado.
+- WO-02: Transposição dupla, BGRA tratado como RGBA e inversão global de Y são detectáveis pelas fixtures.
+- WO-03: Viewport zero, índice fora do range ou shader inválido não produzem PASS; contexto indisponível é falha.
+- WO-04: Estado vazando entre draws ou textura liberada é detectado pelo teste, não mascarado com reset global arbitrário.
+- WO-05: Ausência da baseline nativa ou diferença sistemática de transformação impede PASS.
+- WO-06: Nenhuma feature ausente pode virar no-op bem-sucedido ou fallback visual silencioso.
+- WO-07: Dados insuficientes, dimensão acima do limite e formato ausente têm erro específico.
+- WO-08: Dimensão zero, payload curto e uso pós-dispose falham sem leitura fora do buffer.
+- WO-09: Enum desconhecido retorna UnsupportedFeature; alpha-test não é tratado como blend equivalente.
+- WO-10: Attachment incompatível ou framebuffer incompleto nunca é considerado Ready.
+- WO-11: Combinação não suportada e compile/link failure não reutilizam silenciosamente shader anterior.
+- WO-12: Resize inválido preserva o recurso válido anterior e reporta erro.
+- WO-13: Se a entrada arrasta mundo inteiro/ActiveX, reduzir a fatia ou registrar bloqueio; não criar stubs.
+- WO-14: Qualquer símbolo sem implementação ou feature usada ausente bloqueia; não retornar sucesso falso.
+- WO-15: Restore parcial ou callback após dispose não marca Ready nem vaza recursos.
+- WO-16: Métrica indisponível não vira zero e resultado de software não fundamenta promessa de FPS em hardware.
 
-### 4. IPipelineState
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+## Dependências reais
 
-### 5. IMaterial
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+Ver dependencies dos JSONs e o grafo em [port-program.md](../../port-program.md).
+Não há requisito global de compilar todo Windows antes de R0 sintético. Integração
+original e paridade final exigem a baseline, closure e autorização correspondentes.
 
-## Fronteiras
-- O browser só tem WebAssembly/JS/WebGL2/Web Audio/WebSocket/Storage, nunca `Windows.h` ou DirectX nativo.
-- Serviços de jogo continuam autoritativos no backend; decisões do cliente não mudam economia/sessões sem confirmação.
-- Recursos externos entram por parsers com limites; manter trilha de versão, hash e autorização.
-- A plataforma e os contratos são de código nosso; fontes upstream ficam em `references/` e não entram em CI.
+## Contratos canônicos
 
-## Versionamento e fallback
-- Compatibilidade entre cliente, engine, asset e realm deve constar em manifesto/matriz, não por aproximação.
-- Toda mudança pública de contrato exige teste backwards + ADR.
-- Se inviável ou sem direitos suficientes, manter contrato e substituir implementação por módulo original autorizado.
-
-## Observabilidade
-- Medir golden images com tolerância registrada por cenário, browser, commit e build, preservando a evidência
-- Medir frametime e draw calls por cenário, browser, commit e build, preservando a evidência
-- Medir recursos GPU liberados sem vazamento por cenário, browser, commit e build, preservando a evidência
+- [.agents/epics/e06-render-webgl2-v1/contracts/render-r0.md](../../../.agents/epics/e06-render-webgl2-v1/contracts/render-r0.md)
+- [docs/DECISIONS/ADR-0004-incremental-port-method.md](../../../docs/DECISIONS/ADR-0004-incremental-port-method.md)

@@ -1,25 +1,30 @@
-# Registro de riscos — Pipeline de recursos PCK/PKX, formatos e proveniência
+# Riscos — Pipeline de recursos PCK/PKX, formatos e proveniência
 
-## Riscos específicos
+## Estado e proveniência
 
-| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
-| --- | --- | --- | --- | --- | --- |
-| R-1 | arquivos >2GB e offsets truncados | Alto / validar gravidade | Expor cenário negativo e observável | Catalogar magic/versionamento e limites de PCK/PKX e famílias de arquivos | Bloquear trabalho dependente, ADR ou fallback |
-| R-2 | bomba de descompressão e path traversal | Alto / validar gravidade | Expor cenário negativo e observável | Especificar parsing streaming e GBK→Unicode sem confiar em nomes de caminho | Bloquear trabalho dependente, ADR ou fallback |
-| R-3 | incompatibilidade de versões e redistribuição | Alto / validar gravidade | Expor cenário negativo e observável | Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada | Bloquear trabalho dependente, ADR ou fallback |
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Legenda da tabela
-Formato: ID | risco | gravidade inicial | sinal de falha | primeira mitigação | contingency.
+## Riscos e incertezas
 
-## Riscos transversais
-| Categoria | Sinal | Tratamento |
-| --- | --- | --- |
-| Direitos | licença titular desconhecido | manter fora de artefatos distribuídos |
-| Integridade | checks verdes sem funcionalidade real | evidência E2E específica e gate humano |
-| Segurança do agente | mudança em workflows/segredos | rejeitar patch antes de write-token |
-| Compatibilidade | assets/protocolos de versões diferentes | matriz de versão e validação por commit |
-| Performance | stutter/memória e download excessivo | perf budgets, tracing e opções de fallback |
-| Operação | falta de credenciais/servidor/SDK | bloquear honestamente, não simular sucesso |
+- [HIGH][Confirmed] Layouts de todas as famílias ainda não estão materializados em contratos implementáveis.
+- [HIGH][Possible] Offset >2GiB, overflow e bomba de descompressão podem quebrar wasm32.
+- [HIGH][Possible] Conversão de encoding/case pode gerar colisão de identidade ou traversal.
 
-## Registro de incidente e decisão
-Cada risco precisa de dono, impacto, likelihood revisada, evidência, mitigação, prazo de revisão e critério de encerramento. Erros críticos exigem suspensão de release e workorder de correção.
+(HUMAN) Fornecer assets autorizados e decidir uso/distribuição em WO-05. Testes sintéticos não aprovam direitos nem compatibilidade de versão.
+
+## Contratos
+
+- [docs/LEGAL.md](../../../docs/LEGAL.md)
+- [docs/ANGELICA-PORTING-METHOD.md](../../../docs/ANGELICA-PORTING-METHOD.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.
+
+
+## Condições de parada
+
+Não inferir schema, autorização ou paridade. Manter as tarefas independentes
+executáveis enquanto a parte dependente fica BLOCKED. Retomar com evidência da
+pré-condição; não remover gates apenas para alimentar o scheduler.

@@ -1,43 +1,35 @@
-# Epic Charter: Pipeline de recursos PCK/PKX, formatos e proveniência
+# Epic — Pipeline de recursos PCK/PKX, formatos e proveniência
 
-- **Identificador:** `e05-asset-pipeline-v1`
-- **Versão:** 1.0.0 (alterações semânticas exigem PR + ADR)
-- **Status:** planned
-- **Objetivo mensurável:** Especificar parsers e transformações seguras de recursos permitidos, incluindo PCK/PKX, nomes GBK, offsets 64-bit, materiais, modelos, texturas, checksum e manifestos.
-- **Principal dependência:** `e04-wasm-runtime-v1`, salvo workorders independentes documentados
-- **Proprietário da decisão:** Tech Lead do PW Web; gates jurídicos pelo responsável de IP.
+Preparar uma variante de asset confirmada, com parsing limitado, manifesto íntegro e preload assíncrono antes do uso.
 
-## Contexto e razão de existir
-A conversão para WebAssembly requer validação progressiva de compatibilidade, direitos, API de plataforma, recursos originais, cliente e realm. Este épico reduz especificamente os riscos de **arquivos >2GB e offsets truncados; bomba de descompressão e path traversal; incompatibilidade de versões e redistribuição**. A execução não significa entrega do jogo inteiro: separa componentes demonstráveis de conjecturas.
+## Resultado esperado
 
-## Entradas e artefatos
-- engine/formats
-- tools/assets
-- web/storage
-- tests/fixtures
+Parser de uma variante, manifesto e preload limitados; OPFS/CDN completo continua em e15.
 
-## Contratos de saída obrigatórios
-- IArchiveIndex
-- AssetManifest
-- IAssetDecoder
-- resource version map
+## Limites
 
-## Critérios executivos de sucesso
-- fixtures sintéticas com limites validados
-- 0 path escapes
-- 100% arquivos emitidos com hash e versão
+Uma workorder por patch/PR. Artefatos de laboratório ficam em artifacts; evidência
+sanitizada fica em docs/evidence. Não alterar executor, referências fixadas ou
+contratos de outros repositórios. POC e scene sintética não são gameplay real.
 
-## Fora do escopo
-- Distribuir código/assets de terceiros sem permissão documentada.
-- Substituir testes por declarações verbais ou prints sem contexto.
-- Liberar alterações diretamente em produção; workorders entram em PR, com revisão e CI.
-- Tratar fixtures sintéticas como prova da funcionalidade integral do Perfect World.
+## Estado e proveniência
 
-## Dependências e desbloqueio
-- Referência de cliente/engine/protocolo explicitamente identificada em testes.
-- Contratos e controles em `AGENTS.md` seguidos integralmente.
-- Ambientes de desenvolvimento isolados e artefatos reproduzíveis.
-- Decisões de mudança de stack, versão ou direitos documentadas em ADR.
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Definition of done
-Cinco workorders com evidência verificável; aceitação e limites documentados; matriz de riscos atualizada; testes unitários/integrados pertinentes executados; revisão técnica e, quando aplicável, revisão jurídica.
+## Riscos e incertezas
+
+- [HIGH][Confirmed] Layouts de todas as famílias ainda não estão materializados em contratos implementáveis.
+- [HIGH][Possible] Offset >2GiB, overflow e bomba de descompressão podem quebrar wasm32.
+- [HIGH][Possible] Conversão de encoding/case pode gerar colisão de identidade ou traversal.
+
+(HUMAN) Fornecer assets autorizados e decidir uso/distribuição em WO-05. Testes sintéticos não aprovam direitos nem compatibilidade de versão.
+
+## Contratos
+
+- [docs/LEGAL.md](../../../docs/LEGAL.md)
+- [docs/ANGELICA-PORTING-METHOD.md](../../../docs/ANGELICA-PORTING-METHOD.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.

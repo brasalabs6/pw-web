@@ -1,34 +1,71 @@
-# Test plan e prova de funcionamento — Baseline do cliente Windows e seleção validada da Angelica
+# Testes — Baseline do cliente Windows e seleção validada da Angelica
 
-## Pirâmide por workorder
-- **Unit:** contratos explícitos, dados válidos/inválidos, overflow/empty/state machine/cancelamento.
-- **Component:** mocks locais e comparação nativa x browser quando aplicável.
-- **Integration:** sem assets comerciais e serviços externos na CI padrão; ambiente de staging isolado e recursos permitidos quando necessário.
-- **E2E:** capacidades percebidas pelo usuário; teste browser e screenshot/replay quando resultado visual.
-- **Security:** fuzz, ACL, canonicalização de arquivos, bounds, malformed/timeout/rate limit pertinentes.
-- **Performance:** FPS/frametime, heap, VRAM, carga de rede, latência e logs por dispositivo (somente cenários que existem).
+Positivo e negativo por workorder são obrigatórios. Ferramenta ausente significa
+BLOCKED; teste executado com falha significa FAIL. Build sozinho não é prova runtime.
 
-## Plano de aceitação por workorder
-- **T-01:** executar teste reproduzível demonstrando `Construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2`, incluindo um caso negativo e uma observação independente. Evidência por log, trace ou screenshot autorizado; declarar blocked caso dependa de recurso indisponível.
-- **T-02:** executar teste reproduzível demonstrando `Criar matriz de compatibilidade D3D8/9, headers, ABI, asset e protocolo por versão`, incluindo um caso negativo e uma observação independente. Evidência por log, trace ou screenshot autorizado; declarar blocked caso dependa de recurso indisponível.
-- **T-03:** executar teste reproduzível demonstrando `Compilar cliente e engine em ambiente Windows autorizado com logs reproduzíveis`, incluindo um caso negativo e uma observação independente. Evidência por log, trace ou screenshot autorizado; declarar blocked caso dependa de recurso indisponível.
-- **T-04:** executar teste reproduzível demonstrando `Verificar inicialização, carregamento da cena, handshake e comportamento visual`, incluindo um caso negativo e uma observação independente. Evidência por log, trace ou screenshot autorizado; declarar blocked caso dependa de recurso indisponível.
-- **T-05:** executar teste reproduzível demonstrando `Registrar ADR de seleção final, fallback e bloqueios por componente`, incluindo um caso negativo e uma observação independente. Evidência por log, trace ou screenshot autorizado; declarar blocked caso dependa de recurso indisponível.
+## WO-01
 
-## Benchmarks e verificação
-- Registrar métrica: reprodução com toolchain documentada. Publicar valor obtido e condições, não estimativa inventada.
-- Registrar métrica: 0 erros não documentados no build qualificado. Publicar valor obtido e condições, não estimativa inventada.
-- Registrar métrica: versão por screenshot/hash/protocolo. Publicar valor obtido e condições, não estimativa inventada.
+- Positivo: Inventário identifica os 21 projetos das soluções principais 1.5.3 e explica dependências por configuração, sem inferir sucesso do linker.
+- Negativo: Projeto com path ausente, macro e case diferente produz três classificações distintas; nenhum é silenciosamente descartado.
+- Comando/ação: `python3 -m unittest discover -s tests -p 'test_client_inventory.py' -v`.
 
-## Dados de teste
-- Fixtures pequenas sintéticas preferidas. Dados reais só com autorização explícita; não armazenar hashes que revelem credenciais.
-- Separar golden expected de saída observada, registrar SHA e ambiente.
-- Fixtures malformadas para demonstrar rejeição segura.
+## WO-02
 
-## Evidência machine-readable
-```json
-{"schema_version":1,"epic":"e02-native-client-baseline-v1","workorder":"wo-01","commit":"<sha>","environment":"<browser/os/gpu>","tests":[{"id":"T-01","status":"blocked","evidence":"<artifact>"}],"limitations":["<limitação>"]}
-```
+- Positivo: A matriz distingue presença de .lib, compatibilidade ABI, build e execução; nenhum campo pendente aparece como compatível.
+- Negativo: A diferença DWORD Linux=8/wasm32=4 da POC permanece explícita; nome da pasta não é evidência de versão.
+- Comando/ação: `Revisar cada linha contra inventário e docs/POC-ANGELICA.md; ./scripts/verify.sh`.
 
-## Gate
-Somente marcar concluído quando evidências corresponderem aos critérios de `workorders/*.json`, CI verde e revisão pertinente. `Bootstrap CI` sozinho não prova gameplay.
+## WO-03
+
+- Positivo: Um executável reconstruído de fontes e dependências identificadas tem SHA e build reproduzível em diretório vazio.
+- Negativo: Biblioteca ausente ou máquina incompatível produz FAIL/BLOCKED; artefato antigo não conta como build novo.
+- Comando/ação: `Executar scripts/research/build-client-windows.ps1 no laboratório e registrar a linha vcbuild/MSBuild escolhida em WO-06.`.
+
+## WO-04
+
+- Positivo: Cada capacidade possui resultado observado e artefato; somente entrada real no mundo satisfaz a capacidade mundo.
+- Negativo: Cliente que abre janela mas falha login permanece parcial e não libera seleção definitiva por suposição.
+- Comando/ação: `Runbook Windows de WO-03 + passos de runtime versionados neste relatório; não existe comando genérico de login.`.
+
+## WO-05
+
+- Positivo: ADR aceita ou rejeitada contém evidências e decisão identificada; o gate terminal continua significando seleção validada.
+- Negativo: Sem build ou direitos, manter BLOCKED/proposto; não marcar wo-05 concluída para liberar outros épicos.
+- Comando/ação: `Revisão humana da ADR e matriz; ./scripts/verify.sh`.
+
+## WO-06
+
+- Positivo: Preflight distingue compilador, headers e linker disponíveis e passa no laboratório usado em WO-03.
+- Negativo: VS de arquitetura errada ou d3dx8 ausente bloqueia antes do build do cliente.
+- Comando/ação: `powershell -File scripts/research/check-windows-toolchain.ps1`.
+
+## WO-07
+
+- Positivo: Mapa de linker permite identificar produtor e arquitetura de cada biblioteca consumida pelo cliente.
+- Negativo: Uma lib encontrada pelo nome com CRT/arquitetura incompatível é rejeitada, não reutilizada silenciosamente.
+- Comando/ação: `powershell -File scripts/research/build-libraries-windows.ps1`.
+
+## WO-08
+
+- Positivo: Todos os caminhos e símbolos de Release têm resolução demonstrada ou bloqueio nomeado antes de WO-03.
+- Negativo: Mistura acidental com Angelica2.2 ou SDK x64 é identificada na revisão.
+- Comando/ação: `Executar preflight de WO-06 e inspeção dumpbin/linker com comandos exatos no relatório.`.
+
+## WO-09
+
+- Positivo: WO-04 recebe manifesto sanitizado de recursos e destino de laboratório cuja compatibilidade será testada.
+- Negativo: Arquivo com versão ou hash diferente bloqueia o cenário; presença de um .pck qualquer não é suficiente.
+- Comando/ação: `Runbook de hashing e conferência definido no relatório, sem copiar assets para Git.`.
+
+## WO-10
+
+- Positivo: Relatório explica custo e evidência de cada alternativa sem declarar 1.5.2 funcional por README.
+- Negativo: Headers/libs entre versões nunca são combinados como solução para missing symbols.
+- Comando/ação: `./scripts/verify.sh e revisão da matriz por commit; build alternativo só no ambiente registrado.`.
+
+## Evidência
+
+Registrar comando, versão, SHA, fixture, resultado e limites em docs/evidence;
+logs/artifacts locais não substituem um resultado verificável. Comandos “criar” são
+entregáveis futuros; registrar zero casos ou screenshot isolada não satisfaz aceite.
+`./scripts/verify.sh` continua obrigatório e não valida o cliente completo.

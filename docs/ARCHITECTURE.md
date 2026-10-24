@@ -1,5 +1,10 @@
 # Arquitetura técnica — proposta, não implementação concluída
 
+O [método de port incremental](ANGELICA-PORTING-METHOD.md) define as fronteiras,
+o contrato R0 e a próxima tarefa P1 para executores. A [POC-001](POC-ANGELICA.md)
+validou apenas um componente original isolado; o diagrama abaixo continua sendo
+a arquitetura-alvo, não uma integração de cliente já concluída.
+
 ## Fluxo-alvo
 ```text
 Browser

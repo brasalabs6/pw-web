@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "epic": "e03-platform-portability-v1",
+  "id": "wo-07",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Implementar adapter de relógio monotônico injetável",
+  "objective": "Isolar as dependências de plataforma da primeira fatia e provar tipos, matemática, leitura e input com testes nativo/WASM. Nesta workorder: Implementar adapter de relógio monotônico injetável. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P0",
+  "risk": "Relógio regressivo/NaN é rejeitado; não se corrige usando Date.now sem autorização do contrato.",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e03-platform-portability-v1/wo-02",
+    "e01-agent-orchestration-v1/wo-05"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    ".agents/epics/e06-render-webgl2-v1/contracts/render-r0.md",
+    "docs/contracts/platform-v0.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: engine/platform/clock.h; engine/platform/clock.cpp; tests/platform/clock.cpp; scripts/test-clock.sh",
+    "WI-01: Implementar a assinatura/unidade aprovada em platform-v0, mantendo relógio do host fora do core.",
+    "WI-02: Usar timestamps determinísticos nos testes; tempo de parede não governa simulação.",
+    "WI-03: Tratar timestamp regressivo, não finito e reset conforme o contrato, sem delta negativo silencioso.",
+    "WI-04: Comparar sequência nativo/WASM e documentar precisão e limite de conversão."
+  ],
+  "acceptance": [
+    "A sequência conhecida de timestamps produz os deltas exatos e o reset especificado.",
+    "Caso negativo obrigatório: Relógio regressivo/NaN é rejeitado; não se corrige usando Date.now sem autorização do contrato.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "./scripts/test-clock.sh (criar nesta WO)",
+    "Positivo: A sequência conhecida de timestamps produz os deltas exatos e o reset especificado.",
+    "Negativo: Relógio regressivo/NaN é rejeitado; não se corrige usando Date.now sem autorização do contrato.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "engine/platform/",
+    "scripts/",
+    "tests/platform/",
+    "docs/evidence/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: implementação. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de engine/platform/clock.h; engine/platform/clock.cpp; tests/platform/clock.cpp; scripts/test-clock.sh. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

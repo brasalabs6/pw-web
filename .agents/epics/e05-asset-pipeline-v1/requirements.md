@@ -1,37 +1,24 @@
 # Requisitos — Pipeline de recursos PCK/PKX, formatos e proveniência
 
-## Requisitos funcionais (RF)
-- **RF-01**: Catalogar magic/versionamento e limites de PCK/PKX e famílias de arquivos. Deve expor contrato testável e permitir falha controlada.
-- **RF-02**: Especificar parsing streaming e GBK→Unicode sem confiar em nomes de caminho. Deve expor contrato testável e permitir falha controlada.
-- **RF-03**: Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada. Deve expor contrato testável e permitir falha controlada.
-- **RF-04**: Gerar manifestos versionados com hashes, tamanhos, offsets e dependências. Deve expor contrato testável e permitir falha controlada.
-- **RF-05**: Validar casos reais apenas com assets autorizados e decisão de distribuição. Deve expor contrato testável e permitir falha controlada.
+Cada requisito abaixo tem uma workorder proprietária. Resultado mensurável prevalece
+sobre presença de arquivos. Schema ou ambiente ausente mantém a tarefa bloqueada.
 
-## Interfaces e estados esperados
-- **API-1 IArchiveIndex:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-2 AssetManifest:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-3 IAssetDecoder:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-4 resource version map:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
+- **RF-01 / WO-01:** Cada campo catalogado tem origem verificável; formatos ainda não compreendidos permanecem bloqueados.
+- **RF-02 / WO-02:** Cada parser futuro tem formato acordado, erro e exemplo válido/inválido; algoritmo de compressão não é adivinhado.
+- **RF-03 / WO-03:** Arquivo válido produz o índice e conteúdo esperado; corpus inválido retorna erros sem OOB, hang ou alocação ilimitada.
+- **RF-04 / WO-04:** Mesmas entradas produzem manifesto idêntico e cada hash corresponde aos bytes da fixture.
+- **RF-05 / WO-05:** Ao menos o conjunto mínimo acordado passa com bytes/estruturas comparáveis ao baseline autorizado.
+- **RF-06 / WO-06:** Limites e invariantes podem ser testados antes de conhecer PCK; conversão uint64→size_t é checada.
+- **RF-07 / WO-07:** Fixtures little-endian têm mesmo resultado nativo/WASM e limites de 32/64 bits são respeitados.
+- **RF-08 / WO-08:** Índice retornado coincide com fixture e preserva offsets/tamanhos dentro dos limites declarados.
+- **RF-09 / WO-09:** Payload conhecido é recuperado exatamente com contagem de bytes e estado final válidos.
+- **RF-10 / WO-10:** Nome válido possui mapeamento determinístico e único para o manifesto.
+- **RF-11 / WO-11:** Um recurso só fica pronto quando seus bytes e dependências estão íntegros.
+- **RF-12 / WO-12:** Cena passa a READY apenas com todas as dependências verificadas e respeita o budget.
 
-## Requisitos não funcionais (RNF)
-- **Compatibilidade:** browser sem acesso a Win32/Direct3D/TCP raw; identificar plataforma alvo e protocolo exatos.
-- **Performance:** medir sem criar números falsos; budgets definidos e aprovados antes de otimizações. Instrumentar fixtures sintéticas com limites validados; 0 path escapes; 100% arquivos emitidos com hash e versão.
-- **Confiabilidade:** operação repetível, sem vazamento de recursos, retry idempotente, tratamento de dados inconsistentes, queda de contexto e timeouts.
-- **Segurança:** entrada externa não confiável, bounds checking, saneamento de caminhos, rate limiting quando houver rede, segredos só no lado apropriado.
-- **Qualidade:** testes com fixtures sintéticas/permitidas, ambiente e hash de commit anotados, evidências anexadas ao PR.
-- **Licenciamento:** conteúdo de terceiros só após gate de direitos; submódulos são referências não integradas automaticamente.
-- **Observabilidade:** telemetria com eventos de erro e performance, sem capturar senhas, tokens, chats privados ou conteúdo protegido desnecessariamente.
+## Requisitos transversais
 
-## Restrições e não objetivos
-- Mitigar risco de arquivos >2GB e offsets truncados
-- Mitigar risco de bomba de descompressão e path traversal
-- Mitigar risco de incompatibilidade de versões e redistribuição
-- Não propor funcionalidades não verificadas como implementadas.
-- Não acoplar endpoints de produção a testes de laboratório.
-- Não extrapolar qualidade de WebGL procedural para cliente real.
-
-## Evidências mínimas
-- Comando de build/teste e plataforma.
-- Fixture esperada e obtida, junto ao commit exato.
-- Resultado pass/fail/blocked, logs e comparação, orçamento/limites quando relevante.
-- Lista de divergências persistentes e próximo experimento testável.
+- Sem fontes/assets proprietários no build público sem decisão documentada.
+- Mesmo caso reproduzível no ambiente declarado; todos os testes obrigatórios contam.
+- Input inválido, lifetime e limites tratados antes de efeitos irreversíveis.
+- Comandos planejados não são evidência; saída real com versão/SHA é obrigatória.

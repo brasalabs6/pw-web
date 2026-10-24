@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "epic": "e06-render-webgl2-v1",
+  "id": "wo-07",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Especificar R1 de textura RGBA8 e sampler mínimo",
+  "objective": "Construir renderer WebGL2 por subconjuntos e adaptar um primeiro draw Angelica somente após closure, baseline e autorização. Nesta workorder: Especificar R1 de textura RGBA8 e sampler mínimo. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P1",
+  "risk": "Dados insuficientes, dimensão acima do limite e formato ausente têm erro específico.",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e06-render-webgl2-v1/wo-03",
+    "e06-render-webgl2-v1/wo-06",
+    "e01-agent-orchestration-v1/wo-05"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    ".agents/epics/e06-render-webgl2-v1/contracts/render-r0.md",
+    "docs/DECISIONS/ADR-0004-incremental-port-method.md",
+    "docs/contracts/render-capabilities.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: docs/contracts/render-texture-r1.md",
+    "WI-01: Definir textura RGBA8 própria, dimensões, stride, orientação, alinhamento de upload e tamanho exato.",
+    "WI-02: Definir UV e sampler mínimo com filtros/wrap aceitos; excluir DDS/compressão enquanto sem contrato.",
+    "WI-03: Definir ownership/update/dispose e atualização da capability matrix.",
+    "WI-04: Escrever fixtures 2x2 de cores distintas e casos inválidos para provar UV/orientação."
+  ],
+  "acceptance": [
+    "R1 fecha todo dado necessário a um upload e draw texturizado, com resultado de pixels previsto.",
+    "Caso negativo obrigatório: Dados insuficientes, dimensão acima do limite e formato ausente têm erro específico.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "Revisão de fixture 2x2 e lifecycle; ./scripts/verify.sh",
+    "Positivo: R1 fecha todo dado necessário a um upload e draw texturizado, com resultado de pixels previsto.",
+    "Negativo: Dados insuficientes, dimensão acima do limite e formato ausente têm erro específico.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "docs/contracts/",
+    "docs/evidence/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: especificação. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de docs/contracts/render-texture-r1.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

@@ -1,38 +1,28 @@
 # Requisitos — Renderer WebGL2 da engine Angelica
 
-## Requisitos funcionais (RF)
-- **RF-01**: Inventariar render states realmente usados na Angelica2 e dependências D3D8. Deve expor contrato testável e permitir falha controlada.
-- **RF-02**: Definir tabelas de equivalência de vertex formats e estados blend/cull/depth. Deve expor contrato testável e permitir falha controlada.
-- **RF-03**: Implementar backend WebGL2 incremental com shaders do subconjunto utilizado. Deve expor contrato testável e permitir falha controlada.
-- **RF-04**: Integrar materiais, texturas, render targets, transparência e context restoration. Deve expor contrato testável e permitir falha controlada.
-- **RF-05**: Validar paridade visual com screenshot Windows e GPU capture autorizados. Deve expor contrato testável e permitir falha controlada.
+Cada requisito abaixo tem uma workorder proprietária. Resultado mensurável prevalece
+sobre presença de arquivos. Schema ou ambiente ausente mantém a tarefa bloqueada.
 
-## Interfaces e estados esperados
-- **API-1 IRenderDevice:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-2 ITexture:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-3 IMeshBuffer:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-4 IPipelineState:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-5 IMaterial:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
+- **RF-01 / WO-01:** Inventário estabelece subconjunto necessário e identifica toda dependência que impede o primeiro draw.
+- **RF-02 / WO-02:** Nenhuma chamada D3D usada pela fatia fica sem semântica, erro ou adaptação explícita.
+- **RF-03 / WO-03:** Fixtures R0 6/7 desenham cores/profundidade esperadas; pixel central e canto são conferidos por readPixels.
+- **RF-04 / WO-04:** Cena com opaco, alpha e offscreen produz pixels previstos e mantém contagem estável de recursos após reload.
+- **RF-05 / WO-05:** Relatório demonstra paridade da primeira fatia Angelica, com referência Windows e limites verificáveis.
+- **RF-06 / WO-06:** Caller sabe exatamente o que o backend suporta e como a ausência é reportada.
+- **RF-07 / WO-07:** R1 fecha todo dado necessário a um upload e draw texturizado, com resultado de pixels previsto.
+- **RF-08 / WO-08:** Quadrantes têm cores esperadas e bytes inválidos não alteram uma textura válida existente.
+- **RF-09 / WO-09:** Estados mapeados reproduzem a semântica aprovada sem vazamento entre draws.
+- **RF-10 / WO-10:** WO-12 recebe contrato fechado com estado anterior preservado em falha de criação/resize.
+- **RF-11 / WO-11:** Cada combinação suportada tem fixture de imagem e chave única; não há programa reutilizado incorretamente.
+- **RF-12 / WO-12:** Offscreen e readback retornam dimensões/cores esperadas após resize válido.
+- **RF-13 / WO-13:** Closure tem fronteira auditável e não depende de suprimir funcionalidades usadas para compilar.
+- **RF-14 / WO-14:** Um draw executado pelo caminho original adaptado coincide com os valores/pixels da baseline.
+- **RF-15 / WO-15:** Draw em Lost retorna ContextLost; após recriação válida o pixel de referência volta a ser desenhado.
+- **RF-16 / WO-16:** Benchmark informa condições, amostras e métricas reais; cenários de paridade permanecem verdes.
 
-## Requisitos não funcionais (RNF)
-- **Compatibilidade:** browser sem acesso a Win32/Direct3D/TCP raw; identificar plataforma alvo e protocolo exatos.
-- **Performance:** medir sem criar números falsos; budgets definidos e aprovados antes de otimizações. Instrumentar golden images com tolerância registrada; frametime e draw calls; recursos GPU liberados sem vazamento.
-- **Confiabilidade:** operação repetível, sem vazamento de recursos, retry idempotente, tratamento de dados inconsistentes, queda de contexto e timeouts.
-- **Segurança:** entrada externa não confiável, bounds checking, saneamento de caminhos, rate limiting quando houver rede, segredos só no lado apropriado.
-- **Qualidade:** testes com fixtures sintéticas/permitidas, ambiente e hash de commit anotados, evidências anexadas ao PR.
-- **Licenciamento:** conteúdo de terceiros só após gate de direitos; submódulos são referências não integradas automaticamente.
-- **Observabilidade:** telemetria com eventos de erro e performance, sem capturar senhas, tokens, chats privados ou conteúdo protegido desnecessariamente.
+## Requisitos transversais
 
-## Restrições e não objetivos
-- Mitigar risco de semântica D3D↔GL divergente
-- Mitigar risco de shaders D3DX indisponíveis
-- Mitigar risco de perda do contexto GPU e leaking buffers
-- Não propor funcionalidades não verificadas como implementadas.
-- Não acoplar endpoints de produção a testes de laboratório.
-- Não extrapolar qualidade de WebGL procedural para cliente real.
-
-## Evidências mínimas
-- Comando de build/teste e plataforma.
-- Fixture esperada e obtida, junto ao commit exato.
-- Resultado pass/fail/blocked, logs e comparação, orçamento/limites quando relevante.
-- Lista de divergências persistentes e próximo experimento testável.
+- Sem fontes/assets proprietários no build público sem decisão documentada.
+- Mesmo caso reproduzível no ambiente declarado; todos os testes obrigatórios contam.
+- Input inválido, lifetime e limites tratados antes de efeitos irreversíveis.
+- Comandos planejados não são evidência; saída real com versão/SHA é obrigatória.

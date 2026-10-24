@@ -4,9 +4,9 @@
 
 | Marco | Meta | Teste de aceitação | Estado |
 | --- | --- | --- | --- |
-| M0 — Bootstrap | Estrutura, scripts, CI, web host e WASM mínimo | `verify.sh` e build com emcc em ambiente provisionado | em andamento |
-| M1 — Triagem do código | Selecionar versão/client/engine utilizáveis | Build Windows reproduzível + inventário de APIs + parecer IP | não iniciado |
-| M2 — Núcleo portátil | Compilar subsistema útil para wasm32 | testes nativo e WASM concordam em fixtures permitidas | não iniciado |
+| M0 — Bootstrap | Estrutura, scripts, CI, web host e WASM mínimo | `verify.sh` e build com emcc em ambiente provisionado | provas locais passaram; ver POC-001 |
+| M1 — Triagem do código | Selecionar versão/client/engine utilizáveis | Build Windows reproduzível + inventário de APIs + parecer IP | triagem iniciada; build Windows e parecer pendentes |
+| M2 — Núcleo portátil | Compilar subsistema útil para wasm32 | testes nativo e WASM concordam em fixtures permitidas | ARandomGen validado isoladamente; seleção/integração pendentes |
 | M3 — Render engine | Desenhar mundo e personagens reais | cena com recursos autorizados e comparação semântica | não iniciado |
 | M4 — Transporte | Login/protocolo binário compatível com realm | integração e fixtures byte a byte | não iniciado |
 | M5 — Fatia MMO | Login → personagem → mundo → movimento multiuser | 2 clientes no navegador, estados convergentes | não iniciado |
@@ -14,6 +14,11 @@
 | M7 — Entrega | Cache/streaming, segurança, testes cross-browser | metas de desempenho medidas, rights cleared | não iniciado |
 
 ## Ordem P0
+
+Evidência: [POC-001](POC-ANGELICA.md). Próxima tarefa pronta para executor:
+**P1**, contrato de matemática/ABI, no [método de port](ANGELICA-PORTING-METHOD.md).
+Os gates abaixo continuam obrigatórios para integrar o cliente original.
+
 1. Verificar procedência jurídica de fontes e assets; não redistribuir artefatos até autorização.
 2. Construir benchmark de compilação Win32 e interface gráfica de candidatos 1.5.3 e 1.5.2.
 3. Extrair e categorizar dependências Win32, D3D8/9, SDK, ponteiros, asm, threads, networking.

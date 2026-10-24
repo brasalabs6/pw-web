@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e04-wasm-runtime-v1",
+  "id": "wo-08",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Implementar bootstrap assíncrono com falha visível",
+  "objective": "Entregar toolchain reproduzível, binding, bootstrap e loop cooperativo, testados no WASM real com falhas observáveis. Nesta workorder: Implementar bootstrap assíncrono com falha visível. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P0",
+  "risk": "Resposta tardia após dispose e módulo com export ausente são rejeitados.",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e04-wasm-runtime-v1/wo-06",
+    "e01-agent-orchestration-v1/wo-05"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    "docs/contracts/runtime-v0.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: web/runtime/loader.mjs; tests/runtime/loader.test.mjs",
+    "WI-01: Carregar módulo antes de liberar consumidor, com estados e ownership do contrato runtime.",
+    "WI-02: Distinguir 404, erro de rede, compilação WASM, ABI incompatível e abort de inicialização.",
+    "WI-03: Prevenir init concorrente duplicada e descartar resultado tardio após dispose.",
+    "WI-04: Verificar rede real local para sucesso/404 e falha explicitamente apresentada ao host."
+  ],
+  "acceptance": [
+    "Consumidor só recebe instância pronta e uma inicialização ativa; erro não vira rótulo genérico de sucesso.",
+    "Caso negativo obrigatório: Resposta tardia após dispose e módulo com export ausente são rejeitados.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "node --test tests/runtime/loader.test.mjs (criar) + requests do autoteste browser",
+    "Positivo: Consumidor só recebe instância pronta e uma inicialização ativa; erro não vira rótulo genérico de sucesso.",
+    "Negativo: Resposta tardia após dispose e módulo com export ausente são rejeitados.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "tests/runtime/",
+    "web/runtime/",
+    "docs/evidence/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: implementação. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de web/runtime/loader.mjs; tests/runtime/loader.test.mjs. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}
