@@ -1,6 +1,9 @@
 # Registro de riscos — Desacoplamento de Win32, SDK e Direct3D
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | dependências ocultas em headers transversais | Alto / validar gravidade | Expor cenário negativo e observável | Automatizar inventário de includes/API macros e grafo de módulos originais | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | ABI packing e UTF/GBK | Alto / validar gravidade | Expor cenário negativo e observável | Especificar contratos de plataforma e stubs sem comportamento de jogo | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | semântica de threads/cancelamento divergente | Alto / validar gravidade | Expor cenário negativo e observável | Implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais | Bloquear trabalho dependente, ADR ou fallback |

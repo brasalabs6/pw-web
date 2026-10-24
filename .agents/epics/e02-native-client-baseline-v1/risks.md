@@ -1,6 +1,9 @@
 # Registro de riscos — Baseline do cliente Windows e seleção validada da Angelica
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | repositório incompleto | Alto / validar gravidade | Expor cenário negativo e observável | Construir inventário estático de solutions, arquivos e bibliotecas da fonte 1.5.3/1.5.2 | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | SDK legado indisponível | Alto / validar gravidade | Expor cenário negativo e observável | Criar matriz de compatibilidade D3D8/9, headers, ABI, asset e protocolo por versão | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | cliente não autentica em servidor atual | Alto / validar gravidade | Expor cenário negativo e observável | Compilar cliente e engine em ambiente Windows autorizado com logs reproduzíveis | Bloquear trabalho dependente, ADR ou fallback |

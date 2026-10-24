@@ -1,6 +1,9 @@
 # Registro de riscos — UI do jogo, HUD, entrada, câmera e áudio
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | web browser consome teclas/scroll | Alto / validar gravidade | Expor cenário negativo e observável | Documentar inventário de telas, fluxos UI e inputs com baseline autorizado | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | latência de UI | Alto / validar gravidade | Expor cenário negativo e observável | Implementar mapeamento de ações e câmera sem prender foco do browser | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | recurso sonoro com direitos incertos | Alto / validar gravidade | Expor cenário negativo e observável | Criar shell responsivo HUD/inventário/chat/configurações com dados mockados | Bloquear trabalho dependente, ADR ou fallback |

@@ -1,6 +1,9 @@
 # Registro de riscos — Orquestração autônoma, isolamento e governança de agentes
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | prompt injection via PR e logs | Alto / validar gravidade | Expor cenário negativo e observável | Definir máquina de estados, schemas, escopos, dependências e critérios de evidência | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | chave API exposta a código não confiável | Alto / validar gravidade | Expor cenário negativo e observável | Implementar execução manual isolada, secret boundary e limites de patch | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | loops, race conditions e custo descontrolado | Alto / validar gravidade | Expor cenário negativo e observável | Implementar controlador CI/feedback, limites de retries e parada segura | Bloquear trabalho dependente, ADR ou fallback |

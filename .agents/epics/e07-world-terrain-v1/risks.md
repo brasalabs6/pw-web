@@ -1,6 +1,9 @@
 # Registro de riscos — Terreno, cidades, vegetação, água e visibilidade do mundo
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | coordenadas, escala e eixos divergentes | Alto / validar gravidade | Expor cenário negativo e observável | Definir matrizes de coordenadas, units/axis e modelo de chunks/scenegraph | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | costuras de terreno | Alto / validar gravidade | Expor cenário negativo e observável | Implementar heightfield e malha procedural com LOD e stitching | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | carregamento de chunks gera stutter | Alto / validar gravidade | Expor cenário negativo e observável | Implementar quadtree/frustum culling e carregamento de objetos estáticos | Bloquear trabalho dependente, ADR ou fallback |

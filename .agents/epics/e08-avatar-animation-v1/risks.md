@@ -1,6 +1,9 @@
 # Registro de riscos — Avatares, esqueletos, animações e customização
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | formato binário incompatível | Alto / validar gravidade | Expor cenário negativo e observável | Especificar bones, transforms, clips, markers e blend trees com fixtures próprias | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | hierarquias de bones divergentes | Alto / validar gravidade | Expor cenário negativo e observável | Implementar amostragem e interpolação determinística de animação | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | diferença GPU/CPU skinning e retargeting | Alto / validar gravidade | Expor cenário negativo e observável | Implementar skinning em shader WebGL2 com fallback CPU e testes | Bloquear trabalho dependente, ADR ou fallback |

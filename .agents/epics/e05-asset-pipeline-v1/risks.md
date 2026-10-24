@@ -1,6 +1,9 @@
 # Registro de riscos — Pipeline de recursos PCK/PKX, formatos e proveniência
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | arquivos >2GB e offsets truncados | Alto / validar gravidade | Expor cenário negativo e observável | Catalogar magic/versionamento e limites de PCK/PKX e famílias de arquivos | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | bomba de descompressão e path traversal | Alto / validar gravidade | Expor cenário negativo e observável | Especificar parsing streaming e GBK→Unicode sem confiar em nomes de caminho | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | incompatibilidade de versões e redistribuição | Alto / validar gravidade | Expor cenário negativo e observável | Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada | Bloquear trabalho dependente, ADR ou fallback |

@@ -1,6 +1,9 @@
 # Registro de riscos — Direitos, proveniência, licenciamento e decisões de produto
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | licença de terceiro não comprova titularidade | Alto / validar gravidade | Expor cenário negativo e observável | Catalogar arquivos, bibliotecas, símbolos e conteúdos protegidos por origem e versão | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | redistribuição pública de assets | Alto / validar gravidade | Expor cenário negativo e observável | Validar direitos de reprodução/modificação/distribuição e termos comerciais por titular | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | licença incompatível com distribuição comercial | Alto / validar gravidade | Expor cenário negativo e observável | Desenhar estratégia de implementação independente para componentes sem autorização | Bloquear trabalho dependente, ADR ou fallback |

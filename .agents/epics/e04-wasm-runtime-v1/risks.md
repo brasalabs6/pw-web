@@ -1,6 +1,9 @@
 # Registro de riscos — Toolchain C++/Emscripten e runtime WebAssembly
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | builds diferentes por emsdk | Alto / validar gravidade | Expor cenário negativo e observável | Fixar versão/flags da toolchain Emscripten e matriz debug/release | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | OOM e pointers inválidos | Alto / validar gravidade | Expor cenário negativo e observável | Implementar binding ABI simples com typed buffers e error codes | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | browser bloqueia SharedArrayBuffer | Alto / validar gravidade | Expor cenário negativo e observável | Criar loop cooperativo requestAnimationFrame com pause/resume | Bloquear trabalho dependente, ADR ou fallback |
