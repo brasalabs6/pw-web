@@ -1,12 +1,11 @@
-# Project-scoped Grok config: MCP and permissions only. Models live at GROK_HOME/config.toml.
-# Chrome must be installed separately. Chrome DevTools MCP runs an isolated headless profile.
-# CI's PATH includes a pinned local install of chrome-devtools-mcp, no npx @latest.
+# Project configuration: Chrome DevTools MCP. Browser executable comes from CHROME_BIN.
+# Only localhost:8080 is allowed; CI runs isolated Chrome and a synthetic WebGL demo.
 [mcp]
 max_output_bytes = 40000
 
 [mcp_servers.chrome-devtools]
-command = "chrome-devtools-mcp"
-args = ["--headless", "--isolated", "--no-usage-statistics", "--no-performance-crux"]
+command = "bash"
+args = ["scripts/chrome-mcp-launch.sh"]
 enabled = true
-startup_timeout_sec = 30
+startup_timeout_sec = 45
 tool_timeout_sec = 120
