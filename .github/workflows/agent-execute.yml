@@ -26,6 +26,9 @@ permissions:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       branch: ${{ steps.validate.outputs.branch }}
       checkout_ref: ${{ steps.validate.outputs.checkout_ref }}
@@ -38,6 +41,15 @@ jobs:
           ref: main
           persist-credentials: false
           submodules: false
+      - name: Enforce declared dependencies before first dispatch
+        if: inputs.attempt == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EPIC: ${{ inputs.epic }}
+          WO: ${{ inputs.workorder }}
+        run: |
+          gh pr list --state merged --limit 500 --json title > /tmp/merged-prs.json
+          python3 .agents/automation/backlog_pick.py --merged /tmp/merged-prs.json --require "$EPIC/$WO"
       - id: validate
         run: |
           python3 .agents/automation/validate_dispatch.py \

@@ -47,3 +47,6 @@ game-data/
 *.smd
 *.dds
 *.hmap
+
+# Local CI/agent evidence; uploads live in Actions artifacts, never source control
+artifacts/
