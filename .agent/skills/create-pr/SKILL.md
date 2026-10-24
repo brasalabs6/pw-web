@@ -20,7 +20,7 @@ version: 1.0.0
 - State **Hypothesis → Implementation → Evidence → Limitations**. Include exact test commands, outcome `PASS / FAIL / BLOCKED / NOT RUN`, version and commit SHA when relevant.
 - `Bootstrap CI` passing **does not** prove POC-001's original Angelica/WASM path, which is opt-in. Differentiate unit comparison tests, an independent Chrome WebGL smoke, a local authorized Angelica probe, and actual engine client/gameplay.
 - Renderer/viewport/UI PRs: include Chrome desktop and mobile artifacts and WebGL context/driver details; software SwiftShader is not a GPU perf benchmark. Browser host `8480`, opt-in Angelica probe `8481`. Never use 8080.
-- For rights-gated work, do not claim original assets/code may be redistributed; cite `docs/LEGAL.md` and label unresolved distribution gate `BLOCKED`.
+- **Direitos autorais / rights gate:** for rights-gated work, do not claim original assets/code may be redistributed; cite `docs/LEGAL.md` and label unresolved distribution gate `BLOCKED`.
 - Do not weaken failing tests, invent logs/screenshots, or classify unrun steps as pass. If a toolchain is missing, mark `BLOCKED`, not success.
 - Include reproduction, negative tests, rollback, risk, dependencies, any required manual gate, and explicit acceptance criteria.
 
