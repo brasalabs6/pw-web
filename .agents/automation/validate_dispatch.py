@@ -14,8 +14,8 @@ a = p.parse_args()
 wo = read(a.epic, a.workorder)
 if not wo["automation"]:
     raise SystemExit("This workorder requires human-led execution (automation=false)")
-if not 1 <= a.attempt <= 3:
-    raise SystemExit("attempt must be 1, 2 or 3")
+if not 1 <= a.attempt <= 30:
+    raise SystemExit("attempt must be between 1 and 30")
 branch = f"agent/{a.epic}/{a.workorder}"
 ref = "main" if a.attempt == 1 else branch
 with open(a.output, "a", encoding="utf-8") as out:

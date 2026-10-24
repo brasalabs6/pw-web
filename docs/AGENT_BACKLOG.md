@@ -3,10 +3,10 @@
 A arquitetura de `docs/AUTONOMY.md` suporta dois modos: despacho manual e backlog automático. A fila é **desligada por padrão**.
 
 ## Como ativar após testes e orçamento
-- Colocar `XAI_API_KEY` no Secrets do repositório.
+- Colocar `CF_PROXY_API_KEY` no Secrets do repositório.
 - Ajustar Settings → Actions para permitir Actions criar PRs.
 - Definir variável de repositório `AGENT_BACKLOG_ENABLED=true`. Isso permite a `Agent Backlog Scheduler` considerar uma task duas vezes ao dia (07:13 e 19:13 UTC) ou via workflow_dispatch.
-- Opcionalmente definir `AGENT_AUTONOMY_ENABLED=true` para até **2 tentativas extras** quando a CI disparada pelo agente falha.
+- Opcionalmente definir `AGENT_REVIEW_LOOP_ENABLED=true` para reparos sucessivos baseados em **dois pareceres independentes e CI** (padrão 8 rodadas, teto de 30) até aprovação ou bloqueio.
 - Aplicar branch protection e revisão humana antes de integrar qualquer PR. Não existe auto merge.
 
 ## Algoritmo de seleção
@@ -47,3 +47,5 @@ Um despacho automático no máximo a cada horário do cron; um PR por vez; até 
 - Actions → Bootstrap CI → `report.json` + `verify.log`.
 - Actions → Agent CI Feedback → comentário de resultado e reexecução condicional.
 - Issues/PRs → evidência, discussão e aceite. Nada é observado continuamente por uma sessão do ChatGPT; os resultados permanecem no GitHub para consultas posteriores.
+
+O loop de revisão DeepSeek + GLM Flash é documentado em [GROK_BUILD.md](GROK_BUILD.md).

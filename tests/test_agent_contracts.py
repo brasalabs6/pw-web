@@ -24,7 +24,7 @@ class AgentContractTests(unittest.TestCase):
     def test_guarded_paths(self):
         dummy = {"write_scopes": ["web/", "engine/", "tests/"]}
         self.assertTrue(path_allowed("web/example.js", dummy))
-        for path in (".github/workflows/ci.yml", ".agents/automation/catalog.py",
+        for path in (".github/workflows/ci.yml", ".agents/automation/catalog.py", ".grok/agents/coder.md",
                      "references/client-153/foo", "web/../../.env", "web/asset.pck",
                      "web/malware.wasm", "AGENTS.md", "scripts/verify.sh"):
             self.assertFalse(path_allowed(path, dummy))
