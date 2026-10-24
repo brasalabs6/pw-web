@@ -1,0 +1,22 @@
+# Registro de riscos — Inventário, equipamentos, crafting, loja e economia
+
+## Riscos específicos
+| R-1 | dup de item | Alto / validar gravidade | Expor cenário negativo e observável | Especificar esquemas de item, stacks, binds, inventário e mensagens binárias | Bloquear trabalho dependente, ADR ou fallback |
+| R-2 | replay/ordem de trade | Alto / validar gravidade | Expor cenário negativo e observável | Implementar modelos de estado/HUD com fixtures e invariantes de slots | Bloquear trabalho dependente, ADR ou fallback |
+| R-3 | manipulação de preço por cliente | Alto / validar gravidade | Expor cenário negativo e observável | Implementar drag/drop, equip, confirmação de compra e fluxo de craft mock | Bloquear trabalho dependente, ADR ou fallback |
+
+## Legenda da tabela
+Formato: ID | risco | gravidade inicial | sinal de falha | primeira mitigação | contingency.
+
+## Riscos transversais
+| Categoria | Sinal | Tratamento |
+| --- | --- | --- |
+| Direitos | licença titular desconhecido | manter fora de artefatos distribuídos |
+| Integridade | checks verdes sem funcionalidade real | evidência E2E específica e gate humano |
+| Segurança do agente | mudança em workflows/segredos | rejeitar patch antes de write-token |
+| Compatibilidade | assets/protocolos de versões diferentes | matriz de versão e validação por commit |
+| Performance | stutter/memória e download excessivo | perf budgets, tracing e opções de fallback |
+| Operação | falta de credenciais/servidor/SDK | bloquear honestamente, não simular sucesso |
+
+## Registro de incidente e decisão
+Cada risco precisa de dono, impacto, likelihood revisada, evidência, mitigação, prazo de revisão e critério de encerramento. Erros críticos exigem suspensão de release e workorder de correção.

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "epic": "e03-platform-portability-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais",
+  "objective": "Criar fronteiras C++ portáveis para relógio, janela, threads, arquivos, eventos, memória, locale, áudio e render, minimizando dependências Windows no núcleo. Nesta workorder: Implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "semântica de threads/cancelamento divergente",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e03-platform-portability-v1/wo-02"
+  ],
+  "inputs": [
+    "engine/core",
+    "engine/platform",
+    "engine/render",
+    "tests/",
+    "docs/ARCHITECTURE.md",
+    "Contrato IWindowInput"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais",
+    "Teste positivo e negativo para IWindowInput com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por IWindowInput",
+    "Executar teste unitário determinístico verificando iwindowinput com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para iwindowinput e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando IWindowInput com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para IWindowInput",
+    "Integração isolada: validar implementar adapters portáteis de tempo, memória, caminhos e arquivos virtuais com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e16-qa-observability-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Criar matriz de testes por camada, severidade e definição de done",
+  "objective": "Fazer toda capacidade depender de logs e testes objetivos: unit, integração, protocolo, render golden, Browser E2E, regressão, fuzz, perf e relatórios de evidência. Nesta workorder: Criar matriz de testes por camada, severidade e definição de done. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "falso verde do scaffold",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e15-assets-streaming-perf-v1/wo-05"
+  ],
+  "inputs": [
+    "tests/",
+    "tools/qa",
+    "docs/",
+    "web/telemetry",
+    "docs/ARCHITECTURE.md",
+    "Contrato TestMatrix"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para criar matriz de testes por camada, severidade e definição de done",
+    "Teste positivo e negativo para TestMatrix com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar criar matriz de testes por camada, severidade e definição de done dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por TestMatrix",
+    "Executar teste unitário determinístico verificando testmatrix com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para testmatrix e anexar log",
+    "Submeter PR isolado, alterações apenas em tests/, tools/, web/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando TestMatrix com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para TestMatrix",
+    "Integração isolada: validar criar matriz de testes por camada, severidade e definição de done com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "tests/",
+    "tools/",
+    "web/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

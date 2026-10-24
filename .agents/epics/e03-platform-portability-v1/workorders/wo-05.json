@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "epic": "e03-platform-portability-v1",
+  "id": "wo-05",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Criar testes cruzados e checklist de migração com limites Win32 remanescentes",
+  "objective": "Criar fronteiras C++ portáveis para relógio, janela, threads, arquivos, eventos, memória, locale, áudio e render, minimizando dependências Windows no núcleo. Nesta workorder: Criar testes cruzados e checklist de migração com limites Win32 remanescentes. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "ABI packing e UTF/GBK",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e03-platform-portability-v1/wo-04"
+  ],
+  "inputs": [
+    "engine/core",
+    "engine/platform",
+    "engine/render",
+    "tests/",
+    "docs/ARCHITECTURE.md",
+    "Contrato INetworkTransport"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para criar testes cruzados e checklist de migração com limites win32 remanescentes",
+    "Teste positivo e negativo para INetworkTransport com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar criar testes cruzados e checklist de migração com limites win32 remanescentes dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por INetworkTransport",
+    "Executar teste unitário determinístico verificando inetworktransport com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para inetworktransport e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando INetworkTransport com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para INetworkTransport",
+    "Integração isolada: validar criar testes cruzados e checklist de migração com limites win32 remanescentes com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "epic": "e06-render-webgl2-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar backend WebGL2 incremental com shaders do subconjunto utilizado",
+  "objective": "Substituir estado Direct3D8/9 da Angelica por backend WebGL2 verificável, com recursos, vertex formats, depth/cull/blend, fixed function em shaders e gestão de contexto. Nesta workorder: Implementar backend WebGL2 incremental com shaders do subconjunto utilizado. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "perda do contexto GPU e leaking buffers",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e06-render-webgl2-v1/wo-02"
+  ],
+  "inputs": [
+    "engine/render",
+    "web/renderer",
+    "tests/render",
+    "docs/ARCHITECTURE.md",
+    "Contrato IMeshBuffer"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar backend webgl2 incremental com shaders do subconjunto utilizado",
+    "Teste positivo e negativo para IMeshBuffer com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar backend webgl2 incremental com shaders do subconjunto utilizado dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por IMeshBuffer",
+    "Executar teste unitário determinístico verificando imeshbuffer com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para imeshbuffer e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando IMeshBuffer com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para IMeshBuffer",
+    "Integração isolada: validar implementar backend webgl2 incremental com shaders do subconjunto utilizado com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

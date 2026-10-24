@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e01-agent-orchestration-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar controlador CI/feedback, limites de retries e parada segura",
+  "objective": "Controlar trabalho de agentes por workorders versionados, branch por escopo, sandbox, validação de patches, provas em CI, reparo limitado e intervenção humana em operações sensíveis. Nesta workorder: Implementar controlador CI/feedback, limites de retries e parada segura. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "loops, race conditions e custo descontrolado",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e01-agent-orchestration-v1/wo-02"
+  ],
+  "inputs": [
+    ".agents/automation",
+    "GitHub Actions",
+    "GitHub PR/Issues",
+    "revisões e logs",
+    "docs/ARCHITECTURE.md",
+    "Contrato CI report.json"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar controlador ci/feedback, limites de retries e parada segura",
+    "Teste positivo e negativo para CI report.json com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar controlador ci/feedback, limites de retries e parada segura dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por CI report.json",
+    "Executar teste unitário determinístico verificando ci report.json com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para ci report.json e anexar log",
+    "Submeter PR isolado, alterações apenas em tests/, docs/, engine/, web/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando CI report.json com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para CI report.json",
+    "Integração isolada: validar implementar controlador ci/feedback, limites de retries e parada segura com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "tests/",
+    "docs/",
+    "engine/",
+    "web/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

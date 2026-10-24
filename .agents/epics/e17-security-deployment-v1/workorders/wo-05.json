@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e17-security-deployment-v1",
+  "id": "wo-05",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Testar incident response, backup/restore, rollback e deploy controlado",
+  "objective": "Provisionar distribuição segura de build web e gateway com TLS, CSP, isolamento de realm, secrets, observabilidade, rollbacks e proibição de releases sem IP liberado. Nesta workorder: Testar incident response, backup/restore, rollback e deploy controlado. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "supply chain de actions",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e17-security-deployment-v1/wo-04"
+  ],
+  "inputs": [
+    "infra/",
+    "gateway/",
+    "web/",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato RollbackPlan"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para testar incident response, backup/restore, rollback e deploy controlado",
+    "Teste positivo e negativo para RollbackPlan com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar testar incident response, backup/restore, rollback e deploy controlado dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por RollbackPlan",
+    "Executar teste unitário determinístico verificando rollbackplan com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para rollbackplan e anexar log",
+    "Submeter PR isolado, alterações apenas em infra/, gateway/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando RollbackPlan com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para RollbackPlan",
+    "Integração isolada: validar testar incident response, backup/restore, rollback e deploy controlado com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "infra/",
+    "gateway/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

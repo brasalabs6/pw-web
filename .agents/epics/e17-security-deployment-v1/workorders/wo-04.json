@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e17-security-deployment-v1",
+  "id": "wo-04",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Definir release pipeline assinado com stage e aprovação jurídica",
+  "objective": "Provisionar distribuição segura de build web e gateway com TLS, CSP, isolamento de realm, secrets, observabilidade, rollbacks e proibição de releases sem IP liberado. Nesta workorder: Definir release pipeline assinado com stage e aprovação jurídica. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "expor pw-gs/postgres à internet",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e17-security-deployment-v1/wo-03"
+  ],
+  "inputs": [
+    "infra/",
+    "gateway/",
+    "web/",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato SecurityGate"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para definir release pipeline assinado com stage e aprovação jurídica",
+    "Teste positivo e negativo para SecurityGate com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar definir release pipeline assinado com stage e aprovação jurídica dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por SecurityGate",
+    "Executar teste unitário determinístico verificando securitygate com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para securitygate e anexar log",
+    "Submeter PR isolado, alterações apenas em infra/, gateway/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando SecurityGate com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para SecurityGate",
+    "Integração isolada: validar definir release pipeline assinado com stage e aprovação jurídica com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "infra/",
+    "gateway/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "epic": "e00-rights-governance-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Desenhar estratégia de implementação independente para componentes sem autorização",
+  "objective": "Obter base de autorização verificável por componente antes de usar ou distribuir código, conteúdo, trilha sonora, formatos ou marca relacionados a Perfect World. Nesta workorder: Desenhar estratégia de implementação independente para componentes sem autorização. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "licença incompatível com distribuição comercial",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e00-rights-governance-v1/wo-02"
+  ],
+  "inputs": [
+    "docs/LEGAL.md",
+    "docs/RESEARCH.md",
+    "matriz de proveniência",
+    "registro de deliberações ADR",
+    "docs/ARCHITECTURE.md",
+    "Contrato planos de substituição por componente"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para desenhar estratégia de implementação independente para componentes sem autorização",
+    "Teste positivo e negativo para planos de substituição por componente com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar desenhar estratégia de implementação independente para componentes sem autorização dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por planos de substituição por componente",
+    "Executar teste unitário determinístico verificando planos de substituição por componente com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para planos de substituição por componente e anexar log",
+    "Submeter PR isolado, alterações apenas em docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando planos de substituição por componente com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para planos de substituição por componente",
+    "Integração isolada: validar desenhar estratégia de implementação independente para componentes sem autorização com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

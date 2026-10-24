@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "epic": "e02-native-client-baseline-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Compilar cliente e engine em ambiente Windows autorizado com logs reproduzíveis",
+  "objective": "Medir build real do cliente 1.5.3 D3D8 versus alternativa 1.5.2 D3D9, registrar dependências, inicialização, cena, login e decisão por evidência técnica e direitos. Nesta workorder: Compilar cliente e engine em ambiente Windows autorizado com logs reproduzíveis. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "cliente não autentica em servidor atual",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e02-native-client-baseline-v1/wo-02"
+  ],
+  "inputs": [
+    "references/client-153",
+    "references/client-152-modern",
+    "documentos de build Windows",
+    "testes de comparação",
+    "docs/ARCHITECTURE.md",
+    "Contrato matriz client↔assets↔protocol↔server"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para compilar cliente e engine em ambiente windows autorizado com logs reproduzíveis",
+    "Teste positivo e negativo para matriz client↔assets↔protocol↔server com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar compilar cliente e engine em ambiente windows autorizado com logs reproduzíveis dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por matriz client↔assets↔protocol↔server",
+    "Executar teste unitário determinístico verificando matriz client↔assets↔protocol↔server com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para matriz client↔assets↔protocol↔server e anexar log",
+    "Submeter PR isolado, alterações apenas em docs/, tests/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando matriz client↔assets↔protocol↔server com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para matriz client↔assets↔protocol↔server",
+    "Integração isolada: validar compilar cliente e engine em ambiente windows autorizado com logs reproduzíveis com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "docs/",
+    "tests/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

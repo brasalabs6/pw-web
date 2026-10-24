@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e16-qa-observability-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Criar harness browser E2E WebGL/WASM/viewport e screenshot diffs",
+  "objective": "Fazer toda capacidade depender de logs e testes objetivos: unit, integração, protocolo, render golden, Browser E2E, regressão, fuzz, perf e relatórios de evidência. Nesta workorder: Criar harness browser E2E WebGL/WASM/viewport e screenshot diffs. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "testes flaky e builds não determinísticas",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e16-qa-observability-v1/wo-02"
+  ],
+  "inputs": [
+    "tests/",
+    "tools/qa",
+    "docs/",
+    "web/telemetry",
+    "docs/ARCHITECTURE.md",
+    "Contrato PacketReplay"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para criar harness browser e2e webgl/wasm/viewport e screenshot diffs",
+    "Teste positivo e negativo para PacketReplay com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar criar harness browser e2e webgl/wasm/viewport e screenshot diffs dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por PacketReplay",
+    "Executar teste unitário determinístico verificando packetreplay com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para packetreplay e anexar log",
+    "Submeter PR isolado, alterações apenas em tests/, tools/, web/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando PacketReplay com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para PacketReplay",
+    "Integração isolada: validar criar harness browser e2e webgl/wasm/viewport e screenshot diffs com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "tests/",
+    "tools/",
+    "web/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

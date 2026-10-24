@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e08-avatar-animation-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Especificar bones, transforms, clips, markers e blend trees com fixtures próprias",
+  "objective": "Carregar malhas e hierarquias de ossos, skinning e blend de clips, partes de equipamento, morph/face, movimentos, montaria e voo com sincronização de rede. Nesta workorder: Especificar bones, transforms, clips, markers e blend trees com fixtures próprias. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "formato binário incompatível",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e07-world-terrain-v1/wo-05"
+  ],
+  "inputs": [
+    "engine/animation",
+    "engine/character",
+    "engine/formats",
+    "engine/render",
+    "docs/ARCHITECTURE.md",
+    "Contrato Skeleton"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para especificar bones, transforms, clips, markers e blend trees com fixtures próprias",
+    "Teste positivo e negativo para Skeleton com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar especificar bones, transforms, clips, markers e blend trees com fixtures próprias dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por Skeleton",
+    "Executar teste unitário determinístico verificando skeleton com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para skeleton e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando Skeleton com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para Skeleton",
+    "Integração isolada: validar especificar bones, transforms, clips, markers e blend trees com fixtures próprias com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

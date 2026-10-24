@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e08-avatar-animation-v1",
+  "id": "wo-05",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Validar avatar/autorização, caminhada, ataque, montaria e voo em comparação",
+  "objective": "Carregar malhas e hierarquias de ossos, skinning e blend de clips, partes de equipamento, morph/face, movimentos, montaria e voo com sincronização de rede. Nesta workorder: Validar avatar/autorização, caminhada, ataque, montaria e voo em comparação. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "hierarquias de bones divergentes",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e08-avatar-animation-v1/wo-04"
+  ],
+  "inputs": [
+    "engine/animation",
+    "engine/character",
+    "engine/formats",
+    "engine/render",
+    "docs/ARCHITECTURE.md",
+    "Contrato AnimationStateMachine"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para validar avatar/autorização, caminhada, ataque, montaria e voo em comparação",
+    "Teste positivo e negativo para AnimationStateMachine com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar validar avatar/autorização, caminhada, ataque, montaria e voo em comparação dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por AnimationStateMachine",
+    "Executar teste unitário determinístico verificando animationstatemachine com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para animationstatemachine e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando AnimationStateMachine com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para AnimationStateMachine",
+    "Integração isolada: validar validar avatar/autorização, caminhada, ataque, montaria e voo em comparação com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

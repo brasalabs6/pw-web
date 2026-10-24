@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e04-wasm-runtime-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Fixar versão/flags da toolchain Emscripten e matriz debug/release",
+  "objective": "Compilar componentes C++ portáveis para wasm32, configurar startup, heaps, memória, tratamento de erros, frame loop e interop JavaScript com reprodução determinística. Nesta workorder: Fixar versão/flags da toolchain Emscripten e matriz debug/release. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "builds diferentes por emsdk",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e03-platform-portability-v1/wo-05"
+  ],
+  "inputs": [
+    "engine/core",
+    "web/wasm",
+    "scripts/build-wasm.sh",
+    "tests/",
+    "docs/ARCHITECTURE.md",
+    "Contrato module factory async"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para fixar versão/flags da toolchain emscripten e matriz debug/release",
+    "Teste positivo e negativo para module factory async com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar fixar versão/flags da toolchain emscripten e matriz debug/release dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por module factory async",
+    "Executar teste unitário determinístico verificando module factory async com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para module factory async e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando module factory async com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para module factory async",
+    "Integração isolada: validar fixar versão/flags da toolchain emscripten e matriz debug/release com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

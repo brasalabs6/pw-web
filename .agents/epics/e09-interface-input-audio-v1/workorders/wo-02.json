@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e09-interface-input-audio-v1",
+  "id": "wo-02",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar mapeamento de ações e câmera sem prender foco do browser",
+  "objective": "Criar apresentação de HUD, janelas, ações por mouse/teclado/toque, câmera, atalhos, chat e mixagem de som sem bloquear o loop da engine. Nesta workorder: Implementar mapeamento de ações e câmera sem prender foco do browser. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "latência de UI",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e09-interface-input-audio-v1/wo-01"
+  ],
+  "inputs": [
+    "web/ui",
+    "web/input",
+    "web/audio",
+    "engine/ui",
+    "docs/ARCHITECTURE.md",
+    "Contrato HUDState"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar mapeamento de ações e câmera sem prender foco do browser",
+    "Teste positivo e negativo para HUDState com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar mapeamento de ações e câmera sem prender foco do browser dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por HUDState",
+    "Executar teste unitário determinístico verificando hudstate com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para hudstate e anexar log",
+    "Submeter PR isolado, alterações apenas em web/, engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando HUDState com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para HUDState",
+    "Integração isolada: validar implementar mapeamento de ações e câmera sem prender foco do browser com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "web/",
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

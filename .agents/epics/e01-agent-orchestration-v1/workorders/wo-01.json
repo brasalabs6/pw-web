@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "epic": "e01-agent-orchestration-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Definir máquina de estados, schemas, escopos, dependências e critérios de evidência",
+  "objective": "Controlar trabalho de agentes por workorders versionados, branch por escopo, sandbox, validação de patches, provas em CI, reparo limitado e intervenção humana em operações sensíveis. Nesta workorder: Definir máquina de estados, schemas, escopos, dependências e critérios de evidência. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "prompt injection via PR e logs",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [],
+  "inputs": [
+    ".agents/automation",
+    "GitHub Actions",
+    "GitHub PR/Issues",
+    "revisões e logs",
+    "docs/ARCHITECTURE.md",
+    "Contrato workorder JSON + allowlist"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para definir máquina de estados, schemas, escopos, dependências e critérios de evidência",
+    "Teste positivo e negativo para workorder JSON + allowlist com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar definir máquina de estados, schemas, escopos, dependências e critérios de evidência dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por workorder JSON + allowlist",
+    "Executar teste unitário determinístico verificando workorder json + allowlist com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para workorder json + allowlist e anexar log",
+    "Submeter PR isolado, alterações apenas em tests/, docs/, engine/, web/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando workorder JSON + allowlist com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para workorder JSON + allowlist",
+    "Integração isolada: validar definir máquina de estados, schemas, escopos, dependências e critérios de evidência com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "tests/",
+    "docs/",
+    "engine/",
+    "web/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

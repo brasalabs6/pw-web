@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e19-liveops-evolution-v1",
+  "id": "wo-02",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Criar catálogo de incidentes, suporte e telemetria minimizada",
+  "objective": "Preparar operação após beta: versionamento de clientes/realms/protocolos, migrações, observabilidade, suporte, antiabuso, incidentes, governance e evolução sem regressões. Nesta workorder: Criar catálogo de incidentes, suporte e telemetria minimizada. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "incompatibilidade patch/version",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e19-liveops-evolution-v1/wo-01"
+  ],
+  "inputs": [
+    "ops/",
+    "infra/",
+    "gateway/",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato IncidentRecord"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para criar catálogo de incidentes, suporte e telemetria minimizada",
+    "Teste positivo e negativo para IncidentRecord com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar criar catálogo de incidentes, suporte e telemetria minimizada dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por IncidentRecord",
+    "Executar teste unitário determinístico verificando incidentrecord com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para incidentrecord e anexar log",
+    "Submeter PR isolado, alterações apenas em ops/, infra/, gateway/, docs/, tests/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando IncidentRecord com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para IncidentRecord",
+    "Integração isolada: validar criar catálogo de incidentes, suporte e telemetria minimizada com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "ops/",
+    "infra/",
+    "gateway/",
+    "docs/",
+    "tests/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

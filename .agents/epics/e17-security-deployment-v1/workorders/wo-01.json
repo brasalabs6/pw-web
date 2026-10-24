@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e17-security-deployment-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Desenhar topologia por ambiente e segurança das portas/rede",
+  "objective": "Provisionar distribuição segura de build web e gateway com TLS, CSP, isolamento de realm, secrets, observabilidade, rollbacks e proibição de releases sem IP liberado. Nesta workorder: Desenhar topologia por ambiente e segurança das portas/rede. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "expor pw-gs/postgres à internet",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e16-qa-observability-v1/wo-05"
+  ],
+  "inputs": [
+    "infra/",
+    "gateway/",
+    "web/",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato ReleaseManifest"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para desenhar topologia por ambiente e segurança das portas/rede",
+    "Teste positivo e negativo para ReleaseManifest com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar desenhar topologia por ambiente e segurança das portas/rede dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por ReleaseManifest",
+    "Executar teste unitário determinístico verificando releasemanifest com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para releasemanifest e anexar log",
+    "Submeter PR isolado, alterações apenas em infra/, gateway/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando ReleaseManifest com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para ReleaseManifest",
+    "Integração isolada: validar desenhar topologia por ambiente e segurança das portas/rede com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "infra/",
+    "gateway/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}
