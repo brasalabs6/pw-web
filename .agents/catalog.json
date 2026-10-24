@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "version": "2026-10-24",
+  "epics": [
+    {
+      "order": 0,
+      "slug": "e00-rights-governance-v1",
+      "title": "Direitos, proveniência, licenciamento e decisões de produto",
+      "workorders": 5,
+      "priority": "P0"
+    },
+    {
+      "order": 1,
+      "slug": "e01-agent-orchestration-v1",
+      "title": "Orquestração autônoma, isolamento e governança de agentes",
+      "workorders": 5,
+      "priority": "P0"
+    },
+    {
+      "order": 2,
+      "slug": "e02-native-client-baseline-v1",
+      "title": "Baseline do cliente Windows e seleção validada da Angelica",
+      "workorders": 5,
+      "priority": "P0"
+    },
+    {
+      "order": 3,
+      "slug": "e03-platform-portability-v1",
+      "title": "Desacoplamento de Win32, SDK e Direct3D",
+      "workorders": 5,
+      "priority": "P0"
+    },
+    {
+      "order": 4,
+      "slug": "e04-wasm-runtime-v1",
+      "title": "Toolchain C++/Emscripten e runtime WebAssembly",
+      "workorders": 5,
+      "priority": "P0"
+    },
+    {
+      "order": 5,
+      "slug": "e05-asset-pipeline-v1",
+      "title": "Pipeline de recursos PCK/PKX, formatos e proveniência",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 6,
+      "slug": "e06-render-webgl2-v1",
+      "title": "Renderer WebGL2 da engine Angelica",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 7,
+      "slug": "e07-world-terrain-v1",
+      "title": "Terreno, cidades, vegetação, água e visibilidade do mundo",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 8,
+      "slug": "e08-avatar-animation-v1",
+      "title": "Avatares, esqueletos, animações e customização",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 9,
+      "slug": "e09-interface-input-audio-v1",
+      "title": "UI do jogo, HUD, entrada, câmera e áudio",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 10,
+      "slug": "e10-network-transport-v1",
+      "title": "GNET, protocolo de mundo e gateway WSS seguro",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 11,
+      "slug": "e11-login-session-v1",
+      "title": "Identidade, login, personagem e sessão",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 12,
+      "slug": "e12-entities-gameplay-v1",
+      "title": "Movimento, combate, skills, NPCs, quests e interação",
+      "workorders": 5,
+      "priority": "P1"
+    },
+    {
+      "order": 13,
+      "slug": "e13-multiplayer-social-v1",
+      "title": "Sincronização MMO, presença, chat, grupo e guilda",
+      "workorders": 5,
+      "priority": "P2"
+    },
+    {
+      "order": 14,
+      "slug": "e14-items-economy-v1",
+      "title": "Inventário, equipamentos, crafting, loja e economia",
+      "workorders": 5,
+      "priority": "P2"
+    },
+    {
+      "order": 15,
+      "slug": "e15-assets-streaming-perf-v1",
+      "title": "Streaming, CDN, cache OPFS e desempenho do navegador",
+      "workorders": 5,
+      "priority": "P2"
+    },
+    {
+      "order": 16,
+      "slug": "e16-qa-observability-v1",
+      "title": "Estratégia de testes, tracing, replay e QA automatizado",
+      "workorders": 5,
+      "priority": "P2"
+    },
+    {
+      "order": 17,
+      "slug": "e17-security-deployment-v1",
+      "title": "Segurança, infraestrutura, CI/CD e entrega",
+      "workorders": 5,
+      "priority": "P2"
+    },
+    {
+      "order": 18,
+      "slug": "e18-browser-ux-accessibility-v1",
+      "title": "Compatibilidade de navegadores, acessibilidade e dispositivos",
+      "workorders": 5,
+      "priority": "P2"
+    },
+    {
+      "order": 19,
+      "slug": "e19-liveops-evolution-v1",
+      "title": "Operações contínuas, versionamento, conteúdo e manutenção",
+      "workorders": 5,
+      "priority": "P2"
+    }
+  ]
+}

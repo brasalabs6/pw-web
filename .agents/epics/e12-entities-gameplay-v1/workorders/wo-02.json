@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e12-entities-gameplay-v1",
+  "id": "wo-02",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar comando de movimento, colisão e predição/correção em simulação",
+  "objective": "Integrar gameplay com semântica cliente original: navegação, seleção de alvo, habilidades, recursos, buffs, ataques, quests, NPC, loot, voo e montarias. Nesta workorder: Implementar comando de movimento, colisão e predição/correção em simulação. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "desync movimento/skill",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e12-entities-gameplay-v1/wo-01"
+  ],
+  "inputs": [
+    "engine/game",
+    "engine/animation",
+    "web/ui",
+    "tests/gameplay",
+    "docs/ARCHITECTURE.md",
+    "Contrato ActionCommand"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar comando de movimento, colisão e predição/correção em simulação",
+    "Teste positivo e negativo para ActionCommand com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar comando de movimento, colisão e predição/correção em simulação dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por ActionCommand",
+    "Executar teste unitário determinístico verificando actioncommand com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para actioncommand e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando ActionCommand com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para ActionCommand",
+    "Integração isolada: validar implementar comando de movimento, colisão e predição/correção em simulação com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e13-multiplayer-social-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Definir snapshots/deltas/clock e idempotência de evento por entidade",
+  "objective": "Escalar sincronização de entidades, visibilidade AOI, chat, equipe, guildas, trading social e estado persistente com limites adequados a navegador. Nesta workorder: Definir snapshots/deltas/clock e idempotência de evento por entidade. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "pacotes fora de ordem",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e12-entities-gameplay-v1/wo-05"
+  ],
+  "inputs": [
+    "engine/netstate",
+    "gateway/",
+    "web/social",
+    "tests/multiplayer",
+    "docs/ARCHITECTURE.md",
+    "Contrato EntitySnapshot"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para definir snapshots/deltas/clock e idempotência de evento por entidade",
+    "Teste positivo e negativo para EntitySnapshot com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar definir snapshots/deltas/clock e idempotência de evento por entidade dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por EntitySnapshot",
+    "Executar teste unitário determinístico verificando entitysnapshot com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para entitysnapshot e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, gateway/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando EntitySnapshot com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para EntitySnapshot",
+    "Integração isolada: validar definir snapshots/deltas/clock e idempotência de evento por entidade com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "gateway/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

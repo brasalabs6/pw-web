@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e15-assets-streaming-perf-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Definir budgets alvo por browser/dispositivo e manifesto de assets permitidos",
+  "objective": "Baixar assets necessários sob demanda com manifesto e Range requests, cache local, budget de RAM/VRAM, política de versões e frames estáveis. Nesta workorder: Definir budgets alvo por browser/dispositivo e manifesto de assets permitidos. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "pacote monolítico multigigabyte",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e14-items-economy-v1/wo-05"
+  ],
+  "inputs": [
+    "web/storage",
+    "web/streaming",
+    "tools/assets",
+    "engine/resources",
+    "docs/ARCHITECTURE.md",
+    "Contrato ManifestVersion"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para definir budgets alvo por browser/dispositivo e manifesto de assets permitidos",
+    "Teste positivo e negativo para ManifestVersion com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar definir budgets alvo por browser/dispositivo e manifesto de assets permitidos dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por ManifestVersion",
+    "Executar teste unitário determinístico verificando manifestversion com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para manifestversion e anexar log",
+    "Submeter PR isolado, alterações apenas em web/, tools/, engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando ManifestVersion com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para ManifestVersion",
+    "Integração isolada: validar definir budgets alvo por browser/dispositivo e manifesto de assets permitidos com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "web/",
+    "tools/",
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

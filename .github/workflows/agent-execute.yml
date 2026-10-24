@@ -1,0 +1,235 @@
+name: Agent Execute
+on:
+  workflow_dispatch:
+    inputs:
+      epic:
+        description: "Versioned epic slug (e.g. e04-wasm-core-v1)"
+        required: true
+        type: string
+      workorder:
+        description: "Workorder ID from epic/workorders (e.g. wo-01)"
+        required: true
+        type: string
+      dry_run:
+        description: "Validate workflow without API key, code changes or PR"
+        required: true
+        default: false
+        type: boolean
+      attempt:
+        description: "Bounded attempt 1..3 (1 = new PR, 2/3 = fix failed CI)"
+        required: true
+        default: "1"
+        type: string
+
+concurrency:
+  group: pw-agent-${{ inputs.epic }}-${{ inputs.workorder }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      branch: ${{ steps.validate.outputs.branch }}
+      checkout_ref: ${{ steps.validate.outputs.checkout_ref }}
+      attempt: ${{ steps.validate.outputs.attempt }}
+      epic: ${{ steps.validate.outputs.epic }}
+      workorder: ${{ steps.validate.outputs.workorder }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+          submodules: false
+      - name: Enforce declared dependencies before first dispatch
+        if: inputs.attempt == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EPIC: ${{ inputs.epic }}
+          WO: ${{ inputs.workorder }}
+        run: |
+          gh pr list --state merged --limit 500 --json title > /tmp/merged-prs.json
+          python3 .agents/automation/backlog_pick.py --merged /tmp/merged-prs.json --require "$EPIC/$WO"
+      - id: validate
+        run: |
+          python3 .agents/automation/validate_dispatch.py \
+            --epic "$EPIC" --workorder "$WORKORDER" --attempt "$ATTEMPT" --output "$GITHUB_OUTPUT"
+        env:
+          EPIC: ${{ inputs.epic }}
+          WORKORDER: ${{ inputs.workorder }}
+          ATTEMPT: ${{ inputs.attempt }}
+      - name: Confirm branch exists before any repair
+        if: steps.validate.outputs.attempt != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.validate.outputs.branch }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" > /dev/null
+
+  coder:
+    if: inputs.dry_run != true
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+          submodules: false
+          persist-credentials: false
+      - name: Prepare workspace and prompt (no model secret yet)
+        env:
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+          ATTEMPT: ${{ needs.prepare.outputs.attempt }}
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifacts/agent
+          if [ "$ATTEMPT" != '1' ]; then
+            gh run list --workflow ci.yml --branch "$BRANCH" --event workflow_dispatch \
+              --limit 8 --json databaseId,conclusion \
+              | python3 -c 'import json,sys; v=[str(r["databaseId"]) for r in json.load(sys.stdin) if r.get("conclusion")=="failure"]; print(v[0] if v else "")' > artifacts/agent/previous-run-id
+            RUN_ID="$(cat artifacts/agent/previous-run-id)"
+            if [ -n "$RUN_ID" ]; then
+              gh run view "$RUN_ID" --log-failed > artifacts/agent/prior-ci.log || true
+            fi
+          fi
+          python3 .agents/automation/build_prompt.py \
+            --epic "$EPIC" --workorder "$WO" --attempt "$ATTEMPT" \
+            --ci-log artifacts/agent/prior-ci.log --output artifacts/agent/prompt.md
+          chmod -R a+rwX "$GITHUB_WORKSPACE"
+      - name: Fail clearly if OpenAI secret is not configured
+        env:
+          KEY_CONFIGURED: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: |
+          if [ "$KEY_CONFIGURED" != 'true' ]; then
+            echo "::error::Missing OPENAI_API_KEY repository Actions secret. See docs/AUTONOMY.md."
+            exit 1
+          fi
+      - name: Run sandboxed Codex (API key never used in following publish job)
+        id: codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: artifacts/agent/prompt.md
+          safety-strategy: drop-sudo
+          permission-profile: ":workspace"
+          output-file: artifacts/agent/final.txt
+      - name: Serialize patch and diagnostics
+        if: success()
+        run: |
+          git add -N -A
+          git -c diff.renames=false diff --binary --no-ext-diff HEAD > artifacts/agent/change.patch
+          test -s artifacts/agent/change.patch
+          echo "Patch bytes: $(wc -c < artifacts/agent/change.patch)"
+      - name: Upload untrusted patch for independently isolated review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-agent-patch-${{ github.run_id }}
+          path: artifacts/agent/
+          if-no-files-found: warn
+          retention-days: 14
+
+  publish:
+    if: inputs.dry_run != true
+    needs: [prepare, coder]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: false
+          persist-credentials: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: pw-agent-patch-${{ github.run_id }}
+          path: /tmp/pw-agent
+      - name: Validate untrusted patch using MAIN branch policy
+        env:
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+        run: |
+          python3 .agents/automation/validate_patch.py \
+            --epic "$EPIC" --workorder "$WO" --patch /tmp/pw-agent/change.patch
+      - name: Commit isolated patch and request CI on its branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+          ATTEMPT: ${{ needs.prepare.outputs.attempt }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$ATTEMPT" = "1" ]; then
+            if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+              echo "Branch exists; refusing accidental overwrite" >&2
+              exit 1
+            fi
+            git switch -c "$BRANCH"
+          else
+            git fetch origin "$BRANCH"
+            git switch -c "$BRANCH" FETCH_HEAD
+          fi
+          git apply --check /tmp/pw-agent/change.patch
+          git apply --binary /tmp/pw-agent/change.patch
+          git add -A
+          git diff --cached --quiet && { echo "No changes to publish" >&2; exit 1; }
+          git commit -m "agent: $EPIC/$WO [agent-attempt:$ATTEMPT]"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          if [ "$ATTEMPT" = "1" ]; then
+            gh pr create --base main --head "$BRANCH" \
+              --title "agent: $EPIC / $WO" \
+              --body "Automated bounded workorder. Evidence: Agent Execute #$GITHUB_RUN_ID. Tests are dispatched explicitly; review required. No auto-merge. See .agents/epics/$EPIC/workorders/$WO.json" \
+              --draft
+          fi
+          echo "Patch published: $BRANCH" >> "$GITHUB_STEP_SUMMARY"
+          echo "Dispatching CI explicitly; GITHUB_TOKEN-created PRs do not trigger usual PR events." >> "$GITHUB_STEP_SUMMARY"
+          gh workflow run ci.yml --ref "$BRANCH"
+
+  dry-run:
+    if: inputs.dry_run == true
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: false
+          persist-credentials: false
+      - name: Prove workorder selection, constraints, generated prompt and tests
+        env:
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/dry-run
+          python3 .agents/automation/epic_check.py | tee artifacts/dry-run/catalog.json
+          python3 .agents/automation/build_prompt.py \
+            --epic "$EPIC" --workorder "$WO" --attempt 1 \
+            --output artifacts/dry-run/prompt.md
+          bash scripts/verify.sh 2>&1 | tee artifacts/dry-run/verify.log
+          echo "Dry-run: policy and local tests passed. No model call, patch or PR was created." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pw-agent-dry-run-${{ github.run_id }}
+          path: artifacts/dry-run/
+          retention-days: 14

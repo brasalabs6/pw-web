@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e04-wasm-runtime-v1",
+  "id": "wo-02",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar binding ABI simples com typed buffers e error codes",
+  "objective": "Compilar componentes C++ portáveis para wasm32, configurar startup, heaps, memória, tratamento de erros, frame loop e interop JavaScript com reprodução determinística. Nesta workorder: Implementar binding ABI simples com typed buffers e error codes. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "OOM e pointers inválidos",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e04-wasm-runtime-v1/wo-01"
+  ],
+  "inputs": [
+    "engine/core",
+    "web/wasm",
+    "scripts/build-wasm.sh",
+    "tests/",
+    "docs/ARCHITECTURE.md",
+    "Contrato API exportada C estável"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar binding abi simples com typed buffers e error codes",
+    "Teste positivo e negativo para API exportada C estável com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar binding abi simples com typed buffers e error codes dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por API exportada C estável",
+    "Executar teste unitário determinístico verificando api exportada c estável com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para api exportada c estável e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando API exportada C estável com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para API exportada C estável",
+    "Integração isolada: validar implementar binding abi simples com typed buffers e error codes com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

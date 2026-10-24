@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e19-liveops-evolution-v1",
+  "id": "wo-05",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Auditar incidentes e autorizar transição para beta/produção com checklist",
+  "objective": "Preparar operação após beta: versionamento de clientes/realms/protocolos, migrações, observabilidade, suporte, antiabuso, incidentes, governance e evolução sem regressões. Nesta workorder: Auditar incidentes e autorizar transição para beta/produção com checklist. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "incompatibilidade patch/version",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e19-liveops-evolution-v1/wo-04"
+  ],
+  "inputs": [
+    "ops/",
+    "infra/",
+    "gateway/",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato FeatureFlag"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para auditar incidentes e autorizar transição para beta/produção com checklist",
+    "Teste positivo e negativo para FeatureFlag com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar auditar incidentes e autorizar transição para beta/produção com checklist dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por FeatureFlag",
+    "Executar teste unitário determinístico verificando featureflag com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para featureflag e anexar log",
+    "Submeter PR isolado, alterações apenas em ops/, infra/, gateway/, docs/, tests/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando FeatureFlag com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para FeatureFlag",
+    "Integração isolada: validar auditar incidentes e autorizar transição para beta/produção com checklist com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "ops/",
+    "infra/",
+    "gateway/",
+    "docs/",
+    "tests/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

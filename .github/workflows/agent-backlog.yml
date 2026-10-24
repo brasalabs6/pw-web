@@ -1,0 +1,64 @@
+name: Agent Backlog Scheduler
+on:
+  schedule:
+    - cron: "13 7,19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pw-agent-backlog
+  cancel-in-progress: false
+
+jobs:
+  dispatch-next:
+    if: vars.AGENT_BACKLOG_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: false
+          persist-credentials: false
+      - name: Check no workorder PR or execution is already active
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh pr list --state open --limit 500 --json headRefName > /tmp/open-prs.json
+          gh run list --workflow agent-execute.yml --limit 30 --json status,conclusion > /tmp/agent-runs.json
+          python3 - <<'PY'
+          import json, os
+          prs = json.load(open('/tmp/open-prs.json'))
+          runs = json.load(open('/tmp/agent-runs.json'))
+          active = any(p['headRefName'].startswith('agent/') for p in prs)
+          active = active or any(r['status'] in ('queued','in_progress','waiting','requested','pending') for r in runs)
+          # On a failed execution without a PR, stop schedule instead of retrying endlessly.
+          active = active or bool(runs and runs[0].get('conclusion') in ('failure','cancelled','timed_out'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f: f.write(f"blocked={'true' if active else 'false'}\n")
+          print('Scheduler blocked:', active)
+          PY
+      - name: Select next workorder using versioned dependency graph
+        if: steps.gate.outputs.blocked == 'false'
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr list --state merged --limit 500 --json title > /tmp/merged-prs.json
+          python3 .agents/automation/backlog_pick.py --merged /tmp/merged-prs.json --github-output "$GITHUB_OUTPUT"
+      - name: Dispatch precisely one bounded workorder
+        if: steps.pick.outputs.selected == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EPIC: ${{ steps.pick.outputs.epic }}
+          WO: ${{ steps.pick.outputs.workorder }}
+        run: |
+          gh workflow run agent-execute.yml --ref main -f epic="$EPIC" -f workorder="$WO" -f attempt=1
+          echo "Started one workorder: $EPIC/$WO" >> "$GITHUB_STEP_SUMMARY"

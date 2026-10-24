@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "epic": "e00-rights-governance-v1",
+  "id": "wo-02",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Validar direitos de reprodução/modificação/distribuição e termos comerciais por titular",
+  "objective": "Obter base de autorização verificável por componente antes de usar ou distribuir código, conteúdo, trilha sonora, formatos ou marca relacionados a Perfect World. Nesta workorder: Validar direitos de reprodução/modificação/distribuição e termos comerciais por titular. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P0",
+  "risk": "redistribuição pública de assets",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e00-rights-governance-v1/wo-01"
+  ],
+  "inputs": [
+    "docs/LEGAL.md",
+    "docs/RESEARCH.md",
+    "matriz de proveniência",
+    "registro de deliberações ADR",
+    "docs/ARCHITECTURE.md",
+    "Contrato gate de publicação por artefato"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para validar direitos de reprodução/modificação/distribuição e termos comerciais por titular",
+    "Teste positivo e negativo para gate de publicação por artefato com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar validar direitos de reprodução/modificação/distribuição e termos comerciais por titular dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por gate de publicação por artefato",
+    "Executar teste unitário determinístico verificando gate de publicação por artefato com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para gate de publicação por artefato e anexar log",
+    "Submeter PR isolado, alterações apenas em docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando gate de publicação por artefato com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para gate de publicação por artefato",
+    "Integração isolada: validar validar direitos de reprodução/modificação/distribuição e termos comerciais por titular com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

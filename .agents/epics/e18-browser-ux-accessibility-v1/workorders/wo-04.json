@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "epic": "e18-browser-ux-accessibility-v1",
+  "id": "wo-04",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Criar testes de perda de contexto, background tab, storage eviction e touch",
+  "objective": "Assegurar execução em Chromium/Firefox/Safari elegíveis, fallback e diagnóstico WebGL, layouts escaláveis, teclado/gamepad/toque, i18n e UX para sessões longas. Nesta workorder: Criar testes de perda de contexto, background tab, storage eviction e touch. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "WebGL2 não suportado ou driver instável",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e18-browser-ux-accessibility-v1/wo-03"
+  ],
+  "inputs": [
+    "web/",
+    "tests/browser",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato InputBindings"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para criar testes de perda de contexto, background tab, storage eviction e touch",
+    "Teste positivo e negativo para InputBindings com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar criar testes de perda de contexto, background tab, storage eviction e touch dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por InputBindings",
+    "Executar teste unitário determinístico verificando inputbindings com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para inputbindings e anexar log",
+    "Submeter PR isolado, alterações apenas em web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando InputBindings com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para InputBindings",
+    "Integração isolada: validar criar testes de perda de contexto, background tab, storage eviction e touch com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

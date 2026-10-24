@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e10-network-transport-v1",
+  "id": "wo-05",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Validar captures autorizadas, reconexão, reorder, timeout e semântica GNET",
+  "objective": "Implementar transporte binário browser↔gateway↔servidor, parsing GNET/gamedata por versão, negociação de sessão, auth, backpressure e cobertura byte-a-byte. Nesta workorder: Validar captures autorizadas, reconexão, reorder, timeout e semântica GNET. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "compatibilidade 1.5.3↔realm v155",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e10-network-transport-v1/wo-04"
+  ],
+  "inputs": [
+    "gateway/",
+    "engine/network",
+    "tests/protocol",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato PacketTrace"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para validar captures autorizadas, reconexão, reorder, timeout e semântica gnet",
+    "Teste positivo e negativo para PacketTrace com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar validar captures autorizadas, reconexão, reorder, timeout e semântica gnet dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por PacketTrace",
+    "Executar teste unitário determinístico verificando packettrace com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para packettrace e anexar log",
+    "Submeter PR isolado, alterações apenas em gateway/, engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando PacketTrace com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para PacketTrace",
+    "Integração isolada: validar validar captures autorizadas, reconexão, reorder, timeout e semântica gnet com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "gateway/",
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e14-items-economy-v1",
+  "id": "wo-02",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar modelos de estado/HUD com fixtures e invariantes de slots",
+  "objective": "Reproduzir telas e protocolos de inventário, stack, equipamentos, comércio, leilão, craft, banco e transações com validação 100% server-side. Nesta workorder: Implementar modelos de estado/HUD com fixtures e invariantes de slots. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P2",
+  "risk": "replay/ordem de trade",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e14-items-economy-v1/wo-01"
+  ],
+  "inputs": [
+    "web/inventory",
+    "engine/items",
+    "gateway/",
+    "tests/economy",
+    "docs/ARCHITECTURE.md",
+    "Contrato InventorySlot"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar modelos de estado/hud com fixtures e invariantes de slots",
+    "Teste positivo e negativo para InventorySlot com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar modelos de estado/hud com fixtures e invariantes de slots dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por InventorySlot",
+    "Executar teste unitário determinístico verificando inventoryslot com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para inventoryslot e anexar log",
+    "Submeter PR isolado, alterações apenas em web/, engine/, gateway/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando InventorySlot com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para InventorySlot",
+    "Integração isolada: validar implementar modelos de estado/hud com fixtures e invariantes de slots com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "web/",
+    "engine/",
+    "gateway/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

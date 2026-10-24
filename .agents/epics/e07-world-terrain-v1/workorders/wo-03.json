@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e07-world-terrain-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar quadtree/frustum culling e carregamento de objetos estáticos",
+  "objective": "Reconstruir a apresentação dos mapas de Perfect World com streaming de setores, terreno, lightmap, vegetação, água, objetos estáticos, neblina e culling. Nesta workorder: Implementar quadtree/frustum culling e carregamento de objetos estáticos. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "carregamento de chunks gera stutter",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e07-world-terrain-v1/wo-02"
+  ],
+  "inputs": [
+    "engine/world",
+    "engine/terrain",
+    "engine/render",
+    "web/storage",
+    "docs/ARCHITECTURE.md",
+    "Contrato VisibilitySet"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar quadtree/frustum culling e carregamento de objetos estáticos",
+    "Teste positivo e negativo para VisibilitySet com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar quadtree/frustum culling e carregamento de objetos estáticos dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por VisibilitySet",
+    "Executar teste unitário determinístico verificando visibilityset com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para visibilityset e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando VisibilitySet com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para VisibilitySet",
+    "Integração isolada: validar implementar quadtree/frustum culling e carregamento de objetos estáticos com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

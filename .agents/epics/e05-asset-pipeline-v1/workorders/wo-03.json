@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e05-asset-pipeline-v1",
+  "id": "wo-03",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada",
+  "objective": "Especificar parsers e transformações seguras de recursos permitidos, incluindo PCK/PKX, nomes GBK, offsets 64-bit, materiais, modelos, texturas, checksum e manifestos. Nesta workorder: Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "incompatibilidade de versões e redistribuição",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e05-asset-pipeline-v1/wo-02"
+  ],
+  "inputs": [
+    "engine/formats",
+    "tools/assets",
+    "web/storage",
+    "tests/fixtures",
+    "docs/ARCHITECTURE.md",
+    "Contrato IAssetDecoder"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada",
+    "Teste positivo e negativo para IAssetDecoder com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por IAssetDecoder",
+    "Executar teste unitário determinístico verificando iassetdecoder com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para iassetdecoder e anexar log",
+    "Submeter PR isolado, alterações apenas em engine/, tools/, web/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando IAssetDecoder com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para IAssetDecoder",
+    "Integração isolada: validar implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "engine/",
+    "tools/",
+    "web/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

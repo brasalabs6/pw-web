@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e10-network-transport-v1",
+  "id": "wo-01",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Registrar opcode/length/endian por versão e declarar fonte de evidência",
+  "objective": "Implementar transporte binário browser↔gateway↔servidor, parsing GNET/gamedata por versão, negociação de sessão, auth, backpressure e cobertura byte-a-byte. Nesta workorder: Registrar opcode/length/endian por versão e declarar fonte de evidência. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "endianness e framing",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e09-interface-input-audio-v1/wo-05"
+  ],
+  "inputs": [
+    "gateway/",
+    "engine/network",
+    "tests/protocol",
+    "docs/",
+    "docs/ARCHITECTURE.md",
+    "Contrato PacketReader/Writer"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para registrar opcode/length/endian por versão e declarar fonte de evidência",
+    "Teste positivo e negativo para PacketReader/Writer com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar registrar opcode/length/endian por versão e declarar fonte de evidência dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por PacketReader/Writer",
+    "Executar teste unitário determinístico verificando packetreader/writer com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para packetreader/writer e anexar log",
+    "Submeter PR isolado, alterações apenas em gateway/, engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando PacketReader/Writer com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para PacketReader/Writer",
+    "Integração isolada: validar registrar opcode/length/endian por versão e declarar fonte de evidência com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "gateway/",
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": false,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e09-interface-input-audio-v1",
+  "id": "wo-05",
+  "version": "1.0.0",
+  "status": "planned",
+  "title": "Validar interação e acessibilidade, toque, fullscreen e fluxos reais do cliente",
+  "objective": "Criar apresentação de HUD, janelas, ações por mouse/teclado/toque, câmera, atalhos, chat e mixagem de som sem bloquear o loop da engine. Nesta workorder: Validar interação e acessibilidade, toque, fullscreen e fluxos reais do cliente. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "priority": "P1",
+  "risk": "latência de UI",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e09-interface-input-audio-v1/wo-04"
+  ],
+  "inputs": [
+    "web/ui",
+    "web/input",
+    "web/audio",
+    "engine/ui",
+    "docs/ARCHITECTURE.md",
+    "Contrato UIMessageBus"
+  ],
+  "deliverables": [
+    "Contrato e implementação rastreáveis para validar interação e acessibilidade, toque, fullscreen e fluxos reais do cliente",
+    "Teste positivo e negativo para UIMessageBus com fixture sintética ou autorizada",
+    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
+    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+  ],
+  "acceptance": [
+    "Demonstrar validar interação e acessibilidade, toque, fullscreen e fluxos reais do cliente dentro dos limites licenciados",
+    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por UIMessageBus",
+    "Executar teste unitário determinístico verificando uimessagebus com entrada válida e anexar log",
+    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para uimessagebus e anexar log",
+    "Submeter PR isolado, alterações apenas em web/, engine/, tests/, docs/, nenhuma alteração em workflows ou segredos"
+  ],
+  "tests": [
+    "Teste unitário determinístico verificando UIMessageBus com entrada válida",
+    "Teste de rejeição de dados inválidos, limites e fallback seguro para UIMessageBus",
+    "Integração isolada: validar validar interação e acessibilidade, toque, fullscreen e fluxos reais do cliente com mocks locais e regressão",
+    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+  ],
+  "write_scopes": [
+    "web/",
+    "engine/",
+    "tests/",
+    "docs/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/automation/",
+    "references/",
+    "assets originais",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+}

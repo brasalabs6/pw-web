@@ -1,0 +1,49 @@
+name: Agent Controller Smoke
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controller-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Validate epic DAG, workorder selection and action dispatcher without any secrets
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/controller-smoke
+          python3 .agents/automation/epic_check.py | tee artifacts/controller-smoke/catalog.json
+          python3 .agents/automation/validate_dispatch.py \
+            --epic e01-agent-orchestration-v1 --workorder wo-01 --attempt 1 \
+            --output artifacts/controller-smoke/dispatch.txt
+          python3 .agents/automation/build_prompt.py \
+            --epic e01-agent-orchestration-v1 --workorder wo-01 --attempt 1 \
+            --output artifacts/controller-smoke/prompt.md
+          printf '[]\n' > artifacts/controller-smoke/merged-prs.json
+          python3 .agents/automation/backlog_pick.py \
+            --merged artifacts/controller-smoke/merged-prs.json \
+            --require e01-agent-orchestration-v1/wo-01 \
+            | tee artifacts/controller-smoke/backlog.txt
+          python3 -m unittest discover -s tests -p 'test_*.py' -v \
+            2>&1 | tee artifacts/controller-smoke/tests.log
+          {
+            echo '### Agent Controller Smoke'
+            echo '- Validated workorder schema, dependency gate, dispatch contract, agent prompt and tests.'
+            echo '- No Codex call, token exposure, code patch, PR or game content used.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload controller smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-agent-controller-evidence
+          path: artifacts/controller-smoke/
+          retention-days: 30
