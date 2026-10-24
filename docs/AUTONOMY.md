@@ -3,15 +3,15 @@
 ## O que REALMENTE funciona
 - `Agent Execute` é iniciado manualmente por `workflow_dispatch` com `epic`, `workorder` e `attempt=1`.
 - O contrato JSON versionado fornece descrição, escopo, testes e aceite; IDs arbitrários são recusados.
-- Job **coder** (read-only para GitHub) usa `@xai-official/grok@1.0.70` em modo headless com `XAI_API_KEY`, produz patch e anota diagnóstico.
-- Job **publish** (write de GitHub, sem `XAI_API_KEY`) verifica patch contra allowlist de caminhos e cria draft PR.
+- Job **coder** (read-only para GitHub) usa `@xai-official/grok@1.0.70` em modo headless com `CF_PROXY_API_KEY`, produz patch e anota diagnóstico.
+- Job **publish** (write de GitHub, sem `CF_PROXY_API_KEY`) verifica patch contra allowlist de caminhos e cria draft PR.
 - Publica explicitamente `workflow_dispatch` do `Bootstrap CI` na branch do agente, pois PR criado com `GITHUB_TOKEN` pode não acionar eventos normais.
 - CI salva `artifacts/ci/verify.log` e `report.json` (artefatos + resumo).
 - `Agent CI Feedback` acompanha `workflow_run` para branches `agent/...`, comenta resultado e **só** se `AGENT_AUTONOMY_ENABLED=true`, quando CI falha, agenda reparação 2 ou 3. Após 3 tentativas para; quando passa, aguarda revisão humana.
 - Atualizações na branch ficam disponíveis para inspeção via PR. **Este chat não fica conectado em execução contínua:** posso ler resultados do GitHub durante uma sessão ou quando você voltar, enquanto a automação segue no GitHub por conta própria.
 
 ## Requisitos de configuração (ação humana)
-1. Em GitHub repo Settings → Secrets and variables → Actions → Secrets, cadastrar `XAI_API_KEY` (chave API da sua organização, com limite de orçamento).
+1. Em GitHub repo Settings → Secrets and variables → Actions → Secrets, cadastrar `CF_PROXY_API_KEY` (chave API da sua organização, com limite de orçamento).
 2. Em Actions → General → Workflow permissions, permitir operações necessárias a `contents:write`, `pull-requests:write`, `actions:write` e PRs criados por Actions, conforme política do repositório.
 3. Rodar manualmente `Bootstrap CI` e conferir artefatos.
 4. Rodar **primeiro** um workorder `automation: true` baixo risco via Actions → Agent Execute → Run workflow.
@@ -38,7 +38,7 @@ workorder autorizado -> dispatch attempt1 -> Grok Build (read-only token, patch)
 - O modelo pode propor mudanças maliciosas/incorretas: patch é untrusted input. Validação em job separado com caminho, tamanho, tipo, symlink e quantidade limitados; CI independente.
 - Workorders e validator vêm da `main`, e mudanças neles não são permitidas automaticamente.
 - Não interpolar corpo de issue ou comentários em shell/Grok Build prompt. Inputs são IDs validados por regex e resolvidos localmente.
-- GitHub token de write só no publish job; chave xAI só no coder job, injetada somente na execução do Grok Build; usar sandbox estrito (`--sandbox strict`), com limite de 35 turnos e sem acesso do modelo ao token de escrita do GitHub.
+- GitHub token de write só no publish job; chave proxy Cloudflare só em steps de inferência dos 3 agentes, injetada somente na execução do Grok Build; usar sandbox estrito (`--sandbox strict`), com limite de 35 turnos e sem acesso do modelo ao token de escrita do GitHub.
 - Não considerar testes verdes garantia de segurança. PR exige code review.
 - GitHub Actions tem cobrança/cotas; máximo 3 tentativas, timeout por job, concurrency por workorder e ausência de auto-merge.
 - Scripts de build da branch PR rodam CI **sem segredo** e podem ser maliciosos; colaboradores externos não devem ganhar write ao repositório.
@@ -66,12 +66,20 @@ Use `Agent Execute` com `dry_run=true`, `epic=e01-agent-orchestration-v1`, `work
 
 ## Executor Grok Build (substituição do executor anterior)
 
-- Instalamos `@xai-official/grok@1.0.70` em um diretório temporário, **sem** expor `XAI_API_KEY` ao npm/postinstall.
+- Instalamos `@xai-official/grok@1.0.70` em um diretório temporário, **sem** expor `CF_PROXY_API_KEY` ao npm/postinstall.
 - Executamos `scripts/run-grok-workorder.sh` usando `grok --no-auto-update --sandbox strict --always-approve --no-memory --disable-web-search --max-turns 35 -p '<prompt>' --output-format json`.
 - O valor de `-p` é o conteúdo do prompt gerado localmente a partir de `.agents/epics/.../workorders/*.json`; nenhuma issue externa instrui o agente.
-- O shell do job *coder* não recebe `contents: write`, `pull-requests: write` nem um token GH com acesso de escrita. A chave `XAI_API_KEY` existe apenas no step Grok e fica fora dos logs de shell. A execução retorna JSON em `artifacts/agent/final.json` e um diff, a serem revisados isoladamente pelo job privilegiado.
+- O shell do job *coder* não recebe `contents: write`, `pull-requests: write` nem um token GH com acesso de escrita. A chave `CF_PROXY_API_KEY` existe apenas no step Grok e fica fora dos logs de shell. A execução retorna JSON em `artifacts/agent/final.json` e um diff, a serem revisados isoladamente pelo job privilegiado.
 - Sandbox `strict` limita filesystem e rede de processos-filhos no Linux, mas **não impede** o próprio agente de consultar a API do modelo. Não tratar sandbox como prova absoluta de isolamento: análise de prompts, revisão de dependências e gates do PR continuam obrigatórios.
 - `--always-approve` é usado apenas em ambiente de execução limitado e headless; nunca significa aprovação de PR, licença ou release.
 - Documentação oficial: https://docs.x.ai/build/overview e https://docs.x.ai/build/cli/headless-scripting.
 - Seu plano/assinatura Grok Build local **não garante** que um runner GitHub Actions tenha acesso; a execução hospedada precisa da API key gerada em https://console.x.ai/ e pode ter cobrança independente. Se preferir um runner próprio autenticado, desenhar uma integração separada com armazenamento seguro de credenciais, sem copiar tokens de login para GitHub.
 - O workflow de prova `Agent Controller Smoke` deve validar CLI instalada e teste com *mock* que não envia prompt à xAI. Somente o piloto real com segredo poderá atestar execução do modelo.
+
+## 2 reviewers e looping por findings
+
+O gatilho para code review é `Agent Dual Review`, conforme [docs/GROK_BUILD.md](GROK_BUILD.md). `Agent CI Feedback` apenas relata a CI, **não** reexecuta o coder em paralelo; a dupla revisão e o estado da CI são reunidos no controlador do PR, que decide o reparo.
+
+- `AGENT_REVIEW_LOOP_ENABLED=true`: ativa solicitações de reparo automático; desligado por padrão.
+- `AGENT_MAX_REVIEW_ROUNDS=8`: limite operacional padrão, máximo técnico 30, sem merge automático.
+- A chave é o secret `CF_PROXY_API_KEY`; não é `XAI_API_KEY` neste proxy.
