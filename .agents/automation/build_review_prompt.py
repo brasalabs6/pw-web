@@ -18,8 +18,8 @@ source=Path(a.source).resolve()
 wo=read(a.epic,a.workorder)
 cmd=["git","-C",str(source),"diff","--no-ext-diff","--no-renames","--binary","origin/main...HEAD"]
 patch=subprocess.run(cmd,check=True,capture_output=True).stdout
-if len(patch)>95000 or not patch:
-    raise SystemExit("Diff empty or too big for independent model review (95 KB limit)")
+if len(patch)>240000 or not patch:
+    raise SystemExit("Diff empty or too big for independent model review (240 KB limit)")
 names=subprocess.check_output(["git","-C",str(source),"diff","--name-only","--no-renames","origin/main...HEAD"],text=True).splitlines()
 if not names or len(names)>24:
     raise SystemExit("Unsupported changed file count")

@@ -24,7 +24,7 @@ mkdir -p "$(dirname "$output")"
 grok --no-auto-update --sandbox "$sandbox" --always-approve \
   --no-memory --disable-web-search --max-turns "$turns" \
   --agent-profile "$profile" -m "$model" \
-  -p "$(cat "$prompt")" --output-format json > "$output"
+  --prompt-file "$prompt" --output-format json > "$output"
 python3 - "$output" <<'PY'
 import json, pathlib, sys
 p = pathlib.Path(sys.argv[1])
