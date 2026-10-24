@@ -31,6 +31,6 @@ class GrokModelCatalogTests(unittest.TestCase):
             self.assertTrue(source.startswith("---\n"))
             self.assertIn("name: pw-",source)
             self.assertIn("promptMode: extend",source)
-            self.assertIn("AGENTS.md",source)
+            self.assertIn("agentsMd: true",source)
 
 if __name__=="__main__": unittest.main()
