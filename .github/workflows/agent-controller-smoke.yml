@@ -47,3 +47,21 @@ jobs:
           name: pw-agent-controller-evidence
           path: artifacts/controller-smoke/
           retention-days: 30
+
+  grok-build-cli-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned official Grok Build CLI (no credentials)
+        run: |
+          npm install --prefix "$RUNNER_TEMP/grok-build" --no-audit --no-fund @xai-official/grok@1.0.70
+          echo "$RUNNER_TEMP/grok-build/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Check Grok Build CLI install (no model call)
+        run: |
+          command -v grok
+          grok --version
+          echo 'Official Grok Build CLI installed without API credentials. No inference requested.' >> "$GITHUB_STEP_SUMMARY"
