@@ -79,3 +79,5 @@ A alteração de draft para ready via `GITHUB_TOKEN` pode não desencadear event
 - https://docs.x.ai/build/overview
 - https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/11-custom-models.md
 - https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-agent/README.md
+
+**Prompts longos:** o runner usa `grok --prompt-file` em vez de `-p "$(cat ...)"`, evitando o limite de tamanho dos argumentos do sistema operacional e a exposição do texto completo no comando do processo. O diff de revisão tem limite de 240 KB; PR maior exige segmentação/revisão humana.

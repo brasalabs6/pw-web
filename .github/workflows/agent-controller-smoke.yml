@@ -65,10 +65,10 @@ jobs:
           command -v grok
           grok --version
           grok --help > /tmp/grok-help.txt
-          for flag in --sandbox --always-approve --max-turns --output-format; do
+          for flag in --sandbox --always-approve --max-turns --output-format --prompt-file --agent-profile; do
             grep -F -- "$flag" /tmp/grok-help.txt >/dev/null || {
               echo "Missing required Grok Build CLI argument: $flag" >&2
               exit 1
             }
           done
-          echo 'Official Grok Build CLI installed, required flags verified, no API credentials or model call.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Grok Build CLI supports custom agent-profile and long prompt-file inputs. No API credentials or model call.' >> "$GITHUB_STEP_SUMMARY"
