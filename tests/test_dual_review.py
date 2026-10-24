@@ -4,7 +4,7 @@ sys.path.insert(0,str(ROOT/".agents"/"automation"))
 from review_loop import guard_pr,parse_review,status,format_comment
 
 def result(payload):
-    return {"text":json.dumps(payload),"stopReason":"end_turn"}
+    return {"text":"structured result", "structuredOutput":payload,"stopReason":"end_turn"}
 
 class DualReviewContractTests(unittest.TestCase):
     def test_guard_same_repo_agent_branch_and_sha(self):
@@ -25,7 +25,7 @@ class DualReviewContractTests(unittest.TestCase):
                  "recommendation":"Reject oversized input"}
         with tempfile.TemporaryDirectory() as td:
             p=pathlib.Path(td)/"review.json"
-            payload={"decision":"changes_requested","summary":"One regression",
+            payload={"schema_version":1,"reviewer":"deepseek","status":"final","decision":"changes_requested","summary":"One regression",
                      "findings":[finding],"tests_assessed":["C++ smoke"],"residual_risks":[]}
             p.write_text(json.dumps(result(payload)))
             parsed=parse_review(p,["engine/core/pw_core.cpp"])

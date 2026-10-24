@@ -16,7 +16,7 @@ class GrokBuildRunnerTests(unittest.TestCase):
             '#!/usr/bin/env python3\n'
             'import json, os, sys\n'
             'with open(os.environ["TEST_GROK_ARGS"], "w") as f: json.dump(sys.argv[1:], f)\n'
-            'print(json.dumps({"text": "Mock Grok Build output", "stopReason": "end_turn"}))\n'
+            'print(json.dumps({"text": "Mock Grok Build output", "stopReason": "end_turn", "structuredOutput": {"schema_version":1,"agent":"coder","status":"final","summary":"Fixture","files_changed":[],"tests_run":[],"limitations":[]}}))\n'
         )
         binary.chmod(0o755)
 
@@ -40,6 +40,8 @@ class GrokBuildRunnerTests(unittest.TestCase):
                 self.assertIn(flag, args)
             self.assertEqual(args[args.index("--sandbox")+1], "strict")
             self.assertEqual(args[args.index("--max-turns")+1], "35")
+            self.assertIn("--json-schema", args)
+            self.assertTrue(args[args.index("--json-schema")+1].endswith("coder.schema.json"))
             self.assertIn("--prompt-file", args)
             self.assertEqual(args[args.index("--prompt-file")+1], str(prompt))
             self.assertEqual(args[args.index("-m")+1], "cf-glm-5.3")

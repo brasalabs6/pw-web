@@ -5,6 +5,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+from schema_validation import read_envelope
 
 ROLES = ("deepseek", "glm-flash")
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -26,18 +27,8 @@ def guard_pr(pr: dict, sha: str, repo: str, round_number: int) -> tuple[str, str
         raise ValueError("Head SHA or repository mismatch; reject stale/untrusted event")
     return match.group(1), match.group(2)
 
-def parse_review(result_file: Path, changed_files: list[str]) -> dict:
-    envelope = json.loads(result_file.read_text(encoding="utf-8"))
-    if not isinstance(envelope, dict) or not isinstance(envelope.get("text"), str):
-        raise ValueError("Missing Grok text in JSON envelope")
-    raw = envelope["text"].strip()
-    if raw.startswith("```"):
-        raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw).strip()
-    if len(raw) > 90000:
-        raise ValueError("Review result too long")
-    review = json.loads(raw)
-    if not isinstance(review, dict):
-        raise ValueError("Review must be JSON object")
+def parse_review(result_file: Path, changed_files: list[str], role: str = 'deepseek') -> dict:
+    review = read_envelope(result_file, role)
     decision = review.get("decision")
     if decision not in ("approved", "changes_requested"):
         raise ValueError("Invalid review decision")
@@ -131,7 +122,7 @@ def main():
     errors = {}
     for role, loc in [("deepseek", a.deepseek), ("glm-flash", a.glm)]:
         try:
-            reviews[role] = parse_review(Path(loc), paths)
+            reviews[role] = parse_review(Path(loc), paths, role)
         except (ValueError, OSError, json.JSONDecodeError) as exc:
             errors[role] = str(exc)
     max_rounds = int(a.max_rounds) if str(a.max_rounds).isdigit() else 8
