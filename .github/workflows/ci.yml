@@ -22,6 +22,8 @@ jobs:
         run: |
           python3 -m compileall -q .agents/automation tests
           python3 .agents/automation/epic_check.py
+      - name: Test Angelica POC comparison logic without upstream code or assets
+        run: node --test tests/probes/compare.test.mjs
       - name: Verify bootstrap, tests and portable C++ (capture evidence)
         id: checks
         shell: bash
@@ -90,9 +92,8 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           PW_BROWSER_MODULE_DIR: ${{ runner.temp }}/pw-browser
           PW_BROWSER_ARTIFACTS: artifacts/browser
-        run: bash scripts/browser-smoke.sh
-        env:
           PW_WEB_PORT: '8480'
+        run: bash scripts/browser-smoke.sh
       - name: Upload independent browser screenshot and measurements
         if: always()
         uses: actions/upload-artifact@v4
