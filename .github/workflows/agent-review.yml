@@ -1,0 +1,259 @@
+name: Agent Dual Review
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        required: true
+        type: string
+        description: "Agent PR number"
+      head_sha:
+        required: true
+        type: string
+        description: "Exact tested PR head SHA"
+      round:
+        required: true
+        type: string
+        description: "Review cycle 1..30"
+  pull_request:
+    types: [ready_for_review]
+
+concurrency:
+  group: agent-review-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    if: github.event_name == 'workflow_dispatch' || (startsWith(github.event.pull_request.head.ref, 'agent/') && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      epic: ${{ steps.guard.outputs.epic }}
+      workorder: ${{ steps.guard.outputs.workorder }}
+      sha: ${{ steps.guard.outputs.sha }}
+      branch: ${{ steps.guard.outputs.branch }}
+      pr_number: ${{ steps.guard.outputs.pr_number }}
+      round: ${{ steps.guard.outputs.round }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: false
+          persist-credentials: false
+      - name: Load PR metadata, verify immutable head and agent commit marker
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || inputs.head_sha }}
+          REQUEST_ROUND: ${{ inputs.round }}
+        run: |
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[0-9]{1,8}$ ]] || exit 2
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > /tmp/pr.json
+          gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA" --jq '.commit.message' > /tmp/commit-message.txt
+          if [ -z "$REQUEST_ROUND" ]; then
+            REQUEST_ROUND="$(sed -nE 's/.*\[agent-attempt:([0-9]+)\].*/\1/p' /tmp/commit-message.txt | head -n1)"
+          fi
+          python3 .agents/automation/review_guard.py \
+            --pr-file /tmp/pr.json --sha "$HEAD_SHA" --repo "$GITHUB_REPOSITORY" \
+            --round "$REQUEST_ROUND" --commit-message-file /tmp/commit-message.txt \
+            --output "$GITHUB_OUTPUT"
+
+  review:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - role: deepseek
+            model: cf-deepseek-v4-flash
+            profile: reviewer-deepseek.md
+          - role: glm-flash
+            model: cf-glm-5.3-flash
+            profile: reviewer-glm-flash.md
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout trusted automation and agent system prompts
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: policy
+          submodules: false
+          persist-credentials: false
+      - name: Checkout exact PR head to inspect without write credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+          path: source
+          fetch-depth: 0
+          submodules: false
+          persist-credentials: false
+      - name: Build bounded review context
+        env:
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+          HEAD_SHA: ${{ needs.prepare.outputs.sha }}
+          ROUND: ${{ needs.prepare.outputs.round }}
+          ROLE: ${{ matrix.role }}
+        run: |
+          set -euo pipefail
+          mkdir -p "policy/artifacts/reviews/$ROLE"
+          python3 policy/.agents/automation/build_review_prompt.py \
+            --source source --epic "$EPIC" --workorder "$WO" \
+            --sha "$HEAD_SHA" --round "$ROUND" \
+            --output "policy/artifacts/reviews/$ROLE/prompt.md" \
+            --changed "policy/artifacts/reviews/$ROLE/changed.json"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install official pinned Grok Build without any secrets
+        run: |
+          npm install --prefix "$RUNNER_TEMP/grok-build" --no-audit --no-fund "@xai-official/grok@1.0.70"
+          echo "$RUNNER_TEMP/grok-build/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Install headless Chrome for browser inspection in review
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+          install-dependencies: true
+      - name: Install pinned Chrome DevTools MCP (no model credential)
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw-browser" --no-audit --no-fund chrome-devtools-mcp@1.12.0
+          echo "$RUNNER_TEMP/pw-browser/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Provide localhost-only page to the reviewer
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          mkdir -p policy/artifacts/browser
+          nohup python3 -m http.server 8080 --bind 127.0.0.1 --directory source/web > policy/artifacts/browser/http.log 2>&1 &
+          echo $! > policy/artifacts/browser/server.pid
+          for i in $(seq 1 25); do
+            curl -fsS http://127.0.0.1:8080/ >/dev/null && break
+            sleep 0.2
+          done
+          echo "CHROME_BIN=$CHROME_BIN" >> "$GITHUB_ENV"
+      - name: Install all 8 proxy model aliases in isolated user config
+        env:
+          GROK_HOME: ${{ runner.temp }}/pw-grok-${{ matrix.role }}
+        run: bash policy/scripts/configure-grok-models.sh
+      - name: Run independent model review (strict filesystem read-only)
+        env:
+          CF_PROXY_API_KEY: ${{ secrets.CF_PROXY_API_KEY }}
+          GROK_HOME: ${{ runner.temp }}/pw-grok-${{ matrix.role }}
+          GROK_MODEL: ${{ matrix.model }}
+          GROK_AGENT_PROFILE: ${{ github.workspace }}/policy/.grok/agents/${{ matrix.profile }}
+          GROK_SANDBOX: read-only
+          GROK_MAX_TURNS: '28'
+          GROK_SCHEMA_ROLE: ${{ matrix.role }}
+          ROLE: ${{ matrix.role }}
+        run: |
+          cd source
+          bash ../policy/scripts/run-grok-workorder.sh \
+            "../policy/artifacts/reviews/$ROLE/prompt.md" \
+            "../policy/artifacts/reviews/$ROLE/grok.json"
+      - name: Upload review evidence (no privileged token in model environment)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-dual-review-${{ matrix.role }}-${{ github.run_id }}
+          path: |
+            policy/artifacts/reviews/
+            policy/artifacts/browser/
+          retention-days: 30
+          if-no-files-found: warn
+
+  finalize:
+    if: always() && needs.prepare.result == 'success'
+    needs: [prepare, review]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout trusted review policy (never execute changed PR scripts)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: false
+          persist-credentials: false
+      - name: Download both independently produced review reports
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pw-dual-review-*-${{ github.run_id }}
+          path: /tmp/pw-review
+          merge-multiple: true
+      - name: Check CI result for exact SHA, validate reviews and comment once
+        id: decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+          HEAD_SHA: ${{ needs.prepare.outputs.sha }}
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+          ROUND: ${{ needs.prepare.outputs.round }}
+          LOOP_ENABLED: ${{ vars.AGENT_REVIEW_LOOP_ENABLED }}
+          MAX_ROUNDS: ${{ vars.AGENT_MAX_REVIEW_ROUNDS }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pw-review
+          CURRENT="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          if [ "$HEAD_SHA" != "$CURRENT" ]; then echo "Stale review, leaving no comment"; exit 0; fi
+          MARKER="<!-- pw-agent-review sha=$HEAD_SHA round=$ROUND -->"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" --paginate \
+            --jq '.[].body' > /tmp/pr-comments.txt
+          if grep -Fq "$MARKER" /tmp/pr-comments.txt; then echo "Already reviewed this SHA"; exit 0; fi
+          gh pr diff "$PR_NUMBER" --name-only > /tmp/changed.txt
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          Path('/tmp/changed.json').write_text(json.dumps(Path('/tmp/changed.txt').read_text().splitlines()))
+          PY
+          CI_STATUS="pending"
+          for i in $(seq 1 30); do
+            gh run list --workflow ci.yml --branch "$BRANCH" --event workflow_dispatch --limit 60 \
+              --json headSha,status,conclusion > /tmp/ci-runs.json
+            CI_STATUS="$(python3 - "$HEAD_SHA" <<'PY'
+          import json,sys
+          a=[r for r in json.load(open('/tmp/ci-runs.json')) if r.get('headSha')==sys.argv[1]]
+          print(a[0].get('conclusion') or 'pending' if a else 'pending')
+          PY
+          )"
+            if [ "$CI_STATUS" != "pending" ]; then break; fi
+            sleep 8
+          done
+          python3 .agents/automation/review_loop.py \
+            --deepseek /tmp/pw-review/deepseek/grok.json \
+            --glm /tmp/pw-review/glm-flash/grok.json \
+            --changed /tmp/changed.json --sha "$HEAD_SHA" --round "$ROUND" \
+            --ci "$CI_STATUS" --enabled "$LOOP_ENABLED" \
+            --max-rounds "$MAX_ROUNDS" --run-id "$GITHUB_RUN_ID" \
+            --comment /tmp/dual-comment.md --output "$GITHUB_OUTPUT"
+          gh pr comment "$PR_NUMBER" --body-file /tmp/dual-comment.md
+          echo "Review report posted on PR #$PR_NUMBER (CI=$CI_STATUS, round=$ROUND)." >> "$GITHUB_STEP_SUMMARY"
+      - name: Dispatch next coder iteration only for validated, bounded findings
+        if: steps.decision.outputs.action == 'repair'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+          HEAD_SHA: ${{ needs.prepare.outputs.sha }}
+          EPIC: ${{ needs.prepare.outputs.epic }}
+          WO: ${{ needs.prepare.outputs.workorder }}
+          NEXT: ${{ steps.decision.outputs.next_round }}
+        run: |
+          set -euo pipefail
+          CURRENT="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          [ "$HEAD_SHA" = "$CURRENT" ] || { echo "Head changed, skipping retry"; exit 0; }
+          gh workflow run agent-execute.yml --ref main -f epic="$EPIC" -f workorder="$WO" -f attempt="$NEXT" -f dry_run=false
+          echo "Requested coder repair attempt $NEXT (after both independent reviews)." >> "$GITHUB_STEP_SUMMARY"

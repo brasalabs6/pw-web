@@ -53,4 +53,6 @@ P3: gameplay completo e otimizações.
 
 ## Executor de IA: Grok Build
 
-O executor no GitHub Actions é Grok Build, pela CLI oficial `grok -p` e segredo `XAI_API_KEY`. O GitHub Actions é o orquestrador; Grok é o agente de código, não um serviço de deploy ou merge automático. Consulte `docs/GROK_BUILD.md`, `docs/AUTONOMY.md` e `scripts/run-grok-workorder.sh`. Qualquer mudança de executor/versão exige PR e tests de integração.
+O executor no GitHub Actions é Grok Build, pela CLI oficial `grok -p` e segredo `CF_PROXY_API_KEY` para nosso proxy Cloudflare. O GitHub Actions é o orquestrador; Grok é o agente de código, não um serviço de deploy ou merge automático. Consulte `docs/GROK_BUILD.md`, `docs/AUTONOMY.md` e `scripts/run-grok-workorder.sh`. Qualquer mudança de executor/versão exige PR e tests de integração.
+
+Os agentes de sistema ficam em `.grok/agents/{coder,reviewer-deepseek,reviewer-glm-flash}.md` e o catálogo em `.grok/models.ci.toml` (usado via `GROK_HOME`). Reviews são consultivas e a aprovação final é humana.

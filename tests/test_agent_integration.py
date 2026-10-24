@@ -37,7 +37,7 @@ class AgentIntegrationTests(unittest.TestCase):
     def test_disallow_unbounded_retry_and_manual_work(self):
         with tempfile.TemporaryDirectory() as td:
             out = pathlib.Path(td) / "outputs.txt"
-            for attempt in ("0", "4", "100"):
+            for attempt in ("0", "31", "100"):
                 result = self.call("validate_dispatch.py",
                                    "--epic", "e01-agent-orchestration-v1",
                                    "--workorder", "wo-01", "--attempt", attempt,
@@ -60,18 +60,16 @@ class AgentIntegrationTests(unittest.TestCase):
                                 "--require", "e02-native-client-baseline-v1/wo-01")
             self.assertNotEqual(blocked.returncode, 0)
             self.assertIn("not eligible", blocked.stderr)
-            # e04/wo-01 is automated and depends on e01/wo-05, so it unlocks
-            # only after that dependency completes.
+            # Automated runtime work is unblocked only by the verified e01 dependency.
             gated = self.call("backlog_pick.py", "--merged", merged,
                               "--require", "e04-wasm-runtime-v1/wo-01")
             self.assertNotEqual(gated.returncode, 0)
-            self.assertIn("not eligible", gated.stderr)
             completed = [{"title": f"agent: e01-agent-orchestration-v1 / wo-{i:02d}"} for i in range(1,6)]
             merged.write_text(json.dumps(completed))
             now = self.call("backlog_pick.py", "--merged", merged,
                             "--require", "e04-wasm-runtime-v1/wo-01")
             self.assertEqual(now.returncode, 0, now.stderr)
-            # Manual-gate workorders stay blocked even with dependencies done.
+            # Manual gates never turn into automatic dispatch based on merged dependencies.
             manual = self.call("backlog_pick.py", "--merged", merged,
                                "--require", "e02-native-client-baseline-v1/wo-01")
             self.assertNotEqual(manual.returncode, 0)

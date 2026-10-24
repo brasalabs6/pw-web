@@ -1,0 +1,11 @@
+# Project configuration: Chrome DevTools MCP. Browser executable comes from CHROME_BIN.
+# Only localhost:8080 is allowed; CI runs isolated Chrome and a synthetic WebGL demo.
+[mcp]
+max_output_bytes = 40000
+
+[mcp_servers.chrome-devtools]
+command = "bash"
+args = ["scripts/chrome-mcp-launch.sh"]
+enabled = true
+startup_timeout_sec = 45
+tool_timeout_sec = 120

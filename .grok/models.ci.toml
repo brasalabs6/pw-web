@@ -1,0 +1,114 @@
+# Non-secret user-level model catalog. CI installs this at $GROK_HOME/config.toml.
+# Project .grok/config.toml does NOT support [model.*] overrides.
+# Never commit credentials; all models use env_key = "CF_PROXY_API_KEY".
+[cli]
+auto_update = false
+
+[models]
+default = "cf-glm-5.3"
+default_reasoning_effort = "low"
+session_summary = "cf-glm-5.3-flash"
+image_description = "cf-glm-5.3-flash"
+
+[model."cf-glm-5.2"]
+model = "@cf/zai-org/glm-5.2"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF GLM 5.2 (Brasamain Worker Proxy)"
+description = "Z.ai GLM-5.2 via deployed Brasamain Cloudflare Worker rate proxy"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 262144
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+vision = false
+
+[model."cf-glm-5.3"]
+model = "@cf/zai-org/glm-5.3"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF GLM 5.3 (Brasamain Worker Proxy)"
+description = "Z.ai GLM-5.3 via deployed Brasamain Cloudflare Worker rate proxy"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 1048576
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+vision = false
+
+[model."cf-glm-5.3-flash"]
+model = "@cf/zai-org/glm-5.3-flash"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF GLM 5.3 Flash (Brasamain Worker Proxy)"
+description = "Z.ai GLM-5.3 Flash via Cloudflare Worker"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 1048576
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+
+[model."cf-deepseek-v4-flash"]
+model = "@cf/deepseek-ai/deepseek-v4-flash-0731"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF DeepSeek V4 Flash (Brasamain Worker Proxy)"
+description = "DeepSeek V4 Flash via Cloudflare multi-account failover proxy"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 1310720
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+vision = false
+
+[model."cf-glm-5.3-cyber"]
+model = "glm-5.3-cyber"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF GLM 5.3 Cyber (Brasamain Worker Proxy)"
+description = "GLM-5.3 Cyber alias via Worker proxy"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 1048576
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+vision = false
+
+[model."cf-glm-5.2-cyber"]
+model = "glm-5.2-cyber"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF GLM 5.2 Cyber (Brasamain Worker Proxy)"
+description = "GLM-5.2 Cyber pinned alias without fallback"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 262144
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+vision = false
+
+[model."cf-glm-5.3-flash-cyber"]
+model = "glm-5.3-flash-cyber"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF GLM 5.3 Flash Cyber (Brasamain Worker Proxy)"
+description = "GLM-5.3 Flash Cyber alias via Worker proxy"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 1048576
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+
+[model."cf-qwen3.8-27b"]
+model = "@cf/qwen/qwen3.8-27b"
+base_url = "https://cf-ai-rate-proxy.guibelongtovi-a22.workers.dev/v1"
+name = "CF Qwen 3.8 27B (Brasamain Worker Proxy)"
+description = "Qwen 3.8 27B via Worker direct route"
+api_backend = "chat_completions"
+env_key = "CF_PROXY_API_KEY"
+context_window = 262144
+max_completion_tokens = 16384
+temperature = 0.7
+stream_tool_calls = true
+vision = false
+
