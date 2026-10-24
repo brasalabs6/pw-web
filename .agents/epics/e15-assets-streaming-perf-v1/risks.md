@@ -1,6 +1,9 @@
 # Registro de riscos — Streaming, CDN, cache OPFS e desempenho do navegador
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | pacote monolítico multigigabyte | Alto / validar gravidade | Expor cenário negativo e observável | Definir budgets alvo por browser/dispositivo e manifesto de assets permitidos | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | cache corrompido | Alto / validar gravidade | Expor cenário negativo e observável | Implementar fetch Range/retry/sha/abort com mock HTTP server | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | queda de FPS em streaming e memória estourada | Alto / validar gravidade | Expor cenário negativo e observável | Implementar OPFS/IndexedDB cache versionado e LRU com cotas | Bloquear trabalho dependente, ADR ou fallback |

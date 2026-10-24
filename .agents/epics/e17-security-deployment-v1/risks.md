@@ -1,6 +1,9 @@
 # Registro de riscos — Segurança, infraestrutura, CI/CD e entrega
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | expor pw-gs/postgres à internet | Alto / validar gravidade | Expor cenário negativo e observável | Desenhar topologia por ambiente e segurança das portas/rede | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | supply chain de actions | Alto / validar gravidade | Expor cenário negativo e observável | Criar manifests IaC para sandbox sem produção e secrets externos | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | deploy de conteúdo sem direitos | Alto / validar gravidade | Expor cenário negativo e observável | Implementar TLS/CSP/CORS/cabeçalhos e limites de ataque do gateway mock | Bloquear trabalho dependente, ADR ou fallback |

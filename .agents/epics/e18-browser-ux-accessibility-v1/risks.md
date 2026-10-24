@@ -1,6 +1,9 @@
 # Registro de riscos — Compatibilidade de navegadores, acessibilidade e dispositivos
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | WebGL2 não suportado ou driver instável | Alto / validar gravidade | Expor cenário negativo e observável | Definir navegadores alvo e matriz API/feature flags com critérios de fallback | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | limites iOS/OPFS | Alto / validar gravidade | Expor cenário negativo e observável | Implementar capacidade/diagnóstico e mensagens específicas ao hardware | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | acessibilidade insuficiente e ações presas no browser | Alto / validar gravidade | Expor cenário negativo e observável | Implementar UX responsivo, foco, legendas, remapeamento de entradas e i18n | Bloquear trabalho dependente, ADR ou fallback |

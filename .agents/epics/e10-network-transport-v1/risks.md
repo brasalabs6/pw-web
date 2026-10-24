@@ -1,6 +1,9 @@
 # Registro de riscos — GNET, protocolo de mundo e gateway WSS seguro
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | endianness e framing | Alto / validar gravidade | Expor cenário negativo e observável | Registrar opcode/length/endian por versão e declarar fonte de evidência | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | compatibilidade 1.5.3↔realm v155 | Alto / validar gravidade | Expor cenário negativo e observável | Implementar leitor/escritor bounds-checked e protocolo mock em memória | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | flood/malformed packets e auth bypass | Alto / validar gravidade | Expor cenário negativo e observável | Implementar WSS gateway de testes com limites, origem, sessão e backpressure | Bloquear trabalho dependente, ADR ou fallback |

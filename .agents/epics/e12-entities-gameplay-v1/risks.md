@@ -1,6 +1,9 @@
 # Registro de riscos — Movimento, combate, skills, NPCs, quests e interação
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | cliente altera estado servidor-autoritativo | Alto / validar gravidade | Expor cenário negativo e observável | Definir máquina de entidades e componentes com fixtures sem IP proprietário | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | desync movimento/skill | Alto / validar gravidade | Expor cenário negativo e observável | Implementar comando de movimento, colisão e predição/correção em simulação | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | protocol opcode incompleto | Alto / validar gravidade | Expor cenário negativo e observável | Implementar targeting, cast timeline e feedback visual de skills mockadas | Bloquear trabalho dependente, ADR ou fallback |

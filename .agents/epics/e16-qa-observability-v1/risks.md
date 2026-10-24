@@ -1,6 +1,9 @@
 # Registro de riscos — Estratégia de testes, tracing, replay e QA automatizado
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | falso verde do scaffold | Alto / validar gravidade | Expor cenário negativo e observável | Criar matriz de testes por camada, severidade e definição de done | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | fixtures com direitos incertos | Alto / validar gravidade | Expor cenário negativo e observável | Automatizar fixtures sintéticas, fuzz, ASAN/UBSAN e testes de ABI | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | testes flaky e builds não determinísticas | Alto / validar gravidade | Expor cenário negativo e observável | Criar harness browser E2E WebGL/WASM/viewport e screenshot diffs | Bloquear trabalho dependente, ADR ou fallback |

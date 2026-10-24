@@ -1,6 +1,9 @@
 # Registro de riscos — Sincronização MMO, presença, chat, grupo e guilda
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | pacotes fora de ordem | Alto / validar gravidade | Expor cenário negativo e observável | Definir snapshots/deltas/clock e idempotência de evento por entidade | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | vazamento de chat ou identidade | Alto / validar gravidade | Expor cenário negativo e observável | Implementar interpolação e reconciliation em peers mockados | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | AOI e tempo real sobrecarregam frame | Alto / validar gravidade | Expor cenário negativo e observável | Implementar AOI, canais e filas limitadas do gateway de testes | Bloquear trabalho dependente, ADR ou fallback |

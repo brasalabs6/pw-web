@@ -1,6 +1,9 @@
 # Registro de riscos — Inventário, equipamentos, crafting, loja e economia
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | dup de item | Alto / validar gravidade | Expor cenário negativo e observável | Especificar esquemas de item, stacks, binds, inventário e mensagens binárias | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | replay/ordem de trade | Alto / validar gravidade | Expor cenário negativo e observável | Implementar modelos de estado/HUD com fixtures e invariantes de slots | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | manipulação de preço por cliente | Alto / validar gravidade | Expor cenário negativo e observável | Implementar drag/drop, equip, confirmação de compra e fluxo de craft mock | Bloquear trabalho dependente, ADR ou fallback |

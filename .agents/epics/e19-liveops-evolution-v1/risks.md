@@ -1,6 +1,9 @@
 # Registro de riscos — Operações contínuas, versionamento, conteúdo e manutenção
 
 ## Riscos específicos
+
+| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
+| --- | --- | --- | --- | --- | --- |
 | R-1 | migrar dados jogadores de forma errada | Alto / validar gravidade | Expor cenário negativo e observável | Especificar versão semântica cliente/asset/protocolo/realm e migração segura | Bloquear trabalho dependente, ADR ou fallback |
 | R-2 | incompatibilidade patch/version | Alto / validar gravidade | Expor cenário negativo e observável | Criar catálogo de incidentes, suporte e telemetria minimizada | Bloquear trabalho dependente, ADR ou fallback |
 | R-3 | custos de banda/infra e abuso | Alto / validar gravidade | Expor cenário negativo e observável | Implementar flags de rollout e checagem de compatibilidade em ambiente local | Bloquear trabalho dependente, ADR ou fallback |
