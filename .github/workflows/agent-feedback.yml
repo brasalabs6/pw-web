@@ -1,0 +1,56 @@
+name: Agent CI Feedback
+on:
+  workflow_run:
+    workflows: ["Bootstrap CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  route:
+    if: github.event.workflow_run.event == 'workflow_dispatch' && startsWith(github.event.workflow_run.head_branch, 'agent/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - name: Observe trusted CI signal; dispatch at most three attempts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          AUTONOMY: ${{ vars.AGENT_AUTONOMY_ENABLED }}
+        run: |
+          set -euo pipefail
+          # Parse only rigid branch format, never execute content from an external PR.
+          if [[ ! "$BRANCH" =~ ^agent/([a-z][a-z0-9-]{2,70})/([a-z][a-z0-9-]{2,70})$ ]]; then exit 0; fi
+          EPIC="${BASH_REMATCH[1]}"
+          WO="${BASH_REMATCH[2]}"
+          CURRENT="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" --jq '.object.sha')" || exit 0
+          if [ "$CURRENT" != "$SHA" ]; then
+            echo "Stale CI completion, skipping."
+            exit 0
+          fi
+          PR="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')"
+          [ -n "$PR" ] || exit 0
+          LAST_MSG="$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA" --jq '.commit.message')"
+          if [[ ! "$LAST_MSG" =~ \[agent-attempt:([123])\] ]]; then
+            echo "No trusted attempt marker."
+            exit 0
+          fi
+          ATTEMPT="${BASH_REMATCH[1]}"
+          gh pr comment "$PR" --body "Agent CI feedback: run #$CI_RUN_ID finished **$CONCLUSION**, branch \`$BRANCH\`, commit \`$SHA\`, attempt **$ATTEMPT/3**. Evidence: https://github.com/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID"
+          echo "CI: $CONCLUSION for $BRANCH (attempt $ATTEMPT)" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CONCLUSION" = "success" ]; then
+            echo "Gate passed. Human review/merge required." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$CONCLUSION" = "failure" ] && [ "$ATTEMPT" -lt 3 ] && [ "$AUTONOMY" = "true" ]; then
+            NEXT=$((ATTEMPT+1))
+            gh workflow run agent-execute.yml --ref main -f epic="$EPIC" -f workorder="$WO" -f attempt="$NEXT"
+            echo "Dispatched bounded repair attempt $NEXT." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No retry (disabled, max attempts or cancelled)." >> "$GITHUB_STEP_SUMMARY"
+          fi

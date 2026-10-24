@@ -11,11 +11,43 @@ permissions:
 jobs:
   portable-core-and-bootstrap:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout project (do not download third-party source)
         uses: actions/checkout@v4
         with:
           submodules: false
           persist-credentials: false
-      - name: Verify bootstrap and portable C++
-        run: bash scripts/verify.sh
+      - name: Python compile sanity and catalog policy
+        run: |
+          python3 -m compileall -q .agents/automation tests
+          python3 .agents/automation/epic_check.py
+      - name: Verify bootstrap, tests and portable C++ (capture evidence)
+        id: checks
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/ci
+          bash scripts/verify.sh 2>&1 | tee artifacts/ci/verify.log
+      - name: Machine-readable CI result
+        if: always()
+        env:
+          STATUS: ${{ steps.checks.outcome }}
+        run: |
+          mkdir -p artifacts/ci
+          python3 .agents/automation/run_report.py \
+            --log artifacts/ci/verify.log --status "$STATUS" --output artifacts/ci/report.json
+          {
+            echo "### PW Web CI evidence"
+            echo "- Status: $STATUS"
+            echo "- Scope: portable C++ / Python / workorder schema"
+            echo "- No Perfect World assets, original game binaries or server tests"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload logs and result (available after the run)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-ci-evidence
+          path: artifacts/ci/
+          if-no-files-found: warn
+          retention-days: 30
