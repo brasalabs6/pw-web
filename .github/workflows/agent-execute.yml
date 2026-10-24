@@ -79,6 +79,7 @@ jobs:
     permissions:
       contents: read
       actions: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,6 +96,19 @@ jobs:
         run: |
           mkdir -p artifacts/agent
           if [ "$ATTEMPT" != '1' ]; then
+            PR="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')"
+            if [ -n "$PR" ]; then
+              gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments?per_page=100" --paginate > artifacts/agent/comments.json
+              python3 - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('artifacts/agent/comments.json')
+          try:
+              comments=json.loads(p.read_text())
+              reviews=[c['body'] for c in comments if c.get('user',{}).get('login')=='github-actions[bot]' and c.get('body','').startswith('<!-- pw-agent-review ')]
+              if reviews: pathlib.Path('artifacts/agent/prior-review.md').write_text(reviews[-1][-18000:],encoding='utf-8')
+          except (json.JSONDecodeError,KeyError,TypeError): pass
+          PY
+            fi
             gh run list --workflow ci.yml --branch "$BRANCH" --event workflow_dispatch \
               --limit 8 --json databaseId,conclusion \
               | python3 -c 'import json,sys; v=[str(r["databaseId"]) for r in json.load(sys.stdin) if r.get("conclusion")=="failure"]; print(v[0] if v else "")' > artifacts/agent/previous-run-id
@@ -105,33 +119,35 @@ jobs:
           fi
           python3 .agents/automation/build_prompt.py \
             --epic "$EPIC" --workorder "$WO" --attempt "$ATTEMPT" \
-            --ci-log artifacts/agent/prior-ci.log --output artifacts/agent/prompt.md
-      - name: Install pinned Grok Build CLI (without secrets)
+            --ci-log artifacts/agent/prior-ci.log --review-file artifacts/agent/prior-review.md --output artifacts/agent/prompt.md
+      - name: Install pinned Grok Build CLI (no proxy key in install)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install Grok Build from official npm distribution
-        env:
-          GROK_BUILD_VERSION: '1.0.70'
+      - name: Install official Grok Build
         run: |
-          npm install --prefix "$RUNNER_TEMP/grok-build" --no-audit --no-fund "@xai-official/grok@$GROK_BUILD_VERSION"
+          npm install --prefix "$RUNNER_TEMP/grok-build" --no-audit --no-fund "@xai-official/grok@1.0.70"
           echo "$RUNNER_TEMP/grok-build/node_modules/.bin" >> "$GITHUB_PATH"
-      - name: Verify installed Grok Build version
-        run: grok --version
-      - name: Ensure xAI API key is configured
+      - name: Install user-scoped model config from tracked non-secret catalog
         env:
-          XAI_KEY_CONFIGURED: ${{ secrets.XAI_API_KEY != '' }}
+          GROK_HOME: ${{ runner.temp }}/pw-grok-coder
+        run: bash scripts/configure-grok-models.sh
+      - name: Validate proxy key is configured
+        env:
+          KEY_CONFIGURED: ${{ secrets.CF_PROXY_API_KEY != '' }}
         run: |
-          if [ "$XAI_KEY_CONFIGURED" != 'true' ]; then
-            echo "::error::Missing XAI_API_KEY in Actions secrets. See docs/AUTONOMY.md."
+          if [ "$KEY_CONFIGURED" != "true" ]; then
+            echo "::error::Set repository secret CF_PROXY_API_KEY for the Cloudflare proxy."
             exit 1
           fi
-      - name: Run Grok Build headlessly in strict sandbox (no write token)
-        id: grok
+      - name: Execute Grok Build coder under dedicated CF GLM 5.3 agent profile
         env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-        run: |
-          bash scripts/run-grok-workorder.sh artifacts/agent/prompt.md artifacts/agent/final.json
+          CF_PROXY_API_KEY: ${{ secrets.CF_PROXY_API_KEY }}
+          GROK_HOME: ${{ runner.temp }}/pw-grok-coder
+          GROK_MODEL: cf-glm-5.3
+          GROK_AGENT_PROFILE: .grok/agents/coder.md
+          GROK_SANDBOX: strict
+        run: bash scripts/run-grok-workorder.sh artifacts/agent/prompt.md artifacts/agent/final.json
       - name: Serialize patch and diagnostics
         if: success()
         run: |
@@ -204,12 +220,21 @@ jobs:
           if [ "$ATTEMPT" = "1" ]; then
             gh pr create --base main --head "$BRANCH" \
               --title "agent: $EPIC / $WO" \
-              --body "Automated bounded workorder. Evidence: Agent Execute #$GITHUB_RUN_ID. Tests are dispatched explicitly; review required. No auto-merge. See .agents/epics/$EPIC/workorders/$WO.json" \
+              --body "Bounded Grok Build workorder. Evidence: Agent Execute #$GITHUB_RUN_ID. Two independent model reviewers + CI; human merge only. See .agents/epics/$EPIC/workorders/$WO.json" \
               --draft
           fi
-          echo "Patch published: $BRANCH" >> "$GITHUB_STEP_SUMMARY"
-          echo "Dispatching CI explicitly; GITHUB_TOKEN-created PRs do not trigger usual PR events." >> "$GITHUB_STEP_SUMMARY"
+          PR="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')"
+          [ -n "$PR" ] || { echo "PR not found after push"; exit 1; }
+          if [ "$ATTEMPT" = "1" ]; then
+            gh pr ready "$PR"
+          fi
+          HEAD_SHA="$(git rev-parse HEAD)"
+          echo "Patch published and review requested: $BRANCH PR #$PR SHA $HEAD_SHA" >> "$GITHUB_STEP_SUMMARY"
           gh workflow run ci.yml --ref "$BRANCH"
+          # PR events generated by GITHUB_TOKEN may be suppressed: explicitly dispatch review.
+          gh workflow run agent-review.yml --ref main \
+            -f pr_number="$PR" -f head_sha="$HEAD_SHA" -f round="$ATTEMPT"
+          echo "Dispatched independent DeepSeek and GLM Flash reviewers." >> "$GITHUB_STEP_SUMMARY"
 
   dry-run:
     if: inputs.dry_run == true

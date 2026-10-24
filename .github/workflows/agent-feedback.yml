@@ -16,7 +16,7 @@ jobs:
       actions: write
       pull-requests: write
     steps:
-      - name: Observe trusted CI signal; dispatch at most three attempts
+      - name: Observe trusted CI signal; reviewer loop owns repairs
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ github.event.workflow_run.head_branch }}
@@ -47,10 +47,6 @@ jobs:
           echo "CI: $CONCLUSION for $BRANCH (attempt $ATTEMPT)" >> "$GITHUB_STEP_SUMMARY"
           if [ "$CONCLUSION" = "success" ]; then
             echo "Gate passed. Human review/merge required." >> "$GITHUB_STEP_SUMMARY"
-          elif [ "$CONCLUSION" = "failure" ] && [ "$ATTEMPT" -lt 3 ] && [ "$AUTONOMY" = "true" ]; then
-            NEXT=$((ATTEMPT+1))
-            gh workflow run agent-execute.yml --ref main -f epic="$EPIC" -f workorder="$WO" -f attempt="$NEXT"
-            echo "Dispatched bounded repair attempt $NEXT." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "No retry (disabled, max attempts or cancelled)." >> "$GITHUB_STEP_SUMMARY"
+            echo "CI was not green; agent-review.yml will aggregate CI with both reviews before scheduling any repair." >> "$GITHUB_STEP_SUMMARY"
           fi
