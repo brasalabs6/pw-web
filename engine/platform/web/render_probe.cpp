@@ -57,6 +57,22 @@ void release_objects() {
     forget_objects();
 }
 
+// A failed initialization must never leave an allocated context/callback or
+// partially-created GPU objects behind. Keep it separate from user dispose.
+void abort_initialization() {
+    if (probe.context &&
+        emscripten_webgl_make_context_current(probe.context) == EMSCRIPTEN_RESULT_SUCCESS)
+        release_objects();
+    else forget_objects();
+    emscripten_set_webglcontextlost_callback("#canvas", nullptr, true, nullptr);
+    emscripten_set_webglcontextrestored_callback("#canvas", nullptr, true, nullptr);
+    probe.callbacks = false;
+    if (probe.context) emscripten_webgl_destroy_context(probe.context);
+    probe.context = 0;
+    probe.restored = false;
+    probe.state = State::Uninitialized;
+}
+
 EM_BOOL context_lost(int, const EmscriptenWebGLContextEvent*, void*) {
     probe.state = State::Lost;
     probe.restored = false;
@@ -249,9 +265,7 @@ int probe_init() {
     }
     if (emscripten_webgl_make_context_current(probe.context) != EMSCRIPTEN_RESULT_SUCCESS) {
         diagnostic("WebGL2 make-current failed");
-        emscripten_webgl_destroy_context(probe.context);
-        probe.context = 0;
-        probe.state = State::Uninitialized;
+        abort_initialization();
         return code(RenderStatus::GpuError);
     }
     if (!probe.callbacks) {
@@ -262,11 +276,7 @@ int probe_init() {
         if (lost != EMSCRIPTEN_RESULT_SUCCESS ||
             restored != EMSCRIPTEN_RESULT_SUCCESS) {
             diagnostic("context callbacks unavailable");
-            emscripten_set_webglcontextlost_callback("#canvas", nullptr, true, nullptr);
-            emscripten_set_webglcontextrestored_callback("#canvas", nullptr, true, nullptr);
-            emscripten_webgl_destroy_context(probe.context);
-            probe.context = 0;
-            probe.state = State::Uninitialized;
+            abort_initialization();
             return code(RenderStatus::GpuError);
         }
         probe.callbacks = true;
@@ -279,7 +289,7 @@ int probe_init() {
     if (width < 1 || height < 1 || dims[0] < width || dims[1] < height ||
         glGetError() != GL_NO_ERROR) {
         diagnostic("canvas exceeds GL_MAX_VIEWPORT_DIMS or is invalid");
-        probe.state = State::Uninitialized;
+        abort_initialization();
         return code(RenderStatus::InvalidInput);
     }
     probe.canvas = {static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)};
@@ -287,8 +297,7 @@ int probe_init() {
                      static_cast<std::uint32_t>(std::min(height, dims[1]))};
     if (!create_objects()) {
         diagnostic("partial GPU initialization failed");
-        release_objects();
-        probe.state = State::Uninitialized;
+        abort_initialization();
         return code(RenderStatus::GpuError);
     }
     glViewport(0, 0, width, height);
@@ -297,8 +306,7 @@ int probe_init() {
     glDepthMask(GL_TRUE);
     if (glGetError() != GL_NO_ERROR) {
         diagnostic("initial render state failed");
-        release_objects();
-        probe.state = State::Uninitialized;
+        abort_initialization();
         return code(RenderStatus::GpuError);
     }
     probe.state = State::Ready;
