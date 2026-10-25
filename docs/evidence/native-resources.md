@@ -25,6 +25,25 @@ The source also declares loose-resource trees: `data`, `maps`, `music`, `font`,
 the first scene. The exact entry-map and first-scene transitive asset closure
 remain to be measured from an authorized installed client.
 
+### `.pck` extraction must match this client build
+
+The pinned `Angelica2/AngelicaFile/Source/AFilePackGame.cpp` recognizes package
+footer versions `0x00020001` and `0x00020002` through the 32-bit entry/header
+branch, and `0x00020003` through a separate 64-bit header branch. Its
+`FILEENTRY_INFILE` declaration is a 260-byte path plus four 32-bit fields. The
+split-package threshold is `MAX_FILE_PACKAGE = 0x7fffff00` in
+`Angelica2/AngelicaFile/Header/AFilePackBase.h`; the paired logical-stream read
+is implemented in `AFilePackBase.cpp`.
+
+The `pw-pck-extract` tool in the pinned Rust server reference documents
+validation against 1.5.5 client binaries; its accepted footer set is
+`0x00020002`/`0x00020003` and its README records build-specific structure
+recalibration. It is **not yet validated for this 1.5.3 source/client**. Do not
+use it as the asset parser or assume every installed package uses one layout.
+After the user's download completes, first inventory package sizes and
+companions, then validate version/header/entry layouts against the source and
+the actual package bytes before extracting a `.mox` fixture.
+
 Explicit startup data reads found so far:
 
 | Path | Evidence |
