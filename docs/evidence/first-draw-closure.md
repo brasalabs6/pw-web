@@ -98,6 +98,11 @@ the required matching libraries are present.
   configuration.
 - First real draw: **not run**; no real mesh fixture or Windows reference pixels
   are available in this checkout. The synthetic R0 browser report is separate.
+- Local synthetic R0 WebGL2 proof: **PASS** after compiling with Emscripten
+  6.0.13 and running positive/negative controls in Chrome 153.0.8010.12 on
+  SwiftShader; details and exact commands are in
+  [r0-browser-local.md](r0-browser-local.md). This does not change the first
+  real draw status.
 - Version/protocol identity: **unverified**; README range and project metadata
   conflict with a clean, exact 1.5.3 label.
 
