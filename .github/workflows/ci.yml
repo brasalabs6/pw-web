@@ -22,6 +22,10 @@ jobs:
         run: |
           python3 -m compileall -q .agents/automation tests
           python3 .agents/automation/epic_check.py
+      - name: Setup Node for manifest contracts
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Test Angelica POC comparison logic without upstream code or assets
         run: |
           node --test tests/probes/compare.test.mjs

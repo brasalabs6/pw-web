@@ -1,6 +1,8 @@
 # Entrega Cloudflare — backlog incremental v1
 
-**Estado: planejado; nenhuma task abaixo foi executada por estes documentos.**
+**Estado: execução incremental.** CF-03 tem uma primeira implementação no PR #16
+em revisão local; permanece incompleta até produtores/consumidores reais importarem
+o validador comum. As demais tasks continuam pendentes.
 Escopo manual complementar a e03/e04/e05/e15/e17, sem alterar scheduler, write_scopes
 ou completed-workorders. Follow @implementation-loop e @execute-plan na execução;
 contratos novos/alterados seguem @architecture-spec-authoring. Um incremento por PR.
@@ -150,3 +152,19 @@ real. Game mode: baseline e02 + renderer/formatos/cena + protocolo homologado;
 nenhuma task desta árvore elimina esses gates. WO-02 de e15 continua exigindo seus
 próprios critérios de Range quando executado; v1 por objetos inteiros é um corte
 anterior, não marca essa workorder concluída por aproximação.
+
+## Evidência de execução parcial — CF-03 (2026-10-25)
+
+- Criados JSON Schemas de conteúdo e release, canonicalização/rejeição de chaves
+  duplicadas, validação estrita e checagem da closure de índice→catálogo→bundle→release.
+- Criados fixtures canônicos independentes com hashes fixos e 11 testes Node.
+- `./scripts/verify.sh`: 31 testes Python, 11 contratos Node e 14 casos C++ PASS.
+- `./scripts/probe-manifest-browser.sh` com `CHROME_BIN` e
+  `PW_BROWSER_MODULE_DIR` apontando para instalações locais:
+  PASS em Chrome 152: browser importou os mesmos JSON Schemas, percorreu
+  index→catalog→bundle por hashes e validou o release e o path traversal negativo.
+  Manifest local fica em `artifacts/`.
+- Escopo ainda aberto: não existem cooker/release publisher ou `web/streaming`
+  consumers integrados; não valida bytes de objetos ou assets/source/game reais.
+  Esses consumidores precisam importar esta mesma implementação/schema, não
+  replicar as regras. Nenhum upload, conta Cloudflare ou deploy foi executado.
