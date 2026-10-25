@@ -10,7 +10,7 @@ const { chromium } = require(path.join(
 
 (async () => {
   const root = path.resolve(process.env.PW_RENDER_PROBE_DIR || "artifacts/render-probe");
-  const base = "http://127.0.0.1:8482/";
+  const base = `http://127.0.0.1:${process.env.PW_RENDER_PORT || "8482"}/`;
   const browser = await chromium.launch({
     executablePath: process.env.CHROME_BIN,
     headless: true,

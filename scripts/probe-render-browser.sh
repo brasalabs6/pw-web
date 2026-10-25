@@ -12,20 +12,23 @@ done
 [ -f "$PW_BROWSER_MODULE_DIR/node_modules/playwright-core/package.json" ] ||
   { echo "Missing playwright-core under PW_BROWSER_MODULE_DIR/node_modules/" >&2; exit 2; }
 OUT="$ROOT/artifacts/render-probe"
+PORT="${PW_RENDER_PORT:-8482}"
 for item in index.html render-probe.mjs render-probe.wasm; do
   [ -s "$OUT/$item" ] ||
     { echo "Missing $item: first run ./scripts/build-render-probe.sh" >&2; exit 2; }
 done
 # Check TCP bind, not just an HTTP response: never take over an existing service.
 python3 - <<'PY'
+import os
 import socket
+port = int(os.environ.get("PW_RENDER_PORT", "8482"))
 with socket.socket() as sock:
     try:
-        sock.bind(("127.0.0.1", 8482))
+        sock.bind(("127.0.0.1", port))
     except OSError as exc:
-        raise SystemExit(f"Port 8482 in use: {exc}")
+        raise SystemExit(f"Port {port} in use: {exc}")
 PY
-python3 -m http.server 8482 --bind 127.0.0.1 --directory "$OUT" \
+python3 -m http.server "$PORT" --bind 127.0.0.1 --directory "$OUT" \
   > "$OUT/browser-http.log" 2>&1 &
 SERVER_PID=$!
 trap 'kill "$SERVER_PID" 2>/dev/null || true; wait "$SERVER_PID" 2>/dev/null || true' EXIT
@@ -33,7 +36,7 @@ READY=0
 for i in $(seq 1 50); do
   kill -0 "$SERVER_PID" 2>/dev/null ||
     { echo "R0 local HTTP server exited" >&2; exit 1; }
-  if curl --max-time 1 -fsS "http://127.0.0.1:8482/" >/dev/null 2>&1; then
+  if curl --max-time 1 -fsS "http://127.0.0.1:$PORT/" >/dev/null 2>&1; then
     READY=1; break
   fi
   sleep 0.2

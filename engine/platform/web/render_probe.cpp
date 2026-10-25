@@ -73,17 +73,17 @@ void abort_initialization() {
     probe.state = State::Uninitialized;
 }
 
-EM_BOOL context_lost(int, const EmscriptenWebGLContextEvent*, void*) {
+EM_BOOL context_lost(int, const void*, void*) {
     probe.state = State::Lost;
     probe.restored = false;
     // GL objects have already been invalidated by the browser; never delete/reuse them.
     forget_objects();
     return EM_TRUE; // preventDefault, allowing WEBGL_lose_context.restoreContext().
 }
-EM_BOOL context_restored(int, const EmscriptenWebGLContextEvent*, void*) {
+EM_BOOL context_restored(int, const void*, void*) {
     if (probe.state == State::Lost) probe.restored = true;
     // Still Lost until the caller explicitly invokes probe_init().
-    return EM_TRUE;
+    return EM_FALSE;
 }
 
 GLuint shader(GLenum type, const char* source) {

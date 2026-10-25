@@ -72,6 +72,8 @@ try {
     assert(draw(0) === 3, 'lost draw must return ContextLost');
     assert(init() === 3, 'cannot initialize a lost context');
   });
+  // Let the browser finish the loss frame before requesting restoration.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const restored = event('webglcontextrestored');
   extension.restoreContext();
   await restored;

@@ -136,3 +136,41 @@ status PASS global, 10 grupos positivos, 10 pixels checados, negativo FAIL
 **pela divergência intencional do triângulo** (não por erro de import), e zero
 erros JS. Inspecionar contexto/restauração e driver antes de afirmar prova.
 Nada disso prova draw original Angelica, baseline Windows, protocolo ou gameplay.
+
+## Revalidação Codex — P2 WASM/browser (2026-10-25)
+
+No checkout de trabalho baseado no HEAD `26bc9a2a1a5a883bb9162d29fb46a89ceac26ca0`
+do PR #15, o P2 foi compilado e executado localmente. O primeiro build expôs
+callback incompatível com o SDK instalado: `EmscriptenWebGLContextEvent` não
+está declarado pelo Emscripten 6.0.13. Os callbacks agora usam o payload
+`const void*` da API HTML5 do SDK. A prova de lifecycle também espera dois
+frames após `webglcontextlost` antes de solicitar restore; a chamada no mesmo
+ciclo não restaura o contexto no Chrome usado aqui. O servidor de teste aceita
+`PW_RENDER_PORT` para laboratórios onde a porta padrão 8482 esteja ocupada.
+
+Comandos executados:
+
+```bash
+source /tmp/pw-web-emsdk/emsdk_env.sh
+./scripts/build-render-probe.sh
+PW_RENDER_PORT=8484 CHROME_BIN=/opt/google/chrome/chrome \
+  PW_BROWSER_MODULE_DIR=/opt/vscodium-bin/resources/app \
+  ./scripts/probe-render-browser.sh
+./scripts/verify.sh
+git diff --check
+```
+
+Resultado: Emscripten 6.0.13 compilou o módulo WASM. Prova positiva: 10/10
+grupos, pixels de clear/triângulo/depth/ARGB/translação/erros/lifecycle,
+incluindo reinitialização após restore; zero erros JS. Controle negativo: falhou
+especificamente porque o pixel do triângulo permaneceu branco em vez do preto
+propositalmente esperado. O validador aceitou esse negativo e o relatório global
+foi PASS. `./scripts/verify.sh`: 31 testes Python e 14 casos do contrato C++
+passaram. `git diff --check`: PASS.
+
+Ambiente gráfico: Chrome `152.0.7977.64`, WebGL 2 / OpenGL ES 3.0 Chromium,
+ANGLE Vulkan SwiftShader (software renderer); isto não mede GPU física. O
+manifesto e screenshots ficam localmente em `artifacts/render-probe/` e não são
+commitados. Evidência cobre somente o backend R0 sintético: primeiro draw
+Angelica, comparação Windows, assets, gameplay, servidor e protocolo seguem sem
+prova.
