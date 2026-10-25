@@ -19,8 +19,8 @@ A malha procedural da prova usa renderer próprio, portanto não satisfaz G4.
 ## R0 — 2026-10-25
 
 P1: 14 grupos de fixtures passaram no C++ nativo, com ASan/UBSan e em WASM/Node
-(Emscripten 6.0.13). P2 tem harness preparado, sem resultado de
-pixels. Isso não satisfaz G1, G4, G5 ou G6. [Comandos e limites](evidence/render-r0.md).
+(Emscripten 6.0.13). P2 tem backend C++ GLES3 e harness implementados, mas **não foi compilado
+neste ambiente nem há resultado novo de pixels/lifecycle no browser**. Isso não satisfaz G1, G4, G5 ou G6. [Comandos e limites](evidence/render-r0.md).
 
 ## Matriz de seleção (evidência obrigatória por campo)
 | Critério | 1.5.3 Angelica2 | 1.5.2 Angelica2.2 | Como validar |
