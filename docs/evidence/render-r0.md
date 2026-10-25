@@ -17,7 +17,8 @@ rejeitando entradas inválidas antes do draw. Não é a ABI binária do cliente.
 - `./scripts/verify.sh`: 18 testes Python na base local inicial passaram; após
   integração com `c7c74e1`, passaram 31 testes Python, smoke C++ e 14 grupos R0.
   Resultados locais, não CI do novo commit.
-- WASM: validação pendente enquanto o SDK oficial 6.0.13 é provisionado.
+- WASM: PASS com Emscripten 6.0.13 e Node 24.20.0: os mesmos 14 grupos
+  passaram via `./scripts/test-render-clip.sh` em código de `681c8b7`.
 - Testes de pixels/lifecycle P2 preparados; backend e execução ainda pendentes.
 
 ## Arquivos e reprodução
@@ -67,9 +68,25 @@ implementado; o comando de build só estará pronto para execução após essa e
 
 ## Limites e próximos passos
 
-P1 permanece em andamento até passar no alvo WASM. P2 exige execução real no
+P1 passou no nativo e em WASM/Node. P2 exige execução real no
 browser; compilação não basta. Não houve cópia de código/assets de referência,
 mudança de protocolo, atualização de submódulo ou impacto em outro repositório.
 Não há evidência nova de compilação Windows, integração Angelica, login ou mundo.
 O próximo gate é confirmar P1 em WASM e executar o backend sintético P2 antes da
 integração de um draw original e comparação com baseline Windows.
+
+## Revalidação do componente original — 2026-10-25
+
+Após provisionar o SDK oficial 6.0.13, `./scripts/probe-angelica.sh` recompilou
+ARandomGen in-place do SHA fixado. WASM: 22.280 bytes. A página em localhost:8481
+foi executada no Chrome headless 152, em contexto isolado via Chrome DevTools.
+4.096 uniformes coincidiram exatamente e 256 gaussianos passaram na tolerância
+1e-12; 1.922 triângulos sintéticos e pixel central [50,136,143,255].
+Renderer: ANGLE/SwiftShader (software); nenhuma medida de GPU física.
+
+Negativo: reload com wrapper de fetch que altera exclusivamente a primeira
+amostra de native.json (+0.01); a página reportou FAIL com
+`uniform: seed 0, sample 0 differs`. Reload sem wrapper voltou a PASS.
+Não houve alteração das fontes ou fixtures em disco. Evidência local em
+`artifacts/angelica-probe/browser-rerun-evidence.json` e manifest.json; sem
+upload de binários/assets. Isso não comprova P2, render Angelica ou gameplay.

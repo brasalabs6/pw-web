@@ -18,8 +18,8 @@ A malha procedural da prova usa renderer próprio, portanto não satisfaz G4.
 
 ## R0 — 2026-10-25
 
-P1: 14 grupos de fixtures passaram no C++ nativo e com ASan/UBSan. WASM ainda
-pendente de provisionamento do SDK. P2 tem harness preparado, sem resultado de
+P1: 14 grupos de fixtures passaram no C++ nativo, com ASan/UBSan e em WASM/Node
+(Emscripten 6.0.13). P2 tem harness preparado, sem resultado de
 pixels. Isso não satisfaz G1, G4, G5 ou G6. [Comandos e limites](evidence/render-r0.md).
 
 ## Matriz de seleção (evidência obrigatória por campo)

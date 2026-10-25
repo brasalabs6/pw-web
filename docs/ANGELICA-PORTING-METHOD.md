@@ -109,7 +109,7 @@ com o cliente antes da baseline nativa original.
 | ID / dono | Entradas e escrita permitida | Passos e saída verificável | Negativo / dependência |
 | --- | --- | --- | --- |
 | P0 / executor | `tests/probes/`, `scripts/probe-angelica.sh`, docs | Reproduzir POC-001; preservar manifesto e resultado local | Divergência rejeitada. **Executada nesta sessão** |
-| P1 / executor | R0; novos `engine/render/clip.h`, `clip.cpp`, `tests/render_clip.cpp`, `scripts/test-render-clip.sh` | Implementar somente tipos, validação e transformação/cor de R0; nativo e WASM com mesmas fixtures | NaN/índice fora do range; não inclui GL nem referência. **Implementada; 14 grupos nativos passaram; WASM pendente** |
+| P1 / executor | R0; novos `engine/render/clip.h`, `clip.cpp`, `tests/render_clip.cpp`, `scripts/test-render-clip.sh` | Implementar somente tipos, validação e transformação/cor de R0; nativo e WASM com mesmas fixtures | NaN/índice fora do range; não inclui GL nem referência. **PASS: 14 grupos no nativo e WASM/Node** |
 | P2 / executor | P1 e R0; novos `engine/platform/web/render_probe.cpp`, `tests/probes/render.html`, `scripts/build-render-probe.sh` | Inicializar GLES3/WebGL2; desenhar fixtures 6/7; ler pixels; lifecycle R0 | Viewport zero, feature não suportada, perda de contexto; depende de P1. **Harness de pixel/lifecycle preparado; backend/execução pendentes** |
 | N1 / pesquisa em laboratório | `.sln`/`.vcproj`, SDKs, `docs/evidence/native-client-build.md`; checkout isolado permitido | Fixar Release Win32; inventariar dependências; compilar libs e cliente em diretório limpo; registrar primeiro erro real | Não usar `.obj`/`.pch` carregados do upstream. **Bloqueada no ambiente atual: VS/SDKs** |
 | A1 / pesquisa | P2, N1; `docs/evidence/first-draw-closure.md` | Identificar a menor chamada real Angelica até buffers/draw; listar includes, símbolos, libs e escapes D3D; escolher configuração coerente | Se closure arrasta UI/rede, reduzir entrada; não criar stubs. **Pesquisa executável; integração depende dos gates** |
@@ -238,8 +238,7 @@ dos escapes, distinção nativo/wasm32 e estados de prontidão por tarefa.
 Segundo passe: cenários matriz transposta duas vezes, ARGB reinterpretado como RGBA,
 índice inválido, context loss e fonte/middleware ausente possuem comportamento ou
 bloqueio explícito. P1 está pronta; P2 tem contrato, mas depende da entrega P1.
-A2/A3/G1 não estão liberadas para implementação. POC-001 continua sendo a prova original em WASM; P1 já passou no nativo,
-mas aguarda WASM. Ver [evidência R0](evidence/render-r0.md). Não há aprovação de fidelidade visual do cliente original.
+A2/A3/G1 não estão liberadas para implementação. POC-001 continua sendo a prova original em WASM; P1 passou no nativo e em WASM/Node. Ver [evidência R0](evidence/render-r0.md). Não há aprovação de fidelidade visual do cliente original.
 
 Referências técnicas oficiais: [OpenGL/WebGL no Emscripten](https://emscripten.org/docs/porting/multimedia_and_graphics/OpenGL-support.html)
 e [loop e ambiente de execução](https://emscripten.org/docs/porting/emscripten-runtime-environment.html).

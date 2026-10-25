@@ -13,9 +13,8 @@ Uma malha procedural usa essa saída em WebGL 2. Isso ainda não é o renderer d
 Angelica nem o cliente completo. Veja [resultado e reprodução local](docs/POC-ANGELICA.md)
 e o [método de implementação para Grok/GLM](docs/ANGELICA-PORTING-METHOD.md).
 
-A fronteira matemática R0 já passa em 14 grupos de testes nativos, incluindo
-validação de dados e overflow. A confirmação WASM e o backend gráfico ainda estão
-pendentes; veja [evidência e reprodução](docs/evidence/render-r0.md).
+A fronteira matemática R0 já passa nos mesmos 14 grupos em C++ nativo e WASM/Node,
+incluindo validação de dados e overflow. O backend gráfico ainda está pendente; veja [evidência e reprodução](docs/evidence/render-r0.md).
 
 Execução assistida: [tarefas para o ChatGPT Web e validação pelo Codex](docs/CHATGPT-WEB-HANDOFF.md).
 

@@ -37,8 +37,9 @@ em gitlinks não fazem parte de um checkout offline comum.
   `scripts/verify.sh` agora inclui esses testes nativos.
 - Integração com a branch remota: **31 testes Python + core C++ + 14 grupos R0
   passaram localmente**. Estes resultados não são CI do novo commit.
-- WASM de P1: ainda não executado neste estado; SDK oficial 6.0.13 em download
-  no ambiente Codex. Não conte com esse download no seu ambiente.
+- Atualização Codex: P1 passou nos mesmos 14 grupos em WASM/Node com SDK oficial
+  6.0.13. A POC-001 foi recompilada e passou no Chrome, inclusive negativo e
+  reload limpo. Isso não implementa P2. O SDK local não está no seu ambiente.
 - P2: `tests/probes/render.html` e `scripts/build-render-probe.sh` existem, mas
   **`engine/platform/web/render_probe.cpp` ainda não existe**. Harness preparado
   não equivale a backend implementado ou pixel comprovado.
