@@ -42,3 +42,12 @@ cnet/logservice/logservice
 cnet/gauthd/gauthd
 cnet/gclient/gclient
 cnet/gclient/gclient
+
+# runtime state written by daemons at boot (see scripts/boot-server153.sh)
+dbhome/
+dbdata/
+dblogs/
+backup/
+backupwdb/
+dbhomewdb/
+logs/
