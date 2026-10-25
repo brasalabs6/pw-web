@@ -22,16 +22,12 @@ class UserLogin2 : public ProxyRpc
 		// TODO
 		// UserLogin2Arg arg;
 		// osArg >> arg;
-		if( GAuthClient::GetInstance()->SendProtocol( *this ) )
-		{
-			return true;
-		}
-		else
-		{
+		// gauthd is the terminal server for this Rpc: no forward hop exists,
+		// so fail the delivery (sponsor receives ERR_DELIVER_SEND).
 			SetResult(UserLogin2Res(ERR_DELIVER_SEND));
 			SendToSponsor();
 			return false;
-		}
+
 	}
 
 	void PostProcess(Manager::Session::ID proxy_sid,const OctetsStream& osArg, const OctetsStream& osRes)

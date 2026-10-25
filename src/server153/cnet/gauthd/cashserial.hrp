@@ -22,16 +22,12 @@ class CashSerial : public ProxyRpc
 		// TODO
 		// CashSerialArg arg;
 		// osArg >> arg;
-		if( GameDBClient::GetInstance()->SendProtocol( *this ) )
-		{
-			return true;
-		}
-		else
-		{
+		// gauthd is the terminal server for this Rpc: no forward hop exists,
+		// so fail the delivery (sponsor receives ERR_DELIVER_SEND).
 			SetResult(CashSerialRes(ERR_DELIVER_SEND));
 			SendToSponsor();
 			return false;
-		}
+
 	}
 
 	void PostProcess(Manager::Session::ID proxy_sid,const OctetsStream& osArg, const OctetsStream& osRes)
