@@ -3,7 +3,7 @@
 **Fonte de verdade.** Contrato interno do pw-web, versão 0.
 
 Este contrato é novo, interno ao `pw-web`, versão 0, para uma prova sintética.
-Não altera ABI do cliente nem protocolo externo. Estado: **P1 implementado e validado nativo/WASM; P2 pendente**.
+Não altera ABI do cliente nem protocolo externo. Estado: **P1 implementado e validado nativo/WASM; P2 implementado mas não validado em WASM/browser nesta sessão**.
 Evidência: [render-r0.md](../../../../docs/evidence/render-r0.md).
 Donos previstos: `engine/render/` (semântica/testes) e `engine/platform/web/` (GL/browser).
 Consumidor inicial: harness de teste; depois, um adaptador Angelica autorizado.
