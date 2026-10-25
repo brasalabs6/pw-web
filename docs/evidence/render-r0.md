@@ -174,3 +174,27 @@ manifesto e screenshots ficam localmente em `artifacts/render-probe/` e não sã
 commitados. Evidência cobre somente o backend R0 sintético: primeiro draw
 Angelica, comparação Windows, assets, gameplay, servidor e protocolo seguem sem
 prova.
+
+## Revalidação Codex — P2 no HEAD `c857d9e` (2026-10-25)
+
+No checkout limpo do HEAD `c857d9eeeda32fa931a8ac94c046e0111c9f6ec1`, o backend
+sintético `engine/platform/web/render_probe.cpp` compilou com Emscripten 6.0.13
+(`e13ee988ce3d87a738dd8f3661d02223308c412a`). O build **PASS**; nenhum erro de
+callback `EmscriptenWebGLContextEvent` ocorreu neste HEAD.
+
+Ambiente: Node 22.23.4/npm 10.9.9, `playwright-core` 1.56.0, Chrome for Testing
+153.0.8010.12, WebGL 2 / OpenGL ES 3.0 Chromium, ANGLE Vulkan SwiftShader.
+`./scripts/probe-render-browser.sh` passou o positivo (10 grupos e pixels
+esperados), validou o negativo pela divergência intencional do pixel do
+triângulo, e registrou zero erros JS. O resultado completo e os screenshots
+estão apenas em `artifacts/render-probe/` local; renderer é SwiftShader software,
+sem alegação de desempenho em GPU física.
+
+Também passaram `./scripts/verify.sh` (31 testes Python e 14 casos C++),
+`node --test tests/probes/render-proof-utils.test.cjs` (5/5) e
+`./scripts/test-render-clip.sh` (14 casos nativos + 14 WASM/Node). O script
+`test-render-clip.sh` primeiro foi chamado sem EMSDK ativo e saiu com erro de
+ferramenta ausente; repetido após ativação do SDK, passou nos dois alvos.
+Nenhum código ou asset proprietário foi usado. A prova permanece sintética:
+não demonstra draw original Angelica, modelo/textura real, baseline Windows,
+cliente, realm, protocolo ou gameplay.
