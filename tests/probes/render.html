@@ -8,7 +8,6 @@
 <p id="status">RUNNING</p>
 <pre id="result"></pre>
 <script type="module">
-import createModule from './render-probe.mjs';
 const result = { status: 'RUNNING', passed: [], pixels: {} };
 const canvas = document.querySelector('#canvas');
 const status = document.querySelector('#status');
@@ -19,6 +18,8 @@ const event = name => new Promise((resolve, reject) => {
   canvas.addEventListener(name, () => { clearTimeout(timeout); resolve(); }, { once: true });
 });
 try {
+  // Dynamic import lives inside try: import or bootstrap errors must produce FAIL.
+  const { default: createModule } = await import('./render-probe.mjs');
   const module = await createModule({ canvas });
   const { _probe_init: init, _probe_draw: draw, _probe_clear: clear,
     _probe_pixel: pixel, _probe_dispose: dispose } = module;
@@ -34,9 +35,10 @@ try {
   assert(gl, 'WebGL2 context missing');
   const debug = gl.getExtension('WEBGL_debug_renderer_info');
   result.renderer = debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+  result.gl_version = gl.getParameter(gl.VERSION);
   check('triangle and clear', () => {
     assert(clear() === 0 && draw(0) === 0, 'triangle failed');
-    nearPixel('triangle', 32,32, location.search.includes('negative=1') ? [0,0,0,255] : [255,255,255,255]);
+    nearPixel('triangle', 32,32, new URLSearchParams(location.search).get('negative') === '1' ? [0,0,0,255] : [255,255,255,255]);
     nearPixel('clear', 1,1, [0,0,0,255]);
   });
   for (const [fixture, name] of [[1,'near then far'], [2,'far then near']]) {
