@@ -1,5 +1,9 @@
-IOPATH=/mnt/c/Users/GUSTAVO/Desktop/pw152src_client-master/pw152src_client-master/server/iolib
-BASEPATH=/mnt/c/Users/GUSTAVO/Desktop/pw152src_client-master/pw152src_client-master/server/cgame
+# Portable paths (pw-web): resolve from this file's location so the tree
+# builds from any checkout directory. Upstream had hardcoded /mnt/c/... paths
+# and required setrules.sh to rewrite them with absolute paths on every build.
+RULES_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+IOPATH := $(abspath $(RULES_DIR)../iolib)
+BASEPATH := $(abspath $(RULES_DIR).)
 
 INC=-I$(BASEPATH)/include -I$(BASEPATH) -I$(IOPATH)/inc -I$(BASEPATH)/libcommon
 IOLIB_OBJ=$(BASEPATH)/libgs/gs/*.o $(BASEPATH)/libgs/io/*.o $(BASEPATH)/libgs/db/*.o $(BASEPATH)/libgs/log/*.o 
