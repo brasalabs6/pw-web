@@ -106,3 +106,40 @@ client executable; reproduce its native build with the correct matching SDKs;
 then use compiler dependency output on a minimized ordinary-device mesh target
 to close headers, symbols, libraries, and D3D calls. Only after that can the
 port adapter and a same-input native/browser pixel comparison be specified.
+
+## Source layout for binary Angelica mesh input
+
+The pinned source provides a concrete next data path even though this checkout
+contains no mesh or texture asset. `A3DMesh::Save` and `A3DMesh::Load` in
+`Angelica2/Angelica3D/Source/A3DMesh.cpp` establish the binary `.mox` record:
+
+1. NUL-terminated `VERSION: n`, then NUL-terminated `MESH: name`.
+2. Little-endian Win32 `int` counts for vertices, indices and frames; one-byte
+   Win32 `bool` values for LOD and wire flags.
+3. Version 1 properties use a size-prefixed legacy `A3DMESH_PROP`; versions 2
+   and 100 serialize `A3DMESHPROP` (DWORD flags and material enum).
+4. `uint16` indices; optional LOD distance floats, limit integer and `uint16`
+   map table; then each frame's `A3DVERTEX` records, eight float32 values per
+   vertex (position XYZ, normal XYZ, UV).
+5. Optional `DETAILTEXTURE: name` and a 4x4 float32 matrix; then
+   `TEXTURE: name`; then `MATERIAL: name`, four float32 RGBA values in serialized
+   order ambient/diffuse/emissive/specular, float power and one-byte two-sided.
+6. Version 100 appends two float32 lightmap UV values for each vertex in every
+   frame.
+
+The layout above is traced from the corresponding `Save` and `Load` calls, plus
+`A3DVERTEX`, `A3DMESHPROP`, `A3DMESH_PROP`, `A3DLIGHTMAPCOORD` and
+`A3DMaterial::Save/Load` in the same fixed submodule. `Save` writes v2 or v100;
+`Load` also handles v1 and text mode. It does **not** prove that the target 1.5.3
+content set uses only these binary variants. The parser must bound the v1
+size-prefixed legacy property before reading it, retain the distinction between
+format versions, and reject unknown/truncated data. No raw proprietary source
+was copied into the port for this inventory.
+
+No `.mox`, `.pck`, `.pkx`, texture, map or animation data was found in the
+available workspace, Downloads, Desktop, `.local/share`, `/mnt`, `/media` or
+`/run/media`. Therefore this source-derived format is a decoder prerequisite,
+not a real asset or scene proof. The user confirmed the 1.5.3 reference source
+is all that is currently available; a browser pixel comparison still needs an
+authorized mesh plus its texture and a baseline or a separately approved
+source-derived expected image.
