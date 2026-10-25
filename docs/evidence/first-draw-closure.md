@@ -81,6 +81,16 @@ platform headers; it does **not** prove those source implementations are
 missing. Adding typedef shims or fake Windows/Direct3D headers would conceal
 more of the closure and is not accepted as a port.
 
+A second diagnostic added the host's Wine headers at
+`/usr/include/wine/windows` and `/usr/include/wine`; it failed at the same
+`__int64`, `_atoi64`, and `Windows.h` errors. Wine's installed header is named
+lowercase `windows.h`, while the source includes `Windows.h`; the case-sensitive
+Emscripten filesystem does not resolve that include. These compatibility
+headers are not a selected Angelica build SDK and were not symlinked or altered
+to force compilation. The probe still has not reached downstream A3D symbols or
+produced a usable object; this remains a platform dependency boundary, not
+evidence that the implementation is absent.
+
 The native client project itself declares Win32, Visual Studio 2005, Direct3D 8
 (`d3d8`, `d3dx8`), and many middleware libraries. The exact project configuration
 and dependencies for the intended 1.5.3 baseline have not been established, and
