@@ -38,5 +38,7 @@ cnet/gamedbd/gamedbd
 cnet/gdeliveryd/gdeliveryd
 cnet/glinkd/glinkd
 cnet/gacd/gacd
-cnet/logservice/logservicecnet/gauthd/gauthd
+cnet/logservice/logservice
+cnet/gauthd/gauthd
+cnet/gclient/gclient
 cnet/gclient/gclient
