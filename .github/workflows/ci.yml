@@ -25,7 +25,9 @@ jobs:
       - name: Test Angelica POC comparison logic without upstream code or assets
         run: |
           node --test tests/probes/compare.test.mjs
+          node --test tests/probes/render-proof-utils.test.cjs
           node --check tests/probes/browser-proof.cjs
+          node --check tests/probes/render-browser-proof.cjs
       - name: Verify bootstrap, tests and portable C++ (capture evidence)
         id: checks
         shell: bash
