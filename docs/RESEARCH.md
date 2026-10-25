@@ -1,6 +1,6 @@
 # Research ledger: upstreams, evidências e hipóteses
 
-Última verificação dos refs: 2026-10-24. Submódulos são referências **não incluídas em builds**; veja `.gitmodules`.
+Última verificação dos refs: 2026-10-24. Submódulos são referências **não incluídas em builds**; veja `.gitmodules`. Uso autorizado no escopo de `docs/LEGAL.md` (decisão 2026-10-25).
 
 | Nome | Upstream | Commit fixo | Uso |
 | --- | --- | --- | --- |

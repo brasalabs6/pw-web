@@ -55,7 +55,7 @@ A paridade observada não autoriza reutilizar layouts binários Linux em arquivo
 
 ## Reprodução
 
-Pré-condições: referência já obtida conforme `LEGAL.md`, compilador C++17, Python 3,
+Pré-condições: referência já obtida conforme `LEGAL.md` (autorização 2026-10-25), compilador C++17, Python 3,
 Git, Emscripten 6.0.13 e navegador com WebGL 2. Node é usado apenas nos testes do
 comparador. A prova não baixa referências ou ferramentas automaticamente.
 

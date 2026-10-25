@@ -13,6 +13,10 @@ if command -v c++ >/dev/null 2>&1; then
   c++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iengine/core \
     engine/core/pw_core.cpp tests/core_smoke.cpp -o "$BIN"
   "$BIN"
+  echo "== portable renderer contract =="
+  c++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iengine/render \
+    engine/render/clip.cpp tests/render_clip.cpp -o "$BIN"
+  "$BIN"
 else
   echo "SKIP: native compiler unavailable (CI has C++)"
 fi

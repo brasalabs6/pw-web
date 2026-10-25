@@ -20,7 +20,7 @@
 7. Definir regras de proteção de `main` com revisão humana + `Bootstrap CI` obrigatório, e limites de uso do Actions/xAI.
 
 ## O que NÃO automatizamos nesta fase
-- Merge, deploy público, download de conteúdo proprietário, decisões jurídicas, credenciais, pagamentos, releases, alteração de workflows do próprio agente, leitura/escrita de servers de produção.
+- Merge, deploy público, decisões jurídicas novas, credenciais, pagamentos, releases, alteração de workflows do próprio agente, leitura/escrita de servers de produção.
 - Escolha automática de PRs sem revisão humana, ou despachador programado de backlog sem limites: programação de novas tasks requer uma governança adicional.
 - Certificar funcionalidade Perfect World por checks de scaffold: apenas testes reprodutíveis do que foi realmente implementado.
 

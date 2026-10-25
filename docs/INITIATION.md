@@ -28,7 +28,7 @@ Abrir um URL e jogar uma sessão real de Perfect World, com render 3D local por 
 ## Workstreams e entregáveis
 | Trilha | Entregável verificável | Dependência |
 | --- | --- | --- |
-| Licenciamento | matriz de autoria e permissões por fonte/asset | acesso às fontes |
+| Licenciamento | matriz de autoria e permissões por fonte/asset | autorização registrada em `docs/LEGAL.md` |
 | Cliente Windows | executável reproduzível + logs + funcionalidade testada | toolchain, recursos autorizados |
 | Inventário de dependências | mapa de Win32, D3D8/9, arquivos, som, threads, sockets, asm | código de cliente selecionado |
 | Core WASM | build reprodutível com teste C++ → browser | emsdk |

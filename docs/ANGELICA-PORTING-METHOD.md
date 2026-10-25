@@ -12,8 +12,9 @@ numérica alimentando um renderer procedural. Ainda não existe renderer Angelic
 portado, cliente Windows reconstruído, asset validado ou sessão de jogo no browser.
 
 Este documento detalha o recorte técnico dos épicos e02, e03, e04, e05 e e06.
-Não marca workorders antigos como concluídos nem habilita o scheduler. Regras de
-direitos, referências congeladas e contratos de servidor continuam em vigor.
+Não marca workorders antigos como concluídos nem habilita o scheduler. O uso de
+código/assets está autorizado no escopo de `docs/LEGAL.md` (2026-10-25);
+referências congeladas e contratos de servidor continuam em vigor.
 
 ## Escolha que economiza trabalho
 
@@ -99,7 +100,8 @@ fixtures. Leia-o antes de executar P1/P2; não duplique a definição em outro �
 
 ## Ordem de execução e pacotes de trabalho
 
-As tarefas abaixo não autorizam redistribuir referências. Tarefas independentes
+As tarefas abaixo operam no escopo da autorização de `docs/LEGAL.md` (2026-10-25);
+redistribuição fora desse escopo permanece proibida. Tarefas independentes
 de fontes proprietárias podem avançar enquanto se prepara o laboratório Windows.
 Não esperar por login para testar matemática/render próprios; não declarar paridade
 com o cliente antes da baseline nativa original.
@@ -107,11 +109,11 @@ com o cliente antes da baseline nativa original.
 | ID / dono | Entradas e escrita permitida | Passos e saída verificável | Negativo / dependência |
 | --- | --- | --- | --- |
 | P0 / executor | `tests/probes/`, `scripts/probe-angelica.sh`, docs | Reproduzir POC-001; preservar manifesto e resultado local | Divergência rejeitada. **Executada nesta sessão** |
-| P1 / executor | R0; novos `engine/render/clip.h`, `clip.cpp`, `tests/render_clip.cpp`, `scripts/test-render-clip.sh` | Implementar somente tipos, validação e transformação/cor de R0; nativo e WASM com mesmas fixtures | NaN/índice fora do range; não inclui GL nem referência. **Pronta para implementar** |
-| P2 / executor | P1 e R0; novos `engine/platform/web/render_probe.cpp`, `tests/probes/render.html`, `scripts/build-render-probe.sh` | Inicializar GLES3/WebGL2; desenhar fixtures 6/7; ler pixels; lifecycle R0 | Viewport zero, feature não suportada, perda de contexto; depende de P1. **Contrato pronto, execução pendente** |
+| P1 / executor | R0; novos `engine/render/clip.h`, `clip.cpp`, `tests/render_clip.cpp`, `scripts/test-render-clip.sh` | Implementar somente tipos, validação e transformação/cor de R0; nativo e WASM com mesmas fixtures | NaN/índice fora do range; não inclui GL nem referência. **Implementada; 14 grupos nativos passaram; WASM pendente** |
+| P2 / executor | P1 e R0; novos `engine/platform/web/render_probe.cpp`, `tests/probes/render.html`, `scripts/build-render-probe.sh` | Inicializar GLES3/WebGL2; desenhar fixtures 6/7; ler pixels; lifecycle R0 | Viewport zero, feature não suportada, perda de contexto; depende de P1. **Harness de pixel/lifecycle preparado; backend/execução pendentes** |
 | N1 / pesquisa em laboratório | `.sln`/`.vcproj`, SDKs, `docs/evidence/native-client-build.md`; checkout isolado permitido | Fixar Release Win32; inventariar dependências; compilar libs e cliente em diretório limpo; registrar primeiro erro real | Não usar `.obj`/`.pch` carregados do upstream. **Bloqueada no ambiente atual: VS/SDKs** |
 | A1 / pesquisa | P2, N1; `docs/evidence/first-draw-closure.md` | Identificar a menor chamada real Angelica até buffers/draw; listar includes, símbolos, libs e escapes D3D; escolher configuração coerente | Se closure arrasta UI/rede, reduzir entrada; não criar stubs. **Pesquisa executável; integração depende dos gates** |
-| A2 / executor | A1 e autorização de integração; área de port aprovada, nunca `references/` | Adaptar apenas a closure de um draw original para R0; comparar com baseline nativa | Mesmo input deve produzir mesmos pontos/cores/profundidade. **Não pronta: closure e direitos pendentes** |
+| A2 / executor | A1 e autorização de integração (`docs/LEGAL.md`); área de port aprovada, nunca `references/` | Adaptar apenas a closure de um draw original para R0; comparar com baseline nativa | Mesmo input deve produzir mesmos pontos/cores/profundidade. **Não pronta: closure pendente** |
 | A3 / arquitetura + executor | A2; contrato seguinte ainda a escrever | Acrescentar uma textura RGBA sintética, sampler e alpha; depois um formato/malha autorizado e animação | Não inventar formato ECM/SKI/BON. **Não pronta: contrato e fixtures pendentes** |
 | G1 / arquitetura + executor | Cena mínima e realm definido | Uma sequência login → personagem → mundo, contratos reais e captura autorizada | Não presumir compatibilidade 1.5.3. **Não pronta: baseline/protocolo/servidor** |
 
@@ -236,8 +238,8 @@ dos escapes, distinção nativo/wasm32 e estados de prontidão por tarefa.
 Segundo passe: cenários matriz transposta duas vezes, ARGB reinterpretado como RGBA,
 índice inválido, context loss e fonte/middleware ausente possuem comportamento ou
 bloqueio explícito. P1 está pronta; P2 tem contrato, mas depende da entrega P1.
-A2/A3/G1 não estão liberadas para implementação. A única prova de runtime concluída
-neste documento é POC-001. Não há aprovação de fidelidade visual do cliente original.
+A2/A3/G1 não estão liberadas para implementação. POC-001 continua sendo a prova original em WASM; P1 já passou no nativo,
+mas aguarda WASM. Ver [evidência R0](evidence/render-r0.md). Não há aprovação de fidelidade visual do cliente original.
 
 Referências técnicas oficiais: [OpenGL/WebGL no Emscripten](https://emscripten.org/docs/porting/multimedia_and_graphics/OpenGL-support.html)
 e [loop e ambiente de execução](https://emscripten.org/docs/porting/emscripten-runtime-environment.html).

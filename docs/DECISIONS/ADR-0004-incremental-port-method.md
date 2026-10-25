@@ -26,7 +26,7 @@ a semântica necessária para implementação sem decisões adicionais.
 5. Cada entrega carrega baseline, contrato, teste positivo/negativo, comandos,
    limitações e diff revisável. O modelo executor não escolhe layouts desconhecidos.
 6. Manter referências congeladas e artefatos derivados locais. A integração em
-   código distribuído segue o gate já existente em `LEGAL.md`.
+   código distribuído segue a autorização registrada em `LEGAL.md` (2026-10-25).
 
 ## Alternativas e consequências
 

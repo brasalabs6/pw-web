@@ -49,7 +49,7 @@ O servidor opera remotamente, mas renderização, input e simulação cliente oc
 - Segurança: nunca confiar no cliente; gateway autentica e rate-limita.
 
 ## Testabilidade
-Unit native C++ sem asset; build WASM e import pelo navegador; contrato de protocolo e fixtures permitidas; screenshot diffs com versão Windows autorizada; perf medido (FPS/frametime, memória, bytes de rede, tamanho de transferência).
+Unit native C++ sem asset; build WASM e import pelo navegador; contrato de protocolo e fixtures permitidas; screenshot diffs com versão Windows autorizada (`docs/LEGAL.md`); perf medido (FPS/frametime, memória, bytes de rede, tamanho de transferência).
 
 ## Futuro de engenharia
 `engine`, `web`, `gateway` serão monorepo separados por contratos, com CI em cada módulo e manifests de assets assinados. Hoje, apenas a prova genérica da plataforma existe.

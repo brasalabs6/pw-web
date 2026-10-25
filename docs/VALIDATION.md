@@ -9,12 +9,18 @@ Nenhum cliente foi aprovado definitivamente. Candidata 1.5.3 tem Angelica2 com D
 | --- | --- |
 | G0 plataforma | PASS local: bootstrap, core WASM executado e WebGL2 no Chrome 152 |
 | G1 código original completo | Pendente: não houve build Windows; probe direta de A3DEngine para WASM falha em Windows.h |
-| G2 licenças | Pendente; experimento isolado não aprova integração/distribuição |
+| G2 licenças | Autorização registrada em `docs/LEGAL.md` (2026-10-25); integração/distribuição seguem o escopo do contrato |
 | G3 componente WASM | PASS restrito ao ARandomGen original: 4.096 uniformes exatos e 256 gaussianos dentro da tolerância |
 | G4 render original / G5 rede / G6 multiplayer | Não demonstrados |
 
 Comandos, versões, limites e teste negativo: [POC-001](POC-ANGELICA.md).
 A malha procedural da prova usa renderer próprio, portanto não satisfaz G4.
+
+## R0 — 2026-10-25
+
+P1: 14 grupos de fixtures passaram no C++ nativo e com ASan/UBSan. WASM ainda
+pendente de provisionamento do SDK. P2 tem harness preparado, sem resultado de
+pixels. Isso não satisfaz G1, G4, G5 ou G6. [Comandos e limites](evidence/render-r0.md).
 
 ## Matriz de seleção (evidência obrigatória por campo)
 | Critério | 1.5.3 Angelica2 | 1.5.2 Angelica2.2 | Como validar |
@@ -25,13 +31,13 @@ A malha procedural da prova usa renderer próprio, portanto não satisfaz G4.
 | Binário Windows rodando | não demonstrado | não demonstrado | vídeo/log/versão/hash |
 | Login em servidor alvo | não demonstrado | não demonstrado | captura de handshake |
 | Assets correspondentes | não demonstrado | não demonstrado | manifesto e hash |
-| Licença válida do cliente | não demonstrada | não demonstrada | chain of title autorizada |
+| Licença válida do cliente | autorizada (`docs/LEGAL.md`, 2026-10-25) | autorizada | chain of title registrada |
 | Esforço wasm | não medido | não medido | métricas de build/tracing |
 
 ## Gates
 - **G0 plataforma:** `scripts/verify.sh` verde, WebGL2 no browser, build WASM trivial por `build-wasm.sh`.
 - **G1 código original:** build Windows limpo sem hacks não documentados e inicialização até a cena.
-- **G2 licenças:** comprovar autorização para cada parte antes de embutir/distribuir.
+- **G2 licenças:** registrar autorização por parte conforme `docs/LEGAL.md` antes de embutir/distribuir.
 - **G3 engine WASM:** pelo menos um módulo útil real compilado e testado com entradas permitidas.
 - **G4 render:** malha/tex/material/animação com desenho coerente vs referência.
 - **G5 rede:** handshake, autenticação, lista de personagens e entrada no mundo.

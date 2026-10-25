@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>R0 — prova GLES3/WebGL2</title>
+<h1>R0 — prova sintética do backend</h1>
+<p>Sem assets, renderer original ou gameplay de Perfect World.</p>
+<canvas id="canvas" width="64" height="64"></canvas>
+<p id="status">RUNNING</p>
+<pre id="result"></pre>
+<script type="module">
+import createModule from './render-probe.mjs';
+const result = { status: 'RUNNING', passed: [], pixels: {} };
+const canvas = document.querySelector('#canvas');
+const status = document.querySelector('#status');
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const check = (name, action) => { action(); result.passed.push(name); };
+const event = name => new Promise((resolve, reject) => {
+  const timeout = setTimeout(() => reject(new Error(`Timeout: ${name}`)), 10000);
+  canvas.addEventListener(name, () => { clearTimeout(timeout); resolve(); }, { once: true });
+});
+try {
+  const module = await createModule({ canvas });
+  const { _probe_init: init, _probe_draw: draw, _probe_clear: clear,
+    _probe_pixel: pixel, _probe_dispose: dispose } = module;
+  const nearPixel = (name, x, y, expected) => {
+    const packed = pixel(x,y) >>> 0;
+    const actual = [packed >>> 24, (packed >>> 16) & 255, (packed >>> 8) & 255, packed & 255];
+    result.pixels[name] = actual;
+    assert(actual.every((value, i) => Math.abs(value - expected[i]) <= 2),
+      `${name}: ${actual} != ${expected}`);
+  };
+  check('initialize', () => assert(init() === 0, 'initialize failed'));
+  const gl = canvas.getContext('webgl2');
+  assert(gl, 'WebGL2 context missing');
+  const debug = gl.getExtension('WEBGL_debug_renderer_info');
+  result.renderer = debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+  check('triangle and clear', () => {
+    assert(clear() === 0 && draw(0) === 0, 'triangle failed');
+    nearPixel('triangle', 32,32, location.search.includes('negative=1') ? [0,0,0,255] : [255,255,255,255]);
+    nearPixel('clear', 1,1, [0,0,0,255]);
+  });
+  for (const [fixture, name] of [[1,'near then far'], [2,'far then near']]) {
+    check(name, () => {
+      assert(clear() === 0 && draw(fixture) === 0, name);
+      nearPixel(name,32,32,[255,0,0,255]);
+    });
+  }
+  check('ARGB shader channels', () => {
+    assert(clear() === 0 && draw(6) === 0, 'color draw failed');
+    nearPixel('ARGB',32,32,[64,32,16,128]);
+  });
+  check('row-major translation', () => {
+    assert(clear() === 0 && draw(7) === 0, 'translation failed');
+    nearPixel('translated interior',48,32,[255,255,255,255]);
+    nearPixel('translated exterior',20,32,[0,0,0,255]);
+  });
+  check('reject before drawing', () => {
+    assert(clear() === 0, 'clear failed');
+    assert(draw(3) === 1, 'bad index must return InvalidInput');
+    assert(draw(4) === 1, 'zero viewport must return InvalidInput');
+    assert(draw(5) === 2, 'texture must return UnsupportedFeature');
+    nearPixel('invalid draw unchanged',32,32,[0,0,0,255]);
+  });
+  const extension = gl.getExtension('WEBGL_lose_context');
+  assert(extension, 'WEBGL_lose_context required for lifecycle test');
+  const lost = event('webglcontextlost');
+  extension.loseContext();
+  await lost;
+  check('context loss', () => {
+    assert(draw(0) === 3, 'lost draw must return ContextLost');
+    assert(init() === 3, 'cannot initialize a lost context');
+  });
+  const restored = event('webglcontextrestored');
+  extension.restoreContext();
+  await restored;
+  check('explicit restoration', () => {
+    assert(draw(0) !== 0, 'restore must require explicit initialization');
+    assert(init() === 0 && clear() === 0 && draw(0) === 0, 'reinitialize failed');
+    nearPixel('restored triangle',32,32,[255,255,255,255]);
+  });
+  check('idempotent dispose and reinitialize', () => {
+    dispose(); dispose();
+    assert(draw(0) !== 0, 'disposed draw accepted');
+    assert(init() === 0 && clear() === 0 && draw(0) === 0, 'initialize after dispose');
+    nearPixel('reinitialized triangle',32,32,[255,255,255,255]);
+    dispose();
+  });
+  assert(result.passed.length === 10, 'incomplete test suite');
+  result.status = 'PASS';
+} catch (error) {
+  result.status = 'FAIL';
+  result.error = String(error);
+}
+status.textContent = result.status;
+status.dataset.state = result.status;
+document.querySelector('#result').textContent = JSON.stringify(result, null, 2);
+</script>
+</html>

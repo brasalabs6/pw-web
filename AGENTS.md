@@ -12,7 +12,7 @@ Produzir o cliente do Perfect World executado no navegador, **não** um clone vi
 6. `docs/VALIDATION.md`, `docs/LEGAL.md` e `docs/RESEARCH.md`
 
 ## Regras estritas
-- **Não** copiar código ou assets proprietários de referências para `engine/`, `web/` ou a branch principal até haver uma decisão jurídica documentada. Acesso ao repositório não é autorização.
+- Copiar código ou assets proprietários de referências para `engine/`, `web/` ou a branch principal é permitido **somente no escopo da decisão jurídica documentada** em `docs/LEGAL.md` (2026-10-25), com registro de proveniência e preservação de headers de copyright. Acesso ao repositório, por si só, nunca é autorização.
 - Não rodar `git submodule update --remote`; usar commits fixados e registrar revisão em `docs/RESEARCH.md`.
 - Não presumir que a compilação Windows 1.5.3 funciona nem que a versão 1.5.3 autentica no servidor Rust.
 - Nunca afirmar que existe um port jogável sem uma prova com entrada no mundo e troca de pacotes.

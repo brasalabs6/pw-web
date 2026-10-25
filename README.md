@@ -6,7 +6,20 @@ Objetivo: construir um **cliente de MMORPG executado localmente no navegador**, 
 
 > **Estado: fundação e provas de viabilidade (não jogável).** A demo em `web/` usa geometria procedimental e NÃO contém Perfect World nem seus assets.
 
-**Primeira POC da Angelica:** o módulo original ARandomGen foi compilado in-place para wasm32 e comparado com o comportamento nativo; veja [POC-001](docs/POC-ANGELICA.md) e [método de port por fatias](docs/ANGELICA-PORTING-METHOD.md). Esta prova não é o renderer original nem o jogo funcionando.\n\n## Início rápido
+**Primeira prova executada:** um componente original da Angelica (`ARandomGen`)
+foi compilado sem alterações para WASM e validado no navegador contra a execução
+nativa: 4.096 valores uniformes idênticos e 256 gaussianos dentro da tolerância.
+Uma malha procedural usa essa saída em WebGL 2. Isso ainda não é o renderer da
+Angelica nem o cliente completo. Veja [resultado e reprodução local](docs/POC-ANGELICA.md)
+e o [método de implementação para Grok/GLM](docs/ANGELICA-PORTING-METHOD.md).
+
+A fronteira matemática R0 já passa em 14 grupos de testes nativos, incluindo
+validação de dados e overflow. A confirmação WASM e o backend gráfico ainda estão
+pendentes; veja [evidência e reprodução](docs/evidence/render-r0.md).
+
+Execução assistida: [tarefas para o ChatGPT Web e validação pelo Codex](docs/CHATGPT-WEB-HANDOFF.md).
+
+## Início rápido
 
 ```bash
 git clone https://github.com/brasalabs6/pw-web.git
@@ -17,9 +30,9 @@ cd pw-web
 
 Abra http://localhost:8480 para conferir o diagnóstico do navegador e a prova gráfica WebGL 2. Não é necessária nenhuma dependência de terceiros para esse primeiro teste. Para compilar a prova de C++ → WASM, instale o [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) e execute `./scripts/build-wasm.sh`. A página deverá passar a informar que o núcleo WebAssembly foi carregado.
 
-## Referências externas (opcionais e **não redistribuídas**)
+## Referências externas (opcionais)
 
-Os diretórios em `references/` são submódulos fixados por commit. **Não** são usados pela demo, pelo build padrão ou pelo CI. Baixe apenas se você tiver a autorização pertinente:
+Os diretórios em `references/` são submódulos fixados por commit. **Não** são usados pela demo, pelo build padrão ou pelo CI. O uso é permitido no escopo da autorização documentada em [docs/LEGAL.md](docs/LEGAL.md) (2026-10-25):
 
 ```bash
 git submodule update --init references/client-153
@@ -27,7 +40,7 @@ git submodule update --init references/client-152-modern
 git submodule update --init references/server-rust
 ```
 
-**Atenção jurídica:** a disponibilidade pública de código-fonte de Perfect World não demonstra direito de reprodução, criação de derivados ou distribuição comercial. Não publique código, assets ou marcas de terceiros sem avaliar os direitos aplicáveis. Veja [docs/LEGAL.md](docs/LEGAL.md).
+**Atenção jurídica:** a disponibilidade pública de código-fonte de Perfect World não demonstra, por si só, direito de reprodução ou distribuição. O uso neste projeto está autorizado no escopo da decisão documentada em [docs/LEGAL.md](docs/LEGAL.md) (2026-10-25); fora desse escopo, não publique código, assets ou marcas de terceiros.
 
 ## Guia do projeto
 

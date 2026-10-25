@@ -19,7 +19,7 @@ Evidência: [POC-001](POC-ANGELICA.md). Próxima tarefa pronta para executor:
 **P1**, contrato de matemática/ABI, no [método de port](ANGELICA-PORTING-METHOD.md).
 Os gates abaixo continuam obrigatórios para integrar o cliente original.
 
-1. Verificar procedência jurídica de fontes e assets; não redistribuir artefatos até autorização.
+1. Registrar procedência de fontes e assets conforme `docs/LEGAL.md`; distribuição somente no escopo da autorização.
 2. Construir benchmark de compilação Win32 e interface gráfica de candidatos 1.5.3 e 1.5.2.
 3. Extrair e categorizar dependências Win32, D3D8/9, SDK, ponteiros, asm, threads, networking.
 4. Fazer C++ básico rodar no navegador e depois um módulo real independentemente do render.
@@ -29,7 +29,7 @@ Os gates abaixo continuam obrigatórios para integrar o cliente original.
 ## Riscos / mitigação
 | Risco | Gravidade | Mitigação |
 | --- | --- | --- |
-| Direitos de código/arte/áudio não demonstrados | bloqueante para distribuição | parecer/autorização ou implementação/conteúdo autorizado |
+| Direitos de código/arte/áudio | autorização registrada em `docs/LEGAL.md` (2026-10-25); escopo de distribuição segue o contrato | manter registro de proveniência e não exceder o escopo |
 | 1.5.3 não compila/loga | crítico | comparar 1.5.2, validar Windows primeiro e protocolo por versão |
 | Grande acoplamento D3D/Win32 | crítico | adapter incremental e testes de equivalência |
 | Incompatibilidade asset↔engine | alto | fixtures/manifest com identificação exata de versão |
@@ -44,7 +44,7 @@ Os gates abaixo continuam obrigatórios para integrar o cliente original.
 - D3D translation inviável: construir renderer próprio do subconjunto necessário; documentar custo.
 
 ## Próximas issues sugeridas
-- P0-1 Compilar e executar cliente 1.5.3 em laboratório autorizado.
+- P0-1 Compilar e executar cliente 1.5.3 em laboratório (autorizado por `docs/LEGAL.md`).
 - P0-2 Inventariar APIs do 1.5.3 comparando a 1.5.2.
 - P0-3 Verificar e documentar direitos/arquivos-base.
 - P0-4 Primeiro parser original/permitido C++ compilado em Emscripten.

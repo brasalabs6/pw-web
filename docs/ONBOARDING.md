@@ -29,7 +29,7 @@ git submodule update --init references/client-153
 git submodule update --init references/client-152-modern
 git submodule update --init references/server-rust
 ```
-Estas árvores NÃO são parte de um build padrão. São referências externas com versões fixas. Requerem espaço considerável. Não reenvie essas árvores para outro repositório nem crie binários redistribuíveis até esclarecer direitos. A fonte 1.5.3 é candidata, não base aprovada.
+Estas árvores NÃO são parte de um build padrão. São referências externas com versões fixas. Requerem espaço considerável. Não reenvie essas árvores para outro repositório nem crie binários redistribuíveis fora do escopo da autorização registrada em `docs/LEGAL.md` (2026-10-25). A fonte 1.5.3 é candidata, não base aprovada.
 
 ## Teste Windows do cliente (trilha de pesquisa isolada)
 - Usar VM/lab separado, com ferramenta correspondente ao projeto (candidato 1.5.3 requer VS2005).
