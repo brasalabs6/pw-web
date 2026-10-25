@@ -143,3 +143,16 @@ not a real asset or scene proof. The user confirmed the 1.5.3 reference source
 is all that is currently available; a browser pixel comparison still needs an
 authorized mesh plus its texture and a baseline or a separately approved
 source-derived expected image.
+
+Source file hashes used in this call-path/format report (all under the fixed
+submodule commit above):
+
+| Reference path | SHA-256 |
+| --- | --- |
+| `Angelica2/Angelica3D/Source/A3DMesh.cpp` | `eee6db2c8c1b519313a0b32e5c29ebbc7bf3e02fdb94b5822628bfae4e282519` |
+| `Angelica2/Angelica3D/Source/A3DStream.cpp` | `97118427a51d1b97131d19f335331fdda34db82138d54b7f2e0adadd08cd222e` |
+| `Angelica2/Angelica3D/Source/A3DDevice.cpp` | `1a49b8f1708122ad569b2869897cd81dc97a70bc6268826afc3061636755acca` |
+| `Angelica2/Angelica3D/Source/A3DMaterial.cpp` | `29e4bec5b2bbb0e9f8681433277556e9a8db88d8dda002f720c1c5253bdb0734` |
+| `Angelica2/Angelica3D/Header/A3DVertex.h` | `3bdcd6a31ead17522b1391d81060b692cfe3ad58282cdd2efa98f450229a6752` |
+| `Angelica2/Angelica3D/Header/A3DTypes.h` | `b5a0d274534cdc3cc557bd3c56f59923cc31cec1c1204fa3b18858ae1fbcfb0f` |
+| `Angelica2/Angelica3D/Header/A3DMatrix.h` | `9066cdcaa7237b85f225f0f793cc39589a537e8b3b2f658f36878803133964a4` |
