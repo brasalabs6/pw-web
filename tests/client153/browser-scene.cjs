@@ -40,6 +40,8 @@ const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR, 'node_
       return { ...window.__pw153, coloredPixels: colored, uniqueColors: colors.size, gpuError: gl.getError() };
     });
     assert.equal(report.status, 'READY');
+    assert.equal(report.modelLoadPath, 'AFile/VFS');
+    assert.equal(report.stagedModelExists, false, 'temporary model file must be removed after load');
     assert.equal(report.meshes, 1);
     assert.equal(report.drawCalls, 1);
     assert.equal(report.assets.length, 2);
@@ -47,7 +49,7 @@ const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR, 'node_
     assert.equal(report.gpuError, 0);
     assert.ok(report.coloredPixels > 1000);
     assert.ok(report.uniqueColors > 32);
-    report.checks = ['original-model-pixels', 'all-original-texture-mipmaps'];
+    report.checks = ['original-model-pixels', 'all-original-texture-mipmaps', 'original-afile-vfs-load-and-release'];
 
     const before = await page.locator('#canvas').screenshot();
     const box = await page.locator('#canvas').boundingBox();
@@ -98,6 +100,7 @@ const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR, 'node_
     await malformed.goto(url);
     await malformed.waitForFunction(() => window.__pw153?.status === 'FAIL');
     assert.match(await malformed.evaluate(() => window.__pw153.error), /unsupported MOX signature/);
+    assert.equal(await malformed.evaluate(() => window.__pw153.stagedModelExists), false, 'malformed model must release staged VFS file');
     await malformed.close();
     report.checks.push('valid-hash-malformed-model-rejected-without-wasm-abort');
     const allocation = await browser.newPage();

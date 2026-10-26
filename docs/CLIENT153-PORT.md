@@ -82,3 +82,9 @@ preservando seus sistemas. `client153_common` contém a classe original `AString
 e as APIs `ATime` adaptadas e testadas em nativo/WASM; não representa toda a AngelicaCommon.
 SKI/BON/STCK, building e os demais recursos continuam necessários dentro dessa
 integração. Ver [prova do build original](evidence/client153-full-build.md).
+
+
+O host da cena agora monta temporariamente o modelo verificado no VFS do WASM
+e o abre pela interface original `AFile`, removendo-o após a leitura, inclusive
+em falhas. As texturas continuam pelo upload de bytes verificados. O cliente
+completo e o cache/streaming com orçamento de memória ainda não estão integrados.

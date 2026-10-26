@@ -1,4 +1,5 @@
 // Browser platform adapter for the portable original Angelica resource loaders.
+#include "AFile.h"
 #include "dds.h"
 #include "mox.h"
 #include <GLES3/gl3.h>
@@ -221,6 +222,24 @@ int client_load(const unsigned char *bytes, unsigned length) {
   if (glGetError() != GL_NO_ERROR)
     return fail("mesh GPU upload failed");
   return int(gpu.size());
+}
+// The browser stages only verified resources into its local memory filesystem.
+int client_load_file(const char *path) {
+  try {
+    AFile file;
+    if (!path || !file.Open(path, AFILE_OPENEXIST | AFILE_BINARY))
+      return fail("original model file unavailable");
+    const auto length = file.GetFileLength();
+    if (length < 4 || length > 64 * 1024 * 1024 || !file.ResetPointer())
+      return fail("invalid model file length");
+    std::vector<unsigned char> bytes(length);
+    DWORD count = 0;
+    if (!file.Read(bytes.data(), length, &count) || count != length)
+      return fail("original model file truncated");
+    return client_load(bytes.data(), length);
+  } catch (const std::exception &exception) {
+    return fail(exception.what());
+  }
 }
 int client_mesh_count() { return int(model.meshes.size()); }
 const char *client_texture_name(int mesh) {

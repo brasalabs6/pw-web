@@ -164,10 +164,9 @@ Truncated AString leaves the caller's string unchanged. Its length is bounded
 to 16 MiB, an explicit defensive limit requiring corpus validation.
 
 This is not full AngelicaFile: AFileImage, PCK runtime mounting, async resource
-availability, eviction and streaming remain pending. The current object-viewer
-host still uses FILESYSTEM=0 and does not consume this library. The WASM file
-test uses Emscripten's test VFS; no asset package is embedded in a .data file.
-It is not evidence that CDN streaming or a browser client file mount works.
+availability, eviction and streaming remain pending. At the initial native checkpoint the object-viewer host did not consume this
+library. The subsequent browser integration below enables a temporary resource
+VFS. No asset package is embedded in a .data file; full CDN streaming is pending.
 No server contract or parallel worktree was modified.
 
 ### Real-file integration check
@@ -186,3 +185,36 @@ This count describes distinct selected files, not the earlier package-entry
 count, and excludes MOXT/building envelopes. Report:
 `artifacts/client153-full-build/afile-corpus.json` (ignored, local only).
 WASM/Node regressions remain 5/5; the real-file corpus check is native only.
+
+
+## Browser integration of original file interface
+
+The browser target now links client153_file/Common and enables Emscripten's
+memory VFS explicitly. The host downloads and verifies the selected model,
+writes that single resource to `/scene.mox` inside the WASM VFS, then calls
+`client_load_file`. C++ opens it through AFile and passes the original bytes to
+the MOX decoder. A finally block removes the staged file on success or failure.
+This does not expose any host filesystem or serve the installation root.
+Textures retain their existing verified byte-upload path.
+
+The browser regression was extended first and failed against the old runtime
+because the AFile path was absent. After implementation, Chrome 152 desktop and
+mobile emulation render the same original pixels with zero WebGL errors; model
+load reports AFile/VFS and temporary-file absence. Existing corrupt-download,
+valid-hash malformed-model, GPU allocation and context restoration tests pass;
+malformed-model failure also removes its staged file. SwiftShader is the actual
+renderer, not evidence of hardware GPU performance. WASM/Node CTest is 5/5.
+
+Reproduction after activating Emscripten/CMake:
+
+```
+PW_CLIENT153_ROOT=/path/to/authorized/app ./scripts/build-client153.sh
+python3 -m http.server 8497 --bind 127.0.0.1 --directory build/client153-wasm/browser
+PW_BROWSER_MODULE_DIR=/path/to/playwright-install CHROME_BIN=/path/to/chrome node tests/client153/browser-scene.cjs
+PW_BROWSER_MODULE_DIR=/path/to/playwright-install CHROME_BIN=/path/to/chrome PW_CLIENT153_MOBILE=1 PW_CLIENT153_EVIDENCE=artifacts/client153-browser-mobile node tests/client153/browser-scene.cjs
+```
+
+This bridges a real original interface into the browser and remains a resource
+scene. It is not the original complete client loop, runtime PCK mount, memory
+budgeted streaming, world entry or gameplay. Temporary VFS/data copies need
+budgeting before large-resource use. No server or Wine worktree changed.

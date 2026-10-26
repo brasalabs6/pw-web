@@ -17,7 +17,16 @@ async function initialize(){
  report.status='LOADING';report.assets=[];report.drawCalls=0;report.frames=0;
  requireResult(runtime._client_init());
  const bytes=await fetchAsset(scene.model);
- report.meshes=passBytes(bytes,(ptr,size)=>requireResult(runtime._client_load(ptr,size)));
+ const stagedPath='/scene.mox';
+ try {
+  runtime.FS.writeFile(stagedPath,bytes);
+  const name=new TextEncoder().encode(stagedPath+'\0');
+  report.meshes=passBytes(name,ptr=>requireResult(runtime._client_load_file(ptr)));
+  report.modelLoadPath='AFile/VFS';
+ } finally {
+  if(runtime.FS.analyzePath(stagedPath).exists)runtime.FS.unlink(stagedPath);
+  report.stagedModelExists=runtime.FS.analyzePath(stagedPath).exists;
+ }
  const decoder=new TextDecoder('gbk',{fatal:true});
  report.mipLevels=[];
  for(let i=0;i<runtime._client_mesh_count();i++){
