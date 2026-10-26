@@ -76,9 +76,13 @@ sed -i -E '/^\[GAuthClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29200/port\t\
            /^\[GAntiCheatClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29709/port\t\t=\t29702/' "$RUN/gdeliveryd.conf"
 # glinkd: gacd port 29701 -> 29702 for the same reason, and GLinkServer1
 # port 9001 -> 29000 (classic PW client port; the real client's serverlist
-# points at 127.0.0.1:29000).
+# points at 127.0.0.1:29000). The client (PWBR 1.5.3 v145, GAME_VERSION
+# 0x010503) also requires the challenge to carry its exact gamecontent
+# edition string — captured from the client's own log (EC.log "local ver")
+# — or it shows the "software desatualizado" dialog and disconnects.
 sed -i -E '/^\[GAntiCheatClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29701/port\t\t=\t29702/' "$RUN/glinkd.conf"
 sed -i -E '/^\[GLinkServer1\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*9001/port\t\t=\t29000/' "$RUN/glinkd.conf"
+sed -i '/^\[GLinkServer1\]/a version\t\t=\t10503\nedition\t\t=\t300000917d576784405750f171575122b6' "$RUN/glinkd.conf"
 
 # gdeliveryd/gfaction: the committed `filters` sensitive-word tables are GBK
 # (no BOM), but these gamesys.conf vintages declare table_charset=UCS2 — the
@@ -189,8 +193,15 @@ start "$SRC/cnet/gacd"        gacd        "$RUN/gacd.conf"
 start "$SRC/cnet/logservice"  logservice  "$RUN/logservice.conf"
 # glinkd: instance argument "1" selects the [GLinkServer1] section.
 start "$SRC/cnet/glinkd"      glinkd      "$RUN/glinkd.conf" 1
-# gs reads gs.conf/gmserver.conf/gsalias.conf from its cwd (committed).
-start "$SRC/cgame/gs"         gs
+
+# gs: run from the real 1.5.3 v145 server data package when available
+# (scripts/gs-server153.sh prepares the data and starts our binary);
+# otherwise start from the source tree (will fail without game data).
+if [ -x "$REPO_ROOT/scripts/gs-server153.sh" ] && [ -d "${PW153_PKGGAMED:-/home/pwserver/gamed}" ]; then
+  "$REPO_ROOT/scripts/gs-server153.sh"
+else
+  start "$SRC/cgame/gs" gs
+fi
 
 echo "=== waiting ${WAIT}s for stabilization ==="
 sleep "$WAIT"
