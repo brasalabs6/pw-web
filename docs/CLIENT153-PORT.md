@@ -88,3 +88,9 @@ O host da cena agora monta temporariamente o modelo verificado no VFS do WASM
 e o abre pela interface original `AFile`, removendo-o após a leitura, inclusive
 em falhas. As texturas continuam pelo upload de bytes verificados. O cliente
 completo e o cache/streaming com orçamento de memória ainda não estão integrados.
+
+
+O target `client153_math` compila os tipos originais de vetor/matriz/quaternion,
+e a hierarquia da cena usa `A3DMATRIX4`. A prova e as diferenças da source estão
+em [matemática original](evidence/client153-original-math.md). Skeleton, tracks
+e skinning ainda precisam ser integrados ao cliente.

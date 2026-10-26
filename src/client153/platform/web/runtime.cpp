@@ -1,4 +1,5 @@
 // Browser platform adapter for the portable original Angelica resource loaders.
+#include "A3DMatrix.h"
 #include "AFile.h"
 #include "dds.h"
 #include "mox.h"
@@ -63,12 +64,12 @@ GLuint shader(GLenum type, const char *source) {
   return id;
 }
 pw153::Matrix multiply(const pw153::Matrix &a, const pw153::Matrix &b) {
-  pw153::Matrix c{};
-  for (int row = 0; row < 4; row++)
-    for (int col = 0; col < 4; col++)
-      for (int k = 0; k < 4; k++)
-        c[row * 4 + col] += a[row * 4 + k] * b[k * 4 + col];
-  return c;
+  const auto product = A3DMATRIX4(a.data()) * A3DMATRIX4(b.data());
+  pw153::Matrix result;
+  for (int row = 0; row < 4; ++row)
+    for (int col = 0; col < 4; ++col)
+      result[row * 4 + col] = product.m[row][col];
+  return result;
 }
 } // namespace
 extern "C" {

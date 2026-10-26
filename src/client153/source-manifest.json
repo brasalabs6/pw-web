@@ -77,6 +77,26 @@
     {
       "path": "Angelica2/AngelicaFile/Source/AFile.cpp",
       "sha256": "d1844a4b7e54de449de73e5fd258d69fdf0cbdb032ad52bca4a7c1f565efab60"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DVector.h",
+      "sha256": "95a0eb795e4c7d670462be2dc7b73e66371c6ed416f68754154e852b22396444"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DMatrix.h",
+      "sha256": "9066cdcaa7237b85f225f0f793cc39589a537e8b3b2f658f36878803133964a4"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DQuaternion.h",
+      "sha256": "ceaca48a5db10ff36e3a63d9a7995546594f7b418424e6dd8da99d9ac8cc39ca"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMatrix.cpp",
+      "sha256": "356d42fe45e5cf9694fe32f5cb3ca70d6f55a9f2e8c1cf86d7471a09c4291438"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DQuaternion.cpp",
+      "sha256": "e69c9dd74c4923cbff1d55f4dd20a012bc35948a5f1a7cccc2b415784b4fc85d"
     }
   ],
   "adaptations": [
@@ -149,6 +169,27 @@
         "copying owning file objects is prohibited",
         "no synchronous network operation or complete package preloading"
       ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DMatrix.cpp",
+      "functions": [
+        "A3DVECTOR3/4",
+        "A3DMATRIX3/4",
+        "A3DQUATERNION conversions and interpolation"
+      ],
+      "changes": [
+        "restore scalar formulas recorded next to original D3DX calls; no D3DX emulation API",
+        "preserve original row-vector layout and anonymous struct union compiler extension",
+        "normalize axis before rotation to preserve active D3DX normalized-axis behavior",
+        "fix incomplete determinant expansion after regression failure",
+        "implement formerly empty Quaternion-to-Euler operation with regression",
+        "preserve source SLERP threshold and valid-unit quaternion contract",
+        "browser model hierarchy consumes original A3DMATRIX4 multiplication",
+        "const input matrix constructor and explicit default assignment for modern compilers"
+      ]
     }
+  ],
+  "additionalCopyrights": [
+    "Copyright (c) 2003 Epie Entertainment, All Rights Reserved. (A3DQuaternion)"
   ]
 }

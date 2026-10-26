@@ -28,8 +28,9 @@ if(EMSCRIPTEN)
   target_compile_options(client153_formats PUBLIC -fexceptions)
   target_link_options(client153_formats INTERFACE -fexceptions)
   add_executable(client153 platform/web/runtime.cpp)
-  target_link_libraries(client153 PRIVATE client153_formats client153_file)
-  target_compile_options(client153 PRIVATE -Wall -Wextra -Werror -pedantic)
+  target_link_libraries(client153 PRIVATE client153_formats client153_file client153_math)
+  target_compile_options(client153 PRIVATE -Wall -Wextra -Werror)
+  set_target_properties(client153 PROPERTIES CXX_EXTENSIONS ON)
   target_link_options(client153 PRIVATE
     --no-entry
     "-sMIN_WEBGL_VERSION=2" "-sMAX_WEBGL_VERSION=2"
@@ -46,3 +47,12 @@ add_library(client153_file STATIC Angelica2/AngelicaFile/Source/AFile.cpp)
 target_include_directories(client153_file PUBLIC Angelica2/AngelicaFile/Header)
 target_link_libraries(client153_file PUBLIC client153_common)
 target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic)
+
+# Original matrix/vector unions retain MSVC anonymous-struct layout.
+add_library(client153_math STATIC Angelica2/Angelica3D/Source/A3DMatrix.cpp Angelica2/Angelica3D/Source/A3DQuaternion.cpp)
+target_link_libraries(client153_math PUBLIC client153_common)
+target_include_directories(client153_math PUBLIC Angelica2/Angelica3D/Header)
+target_compile_features(client153_math PUBLIC cxx_std_17)
+target_compile_options(client153_math PRIVATE -Wall -Wextra -Werror)
+
+set_target_properties(client153_math PROPERTIES CXX_EXTENSIONS ON)
