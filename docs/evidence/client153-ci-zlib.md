@@ -15,3 +15,20 @@ assets or server configuration are included. Revert the workflow commit to
 restore the previous CI configuration. The skin-model notification seam remains
 unresolved and must be reconnected with the real implementation, not hidden by
 assuming the public setter is unreachable.
+
+The next run `40404531386` found zlib successfully and then failed because GCC
+13 does not recognize Clang's `-Wno-error=keyword-macro`. The compiler options
+now apply that flag only to Clang/AppleClang and the GCC-specific
+`format-truncation` flag only to GNU. Local GCC 16 native and Emscripten 6.0.13
+WASM CTest pass 11/11. Remote CI for this subsequent change remains to be
+observed. CTest without original inputs skips the BON integration scenario;
+the direct local invocation below separately passed:
+
+```
+build/client153-native/client153_skeleton_closure_test artifacts/client153-input/wolf.bon
+# wolf BON: joints=42 bones=42 hooks=5
+```
+
+Known risk: file-path helpers currently allow truncation; this can select the
+wrong asset and needs an explicit failure contract and consumer review. It is
+not resolved by the compiler-specific warning flag.

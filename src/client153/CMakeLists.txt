@@ -26,7 +26,7 @@ target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Head
 target_compile_features(client153_common PUBLIC cxx_std_17)
 #	The original debug-new pattern (#define new A_DEBUG_NEW) hides a keyword;
 #	clang flags it where GCC does not.
-target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic -Wno-error=keyword-macro)
+target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 if(EMSCRIPTEN)
   target_compile_options(client153_platform PUBLIC -fexceptions)
   target_link_options(client153_platform INTERFACE -fexceptions)
@@ -77,7 +77,7 @@ target_link_libraries(client153_file PUBLIC client153_common client153_platform)
 target_link_libraries(client153_file PUBLIC ${PW153_ZLIB_LINK})
 #	Bounded path joins may truncate by design: the original overflowed
 #	MAX_PATH buffers; the port keeps the bound and accepts the truncation.
-target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic -Wno-error=format-truncation -Wno-error=keyword-macro)
+target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic "$<$<CXX_COMPILER_ID:GNU>:-Wno-error=format-truncation>" "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 
 # Original matrix/vector unions retain MSVC anonymous-struct layout.
 add_library(client153_math STATIC Angelica2/Angelica3D/Source/A3DMatrix.cpp Angelica2/Angelica3D/Source/A3DQuaternion.cpp)
@@ -116,5 +116,5 @@ target_link_libraries(client153_skeleton PUBLIC client153_math client153_animati
 target_include_directories(client153_skeleton PUBLIC Angelica2/Angelica3D/Header)
 target_compile_features(client153_skeleton PUBLIC cxx_std_17)
 #	-pedantic omitted like client153_math: the original vector/matrix unions use MSVC anonymous-struct layout.
-target_compile_options(client153_skeleton PRIVATE -Wall -Wextra -Werror -Wno-error=keyword-macro)
+target_compile_options(client153_skeleton PRIVATE -Wall -Wextra -Werror "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 set_target_properties(client153_skeleton PROPERTIES CXX_EXTENSIONS ON)
