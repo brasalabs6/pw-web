@@ -46,7 +46,8 @@ prova desta cena.
 
 ## Corpus real e limites
 
-Os 15 índices PCK/PKX foram lidos. O corpus nativo contém 711 arquivos `.mox`:
+Os 15 índices PCK/PKX foram lidos. O [inventário gerado](client153-assets-inventory.json)
+registra tamanhos, contagens, extensões e SHA-256 de cada arquivo físico. O corpus nativo contém 711 arquivos `.mox`:
 428 `MOXB`/A3DFrame passaram (61 em models e 367 em grasses); 41 MOXT não estão
 implementadas; 242 arquivos de building usam outro envelope e foram rejeitados.
 Extensão `.mox` não basta para selecionar um loader.
