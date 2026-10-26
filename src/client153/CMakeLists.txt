@@ -1,9 +1,18 @@
 # Original Common interface, with portable string storage/formatting corrections.
-add_library(client153_common STATIC Angelica2/AngelicaCommon/Source/AString.cpp)
+add_library(client153_platform STATIC platform/common/clock.cpp)
+target_include_directories(client153_platform PUBLIC platform/common)
+target_compile_features(client153_platform PUBLIC cxx_std_17)
+target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic)
+add_library(client153_common STATIC
+  Angelica2/AngelicaCommon/Source/AString.cpp
+  Angelica2/AngelicaCommon/Source/ATime.cpp)
+target_link_libraries(client153_common PRIVATE client153_platform)
 target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_common PUBLIC cxx_std_17)
 target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic)
 if(EMSCRIPTEN)
+  target_compile_options(client153_platform PUBLIC -fexceptions)
+  target_link_options(client153_platform INTERFACE -fexceptions)
   target_compile_options(client153_common PUBLIC -fexceptions)
   target_link_options(client153_common INTERFACE -fexceptions)
 endif()

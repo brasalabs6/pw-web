@@ -79,6 +79,6 @@ rejeitadas. Não converter esse resultado em alegação de compatibilidade integ
 
 A migração agora segue a compilação das bibliotecas originais e do cliente,
 preservando seus sistemas. `client153_common` contém a classe original `AString`
-adaptada e testada em nativo/WASM; não representa toda a AngelicaCommon.
+e as APIs `ATime` adaptadas e testadas em nativo/WASM; não representa toda a AngelicaCommon.
 SKI/BON/STCK, building e os demais recursos continuam necessários dentro dessa
 integração. Ver [prova do build original](evidence/client153-full-build.md).

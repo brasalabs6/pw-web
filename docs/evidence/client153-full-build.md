@@ -125,3 +125,23 @@ Remaining: other Common classes, Unicode `AWString` and the client-wide
 Windows UTF-16/wchar ABI, platform logging/time/locking, and all higher-library
 closure. This test is not proof of every printf variant or every original
 AString edge case. No server contract changed; no game assets were committed.
+
+## Platform clock boundary
+
+The original game loop calls `a_GetTime` in `EC_Game.cpp:1321,1326`.
+`ATime` now delegates to `client153_platform`: an actual steady clock and local
+calendar backend. This preserves unsigned 32-bit millisecond deltas and the
+original nullable calendar outputs without pulling ACPlatform/Windows into
+Common. ABaseDef DWORD/LONG explicitly retain their original 32-bit widths on
+native LP64 too. The monotonic epoch is process-local and not a wall timestamp;
+consumers must use elapsed differences as the original game loop does.
+
+The original ACounter CPU-cycle API is not compiled or replaced with fake cycle
+values. Its consumers and profiling units remain a subsequent dependency.
+No busy-wait calibration or anti-speed-check result is fabricated by this port.
+Calendar failures throw; they do not return invented dates.
+
+RED: new time test could not compile before ATime was provided.
+GREEN: native and Emscripten/Node CTest 4/4. The time test checks real elapsed time,
+monotonic observations, fixed-width types, calendar fields and null outputs.
+This is not yet a browser main-loop integration or a complete Common library.

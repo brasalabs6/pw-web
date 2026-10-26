@@ -29,6 +29,7 @@ jobs:
           cmake --build build/client153-native --parallel 2
           ctest --test-dir build/client153-native --output-on-failure
           python3 -m unittest discover -s tests/assets -p 'test_*.py'
+          python3 -m unittest discover -s tests/client153 -p 'test_*.py'
       - name: Build WebGL2 runtime and execute WASM parser regressions
         run: |
           emcmake cmake -S . -B build/client153-wasm -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug

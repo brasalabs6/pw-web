@@ -57,6 +57,18 @@
     {
       "path": "Angelica2/AngelicaCommon/Source/AString.cpp",
       "sha256": "e10d90fec3403b253f6a312687d9c42aed63c6ea56f6a50079804213c053e5e3"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/ABaseDef.h",
+      "sha256": "1e054050b3b6ecc4183b1e72e430988e278717cabcc8c9ae63a7784ca6c6bbed"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/ATime.h",
+      "sha256": "c9d1ba672d5e5f86b9eaa233ebe976656a4eace66ef774b94dbbad9cc8a32efe"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/ATime.cpp",
+      "sha256": "8af684825ff53565520ac0117ce802c24a5427268d693c2554cedfac7b1ab9b3"
     }
   ],
   "adaptations": [
@@ -102,6 +114,19 @@
         "MSVC I64/I32 printf length normalization",
         "unaligned word accesses replaced by byte-safe copying/comparison",
         "locked copy constructor no longer reads uninitialized storage"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaCommon/Source/ATime.cpp",
+      "functions": [
+        "a_GetTime",
+        "a_GetSystemTime"
+      ],
+      "changes": [
+        "platform backend owns steady clock and local calendar",
+        "preserve uint32 millisecond wrap and optional calendar output pointers",
+        "Windows performance counter and local time operations replaced with actual platform operations",
+        "ABaseDef DWORD and LONG retain original 32-bit width on LP64 hosts"
       ]
     }
   ]
