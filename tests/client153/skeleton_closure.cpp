@@ -10,6 +10,7 @@
 #include "A3DTrackMan.h"
 #include "A3DPI.h"
 
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -69,8 +70,41 @@ static void test_skeleton_load(const char *bonPath) {
   // Update walks the whole tree without touching the (unattached) skin model.
   CHECK(skeleton.Update(16));
 
-  // Track manager integration: Load registered the skeleton's track set.
-  CHECK(A3D::g_A3DTrackMan.GetSkeletonTrackSet(skeleton.GetSkeletonID(), skeleton.GetFileName()) != nullptr);
+  // Exercise the original action's track-to-bone flow, without assuming that
+  // loading tracks alone advances animation (A3DSkinModelAction is not ported).
+  A3DSklTrackSet *tracks = A3D::g_A3DTrackMan.GetSkeletonTrackSet(
+      skeleton.GetSkeletonID(), skeleton.GetFileName());
+  CHECK(tracks != nullptr);
+  int changed = 0;
+  for (int i = 0; i < skeleton.GetBoneNum(); ++i) {
+    A3DBone *bone = skeleton.GetBone(i);
+    const int joint = bone->GetFirstJoint();
+    A3DSklTrackSet::BONETRACK *track = tracks->GetBoneTrack(joint);
+    if (!track) continue;
+    auto *positions = track->pPosTrack;
+    auto *rotations = track->pRotTrack;
+    CHECK(positions != nullptr && rotations != nullptr);
+    auto apply = [&](int time) {
+      A3DQUATERNION rotation = rotations->GetKeyValue(time);
+      rotation.Normalize();
+      bone->AddBlendState(rotation, positions->GetKeyValue(time), 1.0f,
+                          A3DBone::BM_EXCLUSIVE);
+      CHECK(skeleton.Update(0));
+      return bone->GetRelativeTM();
+    };
+    const auto firstMatrix = apply(positions->GetTrackStartTime());
+    const auto lastMatrix = apply(positions->GetTrackEndTime());
+    bool differs = false;
+    for (int row = 0; row < 4; ++row)
+      for (int col = 0; col < 4; ++col) {
+        CHECK(std::isfinite(firstMatrix.m[row][col]));
+        CHECK(std::isfinite(lastMatrix.m[row][col]));
+        differs |= std::abs(firstMatrix.m[row][col] - lastMatrix.m[row][col]) > 0.00001f;
+      }
+    changed += differs;
+  }
+  CHECK(changed > 0);
+  std::cout << "animated bone transforms changed: " << changed << "\n";
 
   std::cout << "wolf BON: joints=" << skeleton.GetJointNum()
             << " bones=" << skeleton.GetBoneNum()
