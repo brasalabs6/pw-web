@@ -35,9 +35,13 @@ mkdir -p "$RUN" "$LOGS"
 DAEMONS=(gauthd gdeliveryd gamedbd uniquenamed gfaction gacd logservice glinkd gs)
 
 stop_all() {
-  local d
+  local d p
   for d in "${DAEMONS[@]}"; do
-    pkill -x "$d" 2>/dev/null && echo "stopped $d" || true
+    for p in /proc/[0-9]*; do
+      if [ "$(cat "$p/comm" 2>/dev/null)" = "${BIN[$d]}" ]; then
+        kill "$(basename "$p")" 2>/dev/null && echo "stopped ${BIN[$d]}" || true
+      fi
+    done
   done
   sleep 1
 }
@@ -84,11 +88,24 @@ mkdir -p "$SRC/cnet/gamedbd"/{dbhomewdb,backupwdb} "$SRC/cnet/uniquenamed"/{dbho
 mkdir -p "$SRC/cnet/logservice/logs"
 
 # -------------------------------------------------------------------- boot
-start() { # start <dir> <bin> [conf] [extra-arg]
+start() { # start <dir> <bin> [args...]
   local dir="$1" bin="$2"; shift 2
   local name="${dir##*/}"
-  ( cd "$dir" && nohup "./$bin" "$@" >"$LOGS/$name.log" 2>&1 & )
-  echo "started $name (pid via pgrep below)"
+  # gs links libtask.so/libskill.so from its own directory.
+  ( cd "$dir" && LD_LIBRARY_PATH="$dir" nohup "./$bin" "$@" >"$LOGS/$name.log" 2>&1 & )
+  echo "started $name"
+}
+
+alive() { # alive <comm> — /proc-based, works without procps
+  local p
+  for p in /proc/[0-9]*; do
+    [ "$(cat "$p/comm" 2>/dev/null)" = "$1" ] && return 0
+  done
+  return 1
+}
+
+listen_ports() { # hex ports from /proc/net/tcp and /proc/net/udp
+  awk 'NR>1 {split($2,a,":"); print strtonum("0x" a[2])}' /proc/net/tcp /proc/net/udp 2>/dev/null | sort -un
 }
 
 echo "=== booting server153 (order: ${DAEMONS[*]}) ==="
@@ -110,8 +127,8 @@ sleep "$WAIT"
 echo
 echo "=== processes ==="
 for d in "${DAEMONS[@]}"; do
-  if pgrep -x "${BIN[$d]}" >/dev/null; then
-    echo "ALIVE   ${BIN[$d]} ($(pgrep -x "${BIN[$d]}" | tr '\n' ' '))"
+  if alive "${BIN[$d]}"; then
+    echo "ALIVE   ${BIN[$d]}"
   else
     echo "DEAD    ${BIN[$d]}"
   fi
@@ -121,7 +138,7 @@ echo
 echo "=== listening sockets (expect 9200 gauthd, 29100 gdeliveryd, 29300 gprovider,"
 echo "    29400 gamedbd, 29401 uniquenamed, 29500 gfaction, 29702/29712 gacd,"
 echo "    11100/11101 logservice, 9001 glinkd) ==="
-ss -lntup 2>/dev/null | grep -E ':(9200|29100|29300|29400|29401|29500|29702|29712|11100|11101|9001)\b' || echo "no expected sockets found"
+listen_ports | grep -E '^(9200|29100|29300|29400|29401|29500|29702|29712|11100|11101|9001)$' || echo "no expected sockets found"
 
 echo
 echo "logs: $LOGS"
