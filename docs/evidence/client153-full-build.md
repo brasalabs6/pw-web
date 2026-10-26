@@ -334,3 +334,26 @@ python3 scripts/probe-client153-project.py --source <pinned-reference> \
   --emxx <emsdk>/upstream/emscripten/em++ --port-root src/client153/Angelica2 \
   --entry DataPathMan.cpp --output <local-output>/datapath.json
 ```
+
+## Compile real WASM objects
+
+The project probe accepts `--object-dir` with `--all` to compile actual
+WebAssembly object files, using stable path-derived names to avoid collisions.
+An initial compile of the 13 source files previously blocked by the missing
+portable-platform include produced six WASM object files; the other seven
+still failed on their next compilation errors. `file` identified the
+`DataPathMan.cpp` object as WebAssembly. Objects are not linked, and success
+is not a runnable client. A full-project object compilation has been started;
+its outcome must be checked separately.
+
+```
+python3 -m unittest discover -s tests/client153 -p test_project_probe.py
+python3 scripts/probe-client153-project.py --source <pinned-reference> \
+  --emxx <emsdk>/upstream/emscripten/em++ --port-root src/client153/Angelica2 \
+  --output <local-output>/objects.json --all --object-dir <local-build-dir> --jobs 4
+```
+
+In a separate syntax check of 15 files whose initial error was
+`CRITICAL_SECTION`, forcing inclusion of the existing real portable mutex
+header revealed `ACString` as the first error in every file. This was a
+probe, not a permanent preinclude or proof of linked synchronization behavior.

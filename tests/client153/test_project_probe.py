@@ -24,6 +24,15 @@ class ProjectPaths(unittest.TestCase):
             (root / 'platform' / 'common').mkdir(parents=True)
             self.assertIn(root / 'platform' / 'common', probe.port_include_dirs(angelica))
 
+    def test_object_command_produces_real_object_without_filename_collisions(self):
+        command = ['em++', '-fsyntax-only', 'source.cpp', '-I', 'include']
+        first = probe.object_command(command, Path('/tmp/objects'), 'one/source.cpp')
+        second = probe.object_command(command, Path('/tmp/objects'), 'two/source.cpp')
+        self.assertNotIn('-fsyntax-only', first)
+        self.assertIn('-c', first)
+        self.assertNotEqual(first[-1], second[-1])
+        self.assertEqual(command[1], '-fsyntax-only')
+
     def test_case_and_parent_resolution(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

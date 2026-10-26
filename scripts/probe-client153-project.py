@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Inventory the pinned VC project and expose real Emscripten blockers read-only."""
+"""Inventory the pinned VC project and check or compile its sources with Emscripten."""
 import argparse
+import hashlib
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import json
@@ -36,6 +37,12 @@ def port_include_dirs(port_root):
     return paths
 
 
+def object_command(command, object_dir, source_path):
+    digest = hashlib.sha256(source_path.encode('utf-8')).hexdigest()
+    return [part for part in command if part != '-fsyntax-only'] + [
+        '-c', '-o', str(object_dir / (digest + '.o'))]
+
+
 def first_error(stderr):
     for line in stderr.splitlines():
         for marker in ('fatal error: ', 'error: '):
@@ -55,7 +62,10 @@ def main():
     parser.add_argument('--all', action='store_true', help='syntax-check every non-excluded source')
     parser.add_argument('--port-root', type=Path, help='prefer already ported Angelica headers')
     parser.add_argument('--jobs', type=int, default=4)
+    parser.add_argument('--object-dir', type=Path, help='compile actual WASM objects instead of syntax-only checks (requires --all)')
     args = parser.parse_args()
+    if args.object_dir and not args.all:
+        parser.error('--object-dir requires --all')
     if args.jobs < 1 or args.jobs > 16:
         parser.error('--jobs must be between 1 and 16')
     root = args.source.resolve()
@@ -90,10 +100,14 @@ def main():
                   libraries=tools.get('VCLinkerTool', tools.get('VCLibrarianTool', {})).get('AdditionalDependencies', '').split(),
                   probe=dict(command=command, exitCode=result.returncode, stderr=result.stderr))
     if args.all:
+        if args.object_dir:
+            args.object_dir.mkdir(parents=True, exist_ok=True)
         source_index = command.index(str(resolve_windows(project.parent, args.entry)))
         def compile_source(source):
             cmd = command.copy()
             cmd[source_index] = str(root / source['path'])
+            if args.object_dir:
+                cmd = object_command(cmd, args.object_dir.resolve(), source['path'])
             try:
                 outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
                 return dict(path=source['path'], exitCode=outcome.returncode,
@@ -104,6 +118,7 @@ def main():
         with ThreadPoolExecutor(max_workers=args.jobs) as executor:
             outcomes = list(executor.map(compile_source, active))
         groups = Counter(x['firstError'] for x in outcomes if x['firstError'])
+        report['buildMode'] = 'wasm-objects' if args.object_dir else 'syntax-only'
         report['allSources'] = outcomes
         report['errorGroups'] = dict(groups.most_common())
         print(f"Checked {len(outcomes)} sources; {sum(x['exitCode'] == 0 for x in outcomes)} passed")
