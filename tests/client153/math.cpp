@@ -1,5 +1,7 @@
 #include "A3DMatrix.h"
 #include "A3DQuaternion.h"
+#include "A3DVertex.h"
+#include <cstddef>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -10,6 +12,10 @@
   } while (false)
 bool near(float a, float b) { return std::abs(a - b) < .0001f; }
 int main() {
+  static_assert(sizeof(A3DBVERTEX3) == 48);
+  static_assert(offsetof(A3DBVERTEX3, dwMatIndices) == 24);
+  static_assert(offsetof(A3DBVERTEX3, vNormal) == 28);
+  static_assert(offsetof(A3DBVERTEX3, tu) == 40);
   static_assert(sizeof(A3DVECTOR3) == 12);
   static_assert(sizeof(A3DMATRIX4) == 64);
   A3DMATRIX4 translate;

@@ -158,3 +158,23 @@ ctest --test-dir build/client153-native --output-on-failure`,
 --parallel 2 && UBSAN_OPTIONS=halt_on_error=1
 build/client153-sanitize/client153_skeleton_closure_test
 artifacts/client153-input/wolf.bon`, and the opt-in WASM commands above.
+
+## Original vertex layout for skinning
+
+Copied `Angelica2/Angelica3D/Header/A3DVertex.h` from authorized revision
+`e3d6d0075d0a745c9f9859f2cb25b01d71dec045`, retaining copyright and removing
+its unconditional Windows/Direct3D platform include. Direct3D FVF macros
+remain backend-specific and are not used by the portable test. Compile-time
+checks establish that `A3DBVERTEX3` is 48 bytes, with matrix indices at byte 24,
+normal at byte 28 and texture coordinates at byte 40, both on native and WASM.
+This makes the original format definition available for the skin mesh port;
+it does not implement mesh loading, skinning, or rendering.
+
+```
+cmake --build build/client153-native --target client153_math_test --parallel 2
+build/client153-native/client153_math_test
+cmake --build build/client153-sanitize --target client153_math_test --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_math_test
+cmake --build build/client153-wasm-tests --target client153_math_test --parallel 2
+ctest --test-dir build/client153-wasm-tests -R '^client153_math$' --output-on-failure
+```
