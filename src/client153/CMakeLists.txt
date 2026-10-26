@@ -37,7 +37,8 @@ add_library(client153_formats STATIC
   Angelica2/Angelica3D/port/mox.h
   Angelica2/Angelica3D/port/dds.h
   Angelica2/Angelica3D/port/mox.cpp
-  Angelica2/Angelica3D/port/dds.cpp)
+  Angelica2/Angelica3D/port/dds.cpp
+  Angelica2/Angelica3D/port/ski.cpp)
 target_include_directories(client153_formats PUBLIC Angelica2/Angelica3D/port)
 target_compile_features(client153_formats PUBLIC cxx_std_17)
 target_compile_options(client153_formats PRIVATE -Wall -Wextra -Werror -pedantic)
