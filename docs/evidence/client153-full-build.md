@@ -291,3 +291,27 @@ already adapted common/file/3D headers and measure the next errors.
 python3 scripts/probe-client153-project.py --source <pinned-reference> \
   --emxx <emsdk>/upstream/emscripten/em++ --output <local-output>/all.json --all --jobs 4
 ```
+
+## Original hash map dependency
+
+`EC_RTDebug.h` includes `hashmap.h`. The port lacked this original header, so
+the broad entrypoint probe fell back to the unported SDK header and produced
+errors in that SDK's hashtable. Copied the original `hashmap.h` from the
+pinned source (copyright retained), using the already ported `hashtab.h`.
+A behavior test failed to compile before the copy and now verifies insertion,
+lookup and erase on native, WASM/Node and ASan/UBSan. Re-running the entrypoint
+probe with port headers got past that hashtable error; it now reports missing
+`CRITICAL_SECTION`, `ACString` and `basetsd.h` among its first errors. This is
+not a successful full client build.
+
+```
+cmake --build build/client153-native --target client153_common_test --parallel 2
+build/client153-native/client153_common_test
+cmake --build build/client153-wasm-tests --target client153_common_test --parallel 2
+ctest --test-dir build/client153-wasm-tests -R '^client153_common$' --output-on-failure
+cmake --build build/client153-sanitize --target client153_common_test --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_common_test
+python3 scripts/probe-client153-project.py --source <pinned-reference> \
+  --emxx <emsdk>/upstream/emscripten/em++ --port-root src/client153/Angelica2 \
+  --output <local-output>/entry.json
+```

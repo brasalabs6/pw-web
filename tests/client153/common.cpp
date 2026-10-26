@@ -1,3 +1,5 @@
+#include "hashmap.h"
+#include <cstring>
 #include "A3DObject.h"
 #include "AArray.h"
 #include "AList2.h"
@@ -17,6 +19,13 @@
 std::string captured;
 void sink(const char *text) { captured = text; }
 int main() {
+  abase::hash_map<int, AString> messages;
+  messages[7] = "hello";
+  messages[11] = "world";
+  if (messages.size() != 2 || messages.find(7) == messages.end() ||
+      std::strcmp((const char *)messages[7], "hello") != 0 ||
+      messages.erase(7) != 1 || messages.find(7) != messages.end())
+    throw std::runtime_error("original hash map operations failed");
   static_assert(!std::is_copy_constructible_v<AArray<int, int>>);
   static_assert(!std::is_copy_constructible_v<APtrList<int *>>);
   A3DObject object;

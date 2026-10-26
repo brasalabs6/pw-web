@@ -377,6 +377,30 @@
     {
       "path": "Angelica3D/Source/A3DSkeleton.cpp",
       "sha256": "ad3cf907948d239b767f14ca3c61cedcd5587d88c3bd01f0bf769148c670db70"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/hashmap.h",
+      "sha256": "377f9cfd64f4fac4ae5b72655a55d53b25b9f2e80d687cdb5433e2ac9a2cfb80"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DSkinModelAct.h",
+      "sha256": "cb17b0e904442e56e021a1c309f8958a8998385e04d9074ebe3311529552c3a6"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinModelAct.cpp",
+      "sha256": "4e7a94a469ded1b22697cb83301a06f66d60dbbbdedbbc2dc59e2a2077a8b97c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkin.cpp",
+      "sha256": "1cd646bfd8498ecf9f083c863dbcc010f61b3baa3b65bb62ad734245a0cc7c0b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinMesh.cpp",
+      "sha256": "4a7c7951f3692639680abe92e056bdbd73220ad68894d8e12ec50756d2d937db"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinModel.cpp",
+      "sha256": "70db7999851eed4f900359b57467bc2c318286fcea0fca0a5bb81ffa4fe12d4b"
     }
   ],
   "adaptations": [
