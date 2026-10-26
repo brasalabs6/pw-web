@@ -378,3 +378,12 @@ ctest --test-dir build/client153-wasm-tests -R '^client153_utf16$' --output-on-f
 cmake --build build/client153-sanitize --target client153_utf16_test --parallel 2
 UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_utf16_test
 ```
+
+The first full-project **object** build finished: 66 of 787 sources produced
+WASM objects. Every reported successful object exists in the local build
+folder. The first errors among failures were `Windows.h` (356 files), missing
+`CRITICAL_SECTION` (130), missing `ACString` (50), and `_wtoi` (35). The probe
+reports only the first diagnostic per source; the other dependencies remain
+after one error is corrected. This result uses the port headers present when
+the build started and is not a linked or runnable game. Command: the
+`--object-dir` invocation documented in the preceding section.
