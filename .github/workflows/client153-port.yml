@@ -17,6 +17,10 @@ jobs:
         with:
           submodules: false
           persist-credentials: false
+      - name: Install native zlib headers for PCK tests
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends zlib1g-dev
       - name: Record actual compiler versions
         run: |
           cmake --version
