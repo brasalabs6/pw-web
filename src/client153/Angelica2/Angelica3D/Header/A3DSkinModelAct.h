@@ -68,7 +68,7 @@ public:		//	Types
 
 public:		//	Constructor and Destructor
 
-	A3DSkinModelActionCore() { A3DSkinModelActionCore(30); }
+	A3DSkinModelActionCore() : A3DSkinModelActionCore(30) {}
 	A3DSkinModelActionCore(int iFrameRate);
 	virtual ~A3DSkinModelActionCore();
 

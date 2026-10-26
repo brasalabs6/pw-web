@@ -146,3 +146,15 @@ ctest --test-dir build/client153-wasm-real -R '^client153_skeleton_closure$' -V
 cmake --build build/client153-wasm-tests --parallel 2
 ctest --test-dir build/client153-wasm-tests --output-on-failure
 ```
+
+The original `A3DSkinModelActionCore` default constructor constructed a
+separate temporary instead of initializing itself. A regression test calling
+`SetStartAndEndFrame(0, 30)` failed before the fix; constructor delegation now
+initializes 30 FPS, and the expected 1,000 ms end time passes in native,
+ASan/UBSan and WASM/Node. The authorized BON test also still reports 35 changing
+transforms. Commands: `cmake --build build/client153-native --parallel 2 &&
+ctest --test-dir build/client153-native --output-on-failure`,
+`cmake --build build/client153-sanitize --target client153_skeleton_closure_test
+--parallel 2 && UBSAN_OPTIONS=halt_on_error=1
+build/client153-sanitize/client153_skeleton_closure_test
+artifacts/client153-input/wolf.bon`, and the opt-in WASM commands above.

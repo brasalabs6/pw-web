@@ -134,6 +134,9 @@ int main(int argc, char **argv) {
     //	The engine sets the base dir at startup; tests pin it to the cwd.
     CHECK(af_SetBaseDir("."));
     test_config_flags();
+    A3DSkinModelActionCore defaultAction;
+    defaultAction.SetStartAndEndFrame(0, 30);
+    CHECK(defaultAction.GetEndTime() == 1000);
     if (argc == 2) {
       test_skeleton_load(argv[1]);
       test_skeleton_negative();
