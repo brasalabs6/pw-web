@@ -122,6 +122,11 @@ static void test_skeleton_load(const char *bonPath, const char *skiPath) {
   }
   CHECK(changed > 0);
   if (skiPath) {
+    pw153::AnimatedSkin secondInstance;
+    CHECK(secondInstance.load(bonPath, skiPath));
+    CHECK(secondInstance.update(0));
+    secondInstance.close();
+    CHECK(skeleton.Update(0));
     std::ifstream file(skiPath, std::ios::binary);
     CHECK(file.good());
     std::vector<std::uint8_t> bytes((std::istreambuf_iterator<char>(file)), {});

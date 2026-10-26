@@ -401,6 +401,14 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DSkinModel.cpp",
       "sha256": "70db7999851eed4f900359b57467bc2c318286fcea0fca0a5bb81ffa4fe12d4b"
+    },
+    {
+      "path": "AngelicaCommon/Header/AWString.h",
+      "sha256": "1249d6466dbd95221afbd478c960371e49383d8566f67177956ddd734f334369"
+    },
+    {
+      "path": "AngelicaCommon/Source/AWString.cpp",
+      "sha256": "d0d0bc2f0d8c09548fbed9cca29e65bb44b7fcc3f37bfabc299c22aa31ea758e"
     }
   ],
   "adaptations": [
@@ -597,6 +605,21 @@
         "initializer order fixed in A3DSkeletonHook/A3DBone/A3DBoneLookAtController/A3DBoneBodyTurnController; memset-on-class replaced by explicit zeroing (HOOKDATA/BONEDATA)",
         "AString varargs made explicit in error logs; stricmp to strcasecmp; dead locals removed (mattemp1/mattemp2, unused matInv and nAbsTime kept with (void))",
         "A3DConfig key table made const; A3DJoint stubs keep original behavior"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaCommon/Source/AWString.cpp",
+      "functions": [
+        "AWString UTF-16 string class",
+        "AWString::Format/GetFormatLen",
+        "wide CRT surface"
+      ],
+      "changes": [
+        "char16_t keeps the original UTF-16 width (wchar_t is 32-bit on POSIX targets)",
+        "MSVC wide CRT (vswprintf/swprintf/_wtoi/_wtoi64/wcstod/swscanf/wcsicmp/_wcsupr/_wcslwr/wcscspn) replaced by the real platform wide formatter in platform/common/widestr (MSVC semantics: %s wide, %S narrow, %I64 64-bit, %ld 32-bit long)",
+        "Format walks a va_copy for the sizing pass: MSVC passed va_list by value and the original relied on the caller list staying at the start (same fix as AString)",
+        "GetFormatLen %c consumes the promoted int; StringCopy terminator index fixed (original wrote szDest[i] with i out of scope); dead pData read removed",
+        "A3DSkeleton shared-track fix: second skeleton loading the same BON reuses the cached track set (bNewTrackSet false) - serialized tracks are skipped with on-disk metadata verification, frame range/FPS only set on new sets, failed LoadBoneTrack compensates the cached-size accounting Release subtracts, m_bTrackSetOK reset on release"
       ]
     }
   ],

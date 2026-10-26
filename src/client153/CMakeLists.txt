@@ -10,18 +10,19 @@ else()
   set(PW153_ZLIB_LINK ZLIB::ZLIB)
 endif()
 
-add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp)
+add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp platform/common/widestr.cpp)
 target_include_directories(client153_platform PUBLIC platform/common)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
 target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic)
 add_library(client153_common STATIC
+  Angelica2/AngelicaCommon/Source/AWString.cpp
   Angelica2/AngelicaCommon/Source/AString.cpp
   Angelica2/AngelicaCommon/Source/ATime.cpp
   Angelica2/AngelicaCommon/Source/ALog.cpp
   Angelica2/AngelicaCommon/Source/AContainers.cpp
   Angelica2/AngelicaCommon/Source/AAssist.cpp
   Angelica2/AngelicaCommon/Source/ACounter.cpp)
-target_link_libraries(client153_common PRIVATE client153_platform)
+target_link_libraries(client153_common PUBLIC client153_platform)	#	PUBLIC: wide seam headers are part of the common surface.
 target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_common PUBLIC cxx_std_17)
 #	The original debug-new pattern (#define new A_DEBUG_NEW) hides a keyword;

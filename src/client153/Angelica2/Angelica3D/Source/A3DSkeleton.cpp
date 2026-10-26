@@ -34,6 +34,18 @@
 
 #define new A_DEBUG_NEW
 
+// Skip serialized tracks when another skeleton already owns the same track set.
+// Verify the on-disk metadata before using the cached track sizes.
+template <class Track>
+static bool SkipCachedTrack(AFile* file, Track* track)
+{
+	A3DTRACKSAVEDATA data;
+	return track && a3d_LoadTrackInfo(file, &data) &&
+		data.iNumKey == track->GetNumKeys() &&
+		data.iFrameRate == track->GetFrameRate() &&
+		data.iNumSegment == track->GetSegmentNum() && track->FakeLoad(file);
+}
+
 //	Identity and version of skeleton file
 #define	SKEFILE_IDENTIFY	(('A'<<24) | ('S'<<16) | ('K'<<8) | 'E')
 #define SKEFILE_VERSION		6
@@ -350,6 +362,7 @@ void A3DSkeleton::Release()
 	if (m_dwVersion < 6 && m_bTrackSetOK)
 	{
 		A3D::g_A3DTrackMan.ReleaseSkeletonTrackSet(m_dwSkeletonID, m_strFileName);
+		m_bTrackSetOK = false;
 	}
 
 	int i;
@@ -488,8 +501,11 @@ bool A3DSkeleton::Load(AFile* pFile)
 
 			m_bTrackSetOK = true;
 
-			pTrackSet->SetAnimFrameRange(Header.iAnimStart, Header.iAnimEnd);
-			pTrackSet->SetAnimFPS(Header.iAnimFPS);
+			if (bNewTrackSet)
+			{
+				pTrackSet->SetAnimFrameRange(Header.iAnimStart, Header.iAnimEnd);
+				pTrackSet->SetAnimFPS(Header.iAnimFPS);
+			}
 
 			//	Load joint data
 			for (i=0; i < Header.iNumJoint; i++)
@@ -509,11 +525,26 @@ bool A3DSkeleton::Load(AFile* pFile)
 
 				AddJoint(pJoint);
 
-				ASSERT(bNewTrackSet);
-				pTrackSet->LoadBoneTrack(pFile, i);
+				if (bNewTrackSet)
+				{
+					if (!pTrackSet->LoadBoneTrack(pFile, i))
+					{
+						// Release() subtracts the cached size even after a failed load.
+						A3D::g_A3DTrackMan.AddActTrackDataSize(pTrackSet->GetDataSize());
+						return false;
+					}
+				}
+				else
+				{
+					auto* track = pTrackSet->GetBoneTrack(i);
+					if (!track || !SkipCachedTrack(pFile, track->pPosTrack) ||
+						!SkipCachedTrack(pFile, track->pRotTrack))
+						return false;
+				}
 			}
 			
-			A3D::g_A3DTrackMan.AddActTrackDataSize(pTrackSet->GetDataSize());
+			if (bNewTrackSet)
+				A3D::g_A3DTrackMan.AddActTrackDataSize(pTrackSet->GetDataSize());
 		}
 		else	//	Header.dwVersion >= 6
 		{
