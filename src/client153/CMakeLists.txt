@@ -1,0 +1,25 @@
+add_library(client153_formats STATIC
+  Angelica2/Angelica3D/port/mox.h
+  Angelica2/Angelica3D/port/dds.h
+  Angelica2/Angelica3D/port/mox.cpp
+  Angelica2/Angelica3D/port/dds.cpp)
+target_include_directories(client153_formats PUBLIC Angelica2/Angelica3D/port)
+target_compile_features(client153_formats PUBLIC cxx_std_17)
+target_compile_options(client153_formats PRIVATE -Wall -Wextra -Werror -pedantic)
+if(EMSCRIPTEN)
+  target_compile_options(client153_formats PUBLIC -fexceptions)
+  target_link_options(client153_formats INTERFACE -fexceptions)
+  add_executable(client153 platform/web/runtime.cpp)
+  target_link_libraries(client153 PRIVATE client153_formats)
+  target_compile_options(client153 PRIVATE -Wall -Wextra -Werror -pedantic)
+  target_link_options(client153 PRIVATE
+    --no-entry
+    "-sMIN_WEBGL_VERSION=2" "-sMAX_WEBGL_VERSION=2"
+    "-sMODULARIZE=1" "-sEXPORT_ES6=1" "-sENVIRONMENT=web"
+    "-sFILESYSTEM=0" "-sALLOW_MEMORY_GROWTH=1"
+    "-sEXPORTED_FUNCTIONS=[_malloc,_free,_client_init,_client_load,_client_texture,_client_texture_name,_client_texture_name_size,_client_mesh_count,_client_draw,_client_error,_client_dispose]"
+    "-sEXPORTED_RUNTIME_METHODS=[UTF8ToString,HEAPU8]")
+  set_target_properties(client153 PROPERTIES SUFFIX ".mjs" RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/browser")
+  configure_file("${PROJECT_SOURCE_DIR}/web/client153/index.html" "${CMAKE_BINARY_DIR}/browser/index.html" COPYONLY)
+  configure_file("${PROJECT_SOURCE_DIR}/web/client153/app.mjs" "${CMAKE_BINARY_DIR}/browser/app.mjs" COPYONLY)
+endif()

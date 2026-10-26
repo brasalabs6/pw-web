@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "upstream": "https://github.com/WolfsCore/Source-Cliente-1.5.3",
+  "commit": "e3d6d0075d0a745c9f9859f2cb25b01d71dec045",
+  "copyright": "Copyright (c) 2001 Archosaur Studio, All Rights Reserved.",
+  "authorization": "docs/LEGAL.md: operator decision 2026-10-25",
+  "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
+  "upstreamFiles": [
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DFrame.cpp",
+      "sha256": "15a073d0138b076b4bb9bbe7daa51f3ca1a44e06b6e0bfff34e65fa74736aaff"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMesh.cpp",
+      "sha256": "eee6db2c8c1b519313a0b32e5c29ebbc7bf3e02fdb94b5822628bfae4e282519"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMaterial.cpp",
+      "sha256": "29e4bec5b2bbb0e9f8681433277556e9a8db88d8dda002f720c1c5253bdb0734"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DVertex.h",
+      "sha256": "3bdcd6a31ead17522b1391d81060b692cfe3ad58282cdd2efa98f450229a6752"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DTypes.h",
+      "sha256": "b5a0d274534cdc3cc557bd3c56f59923cc31cec1c1204fa3b18858ae1fbcfb0f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DGeometry.h",
+      "sha256": "12404e8c3063f2566f9e35cac0e32d010dc28d520c7a5bd7783825850c5ade3d"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DFrame.h",
+      "sha256": "4aeee1cec17832e274ea5419c8ff9f3c80013ca91217abd77ab23b562c797e79"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AFile.cpp",
+      "sha256": "d1844a4b7e54de449de73e5fd258d69fdf0cbdb032ad52bca4a7c1f565efab60"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AFilePackGame.cpp",
+      "sha256": "212eabc4ff1e6e4a51d2bc7b001eb5ed3292ee3ec600f9585b951c6f48a8f1d9"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AFilePackBase.cpp",
+      "sha256": "185ae656619178937a5c204e5633333efc75a07c1f6ee2ae7d48a94989abb763"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AFilePackMan.cpp",
+      "sha256": "471f1a6f1bfad4bad8e5e4a2026d21c749fc2195497578ac7b54339dd152723a"
+    }
+  ],
+  "adaptations": [
+    {
+      "path": "src/client153/Angelica2/Angelica3D/port/mox.cpp",
+      "functions": [
+        "A3DFrame::Load(binary)",
+        "A3DMesh::Load(binary)",
+        "A3DMesh::LoadMeshPropV1/V2",
+        "A3DMaterial::Load(binary)",
+        "AFile::ReadString(char*)"
+      ],
+      "changes": [
+        "fixed-width little-endian decoding",
+        "bounds and finite-value checks",
+        "transactional CPU output",
+        "file and device operations separated from data loading"
+      ]
+    },
+    {
+      "path": "tools/assets/pck153.py",
+      "functions": [
+        "AFilePackGame::InnerOpen(v0x20002)",
+        "AFilePackGame::ReadFile",
+        "AFilePackBase::CPackageFile logical PCK/PKX stream"
+      ],
+      "changes": [
+        "read-only Python cooker input",
+        "bounded inflate and offsets",
+        "CP936 names preserved as raw hex and decoded Unicode",
+        "encrypted and unverified package versions rejected"
+      ]
+    }
+  ]
+}

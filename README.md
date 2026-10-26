@@ -14,7 +14,9 @@ Angelica nem o cliente completo. Veja [resultado e reprodução local](docs/POC-
 e o [método de implementação para Grok/GLM](docs/ANGELICA-PORTING-METHOD.md).
 
 A fronteira matemática R0 já passa nos mesmos 14 grupos em C++ nativo e WASM/Node,
-incluindo validação de dados e overflow. O backend gráfico ainda está pendente; veja [evidência e reprodução](docs/evidence/render-r0.md).
+incluindo validação de dados e overflow. O backend R0 passou na prova local de
+pixels/lifecycle. O target `client153` também desenha uma malha e textura originais;
+veja [estado e build do port](docs/CLIENT153-PORT.md). Mundo e gameplay seguem pendentes.
 
 Execução assistida: [tarefas para o ChatGPT Web e validação pelo Codex](docs/CHATGPT-WEB-HANDOFF.md).
 
@@ -81,3 +83,9 @@ A automação usa `@xai-official/grok@1.0.70` em modo **headless** (`grok -p`) e
 ### Revisão automática dupla
 
 O executor padrão é **CF GLM 5.3**. Cada PR gerado pelo coder dispara em paralelo **DeepSeek V4 Flash (segurança)** e **GLM 5.3 Flash (arquitetura/QA)**; os findings vão para os comentários do PR e, quando o loop está habilitado, provocam nova implementação. Configuração, limites e evidências: [Grok Build + revisores](docs/GROK_BUILD.md).
+
+## Port com assets reais 1.5.3
+
+O target CMake `client153` carrega uma malha MOX original e sua textura DDS em
+WASM/WebGL2. [Build, execução e estado da migração](docs/CLIENT153-PORT.md).
+Login, mundo e gameplay completo continuam pendentes.

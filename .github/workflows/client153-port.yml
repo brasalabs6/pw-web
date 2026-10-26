@@ -1,0 +1,42 @@
+name: Client 1.5.3 port build
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-and-wasm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: emscripten/emsdk:6.0.13@sha256:badbe38bedc8f4ff88a5a24672a2d59606015ba9a3bbe69801ad2fbdf75ab500
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Record actual compiler versions
+        run: |
+          cmake --version
+          c++ --version
+          emcc --version
+          node --version
+      - name: Native original-layout and bounded package tests
+        run: |
+          cmake -S . -B build/client153-native -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/client153-native --parallel 2
+          ctest --test-dir build/client153-native --output-on-failure
+          python3 -m unittest discover -s tests/assets -p 'test_*.py'
+      - name: Build WebGL2 runtime and execute WASM parser regressions
+        run: |
+          emcmake cmake -S . -B build/client153-wasm -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/client153-wasm --parallel 2
+          ctest --test-dir build/client153-wasm --output-on-failure
+          test -s build/client153-wasm/browser/client153.mjs
+          test -s build/client153-wasm/browser/client153.wasm
+          test -z "$(find build/client153-wasm/browser -name '*.data' -print -quit)"
+      - name: Record validation scope
+        run: |
+          echo 'Build and parser regressions only; no original game assets, login, realm or gameplay executed.' >> "$GITHUB_STEP_SUMMARY"
