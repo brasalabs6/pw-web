@@ -145,6 +145,98 @@
     {
       "path": "Angelica2/Angelica3D/Header/A3DClassID.h",
       "sha256": "1de84d4c07951b63728e1cf4f94e06529c4d418dfcb1d7ab5d3023e0602189a1"
+    },
+    {
+      "path": "AngelicaCommon/Header/APoint.h",
+      "sha256": "8cd4335dcf95e063c5102fda3dbb7a9268afe525a66868432fcac030efd26bf3"
+    },
+    {
+      "path": "AngelicaCommon/Header/ARect.h",
+      "sha256": "8d65c2197a978794c01b18876f3fa9c5b5d3d3811ced3f8a20510808faddc78e"
+    },
+    {
+      "path": "AngelicaCommon/Header/AAssist.h",
+      "sha256": "60d6a8d3033d2dbbfd74524a7608fc0c80f31fb8fd1f0e7e3fbac6276b6893eb"
+    },
+    {
+      "path": "AngelicaCommon/Source/AAssist.cpp",
+      "sha256": "25ff967f2360992caec6887ee85e209c13c7ff5a79683f6ce536ae0fc99b1ffb"
+    },
+    {
+      "path": "AngelicaCommon/Header/AMemory.h",
+      "sha256": "e858c7636b7b69a29b3b751706c507430015a58dffb42d1de0a8f7914a9534d8"
+    },
+    {
+      "path": "AngelicaCommon/Header/ACounter.h",
+      "sha256": "a806be167175bd160747f97bdb404b7704a602dc468ea26d3dbcf8ea42fd25a1"
+    },
+    {
+      "path": "AngelicaCommon/Source/ACounter.cpp",
+      "sha256": "a5261b902a7e031fe841fbdce9f5b4e23074444bef975c47d58c1d96fb07204e"
+    },
+    {
+      "path": "Angelica3D/Header/A3DMacros.h",
+      "sha256": "b69e3f58893346d1b38307e595d24305433570779649a58b17c6f139ab8fb37b"
+    },
+    {
+      "path": "Angelica3D/Header/A3DTypes.h",
+      "sha256": "b5a0d274534cdc3cc557bd3c56f59923cc31cec1c1204fa3b18858ae1fbcfb0f"
+    },
+    {
+      "path": "Angelica3D/Header/A3DPI.h",
+      "sha256": "05116afbbd5314ca322137ea5c93594c2c83dabfecb55922209ecf00e0ab43ac"
+    },
+    {
+      "path": "Angelica3D/Source/A3DPI.cpp",
+      "sha256": "3714b823f8ee0fcbd017ecfaae7f87b3654ed0b1d377eabbea6250b99004597d"
+    },
+    {
+      "path": "Angelica3D/Header/A3DFuncs.h",
+      "sha256": "e917bc47e018c49d7f10abaa651399873a8ba2abc1a6d51610074fae3f8f7341"
+    },
+    {
+      "path": "Angelica3D/Source/A3DFuncs.cpp",
+      "sha256": "cc17272e4fbed0eb119f2fa8c03796fbbd6ea33293d7c5abf346ef0c742cc412"
+    },
+    {
+      "path": "Angelica3D/Header/A3DGeometry.h",
+      "sha256": "12404e8c3063f2566f9e35cac0e32d010dc28d520c7a5bd7783825850c5ade3d"
+    },
+    {
+      "path": "Angelica3D/Source/A3DGeometry.cpp",
+      "sha256": "4d92fc5a6df61cee38146c4c0f7905ba8173a4c78a441ea11da930167d64c6c9"
+    },
+    {
+      "path": "Angelica3D/Header/A3DController.h",
+      "sha256": "640bd18195fa844ae14400366e816790c319f27cec7e0db7f1e6a916e9ba4d67"
+    },
+    {
+      "path": "Angelica3D/Source/A3DController.cpp",
+      "sha256": "70a8f6f2797d27af6295420ee2c03d623a3a4a96b77671192bf8120f829ee088"
+    },
+    {
+      "path": "Angelica3D/Header/A3DCoordinate.h",
+      "sha256": "00e25c2768cd31481563e989d9aedf60574c8de1d0c7c756913fa940a8bd1705"
+    },
+    {
+      "path": "Angelica3D/Source/A3DCoordinate.cpp",
+      "sha256": "ef4839f3960f17cca2ab1755b24d3945411d485bd4d81e270385931313e7189b"
+    },
+    {
+      "path": "Angelica3D/Header/A3DIKData.h",
+      "sha256": "27283a776300d372f5fd5be2dacc3828e4a2dd97b3267c94d5d1c11949929097"
+    },
+    {
+      "path": "Angelica3D/Source/A3DIKData.cpp",
+      "sha256": "e6af1b9ac8952b468b17f61d8c94d5f5cd2cb0e96a5e5866d4969b29b52dff8f"
+    },
+    {
+      "path": "Angelica3D/Header/A3DIKSolver.h",
+      "sha256": "9caf32f2cb4cdbc744c18936ebba6ccc92969c1fb9879315f68538f3f04c4fbb"
+    },
+    {
+      "path": "Angelica3D/Source/A3DIKSolver.cpp",
+      "sha256": "c9b399877fba97996963567e49fd36b7e60bb6648290c494dfb5d4dd4af1fa6c"
     }
   ],
   "adaptations": [
@@ -267,6 +359,35 @@
         "original pointer-container forwarding and missing return/field errors corrected by compilation",
         "prohibit implicit shallow copies of owning containers",
         "preserve original object names and class IDs"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DFuncs.cpp",
+      "functions": [
+        "a3d_LookAtMatrix",
+        "a3d_IdentityMatrix/a3d_ZeroMatrix/a3d_TransformMatrix zeroing",
+        "a3d_MakeVSDeclarator/a3d_MakeMorphVSDeclarator",
+        "_KeepOrthogonal",
+        "A3DCoordinate child list handle",
+        "A3DController pure-virtual destructor",
+        "A3DGeometry A3DAABB/A3DOBB init and Clear",
+        "ACounter timing backend",
+        "AAssist CRC32 IDs/random",
+        "AMemory release-path macros"
+      ],
+      "changes": [
+        "D3DXMatrixLookAtLH replaced by the scalar left-handed formula laid out like a3d_ViewMatrix in the same file",
+        "memset-on-class replaced by explicit member zeroing with identical results",
+        "DirectX FVF vertex-shader declarator builders and the dead _KeepOrthogonal helper omitted; no port consumer yet",
+        "A3DCoordinate child-position handle widened from DWORD to ALISTPOSITION (original assumed 32-bit pointers)",
+        "pure-virtual A3DController destructor defined out-of-line; the original never defined it",
+        "A3DAABB initializer order fixed to declaration order; A3DSPLANE copy ctor initializes its base",
+        "A3DOBB::Clear zeroes members explicitly; dead Jacobi rotation counter removed",
+        "ACounter maps Windows timing to the portable monotonic clock; CPU-cycle API reports zero pending consumer review",
+        "AAssist keeps CRC32 string IDs, code page state and the original LCG; wide-char and memory-stat surfaces omitted until needed",
+        "AMemory keeps the original release mapping (A_DEBUG_NEW -> new, a_malloc -> malloc); custom allocator deferred",
+        "ARect includes AAssist explicitly for a_Swap; MSVC pragmas dropped",
+        "A3DConfig/AIniFile deferred to the bone batch; no skeleton-support consumer"
       ]
     }
   ],

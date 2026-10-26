@@ -105,3 +105,10 @@ esqueleto e malha ao renderer. Ver [evidência das trilhas](evidence/client153-o
 A migração de skeleton fechou mais dependências de Common: arrays/listas,
 logging e `A3DObject` agora compilam com testes nativos/WASM. O skeleton completo
 continua pendente; ver [evidência dessas dependências](evidence/client153-common-containers.md).
+
+O fechamento do skeleton avançou nas dependências de suporte: helpers escalares
+(`A3DFuncs`), limites geométricos (AABB/OBB), hierarquia de coordenadas,
+controllers, interfaces IK e globais da engine (`A3DPI`) agora compilam em
+nativo/WASM com sanitizadores, com defeitos originais corrigidos e documentados.
+Bones, joints e o skeleton em si permanecem para o próximo lote. Ver
+[evidência do suporte ao skeleton](evidence/client153-skeleton-support.md).

@@ -66,3 +66,22 @@ target_compile_options(client153_animation PRIVATE -Wall -Wextra -Werror)
 target_sources(client153_math PRIVATE
   Angelica2/Angelica3D/Header/A3DObject.h
   Angelica2/Angelica3D/Header/A3DClassID.h)
+
+# Original skeleton support: PI globals, scalar math helpers, geometry bounds,
+# coordinate spaces, controllers and IK, on the portable platform clock.
+add_library(client153_skeleton STATIC
+  Angelica2/AngelicaCommon/Source/AAssist.cpp
+  Angelica2/AngelicaCommon/Source/ACounter.cpp
+  Angelica2/Angelica3D/Source/A3DPI.cpp
+  Angelica2/Angelica3D/Source/A3DFuncs.cpp
+  Angelica2/Angelica3D/Source/A3DGeometry.cpp
+  Angelica2/Angelica3D/Source/A3DController.cpp
+  Angelica2/Angelica3D/Source/A3DCoordinate.cpp
+  Angelica2/Angelica3D/Source/A3DIKData.cpp
+  Angelica2/Angelica3D/Source/A3DIKSolver.cpp)
+target_link_libraries(client153_skeleton PUBLIC client153_math client153_animation client153_platform)
+target_include_directories(client153_skeleton PUBLIC Angelica2/Angelica3D/Header)
+target_compile_features(client153_skeleton PUBLIC cxx_std_17)
+#	-pedantic omitted like client153_math: the original vector/matrix unions use MSVC anonymous-struct layout.
+target_compile_options(client153_skeleton PRIVATE -Wall -Wextra -Werror)
+set_target_properties(client153_skeleton PROPERTIES CXX_EXTENSIONS ON)
