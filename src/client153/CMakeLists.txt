@@ -75,8 +75,8 @@ add_library(client153_file STATIC
 target_include_directories(client153_file PUBLIC Angelica2/AngelicaFile/Header)
 target_link_libraries(client153_file PUBLIC client153_common client153_platform)
 target_link_libraries(client153_file PUBLIC ${PW153_ZLIB_LINK})
-#	Bounded path joins may truncate by design: the original overflowed
-#	MAX_PATH buffers; the port keeps the bound and accepts the truncation.
+#	Some legacy path operations still require review for truncation; keep
+#	the GCC diagnostic visible while porting those call sites.
 target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic "$<$<CXX_COMPILER_ID:GNU>:-Wno-error=format-truncation>" "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 
 # Original matrix/vector unions retain MSVC anonymous-struct layout.
