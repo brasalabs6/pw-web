@@ -1,0 +1,119 @@
+# Handoff — cliente 1.5.3 no navegador (Grok → Codex, 2026-10-26)
+
+Estado completo do port e instruções para continuidade. Leia junto com
+`AGENTS.md`, `docs/CLIENT153-PORT.md` e as evidências em `docs/evidence/`.
+
+## Onde você está
+
+- **Worktree**: `/home/nonexphere/workspace/pw/pw-browser-port`, branch
+  `feat/client153-common-containers`, tudo commitado e pushed (árvore limpa,
+  exceto `tests/client153/ski_loader.cpp` untracked — WIP antigo seu que
+  referencia um `ski.h` inexistente; decida manter ou remover).
+- **Entrega**: PR #23 (brasalabs6/pw-web, base `main`) — **PR único do
+  cliente**. Regra do `AGENTS.md`: máximo de 2 PRs abertos (servidor #17 +
+  cliente #23); um milestone = um commit autônomo com evidência; merge final
+  é humano.
+- **Goal**: o texto completo está no histórico do PR #23 e no card do agente
+  Grok (`~/.agents/running/`). Critério final: jogo real no browser — login,
+  personagem animado, entrada no mundo, movimento, duas sessões convergentes.
+
+## Milestones já entregues (commits no PR #23, todos CI-verdes)
+
+| Commit | Milestone | Prova real |
+| --- | --- | --- |
+| `31e0d2e` | Camada de suporte ao skeleton (AAssist, APoint/ARect, AMemory, ACounter, A3DTypes/A3DPI/A3DFuncs/A3DGeometry/A3DController/A3DCoordinate/IK) | 9/9 nativo/WASM/ASan |
+| `d661924` | Loader real PCK/PKX + família de arquivos (AFilePackage, AFilePackGame/Man, AFileImage, AIniFile, AScriptFile, AFI/AFPI, abase::vector/hashtab, ATempMemMan, ACSWrapper) | `facedata.pck` 2005 entradas = leitor Python validado; 64 shared files verificados; 10/10 |
+| `7b49cd9` | Fechamento do skeleton (A3DConfig, A3DJoint, A3DBone, A3DBoneController, A3DTrackMan, A3DSkeleton) | BON real do lobo: 42 joints, 42 bones, 5 hooks via `A3DSkeleton::Load` original; 11/11 |
+
+Anteriores (histórico do PR): runtime browser (MOX/DDS via download verificado
+→ VFS → AFile → loader → WebGL2), AString/ATime, AFile, matemática, trilhas
+(BON: 84 trilhas, 31.122 amostras), containers/logging/A3DObject, método
+ADR-0004, plano Cloudflare (ex-#16 mergeado).
+
+## Próximo milestone: skin/skinning (personagem animado no browser)
+
+1. Portar `A3DSkin.h/.cpp`, `A3DSkinMesh*`, `A3DSkinModel*`, `A3DSkinMan`,
+   `A3DMorphSkinMesh`, `a3dskinrender` (referência:
+   `references/client-153/Angelica2/Angelica3D/{Header,Source}/`).
+2. **Reconectar os seams pendentes do skeleton** (documentados em
+   `A3DSkeleton.cpp`): a notificação `m_pSkinModel->OnBoneWholeScaleChanges()`
+   (removida porque inalcançável com `m_pSkinModel == NULL`) e o
+   `SetA3DSkinModel`. Os includes de `A3DEngine` omitidos eram só
+   instrumentação de performance — não reponha.
+3. Validar com os assets reais já extraídos:
+   `artifacts/client153-input/wolf.ski` + `wolf.bon` (o mesmo BON do teste
+   do skeleton). O teste de skinning deve dirigir as classes portadas
+   (pesos SKI, malha deformada), nunca cópias.
+4. Renderizar o personagem animado no browser (WebGL2 host existente em
+   `web/client153`), com prova de pixel positiva e negativa.
+5. Manifest (`source-manifest.json`), evidência (`docs/evidence/`), update do
+   `docs/CLIENT153-PORT.md`, commit autônomo, push, conferir CI.
+
+Depois: shell do cliente (loop/input/tempo/arquivo/áudio → tela de login),
+rede (contrato do PR #17, sem simular regras do servidor), terreno/mundo +
+streaming, entrega Cloudflare, varredura final. O checklist completo está no
+plano do goal.
+
+## Método validado (use exatamente este)
+
+1. Copiar verbatim do `references/client-153` (transcodificar comentários
+   GB18030→UTF-8 quando necessário; ver padrão nos commits anteriores).
+2. Adaptar **só no erro real de compilação**; documentar cada adaptação no
+   próprio arquivo (comentário `//\t...`) e no manifest.
+3. Teste que falha antes da correção quando for defeito original.
+4. Validar nas **três configurações**:
+   ```bash
+   export PATH=/home/nonexphere/.local/share/pw-toolchains/cmake-4.4.4/bin:$PATH
+   cmake --build build/client153-native --parallel 2 && ctest --test-dir build/client153-native --output-on-failure
+   source /home/nonexphere/.local/share/pw-toolchains/emsdk/emsdk_env.sh
+   emcmake cmake -S . -B build/client153-wasm-tests -G Ninja -DCMAKE_BUILD_TYPE=Debug
+   cmake --build build/client153-wasm-tests --parallel 2 && ctest --test-dir build/client153-wasm-tests --output-on-failure
+   cmake --build build/client153-sanitize --parallel 2 && ctest --test-dir build/client153-sanitize --output-on-failure
+   ```
+5. Provas com dados reais: `artifacts/client153-input/` (wolf.bon, wolf.ski,
+   cabinet.mox/dds) e o PCK autorizado via
+   `/home/nonexphere/workspace/pw/clients/client-1.5.3-v145-pwbr/app/`.
+   Assets nunca entram no Git.
+6. Commit autônomo + push + `gh pr checks 23`.
+
+## Defeitos originais já corrigidos (não reintroduza)
+
+- Handles de 32 bits: `ALISTPOSITION` no lugar de `DWORD` (A3DCoordinate,
+  A3DTrackData::m_dwDelFlag1, shared-file handles → `uintptr_t`).
+- `memset`-sobre-classe → zeramento explícito (HOOKDATA, BONEDATA, matrizes).
+- Ordem de inicialização de membros (hook, bone, controllers, AABB, ATempMemMan).
+- AString em varargs `%s` → cast explícito `(const char*)` (UB no original).
+- `stricmp`/`strlwr`/`GetTickCount`/`_fileno`/`_chsize`/`ZeroMemory`/`LPBYTE`
+  → equivalentes portáveis (padrão já estabelecido nos commits).
+- Artefato incompilável do `AFilePackage.h` (FILEHEADER duplicado →
+  FILEHEADER64; layout 32-bit é o ativo do v145).
+- Constantes de formato provadas contra pacotes reais: guard0 `0xFDFDFEEE`,
+  guard1 `0xF00DBEEF`, mask `0xA8937462`, check `0x59374231`.
+
+## Armadilhas conhecidas (aprendidas nesta sessão)
+
+- **Base dir**: `AFileImage`/`AFI` resolvem caminhos via `g_szBaseDir`
+  (vazio até `af_Initialize`/`af_SetBaseDir`). Testes chamam
+  `af_SetBaseDir(".")`. Caminhos absolutos POSIX são reconhecidos.
+- **Lock re-entrante**: `CRITICAL_SECTION` do Windows é re-entrante; o seam
+  usa `std::recursive_mutex` (o track manager aninha o lock — `std::mutex`
+  plano **deadlocka**).
+- **Emscripten zlib**: `-sUSE_ZLIB=1` no CMakeLists raiz (não `-lz`).
+- **`#define new A_DEBUG_NEW`**: clang exige `-Wno-error=keyword-macro`
+  (já nos 3 targets que compilam fontes originais).
+- **Truncamento de caminho**: `-Wno-error=format-truncation` no
+  `client153_file` (joins limitados por design — o original transbordava).
+- **`-pedantic`** é omitido nos targets com unions anônimas MSVC
+  (vetores/matriz originais), igual ao `client153_math`.
+- **Relógio**: origem estática (primeira chamada = 0); teste só afirma
+  monotonicidade, nunca magnitude.
+- **CRC32 do AAssist**: tabela verificada byte a byte contra a referência —
+  IDs de arquivo dependem dela.
+
+## Coordenação
+
+- Servidor (PR #17) e validação Wine: worktrees de outros agentes — não
+  modifique; consuma contratos read-only.
+- Card do agente em `~/.agents/running/`: atualize o seu ao assumir.
+- Sem force-push, sem self-merge; `main` é ação humana ao final.
+- Orphan `tests/client153/ski_loader.cpp`: seu WIP antigo, decide você.
