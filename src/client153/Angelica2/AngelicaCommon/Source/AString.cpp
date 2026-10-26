@@ -11,6 +11,7 @@
  */
 
 #include "AString.h"
+#include "format.h"
 #include <cctype>
 #include <cstring>
 #include <stdexcept>
@@ -130,7 +131,7 @@ void AString::FreeBuffer(s_STRINGDATA *pStrData) {
 }
 
 //	Copy iLen characters from szSrc to szDest and add terminator at the tail
-//of szDest
+// of szDest
 void AString::StringCopy(char *szDest, const char *szSrc, int iLen) {
   std::memmove(szDest, szSrc, static_cast<std::size_t>(iLen));
   szDest[iLen] = 0;
@@ -496,39 +497,9 @@ void AString::MakeLower() {
     *p = static_cast<char>(std::tolower(static_cast<unsigned char>(*p)));
 }
 
-namespace {
-std::string portable_format(const char *format) {
-  if (!format)
-    throw std::invalid_argument("null AString format");
-  std::string out;
-  for (std::size_t i = 0; format[i]; ++i) {
-    out += format[i];
-    if (format[i] != '%')
-      continue;
-    ++i;
-    if (format[i] == '%') {
-      out += '%';
-      continue;
-    }
-    // Flags, width and precision precede the length modifier.
-    while (format[i] && std::strchr("-+ #0*.0123456789", format[i]))
-      out += format[i++];
-    if (std::strncmp(format + i, "I64", 3) == 0) {
-      out += "ll";
-      i += 3;
-    } else if (std::strncmp(format + i, "I32", 3) == 0)
-      i += 3;
-    if (!format[i])
-      throw std::invalid_argument("incomplete AString format");
-    out += format[i];
-  }
-  return out;
-}
-} // namespace
-
 //	Format string
 AString &AString::Format(const char *szFormat, ...) {
-  const std::string format = portable_format(szFormat);
+  const std::string format = pw153::platform::printf_format(szFormat);
   va_list args, sizing;
   va_start(args, szFormat);
   va_copy(sizing, args);
@@ -674,7 +645,7 @@ void AString::UnlockBuffer() {
 */
 
 int AString::GetFormatLen(const char *szFormat, va_list argList) {
-  const std::string format = portable_format(szFormat);
+  const std::string format = pw153::platform::printf_format(szFormat);
   va_list sizing;
   va_copy(sizing, argList);
   int length = std::vsnprintf(nullptr, 0, format.c_str(), sizing);

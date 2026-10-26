@@ -14,7 +14,12 @@ std::uint64_t monotonic_microseconds() {
           .count());
 }
 Calendar local_calendar() {
-  const auto now = std::time(nullptr);
+  const auto instant = std::chrono::system_clock::now();
+  const auto now = std::chrono::system_clock::to_time_t(instant);
+  const auto milliseconds =
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          instant.time_since_epoch())
+          .count();
   std::tm value{};
   if (now == std::time_t(-1) || !localtime_r(&now, &value))
     throw std::runtime_error("local calendar unavailable");
@@ -24,6 +29,7 @@ Calendar local_calendar() {
           static_cast<std::uint16_t>(value.tm_wday),
           static_cast<std::uint16_t>(value.tm_hour),
           static_cast<std::uint16_t>(value.tm_min),
-          static_cast<std::uint16_t>(value.tm_sec)};
+          static_cast<std::uint16_t>(value.tm_sec),
+          static_cast<std::uint16_t>((milliseconds % 1000 + 1000) % 1000)};
 }
 } // namespace pw153::platform

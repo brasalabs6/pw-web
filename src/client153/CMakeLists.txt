@@ -1,11 +1,13 @@
 # Original Common interface, with portable string storage/formatting corrections.
-add_library(client153_platform STATIC platform/common/clock.cpp)
+add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp)
 target_include_directories(client153_platform PUBLIC platform/common)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
 target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic)
 add_library(client153_common STATIC
   Angelica2/AngelicaCommon/Source/AString.cpp
-  Angelica2/AngelicaCommon/Source/ATime.cpp)
+  Angelica2/AngelicaCommon/Source/ATime.cpp
+  Angelica2/AngelicaCommon/Source/ALog.cpp
+  Angelica2/AngelicaCommon/Source/AContainers.cpp)
 target_link_libraries(client153_common PRIVATE client153_platform)
 target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_common PUBLIC cxx_std_17)
@@ -60,3 +62,7 @@ set_target_properties(client153_math PROPERTIES CXX_EXTENSIONS ON)
 add_library(client153_animation STATIC Angelica2/Angelica3D/Source/A3DTrackData.cpp)
 target_link_libraries(client153_animation PUBLIC client153_math client153_file)
 target_compile_options(client153_animation PRIVATE -Wall -Wextra -Werror)
+
+target_sources(client153_math PRIVATE
+  Angelica2/Angelica3D/Header/A3DObject.h
+  Angelica2/Angelica3D/Header/A3DClassID.h)

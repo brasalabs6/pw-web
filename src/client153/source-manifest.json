@@ -121,6 +121,30 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DTrackMan.cpp",
       "sha256": "306b32343d6aa1afc72247a635ce2fb293088c96079a2399965250dcacef3bd3"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/ALog.h",
+      "sha256": "d77cbd5a2e522045d2c1ecd4a40a0f8c50fccabc05f5258b33f5a5f0e2bb404b"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/ALog.cpp",
+      "sha256": "5593e253125449c3b3ecf5f5290582095929f199dd4d4944de6d7e92d303f814"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/AArray.h",
+      "sha256": "fe8ab34ae404e7c161faeab115ad2a6c09a1a12411e9916daf6e4b4a8f6bf9e8"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/AList2.h",
+      "sha256": "faa907353868ae97fcf132b3001ba610876f5ff9b4ac972ff54930ac3c53978c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DObject.h",
+      "sha256": "9ebd4172159eb05dfb87af2b3130953d6fc6eaed69ac6a2f24bb3c0c262618f1"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DClassID.h",
+      "sha256": "1de84d4c07951b63728e1cf4f94e06529c4d418dfcb1d7ab5d3023e0602189a1"
     }
   ],
   "adaptations": [
@@ -226,6 +250,23 @@
         "explicit instantiation compiles all supported operations",
         "preserve original interpolation coefficients; reject unresolved key indices",
         "widen time arithmetic and prohibit copying owning track objects"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaCommon/Source/ALog.cpp",
+      "functions": [
+        "ALog",
+        "default/debug log output",
+        "AArray/APtrArray/AList2/APtrList",
+        "A3DObject"
+      ],
+      "changes": [
+        "actual console/callback and local/VFS log sinks replace Windows debug window",
+        "bounded shared printf modifier normalization with AString",
+        "failed file initialization returns false and Windows separators are normalized",
+        "original pointer-container forwarding and missing return/field errors corrected by compilation",
+        "prohibit implicit shallow copies of owning containers",
+        "preserve original object names and class IDs"
       ]
     }
   ],

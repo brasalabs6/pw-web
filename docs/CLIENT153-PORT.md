@@ -100,3 +100,8 @@ e skinning ainda precisam ser integrados ao cliente.
 quaternion e float. O BON real do lobo passou no carregamento de 84 trilhas e
 31.122 amostras nativas, inclusive sob sanitizadores. Isso ainda não conecta
 esqueleto e malha ao renderer. Ver [evidência das trilhas](evidence/client153-original-tracks.md).
+
+
+A migração de skeleton fechou mais dependências de Common: arrays/listas,
+logging e `A3DObject` agora compilam com testes nativos/WASM. O skeleton completo
+continua pendente; ver [evidência dessas dependências](evidence/client153-common-containers.md).
