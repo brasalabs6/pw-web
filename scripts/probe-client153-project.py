@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Inventory the pinned VC project and expose real Emscripten blockers read-only."""
 import argparse
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
 import subprocess
@@ -26,6 +28,14 @@ def resolve_windows(root, relative):
     return current
 
 
+def first_error(stderr):
+    for line in stderr.splitlines():
+        for marker in ('fatal error: ', 'error: '):
+            if marker in line:
+                return marker + line.split(marker, 1)[1]
+    return 'no compiler error diagnostic'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
@@ -34,7 +44,12 @@ def main():
     parser.add_argument('--configuration', default='Release|Win32')
     parser.add_argument('--entry', default='ElementClient.cpp')
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--all', action='store_true', help='syntax-check every non-excluded source')
+    parser.add_argument('--port-root', type=Path, help='prefer already ported Angelica headers')
+    parser.add_argument('--jobs', type=int, default=4)
     args = parser.parse_args()
+    if args.jobs < 1 or args.jobs > 16:
+        parser.error('--jobs must be between 1 and 16')
     root = args.source.resolve()
     project = root / args.project
     tree = ET.fromstring(project.read_bytes().decode('gb18030'))
@@ -52,6 +67,12 @@ def main():
         excluded = any(x.attrib.get('ExcludedFromBuild') == 'true' for x in [x for x in entry.findall('./FileConfiguration') if x.attrib['Name'] == args.configuration])
         sources.append(dict(path=str(path.relative_to(root)), exists=path.is_file(), excluded=excluded))
     command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', str(resolve_windows(project.parent, args.entry))]
+    if args.port_root:
+        for directory in ('AngelicaCommon/Header', 'AngelicaFile/Header', 'Angelica3D/Header'):
+            path = args.port_root.resolve() / directory
+            if not path.is_dir():
+                parser.error(f'port header directory missing: {directory}')
+            command += ['-I', str(path)]
     for path in includes:
         command += ['-I', str(path)]
     command += ['-D' + d for d in cc['PreprocessorDefinitions'].split(';') if d]
@@ -61,11 +82,31 @@ def main():
                   definitions=cc['PreprocessorDefinitions'].split(';'),
                   libraries=tools.get('VCLinkerTool', tools.get('VCLibrarianTool', {})).get('AdditionalDependencies', '').split(),
                   probe=dict(command=command, exitCode=result.returncode, stderr=result.stderr))
+    if args.all:
+        source_index = command.index(str(resolve_windows(project.parent, args.entry)))
+        def compile_source(source):
+            cmd = command.copy()
+            cmd[source_index] = str(root / source['path'])
+            try:
+                outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+                return dict(path=source['path'], exitCode=outcome.returncode,
+                            firstError=first_error(outcome.stderr) if outcome.returncode else None)
+            except subprocess.TimeoutExpired:
+                return dict(path=source['path'], exitCode=-1, firstError='compiler timeout after 120 seconds')
+        active = [source for source in sources if source['exists'] and not source['excluded']]
+        with ThreadPoolExecutor(max_workers=args.jobs) as executor:
+            outcomes = list(executor.map(compile_source, active))
+        groups = Counter(x['firstError'] for x in outcomes if x['firstError'])
+        report['allSources'] = outcomes
+        report['errorGroups'] = dict(groups.most_common())
+        print(f"Checked {len(outcomes)} sources; {sum(x['exitCode'] == 0 for x in outcomes)} passed")
+        for message, count in groups.most_common(10):
+            print(f'{count:4d} {message}')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{len(sources)} translation units; {sum(not s["exists"] for s in sources)} missing after Windows case resolution')
     print(result.stderr)
-    return result.returncode
+    return 1 if args.all and any(x['exitCode'] for x in outcomes) else result.returncode
 
 
 if __name__ == '__main__':

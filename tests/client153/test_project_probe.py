@@ -10,6 +10,11 @@ spec.loader.exec_module(probe)
 
 
 class ProjectPaths(unittest.TestCase):
+    def test_first_compiler_error_is_grouped_without_local_paths(self):
+        output = "/tmp/example/one.cpp:4:9: fatal error: 'Windows.h' file not found\nmore\n"
+        self.assertEqual(probe.first_error(output), "fatal error: 'Windows.h' file not found")
+        self.assertEqual(probe.first_error('no diagnostic'), 'no compiler error diagnostic')
+
     def test_case_and_parent_resolution(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
