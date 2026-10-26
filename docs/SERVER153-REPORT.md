@@ -3,6 +3,22 @@
 **Data:** 2026-10-26. **Build revision:** `7dde52fa03d3` (ver `src/server153/PROVENANCE.md`).
 **Autorização:** `docs/LEGAL.md` (decisão 2026-10-25, escopo do port contratado).
 
+## 0. RESULTADO PRINCIPAL (2026-10-26 22:22)
+
+**Servidor completo rodando localmente com entrada no mundo comprovada contra o
+cliente real PWBR 1.5.3 v145 (Build 2555) via Wine.** Fluxo validado com evidência
+(`dist/server153/runtime/logs`, `world2.log`):
+
+```
+cliente real → serverlist (patcher) → glinkd:29000 (challenge: version 0x010503
++ edition pin) → MatrixPasswd retcode=0 (dev-auth) → userlogin → rolelist →
+criação de personagem (roleid=1040) → enterworld result=0 →
+"gameserver 101, 用户数目:1" (1 jogador no mundo)
+```
+
+Conta de teste: `1000000` / `1000000` (numérica, múltiplo de 16 — exigência do
+dev-auth desta árvore; ver §4).
+
 ## 1. Classificação da fonte
 
 - **Derivada comunitária, não oficial.** Origem: `hrace009/PW-Source-1.5.3`
@@ -43,8 +59,10 @@
 
 ## 4. Descobertas de runtime (bugs reais corrigidos por nós)
 
-Três **violações de ODR** — o upstream nunca compilou a árvore inteira com flags
-consistentes entre unidades de tradução. Cada uma causava segfault na inicialização:
+### 4.1 Violações de ODR (crashes na inicialização)
+
+O upstream nunca compilou a árvore inteira com flags consistentes entre unidades
+de tradução. Cada uma causava segfault na inicialização:
 
 1. **Locks stub vs. reais** (`share/common/mutex.h`): sem `_REENTRANT_`, Mutex/RWLock
    viram stubs no-op de 1 byte. `matcher.o` (via `gamed`, multi-thread) construía
@@ -57,18 +75,57 @@ consistentes entre unidades de tradução. Cada uma causava segfault na iniciali
    thread de poll (buckets NULL). Fix: `-DUSE_HASH_MAP` global.
 3. **Wrappers ausentes no gauthd**: `certrequest.hpp`/`certkey.hpp` nunca foram
    commitados (criados seguindo o padrão); 6 esqueletos `.hrp` ProxyRpc
-   referenciavam `GAuthClient`/`GameDBClient` inexistentes no gauthd (adaptados
-   para o caminho de falha do framework).
+   referenciavam `GAuthClient`/`GameDBClient` inexistentes no gauthd.
 
-Config/ambiente (documentados no `scripts/boot-server153.sh`):
-- confs `gamesys.conf` de vintages diferentes discordam em portas (gauthd 9200 vs.
-  29200; gacd 29702 vs. 29701/29709) — o boot script gera confs de runtime com os
-  fixes documentados; os confs commitados não são alterados.
-- `filters` (tabela de palavras sensíveis) é **GBK**, mas os confs declaram
+### 4.2 Compatibilidade com o cliente real v145 (handshake e login)
+
+4. **Version/edition do challenge**: o cliente compara `challenge.version` com
+   `GAME_VERSION` (0x010503 no binário PWBR 2555) e `challenge.edition` com a
+   string que ele computa dos próprios data files (`%x%x%x%x%x` de
+   elements/tasks/gshop). O `gamesys.conf` commitado não tem a chave `version`
+   e o `edition` só era setado via announce do gs. Fix: `version=10503` +
+   `edition` pinado no conf (patch no glinkd.cpp) + o announce respeita o pin.
+5. **Cadeia MatrixPasswd incompleta** (3 lacunas): os estados de sessão não
+   listavam `RPC_MATRIXPASSWD/2/TOKEN` nem no glinkd (`_state_GDeliverClient`)
+   nem no gdeliveryd (`_state_GAuthClient`) — o RPC não saía do sponsor (21) e
+   não chegava ao gauthd (8). E o gauthd, nó terminal, nunca teve handler: a
+   base `ProxyRpc::Process()` só encaminha via `Delivery()`. Fix: tipos
+   adicionados aos estados + `Process()` terminal no gauthd com dev-auth
+   (contas numéricas múltiplas de 16, hash MD5(conta‖conta), resposta
+   HMAC_MD5(desafio, hash)). Evidência: `retcode=0,userid=1000000`.
+6. **Loops de re-anúncio de provider**: o gs abre múltiplas conexões provider
+   e re-anuncia após reconexões; o check "Identical game server id" do upstream
+   fechava as sessões → registro oscilava → clientes viam "servidor suspenso".
+   Fix no glinkd E no gdeliveryd: substituir o mapeamento stale em vez de fechar.
+7. **gshopsev.data em formato antigo**: o pacote de dados v145 usa `GSHOP_ITEM`
+   de 196 bytes (sem `min_vip_level` no `buy[]` e sem `buy_times_limit/mode`);
+   esta fonte espera 220. Fix: conversor em `scripts/gs-server153.sh`
+   (originals preservados como `.old`).
+8. **serverlist da patcher**: o cliente com `startbypatcher` lê
+   `patcher/server/serverlist.txt` (não o do element) e exige cabeçalho de
+   grupo: `grupo\r\n\r\nnome\tporta:host\tid\r\n` em UTF-16LE com BOM.
+
+### 4.3 Config/ambiente (documentados no `scripts/boot-server153.sh`)
+
+- confs `gamesys.conf` de vintages diferentes discordam em portas (gauthd 9200
+  vs. 29200; gacd 29702 vs. 29701/29709) — o boot script gera confs de runtime
+  com os fixes documentados; os confs commitados não são alterados.
+- `filters` (tabela de palavras sensíveis) é GBK, mas os confs declaram
   `table_charset=UCS2` — fix no conf de runtime.
-- `gacd` carrega `libxml2.so.2` do próprio diretório se `LD_LIBRARY_PATH` apontar
-  para ele (binário antigo commitado) — o boot só define `LD_LIBRARY_PATH` para o `gs`.
-- `gs` precisa de `LD_LIBRARY_PATH` no próprio diretório (`libtask.so`, `libskill.so`).
+- gamedbd: `accepted_zone_list`, `cross_zone_pos` (4 entradas), `[CASHVIP]` e a
+  lista `tables` completa (48 storages referenciados pelo código; o conf lista
+  26 — `GetStorage("syslog")` retornava NULL e o InitGUID segfaultava).
+- chaves de criptografia gdeliveryd↔gauthd cruzadas (o gauthd.conf commitado
+  tem placeholders 456/123).
+- `gacd` carrega `libxml2.so.2` do próprio diretório se `LD_LIBRARY_PATH`
+  apontar para ele (binário antigo commitado) — o boot só define
+  `LD_LIBRARY_PATH` para o gs.
+- `gs` precisa de `LD_LIBRARY_PATH` no próprio diretório (`libtask.so`,
+  `libskill.so`) e roda do `gamed` do pacote de dados
+  (`scripts/gs-server153.sh`).
+- WDB (gamedbd) não tem recuperação de estado CORRUPT (`truncate()` retorna
+  CORRUPT): estado de shutdown sujo trava o boot; `--fresh` limpa o storage
+  vazio para validação.
 
 ## 5. Tamanhos medidos (2026-10-26)
 
