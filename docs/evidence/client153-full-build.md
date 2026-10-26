@@ -218,3 +218,32 @@ This bridges a real original interface into the browser and remains a resource
 scene. It is not the original complete client loop, runtime PCK mount, memory
 budgeted streaming, world entry or gameplay. Temporary VFS/data copies need
 budgeting before large-resource use. No server or Wine worktree changed.
+
+## Direct whole-client compilation recheck
+
+At the user's request to prioritize a broad build attempt, repeated the original
+VC-project inventory with Emscripten and attempted an actual WASM object build
+of `ElementClient.cpp` using the project's include paths and definitions. The
+project enumerates 787 translation units; all source paths resolve, while 2 of
+29 configured include directories do not exist. The first entrypoint compile
+fails at `ACPlatform.h` because `Windows.h` is unavailable. The project also
+links Windows-only APIs and Direct3D libraries, which the browser/WASM target
+cannot consume directly. The missing directories alone are not proof of a
+missing runtime dependency.
+
+An additional sample of twelve original client translation units (including
+world, game loop, login and UI) all failed syntax compilation: nine first at a
+Windows header and three first at the MSVC-specific `_atoi64` in an original
+SDK header. This is a sample, not an exhaustive error inventory and not a
+successful game build. Asset conversion alone does not address these compiler,
+linker and browser-platform dependencies.
+
+```
+python3 scripts/probe-client153-project.py --source <pinned-reference> \
+  --emxx <emsdk>/upstream/emscripten/em++ --output <local-output>/project.json
+```
+
+The original project report contains absolute local paths and is retained only
+as an ignored local artifact. A full browser port still requires replacing or
+adapting the Windows, graphics, network and other platform boundaries while
+reusing the game code and authorized assets.
