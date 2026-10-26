@@ -169,11 +169,8 @@ SEPFILE:
 	if (!DoExtDecrypt())
 	{
 		AFERRLOG(("AFileImage::Init, Failed to call DoExtDecrypt() for disk file !"));
-		if (m_bTempMem)
-			a_freetemp(m_pFileImage);
-		else
-			a_free(m_pFileImage);
-
+		Release();
+		fclose(pFile);
 		return false;
 	}
 

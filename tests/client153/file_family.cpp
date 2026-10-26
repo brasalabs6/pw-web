@@ -102,6 +102,25 @@ static void test_ini_roundtrip() {
   std::remove("test_output.ini");
 }
 
+static DWORD reject_decryption(const void *, DWORD, void *, DWORD *) {
+  return 2;
+}
+
+static void test_decryption_failure_cleanup() {
+  FILE *file = std::fopen("test_decryption.bin", "wb");
+  CHECK(file != nullptr);
+  CHECK(std::fwrite("testdata", 1, 8, file) == 8);
+  CHECK(std::fclose(file) == 0);
+  AFileImage::SetExtDecryptCallback(reject_decryption);
+  {
+    AFileImage image;
+    CHECK(!image.Open("test_decryption.bin", AFILE_OPENEXIST));
+    image.Close();
+  }
+  AFileImage::SetExtDecryptCallback(nullptr);
+  CHECK(std::remove("test_decryption.bin") == 0);
+}
+
 static void test_zlib_roundtrip() {
   std::string payload(10000, '\0');
   for (std::size_t i = 0; i < payload.size(); ++i)
@@ -160,6 +179,7 @@ int main(int argc, char **argv) {
     AFilePackGame game;
     CHECK(!game.Open(oversized.c_str(), AFilePackGame::OPENEXIST, false));
     CHECK(!game.Open("missing.pck", "", AFilePackGame::OPENEXIST, false));
+    test_decryption_failure_cleanup();
     test_zlib_roundtrip();
     test_ini_roundtrip();
     if (argc == 2) {

@@ -62,3 +62,20 @@ All three CTest suites passed 11/11; without asset arguments they skip original
 asset integration. Direct native and sanitized PCK tests opened 2,005 entries
 and verified 64 shared files. Direct skeleton test loaded 42 joints, 42 bones
 and 5 hooks. These results do not establish a playable browser client.
+
+## Disk image decryption failure
+
+A synthetic disk file and rejecting decryption callback exposed a double free
+in `AFileImage`: the failure path freed the image but retained the pointer, so
+`Close` freed it again; it also leaked the file handle. The regression test
+failed under AddressSanitizer before the change and passes after using the
+existing `Release` cleanup and closing the file. Reproduce with:
+
+```
+cmake --build build/client153-sanitize --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_file_family_test
+```
+
+Native and Emscripten CTest also passed 11/11, and the direct native facedata
+PCK check still opened 2,005 entries and verified 64 shared files. This test
+checks failure cleanup, not the correctness of any proprietary decryption scheme.
