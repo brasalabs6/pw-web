@@ -23,16 +23,23 @@ LOGSTUBSRC = $(LOG_DIR)/stubs.cxx $(LOG_DIR)/state.cxx
 SHARE_SOBJ = $(PERF_DIR)/libperf.a
 
 ifeq ($(SINGLE_THREAD),true)
-	DEFINES = -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 #-march=pentium4
+	# pw-web fix: _REENTRANT_ must be defined in BOTH branches. mutex.h selects
+	# empty 1-byte lock stubs without it, and daemons with different SINGLE_THREAD
+	# values then inline the same classes (e.g. Matcher in matcher.h) with
+	# incompatible layouts in one binary (ODR violation): gdeliveryd.cpp read
+	# cinput at instance+4 while matcher.o (built via gamed, multithread branch)
+	# constructed it at instance+32, so the read hit pthread rwlock state and
+	# iconv_close(1) segfaulted. Real locks are safe for single-thread daemons.
+	DEFINES = -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_REENTRANT_ #-march=pentium4
 	SHAREOBJ := $(SHARESRC:%.cpp=%.o)
 	LOGOBJ := $(LOGSRC:%.cpp=%.o) 
 	LOGSTUB := $(LOGSTUBSRC:%.cxx=%.o) 
 else
-	DEFINES = -D_GNU_SOURCE -pthread -D_REENTRANT_ -D_FILE_OFFSET_BITS=64 #-march=pentium4 
-	LDFLAGS = -pthread 
+	DEFINES = -D_GNU_SOURCE -pthread -D_REENTRANT_ -D_FILE_OFFSET_BITS=64 #-march=pentium4
+	LDFLAGS = -pthread
 	SHAREOBJ := $(SHARESRC:%.cpp=%_m.o)
 	LOGOBJ := $(LOGSRC:%.cpp=%_m.o)
-	LOGSTUB := $(LOGSTUBSRC:%.cxx=%_m.o) 
+	LOGSTUB := $(LOGSTUBSRC:%.cxx=%_m.o)
 endif
 
 ifeq ($(DEBUG_VERSION),true)
