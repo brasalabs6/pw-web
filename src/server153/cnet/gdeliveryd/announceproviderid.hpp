@@ -51,9 +51,13 @@ class AnnounceProviderID : public GNET::Protocol
 			Thread::RWLock::WRScoped l(psm->locker_gameservermap);
 			if (psm->gameservermap.find(id)!=psm->gameservermap.end())
 			{
-				Log::log(LOG_ERR,"Identical game server id(%d) exist. Check gameserver's \".conf\" file.",id);
-				manager->Close(sid);
-				return;
+				// pw-web: the game server opens several provider connections and
+				// re-announces after a reconnect. Upstream rejected every extra or
+				// re-announcing session as a duplicate, so the provider sessions
+				// looped register/close, the gameserver registration flapped and
+				// clients saw "servidor suspenso" (ForbidLogin oscillation).
+				// Replace the stale mapping instead of rejecting the session.
+				Log::log(LOG_ERR,"gdeliveryserver::gameserver %d re-registered (replacing stale entry)",id);
 			}
 			DEBUG_PRINT("gdeliveryserver::gameserver %d's region is (%9.3f, %9.3f,%9.3f,%9.3f), worldtag is %d\n",
 				id,left,right,top,bottom,worldtag);
