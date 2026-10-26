@@ -30,12 +30,17 @@ ifeq ($(SINGLE_THREAD),true)
 	# cinput at instance+4 while matcher.o (built via gamed, multithread branch)
 	# constructed it at instance+32, so the read hit pthread rwlock state and
 	# iconv_close(1) segfaulted. Real locks are safe for single-thread daemons.
-	DEFINES = -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_REENTRANT_ #-march=pentium4
+	# USE_HASH_MAP must also be global: share/common/map.h makes gnet_map a
+	# __gnu_cxx::hash_map with it and a std::map without; daemons define it but
+	# share objects (e.g. pollio.o built first via logclient) did not, so
+	# PollIO::ionew was constructed as std::map and iterated as hash_map by the
+	# poll thread (NULL-bucket segfault in UpdateEventMap).
+	DEFINES = -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_REENTRANT_ -DUSE_HASH_MAP #-march=pentium4
 	SHAREOBJ := $(SHARESRC:%.cpp=%.o)
 	LOGOBJ := $(LOGSRC:%.cpp=%.o) 
 	LOGSTUB := $(LOGSTUBSRC:%.cxx=%.o) 
 else
-	DEFINES = -D_GNU_SOURCE -pthread -D_REENTRANT_ -D_FILE_OFFSET_BITS=64 #-march=pentium4
+	DEFINES = -D_GNU_SOURCE -pthread -D_REENTRANT_ -D_FILE_OFFSET_BITS=64 -DUSE_HASH_MAP #-march=pentium4
 	LDFLAGS = -pthread
 	SHAREOBJ := $(SHARESRC:%.cpp=%_m.o)
 	LOGOBJ := $(LOGSRC:%.cpp=%_m.o)
