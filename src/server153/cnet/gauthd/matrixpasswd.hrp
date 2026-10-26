@@ -7,6 +7,8 @@
 #include "state.hxx"
 #include "matrixpasswdarg"
 #include "matrixpasswdres"
+#include "security.h"
+#include <string>
 
 namespace GNET
 {
@@ -16,6 +18,37 @@ class MatrixPasswd : public ProxyRpc
 #define	RPC_BASECLASS	ProxyRpc
 	#include "matrixpasswd"
 #undef	RPC_BASECLASS
+
+	void Server(Rpc::Data *argument, Rpc::Data *result, Manager *manager, Manager::Session::ID sid)
+	{
+		MatrixPasswdArg *arg = (MatrixPasswdArg *)argument;
+		MatrixPasswdRes *res = (MatrixPasswdRes *)result;
+
+		// pw-web dev-auth (same scheme as GQueryPasswd in this tree): accounts
+		// are numeric multiples of 16 and the stored hash is MD5(account||account).
+		// The upstream billing/au backend this proxy used to forward to does not
+		// exist; without a Server() the RPC fell back to the proxy Delivery and
+		// every login died with ERR_DELIVER_SEND (retcode 21).
+		res->userid = std::atoi(std::string((char*)arg->account.begin(), arg->account.size()).c_str());
+		if (res->userid % 16 || 0 == res->userid)
+		{
+			res->retcode = ERR_INVALID_ACCOUNT;
+			return;
+		}
+
+		MD5Hash md5;
+		Octets digest;
+		md5.Update(arg->account);
+		md5.Update(arg->account);
+		md5.Final(digest);
+
+		HMAC_MD5Hash hash;
+		hash.SetParameter(digest);
+		hash.Update(arg->challenge);
+		hash.Final(res->response);
+
+		res->retcode = ERR_SUCCESS;
+	}
 
 	bool Delivery(Manager::Session::ID proxy_sid, const OctetsStream& osArg)
 	{
