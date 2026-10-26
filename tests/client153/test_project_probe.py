@@ -15,6 +15,15 @@ class ProjectPaths(unittest.TestCase):
         self.assertEqual(probe.first_error(output), "fatal error: 'Windows.h' file not found")
         self.assertEqual(probe.first_error('no diagnostic'), 'no compiler error diagnostic')
 
+    def test_port_includes_platform_header_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            angelica = root / 'Angelica2'
+            for name in ('AngelicaCommon/Header', 'AngelicaFile/Header', 'Angelica3D/Header'):
+                (angelica / name).mkdir(parents=True)
+            (root / 'platform' / 'common').mkdir(parents=True)
+            self.assertIn(root / 'platform' / 'common', probe.port_include_dirs(angelica))
+
     def test_case_and_parent_resolution(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

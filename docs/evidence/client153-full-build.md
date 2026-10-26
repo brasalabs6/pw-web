@@ -315,3 +315,22 @@ python3 scripts/probe-client153-project.py --source <pinned-reference> \
   --emxx <emsdk>/upstream/emscripten/em++ --port-root src/client153/Angelica2 \
   --output <local-output>/entry.json
 ```
+
+## Port platform include path
+
+The broad probe's port-header mode omitted `src/client153/platform/common`,
+so some original source files could not find the already ported, real
+`criticalsection.h`. Added that include directory and a regression test for
+its discovery. Rechecking the 13 files whose first diagnostic had been the
+missing header: six passed syntax checking; seven reached other errors,
+including Windows headers, a forward-declared enum, a 32-bit pointer type
+mismatch and a reference binding mismatch. The previous broad report mixed
+header revisions during execution, so these figures apply only to this
+explicitly selected subset, not to the entire project. No client was linked.
+
+```
+python3 -m unittest discover -s tests/client153 -p test_project_probe.py
+python3 scripts/probe-client153-project.py --source <pinned-reference> \
+  --emxx <emsdk>/upstream/emscripten/em++ --port-root src/client153/Angelica2 \
+  --entry DataPathMan.cpp --output <local-output>/datapath.json
+```

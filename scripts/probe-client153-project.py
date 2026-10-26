@@ -28,6 +28,14 @@ def resolve_windows(root, relative):
     return current
 
 
+def port_include_dirs(port_root):
+    port_root = port_root.resolve()
+    paths = [port_root / directory for directory in
+             ('AngelicaCommon/Header', 'AngelicaFile/Header', 'Angelica3D/Header')]
+    paths.append(port_root.parent / 'platform' / 'common')
+    return paths
+
+
 def first_error(stderr):
     for line in stderr.splitlines():
         for marker in ('fatal error: ', 'error: '):
@@ -68,10 +76,9 @@ def main():
         sources.append(dict(path=str(path.relative_to(root)), exists=path.is_file(), excluded=excluded))
     command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', str(resolve_windows(project.parent, args.entry))]
     if args.port_root:
-        for directory in ('AngelicaCommon/Header', 'AngelicaFile/Header', 'Angelica3D/Header'):
-            path = args.port_root.resolve() / directory
+        for path in port_include_dirs(args.port_root):
             if not path.is_dir():
-                parser.error(f'port header directory missing: {directory}')
+                parser.error(f'port header directory missing: {path}')
             command += ['-I', str(path)]
     for path in includes:
         command += ['-I', str(path)]
