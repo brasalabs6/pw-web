@@ -1,3 +1,12 @@
+# Original Common interface, with portable string storage/formatting corrections.
+add_library(client153_common STATIC Angelica2/AngelicaCommon/Source/AString.cpp)
+target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Header)
+target_compile_features(client153_common PUBLIC cxx_std_17)
+target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic)
+if(EMSCRIPTEN)
+  target_compile_options(client153_common PUBLIC -fexceptions)
+  target_link_options(client153_common INTERFACE -fexceptions)
+endif()
 add_library(client153_formats STATIC
   Angelica2/Angelica3D/port/mox.h
   Angelica2/Angelica3D/port/dds.h

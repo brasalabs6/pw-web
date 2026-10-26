@@ -77,5 +77,8 @@ rejeitadas); 368 de `grasses` (367 binárias aceitas, 1 MOXT rejeitada);
 242 de `building` usam um envelope de building diferente de A3DFrame e são
 rejeitadas. Não converter esse resultado em alegação de compatibilidade integral.
 
-Próxima fronteira: carregar SKI/BON/STCK reais de personagem e o envelope
-`CELBuilding`/`A3DLitModel` da source; continuar até mundo e sessão jogável.
+A migração agora segue a compilação das bibliotecas originais e do cliente,
+preservando seus sistemas. `client153_common` contém a classe original `AString`
+adaptada e testada em nativo/WASM; não representa toda a AngelicaCommon.
+SKI/BON/STCK, building e os demais recursos continuam necessários dentro dessa
+integração. Ver [prova do build original](evidence/client153-full-build.md).

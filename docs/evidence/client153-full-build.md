@@ -83,3 +83,45 @@ Validation: `python3 -m unittest discover -s tests/client153 -p 'test_*.py'`
 passes three path-discovery tests (case resolution, missing directories, ambiguous
 case collisions). Existing native MOX/DDS CTest remains 2/2 passing. Neither test
 suite establishes that the full client compiles.
+
+## First original Common component compiled
+
+`client153_common` now compiles the original `AString` public interface and
+copy-on-write implementation from tracked adapted sources. This is the first
+Common component, **not** the complete Common library or a linked game.
+The frozen reference remains untouched; the source manifest records hashes.
+
+Changes remove the Windows allocator header dependency in favor of C++ array
+allocation; fix array deallocation type and the locked copy constructor's
+uninitialized storage read; use byte-safe copy/comparison; preserve signed 64-bit
+conversion with `long long`; and replace the x86-specific varargs estimator with
+bounded libc formatting. MSVC `I64`/`I32` printf lengths are normalized at this
+boundary. Rendering happens in temporary storage before assignment so source
+arguments may alias the destination. Format failures raise exceptions rather
+than return fabricated successful output.
+
+Tests were added first and failed because `AString.h`/the library did not exist.
+After the adaptation, CTest passes 3/3 on GCC 16.2.1, Emscripten 6.0.13/Node,
+and native AddressSanitizer+UndefinedBehaviorSanitizer builds. Coverage includes
+copy-on-write, numeric conversion, character/precision/I64 formatting, aliasing,
+9 KB formatting, case conversion, slicing, trimming and buffer release.
+
+Commands (activate the documented compiler/CMake toolchain first):
+
+```
+cmake --build build/client153-native --parallel 2
+ctest --test-dir build/client153-native --output-on-failure
+emcmake cmake -S . -B build/client153-wasm-tests -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/client153-wasm-tests --parallel 2
+ctest --test-dir build/client153-wasm-tests --output-on-failure
+cmake -S . -B build/client153-sanitize -G Ninja -DCMAKE_BUILD_TYPE=Debug \
+  '-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer' \
+  '-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined'
+cmake --build build/client153-sanitize --parallel 2
+ctest --test-dir build/client153-sanitize --output-on-failure
+```
+
+Remaining: other Common classes, Unicode `AWString` and the client-wide
+Windows UTF-16/wchar ABI, platform logging/time/locking, and all higher-library
+closure. This test is not proof of every printf variant or every original
+AString edge case. No server contract changed; no game assets were committed.

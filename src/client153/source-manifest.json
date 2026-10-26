@@ -49,6 +49,14 @@
     {
       "path": "Angelica2/AngelicaFile/Source/AFilePackMan.cpp",
       "sha256": "471f1a6f1bfad4bad8e5e4a2026d21c749fc2195497578ac7b54339dd152723a"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Header/AString.h",
+      "sha256": "cfc3d32bb715687990604336cd76ebd802b763ebc7ad7dc0800d0691c1938457"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/AString.cpp",
+      "sha256": "e10d90fec3403b253f6a312687d9c42aed63c6ea56f6a50079804213c053e5e3"
     }
   ],
   "adaptations": [
@@ -80,6 +88,20 @@
         "bounded inflate and offsets",
         "CP936 names preserved as raw hex and decoded Unicode",
         "encrypted and unverified package versions rejected"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaCommon/Source/AString.cpp",
+      "functions": [
+        "AString (original public interface and copy-on-write implementation)"
+      ],
+      "changes": [
+        "standard allocation with matching char[] deletion",
+        "portable case conversion and signed 64-bit conversion",
+        "bounded printf sizing with independent va_list copies and transactional output",
+        "MSVC I64/I32 printf length normalization",
+        "unaligned word accesses replaced by byte-safe copying/comparison",
+        "locked copy constructor no longer reads uninitialized storage"
       ]
     }
   ]
