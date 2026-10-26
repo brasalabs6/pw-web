@@ -7,6 +7,7 @@
 #include "AFI.h"
 #include "A3DJoint.h"
 #include "A3DSkeleton.h"
+#include "A3DSkinModelAct.h"
 #include "A3DTrackMan.h"
 #include "A3DPI.h"
 
@@ -26,6 +27,12 @@
 //	A3DSkeleton::Load/Release are protected in the original design (the skin
 //	model calls them); the test lifts them through a local subclass without
 //	changing the shipped header.
+class TestActionCore : public A3DSkinModelActionCore {
+public:
+  TestActionCore() : A3DSkinModelActionCore(30) {}
+  using A3DSkinModelActionCore::BindTrackSet;
+};
+
 class TestSkeleton : public A3DSkeleton {
 public:
   using A3DSkeleton::Load;
@@ -75,6 +82,9 @@ static void test_skeleton_load(const char *bonPath) {
   A3DSklTrackSet *tracks = A3D::g_A3DTrackMan.GetSkeletonTrackSet(
       skeleton.GetSkeletonID(), skeleton.GetFileName());
   CHECK(tracks != nullptr);
+  TestActionCore action;
+  action.SetTrackSetFileName(skeleton.GetFileName(), false);
+  CHECK(action.BindTrackSet());
   int changed = 0;
   for (int i = 0; i < skeleton.GetBoneNum(); ++i) {
     A3DBone *bone = skeleton.GetBone(i);
@@ -85,9 +95,10 @@ static void test_skeleton_load(const char *bonPath) {
     auto *rotations = track->pRotTrack;
     CHECK(positions != nullptr && rotations != nullptr);
     auto apply = [&](int time) {
-      A3DQUATERNION rotation = rotations->GetKeyValue(time);
-      rotation.Normalize();
-      bone->AddBlendState(rotation, positions->GetKeyValue(time), 1.0f,
+      A3DQUATERNION rotation;
+      A3DVECTOR3 position;
+      CHECK(action.GetBoneStateOnTrack(joint, time, position, rotation));
+      bone->AddBlendState(rotation, position, 1.0f,
                           A3DBone::BM_EXCLUSIVE);
       CHECK(skeleton.Update(0));
       return bone->GetRelativeTM();

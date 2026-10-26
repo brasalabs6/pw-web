@@ -120,3 +120,29 @@ ctest --test-dir build/client153-wasm-real -R '^client153_skeleton_closure$' -V
 The configured path should point to the locally extracted authorized wolf BON;
 the build output contains that asset and must follow the project's distribution
 policy. Standard asset-free CI continues to skip this optional integration case.
+
+## Original action core and skeleton tracks
+
+Ported `A3DSkinModelActionCore` and its original header from Angelica source
+revision `e3d6d0075d0a745c9f9859f2cb25b01d71dec045` under the documented
+2026-10-25 authorization. The core implementation is extracted from
+`Angelica2/Angelica3D/Source/A3DSkinModelAct.cpp`; model-dependent action and
+channel methods are deliberately not compiled yet. Copyright headers remain.
+The real BON test now binds the original action core to the skeleton track set
+and uses its `GetBoneStateOnTrack` before applying the state to each original
+bone. It reports 35 changed transforms in native, ASan/UBSan, and WASM/Node.
+Normal native and WASM CTest suites passed 11/11; the original BON is opt-in.
+The action playback/channel and skin model are not implemented by this change,
+and the production browser runtime does not yet use this core.
+
+```
+cmake --build build/client153-native --parallel 2
+ctest --test-dir build/client153-native --output-on-failure
+build/client153-native/client153_skeleton_closure_test artifacts/client153-input/wolf.bon
+cmake --build build/client153-sanitize --target client153_skeleton_closure_test --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_skeleton_closure_test artifacts/client153-input/wolf.bon
+cmake --build build/client153-wasm-real --target client153_skeleton_closure_test --parallel 2
+ctest --test-dir build/client153-wasm-real -R '^client153_skeleton_closure$' -V
+cmake --build build/client153-wasm-tests --parallel 2
+ctest --test-dir build/client153-wasm-tests --output-on-failure
+```
