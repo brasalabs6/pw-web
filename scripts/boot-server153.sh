@@ -76,13 +76,16 @@ sed -i -E '/^\[GAuthClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29200/port\t\
            /^\[GAntiCheatClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29709/port\t\t=\t29702/' "$RUN/gdeliveryd.conf"
 # glinkd: gacd port 29701 -> 29702 for the same reason, and GLinkServer1
 # port 9001 -> 29000 (classic PW client port; the real client's serverlist
-# points at 127.0.0.1:29000). The client (PWBR 1.5.3 v145, GAME_VERSION
-# 0x010503) also requires the challenge to carry its exact gamecontent
-# edition string — captured from the client's own log (EC.log "local ver")
-# — or it shows the "software desatualizado" dialog and disconnects.
+# points at 127.0.0.1:29000). The committed gamesys.conf carries
+# version = 10204, which the conf parser resolves AFTER our appended key —
+# substitute the original key in place (the client, PWBR 1.5.3 v145 with
+# GAME_VERSION 0x010503, rejects any lower version with the "servidor
+# suspenso" dialog) and pin the edition (the client requires the exact
+# string it computes from its own data files).
 sed -i -E '/^\[GAntiCheatClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29701/port\t\t=\t29702/' "$RUN/glinkd.conf"
 sed -i -E '/^\[GLinkServer1\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*9001/port\t\t=\t29000/' "$RUN/glinkd.conf"
-sed -i '/^\[GLinkServer1\]/a version\t\t=\t10503\nedition\t\t=\t300000917d576784405750f171575122b6' "$RUN/glinkd.conf"
+sed -i -E '/^\[GLinkServer1\]/,/^\[/ s/^version[[:space:]]*=.*/version\t\t=\t10503/' "$RUN/glinkd.conf"
+sed -i '/^\[GLinkServer1\]/a edition\t\t=\t300000917d576784405750f171575122b6' "$RUN/glinkd.conf"
 
 # gdeliveryd/gfaction: the committed `filters` sensitive-word tables are GBK
 # (no BOM), but these gamesys.conf vintages declare table_charset=UCS2 — the
@@ -129,10 +132,12 @@ if [ "$FRESH" -eq 1 ]; then
   done
 fi
 
-# Probe client conf: glinkd listens on 29000.
+# Probe client conf: glinkd listens on 29000; the dev-auth requires numeric
+# accounts (multiples of 16), so pin the probe account range accordingly.
 sed -E 's/address[[:space:]]*=[[:space:]]*[0-9.]+/address\t\t\t=\t127.0.0.1/;
         s/port[[:space:]]*=[[:space:]]*29000/port\t\t\t=\t29000/' \
   "$SRC/cnet/gclient/gclient.conf" > "$RUN/gclient.conf"
+sed -i -E 's/^prefix.*/prefix\t\t\t=\t/; s/^start.*/start\t\t\t=\t1000000/; s/^end.*/end\t\t\t\t=\t1000001/' "$RUN/gclient.conf"
 
 # gs game data: link the v145 data files from the installed real client
 # (see docs/RESEARCH.md, "Assets do cliente 1.5.3"). gs.conf [Template]
