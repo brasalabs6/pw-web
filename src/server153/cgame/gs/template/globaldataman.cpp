@@ -119,7 +119,7 @@ static bool load_malldata(const char * file, abase::vector<MALL_ITEM_SERV> & __g
 	if(!fpServer) return false;
 
 	bool bRst = true;
-	try  
+	try
 	{
 		int timestamp;
 		if(fread(&timestamp, 1, sizeof(int), fpServer) != sizeof(int)) throw -1;
@@ -134,7 +134,7 @@ static bool load_malldata(const char * file, abase::vector<MALL_ITEM_SERV> & __g
 			if(fread(&data, 1, sizeof(data), fpServer) != sizeof(data))
 			{
 				throw -3;
-			}       
+			}
 			MALL_ITEM_SERV goods;
 			goods.goods_id = data.id;
 			goods.goods_count = data.num;
@@ -166,7 +166,7 @@ static bool load_malldata(const char * file, abase::vector<MALL_ITEM_SERV> & __g
 					goods.list[j].st_param2 = 0;
 				}
 				else
-					throw -3;	
+					throw -3;
 				goods.list[j].status = data.buy[j].status;
 				
 				goods.list[j].cash_need = data.buy[j].price;
@@ -202,7 +202,7 @@ bool globaldata_loadserver(const char * file, const char * file2, const char * f
 	if(!load_malldata(file2,global_mall_item_service,mall_timestamp)) return false;
 	bool is_load_file_success = false;
 	if(file3==NULL || strlen(file3)==0)
-	{ 
+	{
 		is_load_file_success = true;
 	}
 	else
@@ -213,7 +213,7 @@ bool globaldata_loadserver(const char * file, const char * file2, const char * f
 		return false;
 
 	if(file4==NULL || strlen(file4)==0)
-	{ 
+	{
 		is_load_file_success = true;
 	}
 	else

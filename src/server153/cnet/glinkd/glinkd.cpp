@@ -65,6 +65,21 @@ int main(int argc, char *argv[])
 		manager->SetUserCountLimit(atoi(conf->find(manager->Identification(), "max_users").c_str()));
 		manager->SetHalfLoginLimit(atoi(conf->find(manager->Identification(), "halflogin_users").c_str()));
 		manager->version=strtol(conf->find(manager->Identification(), "version").c_str(),(char**)NULL,16);
+		{
+			// pw-web: the client compares the challenge's edition string with the
+			// string it computes from its own data files. Upstream only sets the
+			// edition from a game server's AnnounceProviderId, so without a running
+			// gs the challenge carries no edition and every client login dies with
+			// the "wrong version" dialog. Allow the operator to pin the expected
+			// edition in the [GLinkServer*] conf section.
+			std::string ed = conf->find(manager->Identification(), "edition");
+			if (!ed.empty())
+			{
+				Octets o;
+				o.replace(ed.data(), ed.size());
+				manager->SetEdition(o);
+			}
+		}
 		manager->StartListen();
 	}
 	{
