@@ -1,14 +1,41 @@
 #include "AFile.h"
+#include "mox.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 #define CHECK(x)                                                               \
   do {                                                                         \
     if (!(x))                                                                  \
       throw std::runtime_error(#x);                                            \
   } while (false)
-int main() {
+int main(int argc, char **argv) {
+  if (argc == 2) {
+    AFile file;
+    CHECK(file.Open(argv[1], AFILE_OPENEXIST | AFILE_BINARY));
+    CHECK(file.IsBinary());
+    CHECK(file.GetPos() == 4);
+    char field[2048];
+    DWORD count = 0;
+    CHECK(file.ReadString(field, sizeof(field), &count));
+    CHECK(std::strncmp(field, "FRAME: ", 7) == 0 ||
+          std::strncmp(field, "VERSION: ", 9) == 0);
+    const auto size = file.GetFileLength();
+    CHECK(size >= 4);
+    CHECK(file.ResetPointer());
+    std::vector<unsigned char> bytes(size);
+    CHECK(file.Read(bytes.data(), size, &count));
+    CHECK(count == size);
+    pw153::Model model;
+    std::string error;
+    CHECK(pw153::load_mox(bytes.data(), bytes.size(), model, error));
+    std::cout << "PASS REAL AFile -> MOX: bytes=" << size
+              << " frames=" << model.frames.size()
+              << " meshes=" << model.meshes.size() << "\n";
+    return 0;
+  }
+
   const char *path = "client153-file-test.mox";
   AFile f;
   CHECK(f.Open(path, AFILE_CREATENEW | AFILE_BINARY));

@@ -169,3 +169,20 @@ host still uses FILESYSTEM=0 and does not consume this library. The WASM file
 test uses Emscripten's test VFS; no asset package is embedded in a .data file.
 It is not evidence that CDN streaming or a browser client file mount works.
 No server contract or parallel worktree was modified.
+
+### Real-file integration check
+
+The native file test accepts a local original MOX path:
+
+```
+build/client153-native/client153_file_test artifacts/client153-input/cabinet.mox
+```
+
+Observed PASS: AFile detected MOXB, read the frame label, rewound to byte zero,
+read 1199 bytes, and the adapted MOX decoder produced two frames and one mesh.
+Repeating this path for the 336 distinct hash-named files in the local extracted
+corpus that begin MOXB plus FRAME/VERSION returned 336 PASS and zero failures.
+This count describes distinct selected files, not the earlier package-entry
+count, and excludes MOXT/building envelopes. Report:
+`artifacts/client153-full-build/afile-corpus.json` (ignored, local only).
+WASM/Node regressions remain 5/5; the real-file corpus check is native only.
