@@ -100,3 +100,23 @@ UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_skeleton_closur
 cmake --build build/client153-wasm-tests --parallel 2
 ctest --test-dir build/client153-wasm-tests --output-on-failure
 ```
+
+## Opt-in real BON test in WASM
+
+`PW153_TEST_BON_PATH` enables the real skeleton test without adding the asset to
+Git. For WASM it preloads only this test input into the test's virtual filesystem;
+it does not package assets into the game build. A missing path fails configure.
+With the authorized wolf BON, CTest passed natively and under Emscripten/Node,
+reporting 35 changed transforms in each. This supersedes the failed unmounted
+Node attempt above; it is not a browser rendering or gameplay test.
+
+```
+emcmake cmake -S . -B build/client153-wasm-real -G Ninja \
+  -DBUILD_TESTING=ON -DPW153_TEST_BON_PATH="$PWD/artifacts/client153-input/wolf.bon"
+cmake --build build/client153-wasm-real --target client153_skeleton_closure_test --parallel 2
+ctest --test-dir build/client153-wasm-real -R '^client153_skeleton_closure$' -V
+```
+
+The configured path should point to the locally extracted authorized wolf BON;
+the build output contains that asset and must follow the project's distribution
+policy. Standard asset-free CI continues to skip this optional integration case.
