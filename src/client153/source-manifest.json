@@ -329,6 +329,54 @@
     {
       "path": "AngelicaFile/Source/AScriptFile.cpp",
       "sha256": "4c0a119489cae33515022eb4a1fa1f0cfec09b92b155e388aaf39a329140460d"
+    },
+    {
+      "path": "Angelica3D/Header/A3DConfig.h",
+      "sha256": "6dfd248a458294b7f0f3104672478b2728aab81c2acbdeac18b25e00690e56e1"
+    },
+    {
+      "path": "Angelica3D/Source/A3DConfig.cpp",
+      "sha256": "d9cc71c69cf087e90ca0f1741b6c3ae605e4f332284f696eae17b6618e1ee10f"
+    },
+    {
+      "path": "Angelica3D/Header/A3DJoint.h",
+      "sha256": "2160a8267b32e8bcdb25f4ef499e33588f94cb746a8f550bcf1fd63110c6a1f6"
+    },
+    {
+      "path": "Angelica3D/Source/A3DJoint.cpp",
+      "sha256": "a0b8d4b6d17ef481ce18443cfd2a117f790a6d494c98f25550151d53e437ba71"
+    },
+    {
+      "path": "Angelica3D/Header/A3DBone.h",
+      "sha256": "e69f52768ea88e9733a37f14b47c0b8f15a77008e07201107513529c0bab7602"
+    },
+    {
+      "path": "Angelica3D/Source/A3DBone.cpp",
+      "sha256": "11dad145f4c9222c32e6e5dc18d1251791a180b3c9e95a6300cb99f5cff714cd"
+    },
+    {
+      "path": "Angelica3D/Header/A3DBoneController.h",
+      "sha256": "2c382606dd53368c014b178469338be32f98f6556a5e01c8967e80dc696cc3b8"
+    },
+    {
+      "path": "Angelica3D/Source/A3DBoneController.cpp",
+      "sha256": "8dabf6ccf96ea0c06b03e2497282c3f95c851816d2c2d2064331f1bef2fe8991"
+    },
+    {
+      "path": "Angelica3D/Header/A3DTrackMan.h",
+      "sha256": "fd85c616bf482f29f803de74e4077beb032a405bdf8e191055c43ba8305a681c"
+    },
+    {
+      "path": "Angelica3D/Source/A3DTrackMan.cpp",
+      "sha256": "306b32343d6aa1afc72247a635ce2fb293088c96079a2399965250dcacef3bd3"
+    },
+    {
+      "path": "Angelica3D/Header/A3DSkeleton.h",
+      "sha256": "28ba8594603695f89b1c4afd8866b63af1f00ed7df7a30b3ddd8c8c955006960"
+    },
+    {
+      "path": "Angelica3D/Source/A3DSkeleton.cpp",
+      "sha256": "ad3cf907948d239b767f14ca3c61cedcd5587d88c3bd01f0bf769148c670db70"
     }
   ],
   "adaptations": [
@@ -505,6 +553,26 @@
         "abase::vector(int) constructor implemented (original left it commented out while vector_ptr calls it); reserve() missing-argument original defect fixed",
         "AFileImage write paths keep original unsupported semantics; af_GetFileTitle now honors its buffer size; AIniFile AString varargs made explicit",
         "dead code removed: CheckFileEntryValid (PackGame), unused pEntry read in the save loop"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DSkeleton.cpp",
+      "functions": [
+        "A3DSkeleton load/save/clone/update",
+        "A3DBone/A3DJoint hierarchy",
+        "A3DBoneController family",
+        "A3DTrackMan track sets",
+        "A3DConfig flags",
+        "CRITICAL_SECTION seam"
+      ],
+      "changes": [
+        "real wolf BON loads through the original A3DSkeleton::Load: 42 joints, 42 bones, 5 hooks, matching the validated tracks cross-reference",
+        "CRITICAL_SECTION seam made re-entrant (std::recursive_mutex): Windows sections are per-thread re-entrant and the track manager nests its table lock - a plain std::mutex deadlocked",
+        "A3DEngine/A3DSkinModel/AF.h includes omitted: only engine perf-record instrumentation used them; the skin-model whole-scale notification is a documented pending seam for the skin milestone",
+        "A3DTrackData::m_dwDelFlag1 widened from DWORD to ALISTPOSITION (32-bit pointer assumption); GetRootBone NULL-into-int returns -1",
+        "initializer order fixed in A3DSkeletonHook/A3DBone/A3DBoneLookAtController/A3DBoneBodyTurnController; memset-on-class replaced by explicit zeroing (HOOKDATA/BONEDATA)",
+        "AString varargs made explicit in error logs; stricmp to strcasecmp; dead locals removed (mattemp1/mattemp2, unused matInv and nAbsTime kept with (void))",
+        "A3DConfig key table made const; A3DJoint stubs keep original behavior"
       ]
     }
   ],

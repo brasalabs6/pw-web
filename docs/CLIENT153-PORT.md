@@ -120,3 +120,10 @@ original. A família completa de arquivos (AFileImage, AIniFile, AFilePackMan,
 AFilePackGame, AFI/AFPI, containers abase, ACSWrapper) fechou em nativo/WASM
 com sanitizadores: 10/10. Ver
 [evidência da família de arquivos](evidence/client153-file-family.md).
+
+O skeleton original fechou: `A3DSkeleton::Load` abre o BON real do lobo pelo
+caminho original (AFileImage) e monta 42 joints, 42 bones e 5 hooks, batendo
+com a cross-referência validada das trilhas. O seam de lock precisou ser
+re-entrante (`std::recursive_mutex`) porque o track manager aninha o lock da
+tabela — um `std::mutex` plano deadlockava. Ver
+[evidência do fechamento do skeleton](evidence/client153-skeleton-closure.md).

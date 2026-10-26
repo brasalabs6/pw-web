@@ -14,6 +14,7 @@
 #define _A3DTRACKDATA_H_
 
 #include "A3DQuaternion.h"
+#include "AList2.h"	//	ALISTPOSITION for the track-manager handle.
 #include "AFile.h"
 #include <algorithm>
 #include <cmath>
@@ -128,7 +129,7 @@ public: //	Types
 private:
   TRACKDATA_INTERTYPE m_interType; //	Value interpolation type;
 
-  DWORD m_dwDelFlag1; //	Position in track manager
+  ALISTPOSITION m_dwDelFlag1; //	Position in track manager (widened from DWORD: 32-bit pointer assumption)
   DWORD m_dwDelFlag2;
   int m_nRefCount;      //	Reference count, because track data will
                         //	Be a kind of shared memory resource.

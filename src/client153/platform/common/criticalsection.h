@@ -1,14 +1,15 @@
 // Browser/native C++ platform backend. No Win32 emulation beyond this seam:
-// CRITICAL_SECTION maps to a real std::mutex with the Win32 API surface the
-// original sources call (Initialize/Delete/Enter/Leave). The lock is real;
-// single-threaded runtimes serialize trivially.
+// CRITICAL_SECTION maps to a real recursive mutex with the Win32 API surface
+// the original sources call (Initialize/Delete/Enter/Leave). Windows
+// CRITICAL_SECTION is re-entrant per thread, so the port must be too - the
+// track manager re-enters its table lock through nested calls.
 #ifndef PW153_PLATFORM_CRITICALSECTION_H
 #define PW153_PLATFORM_CRITICALSECTION_H
 
 #include <mutex>
 
 struct CRITICAL_SECTION {
-  std::mutex mutex;
+  std::recursive_mutex mutex;
 };
 
 inline void InitializeCriticalSection(CRITICAL_SECTION *pcs) {

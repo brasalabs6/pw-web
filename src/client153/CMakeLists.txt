@@ -99,6 +99,12 @@ target_sources(client153_math PRIVATE
 # Original skeleton support: PI globals, scalar math helpers, geometry bounds,
 # coordinate spaces, controllers and IK, on the portable platform clock.
 add_library(client153_skeleton STATIC
+  Angelica2/Angelica3D/Source/A3DConfig.cpp
+  Angelica2/Angelica3D/Source/A3DJoint.cpp
+  Angelica2/Angelica3D/Source/A3DBone.cpp
+  Angelica2/Angelica3D/Source/A3DBoneController.cpp
+  Angelica2/Angelica3D/Source/A3DTrackMan.cpp
+  Angelica2/Angelica3D/Source/A3DSkeleton.cpp
   Angelica2/Angelica3D/Source/A3DPI.cpp
   Angelica2/Angelica3D/Source/A3DFuncs.cpp
   Angelica2/Angelica3D/Source/A3DGeometry.cpp
