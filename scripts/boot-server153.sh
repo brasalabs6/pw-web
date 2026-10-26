@@ -75,6 +75,11 @@ sed -i -E '/^\[GAuthClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29200/port\t\
 # glinkd: gacd port 29701 -> 29702 for the same reason.
 sed -i -E '/^\[GAntiCheatClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29701/port\t\t=\t29702/' "$RUN/glinkd.conf"
 
+# gdeliveryd/gfaction: the committed `filters` sensitive-word tables are GBK
+# (no BOM), but these gamesys.conf vintages declare table_charset=UCS2 — the
+# conversion then produces garbage and the daemons refuse to start.
+sed -i -E 's/table_charset[[:space:]]*=[[:space:]]*UCS2/table_charset\t\t=\tGBK/' "$RUN/gdeliveryd.conf" "$RUN/gfaction.conf"
+
 # Probe client conf: glinkd (gamesys) listens on 9001.
 sed -E 's/address[[:space:]]*=[[:space:]]*[0-9.]+/address\t\t\t=\t127.0.0.1/;
         s/port[[:space:]]*=[[:space:]]*29000/port\t\t\t=\t9001/' \
@@ -91,8 +96,13 @@ mkdir -p "$SRC/cnet/logservice/logs"
 start() { # start <dir> <bin> [args...]
   local dir="$1" bin="$2"; shift 2
   local name="${dir##*/}"
-  # gs links libtask.so/libskill.so from its own directory.
-  ( cd "$dir" && LD_LIBRARY_PATH="$dir" nohup "./$bin" "$@" >"$LOGS/$name.log" 2>&1 & )
+  # Only gs needs LD_LIBRARY_PATH (libtask.so/libskill.so live in its dir);
+  # other daemons must NOT have it (gacd would load its stale committed libxml2.so.2).
+  if [ "$name" = gs ]; then
+    ( cd "$dir" && LD_LIBRARY_PATH="$dir" nohup "./$bin" "$@" >"$LOGS/$name.log" 2>&1 & )
+  else
+    ( cd "$dir" && nohup "./$bin" "$@" >"$LOGS/$name.log" 2>&1 & )
+  fi
   echo "started $name"
 }
 
@@ -104,8 +114,11 @@ alive() { # alive <comm> — /proc-based, works without procps
   return 1
 }
 
-listen_ports() { # hex ports from /proc/net/tcp and /proc/net/udp
-  awk 'NR>1 {split($2,a,":"); print strtonum("0x" a[2])}' /proc/net/tcp /proc/net/udp 2>/dev/null | sort -un
+listen_ports() { # decimal ports from /proc/net/tcp and /proc/net/udp (portable awk)
+  awk 'NR>1 { n=split($2,a,":"); h=a[2]; d=0
+    for (i=1; i<=length(h); i++) { c=tolower(substr(h,i,1))
+      d = d*16 + (c < "a" ? c+0 : index("abcdef",c)+9) }
+    print d }' /proc/net/tcp /proc/net/udp 2>/dev/null | sort -un
 }
 
 echo "=== booting server153 (order: ${DAEMONS[*]}) ==="
