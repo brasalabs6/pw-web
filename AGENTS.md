@@ -18,7 +18,7 @@ Produzir o cliente do Perfect World executado no navegador, **não** um clone vi
 - Nunca afirmar que existe um port jogável sem uma prova com entrada no mundo e troca de pacotes.
 - Todo trabalho deve indicar: hipótese, evidência, código alterado, comandos para reproduzir, resultado observado, riscos e próximos passos.
 - Manter interfaces de plataforma fora do núcleo C++. No browser, rede via WebSocket seguro, render por WebGL 2 (WebGPU candidato futuro), assets com consentimento e streaming/cache.
-- Um milestone por PR; abrir ADR quando decidir mudar versão-alvo, transporte de rede, backend gráfico ou propriedade dos assets.
+- Máximo de dois PRs abertos simultaneamente: um para o servidor e um para o cliente. O PR do cliente concentra todo o trabalho do port até o jogo ficar 100% operacional no browser; cada milestone entra como commit autônomo com hipótese, evidência, comandos e limites declarados. Não abrir PRs por milestone/slice. O merge final para `main` é ação humana após o critério de 100% operacional. Abrir ADR quando decidir mudar versão-alvo, transporte de rede, backend gráfico ou propriedade dos assets.
 - Não expor credenciais, IPs internos, tokens nem dados do cliente original.
 - README/docs atualizados com status factual, especialmente quando um teste falha.
 
