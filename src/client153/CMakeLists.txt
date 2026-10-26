@@ -41,3 +41,8 @@ if(EMSCRIPTEN)
   configure_file("${PROJECT_SOURCE_DIR}/web/client153/index.html" "${CMAKE_BINARY_DIR}/browser/index.html" COPYONLY)
   configure_file("${PROJECT_SOURCE_DIR}/web/client153/app.mjs" "${CMAKE_BINARY_DIR}/browser/app.mjs" COPYONLY)
 endif()
+
+add_library(client153_file STATIC Angelica2/AngelicaFile/Source/AFile.cpp)
+target_include_directories(client153_file PUBLIC Angelica2/AngelicaFile/Header)
+target_link_libraries(client153_file PUBLIC client153_common)
+target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic)

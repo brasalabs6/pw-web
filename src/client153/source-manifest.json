@@ -69,6 +69,14 @@
     {
       "path": "Angelica2/AngelicaCommon/Source/ATime.cpp",
       "sha256": "8af684825ff53565520ac0117ce802c24a5427268d693c2554cedfac7b1ab9b3"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Header/AFile.h",
+      "sha256": "ec0bd578501ed3fa646344305bc166d825cca92a8d23f558b4ee6308357ec23c"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AFile.cpp",
+      "sha256": "d1844a4b7e54de449de73e5fd258d69fdf0cbdb032ad52bca4a7c1f565efab60"
     }
   ],
   "adaptations": [
@@ -127,6 +135,19 @@
         "preserve uint32 millisecond wrap and optional calendar output pointers",
         "Windows performance counter and local time operations replaced with actual platform operations",
         "ABaseDef DWORD and LONG retain original 32-bit width on LP64 hosts"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaFile/Source/AFile.cpp",
+      "functions": [
+        "AFile file lifecycle, strings, lines, seek and flags"
+      ],
+      "changes": [
+        "standard local/VFS file operations replace Windows AFPlatform and filesystem helpers",
+        "32-bit little-endian MOXB/MOXT and AString length encoding",
+        "bounded reads and explicit truncation failure",
+        "copying owning file objects is prohibited",
+        "no synchronous network operation or complete package preloading"
       ]
     }
   ]

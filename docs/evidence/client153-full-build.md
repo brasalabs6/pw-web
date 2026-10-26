@@ -145,3 +145,27 @@ RED: new time test could not compile before ATime was provided.
 GREEN: native and Emscripten/Node CTest 4/4. The time test checks real elapsed time,
 monotonic observations, fixed-width types, calendar fields and null outputs.
 This is not yet a browser main-loop integration or a complete Common library.
+
+## Angelica File dependency
+
+`client153_file` now compiles a portable adaptation of the original `AFile`
+interface against Common. Real operations include file open/close/read/write,
+MOXB/MOXT header handling, null-terminated and length-prefixed strings,
+line operations, seek, length, rewind and flush. The owning stream cannot be
+copied. Paths normalize Windows separators and preserve the original 260-byte
+capacity. Filesystem operations run in local libc/VFS; they never synchronously
+fetch from the network.
+
+New tests first failed because AFile was not present. Native, Emscripten/Node
+and ASan/UBSan CTest pass 5/5 after implementation. The file regression verifies
+original MOXB framing and AString bytes, zero-offset ResetPointer, truncated
+length-prefixed and missing-terminator failures, missing files and closed seek.
+Truncated AString leaves the caller's string unchanged. Its length is bounded
+to 16 MiB, an explicit defensive limit requiring corpus validation.
+
+This is not full AngelicaFile: AFileImage, PCK runtime mounting, async resource
+availability, eviction and streaming remain pending. The current object-viewer
+host still uses FILESYSTEM=0 and does not consume this library. The WASM file
+test uses Emscripten's test VFS; no asset package is embedded in a .data file.
+It is not evidence that CDN streaming or a browser client file mount works.
+No server contract or parallel worktree was modified.
