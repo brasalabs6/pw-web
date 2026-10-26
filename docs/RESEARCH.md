@@ -7,6 +7,7 @@
 | client-153 | https://github.com/WolfsCore/Source-Cliente-1.5.3 | e3d6d0075d0a745c9f9859f2cb25b01d71dec045 | candidato principal, Angelica2/D3D8, solução VS2005 |
 | client-152-modern | https://github.com/coussiraty/PWClient-152 | f321e68953a5502ff5673d6099dab8c193c597a0 | comparação D3D9/modernização VS2022 |
 | server-rust | https://github.com/mur1ll0/pw-universal-server | 423c0b7323e3effb3420edef4545b934afd56fda | protocolo, parsers, mapas, servidor |
+| server-153-source | https://github.com/hrace009/PW-Source-1.5.3 | 7dde52fa03d394f55321931e7f0d7c1b7375fdad | servidor C++ 32-bit (fonte de build e runtime); derivado comunitário, NÃO-canônico — ver `src/server153/PROVENANCE.md` e `docs/SERVER153-REPORT.md` |
 
 ## Adicionais não incorporados
 - https://github.com/Zyrcon-learn/PW152_CLIENT_ANGELICA2_2 — alternativa Angelica2.2; README afirma compilar, mas relata bugs de inicialização.
