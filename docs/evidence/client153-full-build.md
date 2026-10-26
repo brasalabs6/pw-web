@@ -273,3 +273,21 @@ ctest --test-dir build/client153-wasm-tests --output-on-failure
 cmake -S . -B build/client153-unicode-probe -G Ninja -DCMAKE_CXX_FLAGS=-DUNICODE -DBUILD_TESTING=OFF
 cmake --build build/client153-unicode-probe --parallel 2
 ```
+
+## Broad original-project syntax inventory
+
+The opt-in `--all` probe checked all 787 original project translation units
+with their original configuration. It reported 47 successful syntax checks,
+461 first failures at `Windows.h`, 134 at the MSVC-specific `_atoi64`, 57 at
+an incompatible `vector<void *>` constructor, and 23 at lowercase `windows.h`;
+other first failures include Windows headers and missing include names. These
+are only each file's first reported error: removing one can reveal others.
+Syntax success is not a successful compile/link or proof of runtime behavior.
+The generated detailed report includes local paths and remains an ignored local
+artifact. Repeat with `--port-root src/client153/Angelica2` to prioritize the
+already adapted common/file/3D headers and measure the next errors.
+
+```
+python3 scripts/probe-client153-project.py --source <pinned-reference> \
+  --emxx <emsdk>/upstream/emscripten/em++ --output <local-output>/all.json --all --jobs 4
+```
