@@ -68,3 +68,23 @@ ctest --test-dir build/client153-wasm-tests --output-on-failure
 Asset-free native, WASM and sanitized suites each passed 13/13; the separate
 opt-in real-asset runs passed as described. Assets embedded in a local WASM test
 build remain subject to the distribution policy and are not committed.
+
+## Animated resource instance
+
+Added an `AnimatedSkin` lifecycle that loads the authorized SKI and original
+BON, binds tracks, samples the original action core, updates the original bone
+hierarchy, and exposes transformed mesh positions. The real wolf test checks
+load, updates at 0 and 1,000 ms, changing positions, invalid time and close.
+It passed in native, WASM/Node with both opt-in assets, and ASan/UBSan. The
+instance requires initialized original `A3DConfig`; it is not yet wired into
+the browser runtime. It uses identity model/virtual-bone transforms, samples
+tracks directly rather than complete action playback, and loads a whole SKI
+(up to 64 MiB). Shared track sets and concurrent copies of the same skeleton
+have not been validated. It is not a game or a rendering proof.
+
+```
+cmake --build build/client153-sanitize --target client153_skeleton_closure_test --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_skeleton_closure_test artifacts/client153-input/wolf.bon artifacts/client153-input/wolf.ski
+cmake --build build/client153-wasm-real --target client153_skeleton_closure_test --parallel 2
+ctest --test-dir build/client153-wasm-real -R '^client153_skeleton_closure$' --output-on-failure
+```

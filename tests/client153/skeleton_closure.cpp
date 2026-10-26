@@ -10,6 +10,7 @@
 #include "A3DSkinModelAct.h"
 #include "A3DTrackMan.h"
 #include "AFI.h"
+#include "animated_skin.h"
 #include "skin_binding.h"
 #include <fstream>
 #include <iterator>
@@ -175,6 +176,27 @@ static void test_skeleton_load(const char *bonPath, const char *skiPath) {
             << " bones=" << skeleton.GetBoneNum()
             << " hooks=" << skeleton.GetHookNum() << "\n";
   skeleton.Release();
+  if (skiPath) {
+    pw153::AnimatedSkin instance;
+    CHECK(instance.load(bonPath, skiPath));
+    CHECK(instance.update(0));
+    CHECK(instance.vertex_count() == 997);
+    const auto initial = instance.positions();
+    CHECK(instance.update(1000));
+    int moved = 0;
+    for (std::size_t m = 0; m < initial.size(); ++m)
+      for (std::size_t i = 0; i < initial[m].size(); ++i) {
+        const auto &a = initial[m][i];
+        const auto &b = instance.positions()[m][i];
+        moved +=
+            std::abs(a.x - b.x) + std::abs(a.y - b.y) + std::abs(a.z - b.z) >
+            .00001f;
+      }
+    CHECK(moved > 0);
+    CHECK(!instance.update(-1));
+    instance.close();
+    CHECK(!instance.update(0));
+  }
 }
 
 static void test_skeleton_negative() {

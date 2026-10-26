@@ -121,6 +121,6 @@ target_compile_features(client153_skeleton PUBLIC cxx_std_17)
 target_compile_options(client153_skeleton PRIVATE -Wall -Wextra -Werror "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 set_target_properties(client153_skeleton PROPERTIES CXX_EXTENSIONS ON)
 
-add_library(client153_skinning STATIC Angelica2/Angelica3D/port/skin_binding.cpp)
+add_library(client153_skinning STATIC Angelica2/Angelica3D/port/skin_binding.cpp Angelica2/Angelica3D/port/animated_skin.cpp)
 target_link_libraries(client153_skinning PUBLIC client153_skeleton client153_formats)
 target_compile_options(client153_skinning PRIVATE -Wall -Wextra -Werror)
