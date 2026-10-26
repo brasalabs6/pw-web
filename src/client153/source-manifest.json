@@ -97,6 +97,30 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DQuaternion.cpp",
       "sha256": "e69c9dd74c4923cbff1d55f4dd20a012bc35948a5f1a7cccc2b415784b4fc85d"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DTrackData.h",
+      "sha256": "7b085defaa822450166a5f202559a03a503fc3666630aeccbdddea3afbf1b793"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkeleton.cpp",
+      "sha256": "ad3cf907948d239b767f14ca3c61cedcd5587d88c3bd01f0bf769148c670db70"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DBone.cpp",
+      "sha256": "11dad145f4c9222c32e6e5dc18d1251791a180b3c9e95a6300cb99f5cff714cd"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Header/A3DBone.h",
+      "sha256": "e69f52768ea88e9733a37f14b47c0b8f15a77008e07201107513529c0bab7602"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DJoint.cpp",
+      "sha256": "a0b8d4b6d17ef481ce18443cfd2a117f790a6d494c98f25550151d53e437ba71"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTrackMan.cpp",
+      "sha256": "306b32343d6aa1afc72247a635ce2fb293088c96079a2399965250dcacef3bd3"
     }
   ],
   "adaptations": [
@@ -186,6 +210,22 @@
         "preserve source SLERP threshold and valid-unit quaternion contract",
         "browser model hierarchy consumes original A3DMATRIX4 multiplication",
         "const input matrix constructor and explicit default assignment for modern compilers"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Header/A3DTrackData.h",
+      "functions": [
+        "A3DTrackData vector/quaternion/float templates",
+        "track info, Create, Load, sampling, Save and bounded skip"
+      ],
+      "changes": [
+        "depend directly on original math/AFile targets instead of Win32-dependent umbrella headers",
+        "transactional bounded allocations and key/segment loads with exact byte counts",
+        "finite keys and ordered valid segment ranges",
+        "reject reads/skips beyond available data",
+        "explicit instantiation compiles all supported operations",
+        "preserve original interpolation coefficients; reject unresolved key indices",
+        "widen time arithmetic and prohibit copying owning track objects"
       ]
     }
   ],

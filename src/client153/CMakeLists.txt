@@ -56,3 +56,7 @@ target_compile_features(client153_math PUBLIC cxx_std_17)
 target_compile_options(client153_math PRIVATE -Wall -Wextra -Werror)
 
 set_target_properties(client153_math PROPERTIES CXX_EXTENSIONS ON)
+
+add_library(client153_animation STATIC Angelica2/Angelica3D/Source/A3DTrackData.cpp)
+target_link_libraries(client153_animation PUBLIC client153_math client153_file)
+target_compile_options(client153_animation PRIVATE -Wall -Wextra -Werror)

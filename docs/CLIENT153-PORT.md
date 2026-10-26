@@ -94,3 +94,9 @@ O target `client153_math` compila os tipos originais de vetor/matriz/quaternion,
 e a hierarquia da cena usa `A3DMATRIX4`. A prova e as diferenças da source estão
 em [matemática original](evidence/client153-original-math.md). Skeleton, tracks
 e skinning ainda precisam ser integrados ao cliente.
+
+
+`client153_animation` agora compila as trilhas originais `A3DTrackData` de vetor,
+quaternion e float. O BON real do lobo passou no carregamento de 84 trilhas e
+31.122 amostras nativas, inclusive sob sanitizadores. Isso ainda não conecta
+esqueleto e malha ao renderer. Ver [evidência das trilhas](evidence/client153-original-tracks.md).
