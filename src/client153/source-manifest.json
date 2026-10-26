@@ -237,6 +237,98 @@
     {
       "path": "Angelica3D/Source/A3DIKSolver.cpp",
       "sha256": "c9b399877fba97996963567e49fd36b7e60bb6648290c494dfb5d4dd4af1fa6c"
+    },
+    {
+      "path": "AngelicaCommon/Header/hashtab.h",
+      "sha256": "1f30a85f82ad2763aa8503cd343c9ecc636b0b0bca00a87d8a44144a9f60125e"
+    },
+    {
+      "path": "AngelicaCommon/Header/ACSWrapper.h",
+      "sha256": "e70512b2841f4d9ae3434a409b02666720c2cbe74faf815dbaa2f38886e1cd41"
+    },
+    {
+      "path": "AngelicaCommon/Header/ATempMemMan.h",
+      "sha256": "120b369baf8bf3a086908d9065714eef25dd7542a2bd16a416ee6a3fe11fb8e5"
+    },
+    {
+      "path": "AngelicaCommon/Source/ATempMemMan.cpp",
+      "sha256": "ed958e54652ff666c45d880635df12e8d92ebd6ea73ec42d6bf331c621c47601"
+    },
+    {
+      "path": "AngelicaCommon/Header/vector.h",
+      "sha256": "10ba3fdc7141cb5173d7ed1b436c7e97f6e87a8e6bd5414eae1d63acf51ce2ab"
+    },
+    {
+      "path": "AngelicaFile/Header/AFPlatform.h",
+      "sha256": "c85e677ca3eb11b12492ae3be1e818b67e2a3c8742eed5d01c908cc0993d40a2"
+    },
+    {
+      "path": "AngelicaFile/Header/AFPI.h",
+      "sha256": "94788ddb0d267e2b9d0a3612735c29985464cb59071e20c965938afff59c5cb4"
+    },
+    {
+      "path": "AngelicaFile/Header/AFI.h",
+      "sha256": "4c6cd38d4edc0e9b59d2b4a7ccc49aef3277404ae85c1e95213c54625f253911"
+    },
+    {
+      "path": "AngelicaFile/Source/AFI.cpp",
+      "sha256": "dbcc41c8f4f365adf07c500e9fb0f5c8543b021bbffc92f834906e1b0598c4d3"
+    },
+    {
+      "path": "AngelicaFile/Header/AFilePackBase.h",
+      "sha256": "9ed34f6f45265185e869a3971e6ce953162bfe06e122eb3c2257909f2aeeeb16"
+    },
+    {
+      "path": "AngelicaFile/Source/AFilePackBase.cpp",
+      "sha256": "185ae656619178937a5c204e5633333efc75a07c1f6ee2ae7d48a94989abb763"
+    },
+    {
+      "path": "AngelicaFile/Header/AFilePackage.h",
+      "sha256": "8c6801c54c63bd5ab3a1adeeb09c1dd3ef522508559180102d73b1cade50c762"
+    },
+    {
+      "path": "AngelicaFile/Source/afilepackage.cpp",
+      "sha256": "d0263d1210d5c5858eec1bd2348e9348fb1f0082949631f398034cb109880b28"
+    },
+    {
+      "path": "AngelicaFile/Header/AFilePackMan.h",
+      "sha256": "6398cadd4c8cc347cb35f414e91bf4e73898639f8eba5aef692c7ed2194b17da"
+    },
+    {
+      "path": "AngelicaFile/Source/AFilePackMan.cpp",
+      "sha256": "471f1a6f1bfad4bad8e5e4a2026d21c749fc2195497578ac7b54339dd152723a"
+    },
+    {
+      "path": "AngelicaFile/Header/AFilePackGame.h",
+      "sha256": "ed85f7e0aae9f82fde31d02d12053312e87db58e4adb2edff5b1a428dc733838"
+    },
+    {
+      "path": "AngelicaFile/Source/AFilePackGame.cpp",
+      "sha256": "212eabc4ff1e6e4a51d2bc7b001eb5ed3292ee3ec600f9585b951c6f48a8f1d9"
+    },
+    {
+      "path": "AngelicaFile/Header/AFileImage.h",
+      "sha256": "af7e4ebc29ab3043d78ceb1751d1ac27915b5fd0c7a029c72e8cf01184d87b2c"
+    },
+    {
+      "path": "AngelicaFile/Source/AFileImage.cpp",
+      "sha256": "6b55e258573f667aa442ae858233f3449f7ad84c8836cb9d93a239f74bf103c1"
+    },
+    {
+      "path": "AngelicaFile/Header/AIniFile.h",
+      "sha256": "85ccf691cdfe703a11359a220b73fdfec8583983ede1cff864aace01fb590cf8"
+    },
+    {
+      "path": "AngelicaFile/Source/AIniFile.cpp",
+      "sha256": "2035bdf09f2e74277ead1db95ee6edc667ecba6d84e61c8a3d5c648d4c6eb540"
+    },
+    {
+      "path": "AngelicaFile/Header/AScriptFile.h",
+      "sha256": "0478094f26b2e57d4901460a8ac3748dc795b740ca4befe461ec349b7786785c"
+    },
+    {
+      "path": "AngelicaFile/Source/AScriptFile.cpp",
+      "sha256": "4c0a119489cae33515022eb4a1fa1f0cfec09b92b155e388aaf39a329140460d"
     }
   ],
   "adaptations": [
@@ -388,6 +480,31 @@
         "AMemory keeps the original release mapping (A_DEBUG_NEW -> new, a_malloc -> malloc); custom allocator deferred",
         "ARect includes AAssist explicitly for a_Swap; MSVC pragmas dropped",
         "A3DConfig/AIniFile deferred to the bone batch; no skeleton-support consumer"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaFile/Source/afilepackage.cpp",
+      "functions": [
+        "AFilePackage PCK/PKX loader",
+        "AFilePackGame/AFilePackMan/AFileImage/AIniFile/AScriptFile",
+        "AFPCK format constants",
+        "abase::vector/hashtab",
+        "ACSWrapper/CRITICAL_SECTION",
+        "AFI path helpers",
+        "shared-file handles"
+      ],
+      "changes": [
+        "real v145 package load proven against the validated Python reader: facedata.pck 2005 entries, shared files verified",
+        "AFPCK constants defined from the Element client scope with values proven against real packages (guard0 0xFDFDFEEE, guard1 0xF00DBEEF, mask 0xA8937462, check 0x59374231); stale header comments corrected",
+        "uncompilable original merge artifact resolved: duplicate FILEHEADER renamed to the referenced FILEHEADER64; duplicate same-named pFileEntry member removed (32-bit v145 path is active)",
+        "shared-file handle widened from DWORD to uintptr_t (32-bit pointer assumption)",
+        "CRITICAL_SECTION seam: real std::mutex with the original init/enter/leave surface",
+        "disk path joins use the platform separator; POSIX absolute paths recognized; package-internal names keep the format backslash",
+        "GetTickCount mapped to a_GetTime; _fileno/_chsize to fileno/ftruncate; stricmp/strlwr to strcasecmp/portable lowercase; LPBYTE/LPVOID to BYTE*/void*",
+        "zlib uLongf lengths bridged through locals; the 32-bit PCK length stays authoritative",
+        "abase::vector(int) constructor implemented (original left it commented out while vector_ptr calls it); reserve() missing-argument original defect fixed",
+        "AFileImage write paths keep original unsupported semantics; af_GetFileTitle now honors its buffer size; AIniFile AString varargs made explicit",
+        "dead code removed: CheckFileEntryValid (PackGame), unused pEntry read in the save loop"
       ]
     }
   ],

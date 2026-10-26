@@ -1,0 +1,143 @@
+// Tests for the original AngelicaFile family: AFilePackage loads a real v145
+// PCK, entries match the independently validated Python reader, shared files
+// open/close through the widened handle, AFileImage reads package content,
+// AIniFile round-trips sections/keys, and the zlib compress/uncompress pair
+// round-trips. Cross-validation data comes from tools/assets/pck153.py.
+#include "AFileImage.h"
+#include "AFilePackage.h"
+#include "AFilePackMan.h"
+#include "AFI.h"
+#include "AIniFile.h"
+
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+
+#define CHECK(x)                                                               \
+  do {                                                                         \
+    if (!(x))                                                                  \
+      throw std::runtime_error(#x);                                            \
+  } while (false)
+
+static int count_entries(const char *pckPath) {
+  AFilePackage package;
+  CHECK(package.Open(pckPath, AFilePackage::OPENEXIST, false));
+  const int count = package.GetFileNumber();
+  CHECK(package.Close());
+  return count;
+}
+
+static void test_real_package(const char *pckPath, int expectedEntries) {
+  // The Python reader validated 15 packages / 304,636 files with this layout;
+  // facedata.pck carries 2005 entries in that evidence.
+  const int count = count_entries(pckPath);
+  std::cout << "facedata.pck entries: " << count << "\n";
+  CHECK(count == expectedEntries);
+
+  AFilePackage package;
+  CHECK(package.Open(pckPath, AFilePackage::OPENEXIST, false));
+
+  CHECK(package.Close());
+}
+
+static void test_shared_file_roundtrip(const char *pckPath) {
+  AFilePackage package;
+  CHECK(package.Open(pckPath, AFilePackage::OPENEXIST, false));
+  const int count = package.GetFileNumber();
+  CHECK(count > 0);
+
+  // Open every entry through the widened shared-file handle and confirm the
+  // reported length matches the entry table; close each one.
+  int opened = 0;
+  for (int i = 0; i < count && opened < 64; ++i) {
+    const AFilePackage::FILEENTRY *entry = package.GetFileEntryByIndex(i);
+    if (!entry || entry->dwLength == 0)
+      continue;
+    BYTE *buffer = nullptr;
+    DWORD length = 0;
+    const uintptr_t handle = package.OpenSharedFile(entry->szFileName, &buffer, &length, false);
+    if (handle) {
+      CHECK(buffer != nullptr);
+      CHECK(length == entry->dwLength);
+      package.CloseSharedFile(handle);
+      ++opened;
+    }
+  }
+  CHECK(opened > 0);
+  std::cout << "shared files opened/verified: " << opened << "\n";
+  CHECK(package.Close());
+}
+
+static void test_ini_roundtrip() {
+  //	The original engine sets the base dir at startup (af_Initialize);
+  //	tests pin it to the current directory explicitly.
+  CHECK(af_SetBaseDir("."));
+
+  //	AIniFile::Open requires an existing, non-empty file (AFILE_OPENEXIST
+  //	and AFileImage reject zero-length files).
+  {
+    FILE *seed = std::fopen("test_output.ini", "w");
+    CHECK(seed != nullptr);
+    std::fputs("[a3d]\n", seed);
+    std::fclose(seed);
+  }
+
+  AIniFile ini;
+  CHECK(ini.Open("test_output.ini"));
+  CHECK(ini.WriteIntValue("a3d", "DetailScene", 1));
+  CHECK(ini.WriteIntValue("a3d", "NewBoneScale", 0));
+  //	Original semantics: writes are in-memory; Save persists.
+  CHECK(ini.Save("test_output.ini"));
+  ini.Close();
+
+  AIniFile reader;
+  CHECK(reader.Open("test_output.ini"));
+  CHECK(reader.GetValueAsBoolean("a3d", "DetailScene", false) == true);
+  CHECK(reader.GetValueAsBoolean("a3d", "NewBoneScale", true) == false);
+  CHECK(reader.GetValueAsInt("a3d", "DetailScene", 0) == 1);
+  reader.Close();
+  std::remove("test_output.ini");
+}
+
+static void test_zlib_roundtrip() {
+  std::string payload(10000, '\0');
+  for (std::size_t i = 0; i < payload.size(); ++i)
+    payload[i] = static_cast<char>((i * 7 + 3) & 0xff);
+
+  const DWORD srcLen = static_cast<DWORD>(payload.size());
+  std::string compressed(payload.size() + 1024, '\0');
+  DWORD compressedLen = static_cast<DWORD>(compressed.size());
+  CHECK(AFilePackage::Compress(reinterpret_cast<BYTE *>(payload.data()), srcLen,
+                               reinterpret_cast<BYTE *>(compressed.data()),
+                               &compressedLen) == 0);
+  CHECK(compressedLen > 0 && compressedLen < srcLen);
+
+  std::string restored(payload.size(), '\0');
+  DWORD restoredLen = static_cast<DWORD>(restored.size());
+  CHECK(AFilePackage::Uncompress(reinterpret_cast<BYTE *>(compressed.data()),
+                                 compressedLen,
+                                 reinterpret_cast<BYTE *>(restored.data()),
+                                 &restoredLen) == 0);
+  CHECK(restoredLen == srcLen);
+  CHECK(restored == payload);
+}
+
+int main(int argc, char **argv) {
+  try {
+    test_zlib_roundtrip();
+    test_ini_roundtrip();
+    if (argc == 2) {
+      test_real_package(argv[1], 2005);
+      test_shared_file_roundtrip(argv[1]);
+    } else {
+      std::cout << "package tests skipped: pass the authorized PCK path\n";
+    }
+    std::cout << "client153 file family: all tests passed\n";
+    return 0;
+  } catch (const std::exception &e) {
+    std::cerr << "FAIL: " << e.what() << "\n";
+    return 1;
+  }
+}

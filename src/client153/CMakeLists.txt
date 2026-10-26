@@ -1,4 +1,15 @@
 # Original Common interface, with portable string storage/formatting corrections.
+#	Emscripten ships zlib in its sysroot (link -lz directly); native builds
+#	use the system zlib through CMake's FindZLIB.
+if(EMSCRIPTEN)
+  #	Emscripten's zlib port flags live in the top-level CMakeLists so test
+  #	targets outside this directory scope link the port too.
+  set(PW153_ZLIB_LINK "")
+else()
+  find_package(ZLIB REQUIRED)
+  set(PW153_ZLIB_LINK ZLIB::ZLIB)
+endif()
+
 add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp)
 target_include_directories(client153_platform PUBLIC platform/common)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
@@ -7,11 +18,15 @@ add_library(client153_common STATIC
   Angelica2/AngelicaCommon/Source/AString.cpp
   Angelica2/AngelicaCommon/Source/ATime.cpp
   Angelica2/AngelicaCommon/Source/ALog.cpp
-  Angelica2/AngelicaCommon/Source/AContainers.cpp)
+  Angelica2/AngelicaCommon/Source/AContainers.cpp
+  Angelica2/AngelicaCommon/Source/AAssist.cpp
+  Angelica2/AngelicaCommon/Source/ACounter.cpp)
 target_link_libraries(client153_common PRIVATE client153_platform)
 target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_common PUBLIC cxx_std_17)
-target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic)
+#	The original debug-new pattern (#define new A_DEBUG_NEW) hides a keyword;
+#	clang flags it where GCC does not.
+target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic -Wno-error=keyword-macro)
 if(EMSCRIPTEN)
   target_compile_options(client153_platform PUBLIC -fexceptions)
   target_link_options(client153_platform INTERFACE -fexceptions)
@@ -45,10 +60,24 @@ if(EMSCRIPTEN)
   configure_file("${PROJECT_SOURCE_DIR}/web/client153/app.mjs" "${CMAKE_BINARY_DIR}/browser/app.mjs" COPYONLY)
 endif()
 
-add_library(client153_file STATIC Angelica2/AngelicaFile/Source/AFile.cpp)
+add_library(client153_file STATIC
+  Angelica2/AngelicaFile/Source/AFile.cpp
+  Angelica2/AngelicaFile/Source/AFI.cpp
+  Angelica2/AngelicaFile/Source/AFilePackBase.cpp
+  Angelica2/AngelicaFile/Source/afilepackage.cpp
+  Angelica2/AngelicaFile/Source/AFilePackMan.cpp
+  Angelica2/AngelicaFile/Source/AFilePackGame.cpp
+  Angelica2/AngelicaFile/Source/AFPCKConstants.cpp
+  Angelica2/AngelicaFile/Source/AFileImage.cpp
+  Angelica2/AngelicaFile/Source/AIniFile.cpp
+  Angelica2/AngelicaFile/Source/AScriptFile.cpp
+  Angelica2/AngelicaCommon/Source/ATempMemMan.cpp)
 target_include_directories(client153_file PUBLIC Angelica2/AngelicaFile/Header)
-target_link_libraries(client153_file PUBLIC client153_common)
-target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic)
+target_link_libraries(client153_file PUBLIC client153_common client153_platform)
+target_link_libraries(client153_file PUBLIC ${PW153_ZLIB_LINK})
+#	Bounded path joins may truncate by design: the original overflowed
+#	MAX_PATH buffers; the port keeps the bound and accepts the truncation.
+target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic -Wno-error=format-truncation -Wno-error=keyword-macro)
 
 # Original matrix/vector unions retain MSVC anonymous-struct layout.
 add_library(client153_math STATIC Angelica2/Angelica3D/Source/A3DMatrix.cpp Angelica2/Angelica3D/Source/A3DQuaternion.cpp)
@@ -70,8 +99,6 @@ target_sources(client153_math PRIVATE
 # Original skeleton support: PI globals, scalar math helpers, geometry bounds,
 # coordinate spaces, controllers and IK, on the portable platform clock.
 add_library(client153_skeleton STATIC
-  Angelica2/AngelicaCommon/Source/AAssist.cpp
-  Angelica2/AngelicaCommon/Source/ACounter.cpp
   Angelica2/Angelica3D/Source/A3DPI.cpp
   Angelica2/Angelica3D/Source/A3DFuncs.cpp
   Angelica2/Angelica3D/Source/A3DGeometry.cpp
@@ -83,5 +110,5 @@ target_link_libraries(client153_skeleton PUBLIC client153_math client153_animati
 target_include_directories(client153_skeleton PUBLIC Angelica2/Angelica3D/Header)
 target_compile_features(client153_skeleton PUBLIC cxx_std_17)
 #	-pedantic omitted like client153_math: the original vector/matrix unions use MSVC anonymous-struct layout.
-target_compile_options(client153_skeleton PRIVATE -Wall -Wextra -Werror)
+target_compile_options(client153_skeleton PRIVATE -Wall -Wextra -Werror -Wno-error=keyword-macro)
 set_target_properties(client153_skeleton PROPERTIES CXX_EXTENSIONS ON)

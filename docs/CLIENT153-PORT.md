@@ -112,3 +112,11 @@ controllers, interfaces IK e globais da engine (`A3DPI`) agora compilam em
 nativo/WASM com sanitizadores, com defeitos originais corrigidos e documentados.
 Bones, joints e o skeleton em si permanecem para o próximo lote. Ver
 [evidência do suporte ao skeleton](evidence/client153-skeleton-support.md).
+
+O loader real de pacotes PCK/PKX da Angelica agora compila e carrega o
+pacote autorizado `facedata.pck` com 2005 entradas, idênticas ao leitor
+Python validado, com 64 arquivos compartilhados verificados pelo caminho
+original. A família completa de arquivos (AFileImage, AIniFile, AFilePackMan,
+AFilePackGame, AFI/AFPI, containers abase, ACSWrapper) fechou em nativo/WASM
+com sanitizadores: 10/10. Ver
+[evidência da família de arquivos](evidence/client153-file-family.md).

@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef MAX_PATH
+#define MAX_PATH 260	//	Windows path limit kept for original buffers.
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	Define and Macro
@@ -38,6 +42,7 @@
 
 //	unsigned value
 typedef std::uint32_t DWORD; //	32-bit;
+typedef std::uint64_t DWORD64; //	64-bit;
 typedef unsigned short WORD; //	16-bit;
 typedef unsigned char BYTE;  //	8-bit;
 

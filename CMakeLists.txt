@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
 project(pw_web_client153 LANGUAGES CXX)
 include(CTest)
+#	Emscripten's zlib port must be requested for every compile and link,
+#	includings test executables defined in this file.
+if(EMSCRIPTEN)
+  add_compile_options(-sUSE_ZLIB=1)
+  add_link_options(-sUSE_ZLIB=1)
+endif()
+
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   add_executable(client153_common_test tests/client153/common.cpp)
@@ -30,4 +37,7 @@ if(BUILD_TESTING)
   add_executable(client153_skeleton_test tests/client153/skeleton.cpp)
   target_link_libraries(client153_skeleton_test PRIVATE client153_skeleton client153_math)
   add_test(NAME client153_skeleton COMMAND client153_skeleton_test)
+  add_executable(client153_file_family_test tests/client153/file_family.cpp)
+  target_link_libraries(client153_file_family_test PRIVATE client153_file)
+  add_test(NAME client153_file_family COMMAND client153_file_family_test)
 endif()
