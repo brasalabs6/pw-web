@@ -10,7 +10,7 @@ else()
   set(PW153_ZLIB_LINK ZLIB::ZLIB)
 endif()
 
-add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp)
+add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp)
 target_include_directories(client153_platform PUBLIC platform/common)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
 target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic)

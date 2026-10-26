@@ -357,3 +357,24 @@ In a separate syntax check of 15 files whose initial error was
 `CRITICAL_SECTION`, forcing inclusion of the existing real portable mutex
 header revealed `ACString` as the first error in every file. This was a
 probe, not a permanent preinclude or proof of linked synchronization behavior.
+
+## UTF-16 conversion foundation
+
+The Unicode client uses 16-bit `ACHAR`, while the WASM/native platforms use a
+32-bit `wchar_t`; a real conversion layer is required before restoring the
+original wide-string and code-page APIs. Added strict UTF-8/UTF-16 conversion
+at the platform boundary, including supplementary characters and rejection of
+malformed UTF-8 and unpaired UTF-16 surrogates. A missing-header regression test
+failed before implementation; tests pass on native, WASM/Node and ASan/UBSan.
+The conversion handles UTF-8 only; original Windows code pages, AWString,
+ACString, printf formatting and network compatibility are not implemented or
+verified by this change. It is not yet connected to the client runtime.
+
+```
+cmake --build build/client153-native --target client153_utf16_test --parallel 2
+build/client153-native/client153_utf16_test
+cmake --build build/client153-wasm-tests --target client153_utf16_test --parallel 2
+ctest --test-dir build/client153-wasm-tests -R '^client153_utf16$' --output-on-failure
+cmake --build build/client153-sanitize --target client153_utf16_test --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_utf16_test
+```
