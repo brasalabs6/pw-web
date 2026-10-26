@@ -15,6 +15,7 @@
 #include "AFPI.h"
 #include "AMemory.h"	//	a_malloc/a_free/a_malloctemp/a_freetemp macros.
 #include <cstring>
+#include <stdexcept>
 #include "AFileImage.h"
 #include "AFilePackage.h"
 #include "AFilePackMan.h"
@@ -27,6 +28,7 @@ LPFNEXTDECRYPT AFileImage::m_lpfnExtDecrypt = NULL;
 //	Write data to package
 bool AFileImage::WriteToPack(const char* szFile, const void* pBuf, DWORD dwBufLen, bool bReplaceOnly)
 {
+	if (!szFile || std::strlen(szFile) >= MAX_PATH) return false;
 	char szRelFile[MAX_PATH];
 	af_GetRelativePath(szFile, szRelFile);
 
@@ -277,13 +279,16 @@ bool AFileImage::DoExtDecrypt()
 
 bool AFileImage::Open(const char* szFolderName, const char * szFileName, DWORD dwFlags)
 {
+	if (!szFolderName || !szFileName) return false;
 	char szFullPath[MAX_PATH];
-	af_GetFullPath(szFullPath, szFolderName, szFileName);
+	try { af_GetFullPath(szFullPath, szFolderName, szFileName); }
+	catch (const std::length_error&) { return false; }
 	return Open(szFullPath, dwFlags);
 }
 
 bool AFileImage::Open(const char* szFullPath, DWORD dwFlags)
 {
+	if (!szFullPath || std::strlen(szFullPath) >= MAX_PATH) return false;
 	// If we have opened it already, we must close it;
 	if( m_bHasOpened )
 		Close();

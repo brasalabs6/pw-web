@@ -32,6 +32,8 @@ bool af_Finalize();
 bool af_SetBaseDir(const char* szBaseDir);
 const char* af_GetBaseDir();
 
+// Path composition output buffers must provide at least MAX_PATH bytes.
+// Oversized paths throw std::length_error instead of being truncated.
 void af_GetRelativePathNoBase(const char* szFullpath, const char* szParentPath, char* szRelativepath);
 void af_GetRelativePathNoBase(const char* szFullpath, const char* szParentPath, AString& strRelativePath);
 void af_GetFullPathNoBase(char* szFullpath, const char* szBaseDir, const char* szFilename);

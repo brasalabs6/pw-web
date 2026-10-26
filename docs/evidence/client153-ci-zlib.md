@@ -32,3 +32,33 @@ build/client153-native/client153_skeleton_closure_test artifacts/client153-input
 Known risk: file-path helpers currently allow truncation; this can select the
 wrong asset and needs an explicit failure contract and consumer review. It is
 not resolved by the compiler-specific warning flag.
+
+## Path composition and package folder validation
+
+Hypothesis: unbounded `MAX_PATH` writes and empty package folders can corrupt
+memory before a real asset is loaded. Regression cases reproduced oversized path
+writes and UBSan reported index -1 for empty folders in both package classes.
+The composed-path helpers now reject oversized results with `std::length_error`;
+their legacy `char*` callers must supply at least `MAX_PATH` bytes. Package and
+image open paths reject the tested invalid input. This is a bounded repair, not
+an audit of every original file API: extension helpers and other callers still
+need review, and exception handling must be preserved as those callers are ported.
+
+Validation on the local source and authorized client data:
+
+```
+cmake --build build/client153-native --parallel 2
+ctest --test-dir build/client153-native --output-on-failure
+build/client153-native/client153_skeleton_closure_test artifacts/client153-input/wolf.bon
+build/client153-native/client153_file_family_test <authorized-client>/element/facedata.pck
+cmake --build build/client153-wasm-tests --parallel 2
+ctest --test-dir build/client153-wasm-tests --output-on-failure
+cmake --build build/client153-sanitize --parallel 2
+UBSAN_OPTIONS=halt_on_error=1 ctest --test-dir build/client153-sanitize --output-on-failure
+UBSAN_OPTIONS=halt_on_error=1 build/client153-sanitize/client153_file_family_test <authorized-client>/element/facedata.pck
+```
+
+All three CTest suites passed 11/11; without asset arguments they skip original
+asset integration. Direct native and sanitized PCK tests opened 2,005 entries
+and verified 64 shared files. Direct skeleton test loaded 42 joints, 42 bones
+and 5 hooks. These results do not establish a playable browser client.

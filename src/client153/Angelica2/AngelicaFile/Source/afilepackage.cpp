@@ -10,6 +10,7 @@
  * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.	
  */
 
+#include <stdexcept>
 #include "AFPI.h"
 #include "AFI.h"
 #include "AFilePackage.h"
@@ -329,8 +330,10 @@ AFilePackage::~AFilePackage()
 
 bool AFilePackage::InnerOpen(const char* szPckPath, const char* szFolder, OPENMODE mode, bool bEncrypt, bool bShortName)
 {
+	if (!szPckPath || !szFolder || !*szFolder || strlen(szPckPath) >= MAX_PATH || strlen(szFolder) >= MAX_PATH - 1) return false;
 	char szFullPckPath[MAX_PATH];
-	af_GetFullPath(szFullPckPath, szPckPath);
+	try { af_GetFullPath(szFullPckPath, szPckPath); }
+	catch (const std::length_error&) { return false; }
 
 	m_bUseShortName = bShortName;
 
@@ -573,6 +576,7 @@ bool AFilePackage::Open(const char* szPckPath, const char* szFolder, OPENMODE mo
 
 bool AFilePackage::Open(const char* szPckPath, OPENMODE mode, bool bEncrypt)
 {
+	if (!szPckPath || strlen(szPckPath) >= MAX_PATH) return false;
 	char szFolder[MAX_PATH];
 
 	strncpy(szFolder, szPckPath, MAX_PATH);

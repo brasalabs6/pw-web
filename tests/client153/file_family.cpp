@@ -6,6 +6,7 @@
 #include "AFileImage.h"
 #include "AFilePackage.h"
 #include "AFilePackMan.h"
+#include "AFilePackGame.h"
 #include "AFI.h"
 #include "AIniFile.h"
 
@@ -126,6 +127,39 @@ static void test_zlib_roundtrip() {
 
 int main(int argc, char **argv) {
   try {
+    // Output capacity is MAX_PATH; too-long input must fail without writing past it.
+    char guarded[512]; std::memset(guarded, 0x5a, sizeof(guarded));
+    const std::string limit(MAX_PATH - 1, 'x');
+    af_GetFullPathNoBase(guarded, "", limit.c_str());
+    CHECK(std::string(guarded) == limit);
+    CHECK(guarded[MAX_PATH] == 0x5a);
+    AString string_path;
+    af_GetFullPathNoBase(string_path, "", limit.c_str());
+    CHECK(std::string((const char*)string_path) == limit);
+    const std::string oversized(MAX_PATH, 'x');
+    bool rejected = false;
+    try { af_GetFullPathNoBase(guarded, "", oversized.c_str()); }
+    catch (const std::length_error &) { rejected = true; }
+    CHECK(rejected);
+    CHECK(guarded[MAX_PATH] == 0x5a);
+    rejected = false;
+    try { af_GetFullPath(guarded, oversized.c_str(), "/model"); }
+    catch (const std::length_error &) { rejected = true; }
+    CHECK(rejected);
+    rejected = false;
+    try { af_GetRelativePathNoBase(oversized.c_str(), "", guarded); }
+    catch (const std::length_error &) { rejected = true; }
+    CHECK(rejected);
+    CHECK(guarded[MAX_PATH] == 0x5a);
+    AFileImage image;
+    CHECK(!image.Open(oversized.c_str(), AFILE_OPENEXIST));
+    CHECK(!image.Open("folder", oversized.c_str(), AFILE_OPENEXIST));
+    AFilePackage package;
+    CHECK(!package.Open(oversized.c_str(), AFilePackage::OPENEXIST, false));
+    CHECK(!package.Open("missing.pck", "", AFilePackage::OPENEXIST, false));
+    AFilePackGame game;
+    CHECK(!game.Open(oversized.c_str(), AFilePackGame::OPENEXIST, false));
+    CHECK(!game.Open("missing.pck", "", AFilePackGame::OPENEXIST, false));
     test_zlib_roundtrip();
     test_ini_roundtrip();
     if (argc == 2) {

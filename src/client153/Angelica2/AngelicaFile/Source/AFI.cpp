@@ -17,6 +17,8 @@
 #include "AFilePackMan.h"
 #include <unistd.h>	//	getcwd.
 #include <cstring>
+#include <string>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -110,14 +112,18 @@ void af_GetRelativePathNoBase(const char* szFullpath, const char* szParentPath, 
 
 	if( *p1 ) // not found;
 	{
-		strcpy(szRelativepath, szFullpath);
+		const auto length = std::strlen(szFullpath);
+		if (length >= MAX_PATH) throw std::length_error("Angelica relative path exceeds MAX_PATH");
+		std::memmove(szRelativepath, szFullpath, length + 1);
 		return;
 	}
 
 	if( *p2 == '\\' )
 		p2 ++;
 
-	strcpy(szRelativepath, p2);
+	const auto length = std::strlen(p2);
+	if (length >= MAX_PATH) throw std::length_error("Angelica relative path exceeds MAX_PATH");
+	std::memmove(szRelativepath, p2, length + 1);
 }
 
 void af_GetRelativePathNoBase(const char* szFullpath, const char* szParentPath, AString& strRelativePath)
@@ -129,44 +135,28 @@ void af_GetRelativePathNoBase(const char* szFullpath, const char* szParentPath, 
 
 void af_GetFullPathNoBase(char* szFullpath, const char* szBaseDir, const char* szFilename)
 {
+	if (!szFullpath || !szBaseDir || !szFilename)
+		throw std::invalid_argument("null path argument");
 	szFullpath[0] = '\0';
-
-	int nStrLenName = strlen(szFilename);
-	if( nStrLenName == 0 )
-		return;
-
-	//See if it is a absolute path; POSIX roots ('/') are absolute too.
-	if( nStrLenName > 3 )
-	{
-		if( (szFilename[1] == ':' && szFilename[2] == '\\') || (szFilename[0] == '\\' && szFilename[1] == '\\') )
-		{
-			strcpy(szFullpath, szFilename);
-			return;
-		}
-	}
-	if( szFilename[0] == AFI_PATH_SEPARATOR )
-	{
-		strcpy(szFullpath, szFilename);
-		return;
-	}
+	const std::string name(szFilename), base(szBaseDir);
+	if (name.empty()) return;
+	std::string result;
+	if ((name.size() > 3 && ((name[1] == ':' && name[2] == '\\') ||
+		(name[0] == '\\' && name[1] == '\\'))) || name[0] == AFI_PATH_SEPARATOR)
+		result = name;
+	else if (name.size() > 1 && name[0] == '\\') return;
 	else
 	{
-		if( nStrLenName > 1 && szFilename[0] == '\\' )
-			return;
+		const std::string relative = name.size() > 2 && name[0] == '.' && name[1] == '\\'
+			? name.substr(2) : name;
+		result = base;
+		if (!result.empty() && result.back() != AFI_PATH_SEPARATOR)
+			result += AFI_PATH_SEPARATOR;
+		result += relative;
 	}
-
-	const char* pszRealfile = szFilename;
-	// Get rid of prefix .\, so to make a clean relative file path
-	if( nStrLenName > 2 && szFilename[0] == '.' && szFilename[1] == '\\' )
-		pszRealfile = szFilename + 2;
-	
-	if( szBaseDir[0] == '\0' )
-		strcpy(szFullpath, pszRealfile);
-	else if( szBaseDir[strlen(szBaseDir) - 1] == AFI_PATH_SEPARATOR )
-		sprintf(szFullpath, "%s%s", szBaseDir, pszRealfile);
-	else
-		sprintf(szFullpath, "%s" AFI_PATH_SEPARATOR_STR "%s", szBaseDir, pszRealfile);
-	return;
+	if (result.size() >= MAX_PATH)
+		throw std::length_error("Angelica path exceeds MAX_PATH");
+	std::memcpy(szFullpath, result.c_str(), result.size() + 1);
 }
 
 void af_GetFullPathNoBase(AString& strFullpath, const char* szBaseDir, const char* szFilename)
@@ -178,9 +168,10 @@ void af_GetFullPathNoBase(AString& strFullpath, const char* szBaseDir, const cha
 
 void af_GetFullPath(char* szFullPath, const char* szFolderName, const char* szFileName)
 {
-	char szBaseDir[MAX_PATH];
-	snprintf(szBaseDir, sizeof(szBaseDir), "%s" AFI_PATH_SEPARATOR_STR "%s", g_szBaseDir, szFolderName);
-	af_GetFullPathNoBase(szFullPath, szBaseDir, szFileName);
+	if (!szFolderName) throw std::invalid_argument("null folder name");
+	const std::string szBaseDir = std::string(g_szBaseDir) + AFI_PATH_SEPARATOR_STR + szFolderName;
+	if (szBaseDir.size() >= MAX_PATH) throw std::length_error("Angelica base path exceeds MAX_PATH");
+	af_GetFullPathNoBase(szFullPath, szBaseDir.c_str(), szFileName);
 }
 
 void af_GetFullPath(char* szFullPath, const char* szFileName)
@@ -190,9 +181,10 @@ void af_GetFullPath(char* szFullPath, const char* szFileName)
 
 void af_GetFullPath(AString& strFullPath, const char* szFolderName, const char* szFileName)
 {
-	char szBaseDir[MAX_PATH];
-	snprintf(szBaseDir, sizeof(szBaseDir), "%s" AFI_PATH_SEPARATOR_STR "%s", g_szBaseDir, szFolderName);
-	af_GetFullPathNoBase(strFullPath, szBaseDir, szFileName);
+	if (!szFolderName) throw std::invalid_argument("null folder name");
+	const std::string szBaseDir = std::string(g_szBaseDir) + AFI_PATH_SEPARATOR_STR + szFolderName;
+	if (szBaseDir.size() >= MAX_PATH) throw std::length_error("Angelica base path exceeds MAX_PATH");
+	af_GetFullPathNoBase(strFullPath, szBaseDir.c_str(), szFileName);
 }
 
 void af_GetFullPath(AString& strFullPath, const char* szFileName)
@@ -202,9 +194,10 @@ void af_GetFullPath(AString& strFullPath, const char* szFileName)
 
 void af_GetRelativePath(const char* szFullPath, const char* szFolderName, char* szRelativePath)
 {
-	char szBaseDir[MAX_PATH];
-	snprintf(szBaseDir, sizeof(szBaseDir), "%s" AFI_PATH_SEPARATOR_STR "%s", g_szBaseDir, szFolderName);
-	af_GetRelativePathNoBase(szFullPath, szBaseDir, szRelativePath);
+	if (!szFolderName) throw std::invalid_argument("null folder name");
+	const std::string szBaseDir = std::string(g_szBaseDir) + AFI_PATH_SEPARATOR_STR + szFolderName;
+	if (szBaseDir.size() >= MAX_PATH) throw std::length_error("Angelica base path exceeds MAX_PATH");
+	af_GetRelativePathNoBase(szFullPath, szBaseDir.c_str(), szRelativePath);
 }
 
 void af_GetRelativePath(const char* szFullPath, char* szRelativePath)
@@ -214,9 +207,10 @@ void af_GetRelativePath(const char* szFullPath, char* szRelativePath)
 
 void af_GetRelativePath(const char* szFullPath, const char* szFolderName, AString& strRelativePath)
 {
-	char szBaseDir[MAX_PATH];
-	snprintf(szBaseDir, sizeof(szBaseDir), "%s" AFI_PATH_SEPARATOR_STR "%s", g_szBaseDir, szFolderName);
-	af_GetRelativePathNoBase(szFullPath, szBaseDir, strRelativePath);
+	if (!szFolderName) throw std::invalid_argument("null folder name");
+	const std::string szBaseDir = std::string(g_szBaseDir) + AFI_PATH_SEPARATOR_STR + szFolderName;
+	if (szBaseDir.size() >= MAX_PATH) throw std::length_error("Angelica base path exceeds MAX_PATH");
+	af_GetRelativePathNoBase(szFullPath, szBaseDir.c_str(), strRelativePath);
 }
 
 void af_GetRelativePath(const char* szFullPath, AString& strRelativePath)
