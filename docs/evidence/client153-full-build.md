@@ -247,3 +247,29 @@ The original project report contains absolute local paths and is retained only
 as an ignored local artifact. A full browser port still requires replacing or
 adapting the Windows, graphics, network and other platform boundaries while
 reusing the game code and authorized assets.
+
+## Unicode width needed for broad build
+
+The original Unicode client defines `ACHAR` as Windows `wchar_t` and directly
+uses `sizeof(ACHAR)` in file and character-data paths (for example,
+`DlgFriendHistory.cpp` and `EC_Global.h`). On the native and WASM targets,
+`wchar_t` is 32 bits, so the previously ported alias was incompatible with the
+original two-byte Windows code units. A regression test failed before the
+change. The portable `UNICODE` alias now uses `char16_t` and UTF-16 literals;
+non-Unicode builds retain their prior alias. Native and WASM suites pass 14/14,
+and all currently ported libraries also build with `-DUNICODE`.
+
+This only establishes the character width and literal behavior. `AWString`,
+code-page conversions, actual file encoding and network serialization still
+need porting and direct compatibility tests; neither server compatibility nor
+the original client build has been proven. Functions expecting platform
+`wchar_t` must be adapted explicitly rather than reinterpreting buffers.
+
+```
+cmake --build build/client153-native --parallel 2
+ctest --test-dir build/client153-native --output-on-failure
+cmake --build build/client153-wasm-tests --parallel 2
+ctest --test-dir build/client153-wasm-tests --output-on-failure
+cmake -S . -B build/client153-unicode-probe -G Ninja -DCMAKE_CXX_FLAGS=-DUNICODE -DBUILD_TESTING=OFF
+cmake --build build/client153-unicode-probe --parallel 2
+```
