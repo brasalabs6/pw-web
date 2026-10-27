@@ -995,7 +995,7 @@ bool AUIDialog::Save(const char *pszFilename)
 
 	ACHAR szFontName[256];
 	a_sprintf(szFontName, _AL("%s###%d###%d###%d###%d"),
-		m_strFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
+		(const ACHAR*)m_strFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
 	int idStrFont = AddStringToTable(szFontName);
 	if( idStrFont < 0 ) 
 	{
@@ -1003,7 +1003,7 @@ bool AUIDialog::Save(const char *pszFilename)
 		return false;
 	}
 
-	fprintf(file, "DIALOG \"%s\" %d %d %d %d %d %d %d", m_szName, m_x,
+	fprintf(file, "DIALOG \"%s\" %d %d %d %d %d %d %d", (const char*)m_szName, m_x,
 		m_y, m_nWidth, m_nHeight, idStrTitle, idStrFont, m_nFontHeight);
 
 	for( int i = 0; i < AUIDIALOG_FRAME_NUM; i++ )
@@ -2716,7 +2716,7 @@ bool AUIDialog::ExportStringTable(const char *pszFilename)
 	{
 		int idString = *(it.key());
 		ACString str = *(it.value());
-		fwprintf(file, _AL("%d\t\"%s\"\n"), idString, str);
+		fwprintf(file, _AL("%d\t\"%s\"\n"), idString, (const ACHAR*)str);
 	}
 
 	fclose(file);
@@ -4370,7 +4370,8 @@ bool AUIDialog::RenderRTToTexture(A3DTexture* pTexture)
 		pTexture->Create(m_pA3DDevice, m_nWidth, m_nHeight, A3DFMT_A8R8G8B8);
 
 		// copy
-		if (!pTexture->UpdateFromSurface(&suf, A3DRECT(0,0,m_nWidth,m_nHeight)))
+		A3DRECT rect(0,0,m_nWidth,m_nHeight);
+		if (!pTexture->UpdateFromSurface(&suf, rect))
 		{
 			A3DRELEASE(pTarget);
 			return false;
