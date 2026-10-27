@@ -201,3 +201,20 @@ set_target_properties(client153_skeleton PROPERTIES CXX_EXTENSIONS ON)
 add_library(client153_skinning STATIC Angelica2/Angelica3D/port/skin_binding.cpp Angelica2/Angelica3D/port/animated_skin.cpp)
 target_link_libraries(client153_skinning PUBLIC client153_skeleton client153_formats)
 target_compile_options(client153_skinning PRIVATE -Wall -Wextra -Werror)
+
+# Diagnostic only: attempt to link all currently compiled original engine and
+# UI objects. Unresolved symbols fail the target; this is not a game binary.
+if(EMSCRIPTEN)
+  add_custom_target(client153_original_link_probe
+    COMMAND ${CMAKE_CXX_COMPILER} --no-entry -fexceptions -sUSE_ZLIB=1
+      -Wl,--no-gc-sections -Wl,--error-limit=20
+      $<TARGET_OBJECTS:client153_aui_original>
+      $<TARGET_OBJECTS:client153_engine_original>
+      $<TARGET_FILE:client153_skeleton> $<TARGET_FILE:client153_animation>
+      $<TARGET_FILE:client153_file> $<TARGET_FILE:client153_math>
+      $<TARGET_FILE:client153_common> $<TARGET_FILE:client153_platform>
+      -o ${CMAKE_CURRENT_BINARY_DIR}/client153-original-link-probe.js
+    DEPENDS client153_aui_original client153_engine_original client153_skeleton
+      client153_animation client153_file client153_math client153_common client153_platform
+    COMMAND_EXPAND_LISTS VERBATIM)
+endif()
