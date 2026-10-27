@@ -55,18 +55,13 @@ class UserLogin2 : public ProxyRpc
 		Thread::RWLock::WRScoped l(ausm->locker_map);
 		if (ausm->usermap.find(arg.userid)!=ausm->usermap.end())
 		{
-			if (arg.blkickuser)
-			{
-				/*send kickuser to proper delivery server*/
-				ausm->Send(ausm->usermap[arg.userid].sid,KickoutUser(arg.userid,ausm->usermap[arg.userid].localsid));
-			}
-			else
-			{
-				res.retcode=ERR_MULTILOGIN;
-				SetResult(res);
-				SendToSponsor();
-				return;
-			}
+			// pw-web dev-auth: always kick the stale session and register the
+			// new one. Upstream honored arg.blkickuser; the v145 client sends
+			// blkickuser=0 on re-login, so every re-login after a disconnect
+			// died with ERR_MULTILOGIN (retcode 10) until the old entry timed
+			// out. A real account backend can restore the original policy.
+			ausm->Send(ausm->usermap[arg.userid].sid,
+				KickoutUser(arg.userid,ausm->usermap[arg.userid].localsid));
 		}
 		res.retcode=ERR_SUCCESS;
 		res.blIsGM=1;
