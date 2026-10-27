@@ -13,6 +13,15 @@ spec.loader.exec_module(probe)
 
 
 class ProjectPaths(unittest.TestCase):
+    def test_project_include_list_supports_comma_and_semicolon(self):
+        self.assertEqual(probe.split_includes('header,../media;../common'),
+                         ['header', '../media', '../common'])
+
+    def test_aui_prelude_is_not_applied_to_engine_project(self):
+        self.assertFalse(probe.uses_aui_prelude('Angelica2/Angelica3D/Angelica3D.vcproj'))
+        self.assertTrue(probe.uses_aui_prelude('Common/AUInterface2/AUInterface_2.2.vcproj'))
+        self.assertTrue(probe.uses_aui_prelude('Element\\CElementClient\\ElementClient.vcproj'))
+
     def test_uses_toolchain_zlib_instead_of_windows_sdk_zlib(self):
         root = Path('/reference')
         windows_zlib = root / 'Angelica2/Output/3rdsdk/include/zlib'

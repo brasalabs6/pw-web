@@ -5,6 +5,7 @@ import hashlib
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import json
+import re
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
@@ -27,6 +28,14 @@ def resolve_windows(root, relative):
             raise ValueError(f'ambiguous Windows path: {relative}')
         current = matches[0] if matches else exact
     return current
+
+
+def split_includes(value):
+    return [item.strip() for item in re.split(r'[;,]', value) if item.strip()]
+
+
+def uses_aui_prelude(project):
+    return project.replace('\\', '/').startswith(('Element/CElementClient/', 'Common/AUInterface2/'))
 
 
 def port_include_dirs(port_root):
@@ -92,7 +101,7 @@ def main():
         parser.error('configuration not present in original project')
     tools = {t.attrib['Name']: t.attrib for t in config.findall('Tool')}
     cc = tools['VCCLCompilerTool']
-    includes = [resolve_windows(project.parent, p) for p in cc['AdditionalIncludeDirectories'].split(';')]
+    includes = [resolve_windows(project.parent, p) for p in split_includes(cc['AdditionalIncludeDirectories'])]
     includes = portable_include_dirs(root, includes)
     if args.adapted_root:
         #	Mirror every reference include dir that exists in the adapted
@@ -125,7 +134,8 @@ def main():
     #	Prefer the adapted AUI library copies (the full header set lives in
     #	Common/AUInterface2; the prebuilt SDK include dir only carries part of
     #	it, so its same-dir chains break).
-    for aui_dir in (Path('Common') / 'AUInterface2', Path('Common') / 'Output' / 'include' / 'aui'):
+    for aui_dir in ((Path('Common') / 'AUInterface2', Path('Common') / 'Output' / 'include' / 'aui')
+                    if uses_aui_prelude(args.project) else ()):
         widgets = [w for w in ('AUIListBox.h', 'AUIComboBox.h', 'AUIEditBox.h', 'AUILabel.h',
                                'AUIStillImageButton.h', 'AUICheckBox.h', 'AUIImagePicture.h',
                                'AUIDialog.h')
@@ -199,7 +209,7 @@ def main():
             continue
         extra_tools = {t.attrib['Name']: t.attrib for t in extra_config.findall('Tool')}
         extra_cc = extra_tools['VCCLCompilerTool']
-        extra_includes = [resolve_windows(extra_project.parent, p) for p in extra_cc['AdditionalIncludeDirectories'].split(';')]
+        extra_includes = [resolve_windows(extra_project.parent, p) for p in split_includes(extra_cc['AdditionalIncludeDirectories'])]
         extra_includes = portable_include_dirs(root, extra_includes)
         if adapted_root:
             mirrored_extra = []
