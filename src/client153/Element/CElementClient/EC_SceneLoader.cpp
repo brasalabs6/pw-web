@@ -962,7 +962,7 @@ static DWORD WINAPI LoaderThreadFunc(LPVOID lpParam)
 
 	}	//	try
 
-	catch (...)))
+	catch (...)
 	{
 		::OutputDebugString(_AL("Exception occurred...\n"));
 		a_LogOutput(1, "Exception occurred... mini dumped in loader thread!");

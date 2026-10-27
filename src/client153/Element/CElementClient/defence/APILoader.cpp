@@ -629,7 +629,7 @@ bool WINAPI Parse(LPVOID buffer, DWORD size)
 	{
 		return loader.Parse(buffer, size);
 	}
-	catch (...)))
+	catch (...)
 	{
 		APIData *data = (APIData *)buffer;
 		if (data == NULL)

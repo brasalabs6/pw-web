@@ -573,7 +573,7 @@ void WINAPI TryKillCheaters()
 	{
 		killer.TryKillCheaters();
 	}
-	catch (...)))
+	catch (...)
 	{
 		a_LogOutput(1, "exception occured in defence thread (@CheaterKiller::TryKillCheaters)!");
 	}

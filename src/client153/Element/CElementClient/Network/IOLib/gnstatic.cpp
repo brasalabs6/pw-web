@@ -49,7 +49,7 @@ namespace Thread{
 			}
 			s_thread_count--;
 		}
-		catch (...)))
+		catch (...)
 		{
 			::OutputDebugString(_AL("Exception occurred in gnet...\n"));
 			a_LogOutput(1, "Exception occurred gnet... mini dumped!");

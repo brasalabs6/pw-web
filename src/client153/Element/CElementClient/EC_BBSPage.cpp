@@ -368,7 +368,7 @@ UINT WINAPI DownloadPage(LPVOID pParam)
 	{
 		ret = _DownloadPageImpl(pParam);
 	}
-	catch (...)))
+	catch (...)
 	{
 		a_LogOutput(1, "Exception occurred in DownloadPage thread... mini dumped!");
 	}
@@ -445,7 +445,7 @@ UINT WINAPI ParsePage(LPVOID pParam)
 	{
 		ret = _ParsePageImpl(page, pageinfo);
 	}
-	catch (...)))
+	catch (...)
 	{
 		a_LogOutput(1, "Exception occurred in ParsePage thread... mini dumped!");
 	}

@@ -466,7 +466,7 @@ static DWORD WINAPI DefenceThreadFunc(LPVOID lpParam)
 	{
 		g_pGame->GetGameRun()->CheckDefenceCode();
 	}
-	catch (...)))//(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)//(EXCEPTION_EXECUTE_HANDLER)
 	{
 		a_LogOutput(1, "exception occured in defence thread (@CECGameRun::CheckDefenceCode)!");
 	}
@@ -522,7 +522,7 @@ static DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 
 #ifndef _NOMINIDUMP	
 	}
-	catch (...)))
+	catch (...)
 	{
 		::OutputDebugString(_AL("Exception occurred...\n"));
 		a_LogOutput(1, "Exception occurred in render thread... mini dumped!");
@@ -1104,7 +1104,7 @@ _exit:
 
 	}	//	try
 
-	catch (...)))
+	catch (...)
 	{
 		::OutputDebugString(_AL("Exception occurred...\n"));
 		a_LogOutput(1, "Exception occurred... mini dumped!");

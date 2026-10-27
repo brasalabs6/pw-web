@@ -1368,7 +1368,7 @@ void CECGameRun::CheckDefenceCode()
 		{
 			CheckDefenceCodeImpl();
 		}
-		catch (...)))
+		catch (...)
 		{
 			a_LogOutput(1, "exception occured in defence thread (@@CECGameRun::CheckDefenceCodeImpl)!");
 		}
