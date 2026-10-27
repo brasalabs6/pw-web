@@ -179,6 +179,11 @@ Na varredura seguinte passaram 110 de 787 unidades sintáticas. A remoção do
 erro de `CompactUINT` revelou outros bloqueios: codificação (182), referências
 de tamanho incompatíveis (123) e `CreateEvent` (83). O primeiro erro de
 codificação inspecionado vem de um cabeçalho AUI da referência, em GB18030.
+Os 48 cabeçalhos AUI foram copiados da mesma revisão fixada com hashes no
+manifesto; sete foram transcodificados de GB18030 para UTF-8. O prelude do
+probe prioriza os cabeçalhos adaptados. A unidade que reproduzia o erro de
+codificação agora avança até erros de tipos de tamanho; a contagem global após
+essa mudança ainda não foi medida.
 Os testes de serialização foram ampliados para números de ponto flutuante,
 strings, UTF-16 e octetos; correções de acesso e largura passaram com ASan e
 UBSan, além dos testes nativos e WASM. Ainda não há conexão validada.

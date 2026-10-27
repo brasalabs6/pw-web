@@ -78,6 +78,7 @@ def main():
     if args.jobs < 1 or args.jobs > 16:
         parser.error('--jobs must be between 1 and 16')
     root = args.source.resolve()
+    adapted_root = args.adapted_root.resolve() if args.adapted_root else None
     project = root / args.project
     tree = ET.fromstring(project.read_bytes().decode('gb18030'))
     config = next((c for c in tree.findall('./Configurations/Configuration') if c.attrib['Name'] == args.configuration), None)
@@ -114,17 +115,16 @@ def main():
     #	headers; the SDK's AUIDialog.h uses AUIComboBox without including it.
     #	The widget chain compiles against the port; the D3D font headers stay
     #	out of this prelude (they belong to the renderer cycle).
-    aui_dir = root / 'Common' / 'Output' / 'include' / 'aui'
+    aui_dir = Path('Common') / 'Output' / 'include' / 'aui'
     for widget in ('AUIListBox.h', 'AUIComboBox.h', 'AUIEditBox.h', 'AUILabel.h',
                    'AUIStillImageButton.h', 'AUICheckBox.h', 'AUIImagePicture.h',
                    'AUIDialog.h'):
-        aui = aui_dir / widget
+        aui = source_path(root, adapted_root, aui_dir / widget)
         if aui.is_file():
             forced += ['-include', str(aui)]
     sdk_forward = args.port_root.parent / 'platform' / 'common' / 'sdk_forward.h' if args.port_root else None
     if sdk_forward and sdk_forward.is_file():
         forced += ['-include', str(sdk_forward.resolve())]
-    adapted_root = args.adapted_root.resolve() if args.adapted_root else None
     entry = resolve_windows(project.parent, args.entry)
     entry_path = source_path(root, adapted_root, entry.relative_to(root))
     command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar'] + forced + [str(entry_path)]

@@ -8669,6 +8669,198 @@
     {
       "path": "Element/CCommon/Face/FaceAnimation.h",
       "sha256": "2caa663953ba69c17298d366cde51a8b5ddfc82217d2aee701ae437ce8a92176"
+    },
+    {
+      "path": "Common/Output/include/aui/A2DDotLine.h",
+      "sha256": "59602b4cb73f7b7d7b8196e6dfeaf509e44b511aa021f77ceb2070c1b80ff264"
+    },
+    {
+      "path": "Common/Output/include/aui/A2DDotLineMan.h",
+      "sha256": "9af5aacffc22dc59e567b7d803ca8d35d096c7c4c12874c9aa8c1c43e2052312"
+    },
+    {
+      "path": "Common/Output/include/aui/A3DAlterableSkinModel.h",
+      "sha256": "270bbb929154a93e7f9cf2d08e0d781dec6a02c824b37f6f217590432a987522"
+    },
+    {
+      "path": "Common/Output/include/aui/A3DFTFont.h",
+      "sha256": "32f6f29fc6f6913c5f18126b406ee20ef8f3c9df22a8c3b15028fd8d8d3c8cdd"
+    },
+    {
+      "path": "Common/Output/include/aui/A3DFTFontMan.h",
+      "sha256": "54a8c026f9bc2ccb873e3d28de0b455dec7db5531a8276737af71af1247cccc9"
+    },
+    {
+      "path": "Common/Output/include/aui/AStringWithWildcard.h",
+      "sha256": "90f000e685a82f713073460f9d77469d208d37a859d15bb8317838262b128118"
+    },
+    {
+      "path": "Common/Output/include/aui/AUI.h",
+      "sha256": "f6ce93c289bc77906169813340b763a3303428e70b1c78a638985b95cdd908ba"
+    },
+    {
+      "path": "Common/Output/include/aui/AUICTranslate.h",
+      "sha256": "444518106aa59fe05559e1f0ec04c4250addf76774cf3707bc71baffa026a72a"
+    },
+    {
+      "path": "Common/Output/include/aui/AUICheckBox.h",
+      "sha256": "99b477a70b2bdf17cb5869fdd9af14d7d4c348ad904016ac02936c600b05e790"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIClockIcon.h",
+      "sha256": "d5605bef48594ba4a98a0449ed1e57ee582d1c4159bd5ee9dfed5f783413255d"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIComboBox.h",
+      "sha256": "b39e8c0318ebd6e4e5ee40e434bd5e6b180479d492374c49c05520dec2608914"
+    },
+    {
+      "path": "Common/Output/include/aui/AUICommon.h",
+      "sha256": "3ef40a4405bf452088a82aacadbe06572ab51730465fc473d8e677d6fac712da"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIConsole.h",
+      "sha256": "1937ca07e07c4c7402466e191eee1eabe5b77c52ca75424006189afeb460faa4"
+    },
+    {
+      "path": "Common/Output/include/aui/AUICustomize.h",
+      "sha256": "611036eac849af316ff035a3a25390c29cb3306bc253d0a76365af5aac73fe4a"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIDef.h",
+      "sha256": "9c43a71b32a769d4202a00f49bad47588e178f1d6207bad31baaba354d0c922b"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIDialog.h",
+      "sha256": "2f9badc478f169cf25df1df85ff893a1f6f4679d187b666f810e584ef75076c7"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIEditBox.h",
+      "sha256": "effcb3bc1e6ddc530135a9fad7af42992df4389276aeb238911e35d298f73799"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIFrame.h",
+      "sha256": "d0ec1d18cd4131801ddb0515f5fd830081f82e648145abb9a2654eb48d514c8d"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIImagePicture.h",
+      "sha256": "fb8cedf6173f75504378943de87750bcc8a08dc6fbdc2191df32ac7846a488c3"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIImeHook.h",
+      "sha256": "1bd55de777a2db48b9710e784dc61e4e103dbac03984a54026f24460be1fbe39"
+    },
+    {
+      "path": "Common/Output/include/aui/AUILabel.h",
+      "sha256": "548862fb8e24073357678e5726080cb2b279dd13cf2cc2df4adc9af85b9f7b0b"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIListBox.h",
+      "sha256": "3fb780b84004bfc5ec19308d5b1c7e8e8a0e594618ffb4d603748b7200006292"
+    },
+    {
+      "path": "Common/Output/include/aui/AUILuaDialog.h",
+      "sha256": "36ea228a04d09aeedfef5ce12dab3ab1d7417ace14ac28ae048547bfee19b13b"
+    },
+    {
+      "path": "Common/Output/include/aui/AUILuaManager.h",
+      "sha256": "4c925ab99e6e4d6613a6b56dc9142b0698cb9d4dc32f5d287e18f4d826f6ef91"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIManager.h",
+      "sha256": "78d68e0867b18c4fba15e346bd5eafdbecfde0335ff984015608e1cdf55ba986"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIModelPicture.h",
+      "sha256": "b96bc6f863347a39914e779fea1f9f3622bbbe949c4d18ed46a59109ce7e972e"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIObject.h",
+      "sha256": "ee55fb92e4bd47545cab3a4db4f66cc7cbe3ccabca1b4e088578decfbd7938ad"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIObjectTemplateManager.h",
+      "sha256": "eab011595876449d0a9aaf0cdcd527652e8767ba068e64f94a43981e3aa896ef"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIPicture.h",
+      "sha256": "c4ebef4bdb4aad3fcf50f067a1dbb1c8a77ee0b849bddba454eb100c695aacb8"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIProgress.h",
+      "sha256": "f54f8bceea32f866f753a76903b2134303e487a181a302b76fa35fb504f546fb"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIRadioButton.h",
+      "sha256": "7c310a33af63098dbaf72a8f3a1800b90fa52b3ecbc1e4f948ee58f11e5e7572"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIScroll.h",
+      "sha256": "3c0443f9f64394d37eacd83beedfe980a063127ed395f811840943c815195d14"
+    },
+    {
+      "path": "Common/Output/include/aui/AUISlider.h",
+      "sha256": "bd5b23d162a850b4ebdcc1b73c64e7d2216d7cf76c51c33c7436f8ac53bd60e1"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIStillImageButton.h",
+      "sha256": "46fa4673d34d9dca8f2a6f93527dbcecaabf9d5e18d9c41e191716500eb9db07"
+    },
+    {
+      "path": "Common/Output/include/aui/AUISubDialog.h",
+      "sha256": "5f181d8a7cf66aa606d4627b1488fd80cd4a3319eaa4a31ff153dd2c76cffa3c"
+    },
+    {
+      "path": "Common/Output/include/aui/AUITag.h",
+      "sha256": "ee3434eef9e4290288c12ad7eae0e972dcb2fa215323a753401c6737dee31b6e"
+    },
+    {
+      "path": "Common/Output/include/aui/AUITextArea.h",
+      "sha256": "f66d396e5c54951389b1ccbcb02bc3de2abb938979eab93d14c8aa1420688c75"
+    },
+    {
+      "path": "Common/Output/include/aui/AUITreeView.h",
+      "sha256": "e1224a320a2f080151a95862a1c7e968731044f9957cf6bd44f376ba1719695a"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIVerticalText.h",
+      "sha256": "541030f1109b6195146369681245c9af4d1754a2c1c745eb55ba75732d321f50"
+    },
+    {
+      "path": "Common/Output/include/aui/AUIWindowPicture.h",
+      "sha256": "f19c1a528cfeb7ca5e6f44960a13cdbf55bb9a4d1495f257fafde349685ff0e2"
+    },
+    {
+      "path": "Common/Output/include/aui/AXMLFile.h",
+      "sha256": "753b6e21d59d99496e0c48f26be11999fb3d8d79896682749bb3b8f2bdbb6548"
+    },
+    {
+      "path": "Common/Output/include/aui/CSplit.h",
+      "sha256": "08131255b4c8ff09f447224c7b3c9f152cbc470a62690a9f2958f2434824e4a2"
+    },
+    {
+      "path": "Common/Output/include/aui/FTInterface.h",
+      "sha256": "722f4fdc5678cc41f7608e2b4f606a12822c213616c88910cab833e64321cc55"
+    },
+    {
+      "path": "Common/Output/include/aui/IMEWrapper.h",
+      "sha256": "e6817b11d43952f414e466e21d328f2f204941593acd79d4c4210293f5a1f040"
+    },
+    {
+      "path": "Common/Output/include/aui/ImeUi.h",
+      "sha256": "3100f8f22d2d43982b6dcbe9dc95f830352708396b5eea833ed138240c4491be"
+    },
+    {
+      "path": "Common/Output/include/aui/LuaDlgApi.h",
+      "sha256": "fdd5051e92503a758d526694a6f035dc8da5e0ec219242c5cc87d05c9a899088"
+    },
+    {
+      "path": "Common/Output/include/aui/UIRenderTarget.h",
+      "sha256": "17d2462c270468382b3de8338c7969145c79ea7609e09cc53db0726f60197bd5"
+    },
+    {
+      "path": "Common/Output/include/aui/WndThreadManager.h",
+      "sha256": "40ab369786b188d7c7dd55cb97d09f7362fa01d90e4fe76989a9f51ab1b9e08c"
     }
   ],
   "adaptations": [
