@@ -12,6 +12,7 @@
 
 #pragma once
 #include "../CCommon/itemdataman.h"
+#include <algorithm>
 #include <cstdio>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -454,7 +455,7 @@ struct astrolabe_essence
 			int limit = alloc_max - aptit[index];
 			if(limit > 0)
 			{
-				limit = min(limit,alloc_aptit);
+				limit = std::min(limit,alloc_aptit);
 				int alloc = abase::Rand(1,limit);
 				aptit[index] += alloc;
 				alloc_aptit  -= alloc;
@@ -471,7 +472,7 @@ struct astrolabe_essence
 			int alloc = max_limit - aptit[index];
 			if(alloc > 0)
 			{
-				alloc = min(alloc,add);
+				alloc = std::min(alloc,add);
 				aptit[index] += alloc; 
 				return true;
 			}	

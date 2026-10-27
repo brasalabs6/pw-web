@@ -188,6 +188,16 @@ Os testes de serialização foram ampliados para números de ponto flutuante,
 strings, UTF-16 e octetos; correções de acesso e largura passaram com ASan e
 UBSan, além dos testes nativos e WASM. Ainda não há conexão validada.
 
+Depois da adaptação AUI e dos contadores locais de itens, a varredura
+sintática passou em 112/787; 283 unidades passaram a parar em `min` sem
+namespace e 86 em `CreateEvent`. Essas duas causas foram adaptadas em seguida,
+mas a nova contagem global ainda está em andamento. O GNET usa eventos e
+semáforos existentes e cria threads destacadas; `client153_gnet_thread` testa
+eventos e semáforo nativamente. O pool, `select`, o despertar via UDP e o
+transporte WebSocket não foram validados no navegador. Passaram 20 testes
+nativos e 18 WASM; as regras de itens alteradas ainda não foram testadas no
+gameplay.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

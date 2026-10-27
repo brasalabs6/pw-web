@@ -3,6 +3,7 @@
 
 #include <process.h>
 #include <deque>
+#include <thread>
 
 namespace Thread{
 
@@ -92,7 +93,7 @@ public:
 
 	Condition( ) 
 	{
-		event = CreateEvent( NULL, TRUE, TRUE, NULL); 
+		event = CreateEventW( NULL, TRUE, TRUE, NULL);
 	}
 
 	void Wait( Mutex & mutex ) 
@@ -121,7 +122,7 @@ public:
 
 	Semaphore( ) 
 	{
-		sem = CreateSemaphore(NULL, 0, 0x7fff, NULL); 
+		sem = CreateSemaphoreW(NULL, 0, 0x7fff, NULL);
 	}
 
 	void Wait( Mutex & mutex ) 
@@ -165,7 +166,7 @@ public:
 		{
 			Mutex::Scoped lock(s_mutex_tasks);
 			for( size_t i=0; i<count; i++ ){
-				 _beginthread(&Pool::RunThread, 0, NULL);
+				 std::thread(&Pool::RunThread, nullptr).detach();
 			}
 		}
 	}
