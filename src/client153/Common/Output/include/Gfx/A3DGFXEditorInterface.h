@@ -75,6 +75,10 @@ struct GFX_PROPERTY
 	GFX_PROPERTY(bool _b)			{ m_Type = GFX_VALUE_BOOL; m_Data.b = _b; }
 	GFX_PROPERTY(float _f)			{ m_Type = GFX_VALUE_FLOAT; m_Data.f = _f; }
 	GFX_PROPERTY(unsigned long _c)	{ m_Type = GFX_VALUE_COLOR; m_Data.c = _c; }
+	//	The original's color ctor was 32-bit (MSVC unsigned long); A3DCOLOR
+	//	is unsigned int on this target - the exact-match ctor keeps color
+	//	constructions unambiguous.
+	GFX_PROPERTY(unsigned int _c)	{ m_Type = GFX_VALUE_COLOR; m_Data.c = _c; }
 	GFX_PROPERTY(RandStringContainer* _pRSC) { m_Type = GFX_VALUE_RAND_STRING; m_Data.pRSC = _pRSC; }
 	GFX_PROPERTY(const A3DVECTOR3& _vec)
 	{ 
@@ -132,11 +136,24 @@ struct GFX_PROPERTY
 	operator unsigned long () const
 	{
 		if (GetType() == GFX_VALUE_INT)
-			return unsigned long(m_Data.i);
+			return (unsigned long)(m_Data.i);
 		else if (GetType() == GFX_VALUE_FLOAT)
-			return unsigned long(m_Data.f);
+			return (unsigned long)(m_Data.f);
 		else // assume if (GetType() == GFX_VALUE_COLOR)
 			return m_Data.c;
+	}
+
+	//	The original's color conversion was 32-bit (MSVC unsigned long);
+	//	A3DCOLOR is unsigned int on this target - the exact-match operator
+	//	keeps color conversions unambiguous.
+	operator unsigned int () const
+	{
+		if (GetType() == GFX_VALUE_INT)
+			return (unsigned int)(m_Data.i);
+		else if (GetType() == GFX_VALUE_FLOAT)
+			return (unsigned int)(m_Data.f);
+		else // assume if (GetType() == GFX_VALUE_COLOR)
+			return (unsigned int)(m_Data.c);
 	}
 
 	// }} end modify

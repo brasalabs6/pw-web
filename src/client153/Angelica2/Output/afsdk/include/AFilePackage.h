@@ -24,6 +24,9 @@
 #include "hashtab.h"
 #include "AFilePackBase.h"
 
+//	Forward declaration: the original relied on include order.
+class AFilePackMan;
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	Define and Macro

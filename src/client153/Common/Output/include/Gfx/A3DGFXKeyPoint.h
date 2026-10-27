@@ -596,7 +596,7 @@ public:
 		case ID_GFXOP_KP_POS:
 			return GFX_PROPERTY(GetKPOrg().m_vPos);
 		case ID_GFXOP_KP_COLOR:
-			return GFX_PROPERTY(GetKPOrg().m_color);
+			return GFX_PROPERTY((unsigned long)GetKPOrg().m_color);
 		case ID_GFXOP_KP_SCALE:
 			return GFX_PROPERTY(GetKPOrg().m_fScale);
 		case ID_GFXOP_KP_DIR:
@@ -608,7 +608,7 @@ public:
 		case ID_GFXOP_KP_INTERP:
 			return GFX_PROPERTY((int)GetInterpMode());
 		case ID_GFXOP_KP_TIMESPAN:
-			return GFX_PROPERTY(GetTimeSpan());
+			return GFX_PROPERTY((unsigned long)GetTimeSpan());	//	DWORD -> the color ctor (MSVC's choice).
 		}
 		return GFX_PROPERTY();
 	}
@@ -621,7 +621,7 @@ public:
 			kp.m_vPos = prop;
 			break;
 		case ID_GFXOP_KP_COLOR:
-			kp.m_color = prop;
+			kp.m_color = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice (MSVC picked unsigned long).
 			break;
 		case ID_GFXOP_KP_SCALE:
 			kp.m_fScale = prop;
@@ -633,13 +633,13 @@ public:
 			kp.m_fRad2D = prop;
 			break;
 		case ID_GFXOP_KP_INFINITE:
-			SetInfinite(prop);
+			SetInfinite((bool)(int)prop);	//	explicit operator choice.
 			break;
 		case ID_GFXOP_KP_INTERP:
 			SetInterpMode((INTERPOLATE_MODE)(int)prop);
 			break;
 		case ID_GFXOP_KP_TIMESPAN:
-			SetTimeSpan(prop);
+			SetTimeSpan((DWORD)(unsigned long)prop);	//	explicit operator choice.
 			break;
 		default:
 			return false;
@@ -1283,7 +1283,7 @@ protected:
 		switch (nOp)
 		{
 		case ID_KPCTRL_CLTRAN_ORG:
-			m_clOrg = prop;
+			m_clOrg = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_NUM:
 			m_nDestNum = prop;
@@ -1291,34 +1291,34 @@ protected:
 				m_nDestNum = _cl_tbl_max_num;
 			break;
 		case ID_KPCTRL_CLTRAN_DEST1:
-			m_clDest[0] = prop;
+			m_clDest[0] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST2:
-			m_clDest[1] = prop;
+			m_clDest[1] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST3:
-			m_clDest[2] = prop;
+			m_clDest[2] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST4:
-			m_clDest[3] = prop;
+			m_clDest[3] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST5:
-			m_clDest[4] = prop;
+			m_clDest[4] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST6:
-			m_clDest[5] = prop;
+			m_clDest[5] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST7:
-			m_clDest[6] = prop;
+			m_clDest[6] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST8:
-			m_clDest[7] = prop;
+			m_clDest[7] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST9:
-			m_clDest[8] = prop;
+			m_clDest[8] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_DEST10:
-			m_clDest[9] = prop;
+			m_clDest[9] = (A3DCOLOR)(unsigned long)prop;	//	explicit operator choice.
 			break;
 		case ID_KPCTRL_CLTRAN_TIME1:
 			m_fTransTime[0] = prop;
