@@ -81,7 +81,7 @@ void CDlgReincarnationBook::Update()
 	pObj = GetDlgItem("Txt_Reincarnation");
 	if (pObj) {
 		ltime = pHost->GetRoleCreateTime();
-		birth_time = *localtime(&ltime);
+		birth_time = *localtime((const time_t*)&ltime);
 		strText.Format(GetStringFromTable(10811), birth_time.tm_year + 1900, 
 			birth_time.tm_mon + 1, birth_time.tm_mday, pHost->GetName());
 		pObj->SetText(strText);
@@ -92,7 +92,7 @@ void CDlgReincarnationBook::Update()
 		pObj = GetDlgItem(strTemp);
 		if(pObj) {
 			ltime = tome.reincarnations[i].timestamp;
-			birth_time = *localtime(&ltime);
+			birth_time = *localtime((const time_t*)&ltime);
 			strText.Format(GetStringFromTable(10812), birth_time.tm_year + 1900, 
 				birth_time.tm_mon + 1, birth_time.tm_mday, 
 				pHost->GetName(), tome.reincarnations[i].level, i + 1);

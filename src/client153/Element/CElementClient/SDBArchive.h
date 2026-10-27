@@ -11,6 +11,8 @@
 
 #include <AFile.h>
 #include <AAssist.h>
+//\tAMemory.h added: a_malloctemp/a_freetemp used below came from the original precompiled header; behavior unchanged.
+#include <AMemory.h>
 #include "SDBMisc.h"
 
 // begin namespace SimpleDB

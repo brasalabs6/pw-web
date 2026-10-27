@@ -201,12 +201,14 @@ public:
 	bool AABBTrace(AABBTRACEINFO* pInfo, AABBTRACERT* pTrace);
 	bool RayTrace(const A3DVECTOR3& vecStart, const A3DVECTOR3& vecDelta, RAYTRACERT* pRayTrace);
 
-	bool AddTreeType(char * szTreeFile, char * szSpriteFile, int nDegNum, int nTexRow, int nTexCol, FLOAT vTexDU, FLOAT vTexDV, DWORD *pTreeHandle, const A3DVECTOR3& vecScale=A3DVECTOR3(1.0f, 1.0f, 1.0f)	//	const: the original bound a temporary to a non-const reference.);
+	//	const: the original bound a temporary to a non-const reference.
+	bool AddTreeType(char * szTreeFile, char * szSpriteFile, int nDegNum, int nTexRow, int nTexCol, FLOAT vTexDU, FLOAT vTexDV, DWORD *pTreeHandle, const A3DVECTOR3& vecScale=A3DVECTOR3(1.0f, 1.0f, 1.0f));
 	bool SetTreeTypeScale(DWORD dwTreeHandle, const A3DVECTOR3& vecScale);
 	bool AddTree(DWORD dwTreeHandle, TREEINFO * pTreeInfo, int * pTreeIndex=NULL);
 	bool DelTree(int nTreeIndex, int * pNewTreeIndex=NULL);
 
-	bool AddGrassType(char * szGrassFile, DWORD * pGrassHandle, const A3DVECTOR3& vecScale=A3DVECTOR3(1.0f, 1.0f, 1.0f)	//	const: the original bound a temporary to a non-const reference.);
+	//	const: the original bound a temporary to a non-const reference.
+	bool AddGrassType(char * szGrassFile, DWORD * pGrassHandle, const A3DVECTOR3& vecScale=A3DVECTOR3(1.0f, 1.0f, 1.0f));
 	bool SetGrassTypeScale(DWORD dwGrassHandle, const A3DVECTOR3& vecScale);
 	bool AddGrass(DWORD dwGrassHandle, GRASSINFO * pGrassInfo, int * pGrassIndex=NULL);
 	bool DelGrass(int nGrassIndex, int * pNewGrassIndex=NULL);

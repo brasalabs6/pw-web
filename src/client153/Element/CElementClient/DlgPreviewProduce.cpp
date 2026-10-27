@@ -240,7 +240,7 @@ void CDlgPreviewProduce::OnTick()
 		a_ClampFloor(leftTime, 0);
 		
 		ACString strText;
-		strText.Format(GetStringFromTable(9721), GetGameUIMan()->GetFormatTime(leftTime));
+		strText.Format(GetStringFromTable(9721), (const wchar_t*)GetGameUIMan()->GetFormatTime(leftTime));
 		m_pLabelTime->SetText(strText);
 	}
 	AnimationTick();

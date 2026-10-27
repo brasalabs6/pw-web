@@ -62,7 +62,8 @@ namespace TablePrivate
 // the caller have to provide a struct that holder a member "static const char * value;"
 // the "value" will be recognized as DBFileName
 
-template<class TTypeList, DWORD FirstNFieldIsPrimaryKey = typename TL::Length<TTypeList>::value, const char * DBFileName = 0>
+//\t'typename' removed: TL::Length<TTypeList>::value is a constant, not a type; MSVC ignored the misplaced keyword, behavior unchanged.
+template<class TTypeList, DWORD FirstNFieldIsPrimaryKey = TL::Length<TTypeList>::value, const char * DBFileName = 0>
 class Table
 {
 // typedef
@@ -112,13 +113,14 @@ public:
 		recordSet_.push_back(record); 
 		return Begin() + GetRecordCount() - 1;
 	}
-	Iterator InsertRecord(Iterator iter, const RecordType& record) 
-	{ 
+	Iterator InsertRecord(Iterator iter, const RecordType& record)
+	{
 		// record can not be duplicated
-		Iterator iter = FindRecord(record);
-		if (iter != End()) return iter;
+//\tLocal 'iter' renamed to 'iterFound': MSVC let it shadow the parameter of the same name; same lookups and inserts, behavior unchanged.
+		Iterator iterFound = FindRecord(record);
+		if (iterFound != End()) return iterFound;
 
-		return recordSet_.insert(iter, record); 
+		return recordSet_.insert(iterFound, record);
 	}
 	Iterator DeleteRecord(Iterator iter) { return recordSet_.erase(iter); }
 	void QuickDeleteRecord(Iterator iter) { recordSet_.erase_noorder(iter); }
@@ -394,7 +396,8 @@ namespace TablePrivate
 //			_CrtDbgReport(_CRT_WARN, NULL, 0, NULL, "Enter SelectFromHelper::In()\n");
 			
 			const FromTablesHeadType & headTable = *fromTablesConstPtr.value_;
-			FromTablesHeadType::ConstIterator iter = headTable.Begin();
+//\t'typename' added before dependent nested type ConstIterator; original MSVC build resolved it without the keyword, behavior unchanged.
+			typename FromTablesHeadType::ConstIterator iter = headTable.Begin();
 
 			// recursivly generate the Descartes Product
 			// NullRecord is also a part of Descartes Product
@@ -441,7 +444,9 @@ namespace TablePrivate
 
 template<class TFromTablesTypeList, class ProcessFunctor, class TResultTable>
 inline void SelectFrom(
-	typename const SelectFromHelperTypeGenerator<TFromTablesTypeList>::FromTablesConstPtrValueList & fromTablesConstPtr, 
+//\tOriginal wrote 'typename const SelectFromHelperTypeGenerator<...>'; MSVC ignored the misplaced 'typename'.
+//\t'const' moved after the dependent name, parameter type still const reference, behavior unchanged.
+	const typename SelectFromHelperTypeGenerator<TFromTablesTypeList>::FromTablesConstPtrValueList & fromTablesConstPtr,
 	ProcessFunctor & processor, 
 	TResultTable & resultTable,
 	Type2Type<TFromTablesTypeList>)

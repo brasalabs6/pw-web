@@ -18,6 +18,9 @@
 #include "A3DGeometry.h"
 #include "aabbcd.h"
 
+//	Forward declaration: the original relied on include order.
+class CECMatterMan;
+
 ///////////////////////////////////////////////////////////////////////////
 //	
 //	Define and Macro

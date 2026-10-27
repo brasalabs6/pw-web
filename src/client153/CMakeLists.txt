@@ -14,7 +14,7 @@ add_compile_options(-fshort-wchar)
   set(PW153_ZLIB_LINK ZLIB::ZLIB)
 endif()
 
-add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp platform/common/widestr.cpp platform/common/keystate.cpp)
+add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp platform/common/widestr.cpp platform/common/keystate.cpp platform/common/toolhelp.cpp)
 target_include_directories(client153_platform PUBLIC platform/common)
 target_include_directories(client153_platform PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_platform PUBLIC cxx_std_17)

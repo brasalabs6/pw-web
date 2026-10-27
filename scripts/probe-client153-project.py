@@ -75,6 +75,7 @@ def main():
     parser.add_argument('--all', action='store_true', help='syntax-check every non-excluded source')
     parser.add_argument('--port-root', type=Path, help='prefer already ported Angelica headers')
     parser.add_argument('--adapted-root', type=Path, help='compile the adapted copy of a source when one exists under this root')
+    parser.add_argument('--extra-project', type=Path, action='append', help='additional .vcproj to compile after the main project')
     parser.add_argument('--jobs', type=int, default=4)
     parser.add_argument('--object-dir', type=Path, help='compile actual WASM objects instead of syntax-only checks (requires --all)')
     args = parser.parse_args()
@@ -177,6 +178,59 @@ def main():
         print(f"Checked {len(outcomes)} sources; {sum(x['exitCode'] == 0 for x in outcomes)} passed")
         for message, count in groups.most_common(10):
             print(f'{count:4d} {message}')
+    for extra in args.extra_project or []:
+        extra_project = extra.resolve()
+        extra_tree = ET.fromstring(extra_project.read_bytes().decode('gb18030'))
+        extra_config = next((c for c in extra_tree.findall('./Configurations/Configuration') if c.attrib['Name'] == args.configuration), None)
+        if extra_config is None:
+            print(f'Extra project {extra_project.name}: configuration not present, skipped')
+            continue
+        extra_tools = {t.attrib['Name']: t.attrib for t in extra_config.findall('Tool')}
+        extra_cc = extra_tools['VCCLCompilerTool']
+        extra_includes = [resolve_windows(extra_project.parent, p) for p in extra_cc['AdditionalIncludeDirectories'].split(';')]
+        extra_includes = portable_include_dirs(root, extra_includes)
+        if adapted_root:
+            mirrored_extra = []
+            for inc in extra_includes:
+                try:
+                    rel = inc.relative_to(root)
+                except ValueError:
+                    continue
+                adapted_inc = adapted_root / rel
+                if adapted_inc.is_dir():
+                    mirrored_extra.append(adapted_inc)
+            extra_includes = mirrored_extra + extra_includes
+        extra_sources = []
+        for entry in extra_tree.findall('.//File'):
+            path = resolve_windows(extra_project.parent, entry.attrib['RelativePath'])
+            if path.suffix.lower() not in ('.cpp', '.c', '.cxx'):
+                continue
+            excluded = any(x.attrib.get('ExcludedFromBuild') == 'true' for x in [x for x in entry.findall('./FileConfiguration') if x.attrib['Name'] == args.configuration])
+            extra_sources.append(dict(path=str(path.relative_to(root)), exists=path.is_file(), excluded=excluded))
+        extra_command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar', '-sUSE_ZLIB=1'] + forced
+        if args.port_root:
+            for path in port_include_dirs(args.port_root):
+                extra_command += ['-I', str(path)]
+        for path in extra_includes:
+            extra_command += ['-I', str(path)]
+        extra_command += ['-D' + d for d in extra_cc['PreprocessorDefinitions'].split(';') if d]
+        extra_index = len(extra_command)
+        extra_command.append('')
+        def compile_extra(source, _cmd=extra_command, _index=extra_index):
+            cmd = list(_cmd)
+            cmd[_index] = str(source_path(root, adapted_root, source['path']))
+            try:
+                outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+                return dict(path=source['path'], exitCode=outcome.returncode,
+                            firstError=first_error(outcome.stderr) if outcome.returncode else None)
+            except subprocess.TimeoutExpired:
+                return dict(path=source['path'], exitCode=-1, firstError='compiler timeout after 120 seconds')
+        active_extra = [s2 for s2 in extra_sources if s2['exists'] and not s2['excluded']]
+        with ThreadPoolExecutor(max_workers=args.jobs) as executor:
+            extra_outcomes = list(executor.map(compile_extra, active_extra))
+        report.setdefault('extraProjects', []).append(dict(project=str(extra_project), sources=extra_outcomes))
+        print(f"Extra project {extra_project.name}: {sum(x['exitCode'] == 0 for x in extra_outcomes)}/{len(extra_outcomes)} passed")
+
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{len(sources)} translation units; {sum(not s["exists"] for s in sources)} missing after Windows case resolution')

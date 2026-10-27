@@ -46,12 +46,12 @@ void CDlgLibProduceRelationshipAwardSubList::SetFirstItem(int id, float probabil
 	{
 		pDlg = m_pAUIManager->GetDialog("Win_ProduceRelationshipAward_Sub");
 		m_strDialogName = pDlg->GetName();
-		strName.Format("%s_%d", m_strDialogName, m_nSubDialog);
+		strName.Format("%s_%d", (const char*)m_strDialogName, m_nSubDialog);
 		pDlg->SetName(strName);
 	}
 	else
 	{
-		strName.Format("%s_%d", m_strDialogName, m_nSubDialog);
+		strName.Format("%s_%d", (const char*)m_strDialogName, m_nSubDialog);
 		pDlg = GetGameUIMan()->GetDialog(strName);
 		if (!pDlg)
 		{
@@ -198,12 +198,12 @@ PAUISUBDIALOG CDlgLibProduceRelationshipAwardSubList::AppendSubDialog()
 	{
 		pDlg = m_pAUIManager->GetDialog("Win_ProduceRelationshipAward_Sub");
 		m_strDialogName = pDlg->GetName();
-		strName.Format("%s_%d", m_strDialogName, m_nSubDialog);
+		strName.Format("%s_%d", (const char*)m_strDialogName, m_nSubDialog);
 		pDlg->SetName(strName);
 	}
 	else
 	{
-		strName.Format("%s_%d", m_strDialogName, m_nSubDialog);
+		strName.Format("%s_%d", (const char*)m_strDialogName, m_nSubDialog);
 		pDlg = GetGameUIMan()->GetDialog(strName);
 		if (!pDlg)
 		{

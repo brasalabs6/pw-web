@@ -31,42 +31,6 @@ class CDlgOfflineShopList;
 //////////////////////////////////////////////////////////////////////////
 
 
-class CShopItemSearcher : public WikiSearcher
-{
-public:
-	CShopItemSearcher();
-	virtual ~CShopItemSearcher(){}
-	
-	// derived from wiki base
-	virtual void OnBeginSearch();
-	virtual bool OnAddSearch(WikiEntityPtr p);
-	virtual void OnEndSearch();
-	virtual int  GetPageSize() const;
-	
-	void DoSearch(const ACString& strText);
-	
-	void SetViewList(PAUILISTBOX pList){m_pList = pList;}
-	
-	
-protected:
-	//	The original took addresses of constructor temporaries (dangling);
-	//	the port owns them as members with the same configuration.
-	WikiElementDataProvider m_EssenceProvider;
-	WikiSearchItemByName m_ByNameCommand;
-	
-	ACString m_strLastPattern;
-	abase::vector<int> m_ResultID;
-	std::vector<int> m_BackupID;
-	PAUILISTBOX	m_pList;
-};
-
-
-//------------------------------------------------------------------------
-//
-// ShopDataProvider:provide the id from a vector
-//
-//------------------------------------------------------------------------
-
 class ShopDataProvider : public WikiSearcher::ContentProvider
 {
 public:
@@ -95,6 +59,46 @@ public:
 		int m_IDCount;
 		int m_iCurIndex;
 };
+
+class CShopItemSearcher : public WikiSearcher
+{
+public:
+	CShopItemSearcher();
+	virtual ~CShopItemSearcher(){}
+	
+	// derived from wiki base
+	virtual void OnBeginSearch();
+	virtual bool OnAddSearch(WikiEntityPtr p);
+	virtual void OnEndSearch();
+	virtual int  GetPageSize() const;
+	
+	void DoSearch(const ACString& strText);
+	
+	void SetViewList(PAUILISTBOX pList){m_pList = pList;}
+	
+	
+protected:
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns the providers as members with the same configuration.
+	WikiElementDataProvider m_EssenceProvider;
+	WikiSearchItemByName m_ByNameCommand;
+	ShopDataProvider m_ShopProvider;
+	WikiElementDataProvider m_WikiProvider;
+	
+	ACString m_strLastPattern;
+	abase::vector<int> m_ResultID;
+	std::vector<int> m_BackupID;
+	PAUILISTBOX	m_pList;
+};
+
+
+//------------------------------------------------------------------------
+//
+// ShopDataProvider:provide the id from a vector
+//
+//------------------------------------------------------------------------
+
+
 
 //////////////////////////////////////////////////////////////////////////
 

@@ -188,7 +188,8 @@ namespace Private
 		template<class TTypeList>
 		struct In
 		{
-			typedef TypeList<typename TTypeList::Head, typename HeadSubTypeListHelper<HeadN - 1>::template In<TTypeList::Tail>::Result> Result;
+//\t'typename' added before dependent TTypeList::Tail template argument; original MSVC build resolved it without the keyword, behavior unchanged.
+			typedef TypeList<typename TTypeList::Head, typename HeadSubTypeListHelper<HeadN - 1>::template In<typename TTypeList::Tail>::Result> Result;
 		};
 	};
 	template<> struct HeadSubTypeListHelper<0>

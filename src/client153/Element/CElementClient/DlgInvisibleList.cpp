@@ -85,7 +85,7 @@ bool CDlgInvisibleList::AppendLine(PAUILISTBOX pLstBox, int id)
 		strName = _AL("-");
 	}
 
-	strText.Format(_AL("%s"), strName);
+	strText.Format(_AL("%s"), (const wchar_t*)strName);
 	int nItem = pLstBox->AddString(strText) -1;
 	pLstBox->SetItemData(nItem, (DWORD)id, LST_INDEX_PLAYER);
 	pLstBox->SetItemData(nItem, bNeedGetPlayerName ? 1 : 0, LST_INDEX_NEED_PLAYER);

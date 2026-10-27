@@ -1411,7 +1411,7 @@ CECScene::SUBTRNDATA* CECScene::PrepareSubTerrainData(int iSubTrn, int iIndex)
 	{
 		delete pDataFile;
 		pDataFile = NULL;
-		a_LogOutput(1, "CECScene::PrepareSubTerrainData, failed to open file %s", pData->strFile);
+		a_LogOutput(1, "CECScene::PrepareSubTerrainData, failed to open file %s", (const char*)pData->strFile);
 		return NULL;
 	}
 

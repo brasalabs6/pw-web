@@ -975,7 +975,7 @@ void CDlgChariotRankList::FormatInfo(int i,const ACHAR* name,ACString& outStr)
 
 	ACString kill;
 	kill.Format(_AL("^00ff00%d/^ff0000%d"),m_rankList[i].kill_cnt,m_rankList[i].dead_cnt);
-	outStr.Format(_AL("%d\t%s\t%d\t%s"),m_rankList[i].rank,name,m_rankList[i].score,kill);
+	outStr.Format(_AL("%d\t%s\t%d\t%s"),m_rankList[i].rank,name,m_rankList[i].score,(const wchar_t*)kill);
 }
 void CDlgChariotRankList::SetRankList(const GNET::TankBattlePlayerScoreInfoVector& vec)
 {

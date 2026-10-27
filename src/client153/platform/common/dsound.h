@@ -150,6 +150,18 @@ struct IDirectSound3DBuffer : IDSoundUnknown {
 struct IDirectSound3DBuffer8 : IDirectSound3DBuffer {
 };
 
+struct IDirectSound3DListener : IDSoundUnknown {
+  virtual HRESULT SetDistanceFactor(float factor, DWORD apply) = 0;
+  virtual HRESULT SetRolloffFactor(float factor, DWORD apply) = 0;
+  virtual HRESULT SetDopplerFactor(float factor, DWORD apply) = 0;
+  virtual HRESULT SetOrientation(float xFront, float yFront, float zFront,
+                                 float xTop, float yTop, float zTop,
+                                 DWORD apply) = 0;
+};
+
+struct IDirectSound3DListener8 : IDirectSound3DListener {
+};
+
 struct IDirectSound : IDSoundUnknown {
   virtual HRESULT SetCooperativeLevel(HWND hwnd, DWORD dwLevel) = 0;
 };

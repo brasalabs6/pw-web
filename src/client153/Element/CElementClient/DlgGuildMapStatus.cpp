@@ -91,7 +91,7 @@ void CDlgGuildMapStatus::OnCommandAllBattleTime(const char * szCommand)
 			stime -= GetGame()->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
 			tm *gtime = gmtime((const time_t*)&stime);
 			strText.Format(GetStringFromTable(785), (*info)[i].name,
-				strAttacker, strDefender,
+				(const wchar_t*)strAttacker, (const wchar_t*)strDefender,
 				gtime->tm_mon + 1, gtime->tm_mday, gtime->tm_hour, gtime->tm_min);
 			pList->AddString(strText);
 		}

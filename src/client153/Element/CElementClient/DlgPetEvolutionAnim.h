@@ -9,7 +9,7 @@
 #include "AUIEditBox.h"
 #include "AUIStillImageButton.h"
 #include "AUIImagePicture.h"
-#include <A3DGeometry.h >
+#include <A3DGeometry.h>
 #include "EC_Counter.h"
 
 class A3DGFXEx;

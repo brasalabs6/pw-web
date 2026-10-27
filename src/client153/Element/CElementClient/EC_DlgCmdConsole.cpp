@@ -655,7 +655,7 @@ void CECGameUIMan::ParseDebugConsoleCommand()
 	else if (CompConsoleCommand(CCMD_CREATETIME))
 	{
 		const long lRoleCreateTime = g_pGame->GetGameRun()->GetHostPlayer()->GetRoleCreateTime();
-		struct tm createtime = *localtime(&lRoleCreateTime);
+		struct tm createtime = *localtime((const time_t*)&lRoleCreateTime);
 		char szTime[128];
 		strcpy(szTime, asctime(&createtime));
 		if( szTime[strlen(szTime) - 1] == '\n' )
@@ -665,7 +665,7 @@ void CECGameUIMan::ParseDebugConsoleCommand()
 	else if (CompConsoleCommand(CCMD_LASTLOGINTIME))
 	{
 		const long lLastLoginTime = g_pGame->GetGameRun()->GetHostPlayer()->GetRoleLastLoginTime();
-		struct tm lastlogintime = *localtime(&lLastLoginTime);
+		struct tm lastlogintime = *localtime((const time_t*)&lLastLoginTime);
 		char szTime[128];
 		strcpy(szTime, asctime(&lastlogintime));
 		if( szTime[strlen(szTime) - 1] == '\n' )

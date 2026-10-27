@@ -206,7 +206,7 @@ void CDlgGuildMan::OnCommand_gpass(const char * szCommand)
 
 	ACString strMsg;
 	PAUIDIALOG pMsgBox;
-	strMsg.Format(GetStringFromTable(584), vec[0]);
+	strMsg.Format(GetStringFromTable(584), (const wchar_t*)vec[0]);
 	GetGameUIMan()->MessageBox("Faction_Pass", strMsg,
 		MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 	pMsgBox->SetData(m_pList_Member->GetItemData(nCurSel));
@@ -228,7 +228,7 @@ void CDlgGuildMan::OnCommand_gpromote(const char * szCommand)
 
 	ACString strMsg;
 	PAUIDIALOG pMsgBox;
-	strMsg.Format(GetStringFromTable(586), vec[0]);
+	strMsg.Format(GetStringFromTable(586), (const wchar_t*)vec[0]);
 	GetGameUIMan()->MessageBox("Faction_Promote", strMsg,
 		MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 	pMsgBox->SetData(m_pList_Member->GetItemData(nCurSel));
@@ -244,7 +244,7 @@ void CDlgGuildMan::OnCommand_gdemote(const char * szCommand)
 
 	ACString strMsg;
 	PAUIDIALOG pMsgBox;
-	strMsg.Format(GetStringFromTable(587), vec[0]);
+	strMsg.Format(GetStringFromTable(587), (const wchar_t*)vec[0]);
 	GetGameUIMan()->MessageBox("Faction_Demote", strMsg,
 		MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 	pMsgBox->SetData(m_pList_Member->GetItemData(nCurSel));
@@ -268,7 +268,7 @@ void CDlgGuildMan::OnCommand_gkick(const char * szCommand)
 
 	ACString strMsg;
 	PAUIDIALOG pMsgBox;
-	strMsg.Format(GetStringFromTable(pMem->IsDelayExpel() ? 10382 : 588), vec[0]);
+	strMsg.Format(GetStringFromTable(pMem->IsDelayExpel() ? 10382 : 588), (const wchar_t*)vec[0]);
 	GetGameUIMan()->MessageBox(pMem->IsDelayExpel() ? "Faction_CancelKick" : "Faction_Kick", strMsg,
 		MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 	pMsgBox->SetData(idPlayer);
@@ -527,7 +527,7 @@ void CDlgGuildMan::BuildFactionList()
 		ACString strTime;
 		strTime.Format(GetStringFromTable(10629), t.tm_year+1900, t.tm_mon+1, t.tm_mday);
 
-		strText.Format(szHintFormat, szReincarnation, szGender, pMem->GetReputation(), strTime);
+		strText.Format(szHintFormat, szReincarnation, szGender, pMem->GetReputation(), (const wchar_t*)strTime);
 		m_pList_Member->SetItemColHint(i, 0, strText);
 
 		if(idPlayer == pMem->GetID())

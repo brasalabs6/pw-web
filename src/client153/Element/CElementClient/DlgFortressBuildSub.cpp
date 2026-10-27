@@ -357,7 +357,7 @@ void CDlgFortressBuildSub::OnCommand_Build(const char *szCommand)
 		//	显示确认建造信息，以免误点导致长时间建造
 		ACString strLeftTime = m_pLab_Time->GetText();
 		ACString strMsg;
-		strMsg.Format(GetStringFromTable(9126), strLeftTime, GetMaterialToReturn());
+		strMsg.Format(GetStringFromTable(9126), (const wchar_t*)strLeftTime, (const wchar_t*)GetMaterialToReturn());
 		PAUIDIALOG pMsgBox(NULL);
 		GetGameUIMan()->MessageBox("Fortress_Build", strMsg, MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 		pMsgBox->SetData(m_idBuilding);
@@ -369,7 +369,7 @@ void CDlgFortressBuildSub::OnCommand_Build(const char *szCommand)
 	{
 		//	回收
 		ACString strMsg;
-		strMsg.Format(GetStringFromTable(9127), GetMaterialToReturn());
+		strMsg.Format(GetStringFromTable(9127), (const wchar_t*)GetMaterialToReturn());
 		
 		PAUIDIALOG pMsgBox(NULL);
 		GetGameUIMan()->MessageBox("Fortress_Destroy", strMsg, MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
@@ -729,7 +729,7 @@ ACString CDlgFortressBuildSub::GetMaterialToReturn()
 				}
 			}
 			if (!strText.IsEmpty())
-				str.Format(GetStringFromTable(9129), strText);
+				str.Format(GetStringFromTable(9129), (const wchar_t*)strText);
 		}
 	}
 

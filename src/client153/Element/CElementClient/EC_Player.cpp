@@ -100,7 +100,8 @@
 
 #include "A3DCombinedAction.h"
 #include "A3DGFXFuncs.h"
-#include <A3DSKinRender.h>
+//\tCase fix: original Windows build resolved A3DSKinRender.h case-insensitively to A3DSkinRender.h.
+#include <A3DSkinRender.h>
 
 #include "Alien/DlgAstrolabe.h"
 

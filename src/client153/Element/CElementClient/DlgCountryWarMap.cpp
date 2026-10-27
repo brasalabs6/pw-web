@@ -296,9 +296,9 @@ void CDlgCountryWarMap::OnGetPersonalScore()
 		const CECHostPlayer::BATTLEINFO &binfo = GetHostPlayer()->GetBattleInfo();
 		
 		ACString strTemp;
-		strTemp.Format(GetStringFromTable(9916), GetGameUIMan()->GetFormatTimeSimple(binfo.iCombatTime));
+		strTemp.Format(GetStringFromTable(9916), (const wchar_t*)GetGameUIMan()->GetFormatTimeSimple(binfo.iCombatTime));
 		m_pTxtCombatTime->SetText(strTemp);
-		strTemp.Format(GetStringFromTable(9917), GetGameUIMan()->GetFormatTimeSimple(binfo.iAttendTime));
+		strTemp.Format(GetStringFromTable(9917), (const wchar_t*)GetGameUIMan()->GetFormatTimeSimple(binfo.iAttendTime));
 		m_pTxtWarTime->SetText(strTemp);
 
 		strTemp.Format(GetStringFromTable(9909), binfo.iKillCount);

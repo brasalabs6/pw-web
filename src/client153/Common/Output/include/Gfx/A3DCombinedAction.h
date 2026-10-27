@@ -1272,7 +1272,10 @@ public:
 		{
 			PACTION_INFO pAct = actInfoList.GetNext(pos);
 			int nDynLoopNum = pAct->CalcLoopNum();
-			m_arrActLoopNum.Add(ACTIONDYN_DATA(nDynLoopNum, pAct));
+			//	Named local: the original bound a constructor temporary to the
+			//	non-const ARG_T=T& parameter (MSVC extension).
+			ACTIONDYN_DATA dynData(nDynLoopNum, pAct);
+			m_arrActLoopNum.Add(dynData);
 			if (!m_bIsInfiniteComAct && nDynLoopNum < 0) m_bIsInfiniteComAct = true;
 		}
 		CalcDynComActSpan();

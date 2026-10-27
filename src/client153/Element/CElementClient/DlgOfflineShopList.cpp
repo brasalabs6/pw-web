@@ -501,7 +501,7 @@ bool CShopItemSearcher::OnAddSearch(WikiEntityPtr p)
 	if (!pEP) return false;
 	
 	ACString strItem;	
-	strItem.Format(_AL("%s"), pEP->GetName());
+	strItem.Format(_AL("%s"), (const wchar_t*)pEP->GetName());
 	int csel = m_pList->AddString(strItem);
 	m_pList->SetItemData(m_pList->GetCount()-1, id);
 
@@ -538,10 +538,18 @@ void CShopItemSearcher::DoSearch(const ACString& strText)
 	if(pCommand)
 	{
 		ACString strOld = pCommand->GetPattern();
+		//	Member providers: the original pointed at constructor temporaries
+		//	(dangling); the port owns the objects with the same configuration.
 		if(!strOld.IsEmpty() && m_ResultID.size() && strText.Find(pCommand->GetPattern())>=0)
-			SetContentProvider(&ShopDataProvider(&m_BackupID[0],m_BackupID.size()));
+		{
+			m_ShopProvider = ShopDataProvider(&m_BackupID[0],m_BackupID.size());
+			SetContentProvider(&m_ShopProvider);
+		}
 		else
-			SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+		{
+			m_WikiProvider = WikiElementDataProvider(ID_SPACE_ESSENCE);
+			SetContentProvider(&m_WikiProvider);
+		}
 		
 		pCommand->SetPattern(strText);
 	}

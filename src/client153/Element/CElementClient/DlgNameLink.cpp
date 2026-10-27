@@ -322,7 +322,7 @@ ACString CDlgNameLink::MoveToLinkCommand::GetLinkText() const
 	else
 	{
 		ACString szNameLink;
-		szNameLink.Format(_AL("^00FF00^u&%s&^u^FFFFFF"), m_TargetName);
+		szNameLink.Format(_AL("^00FF00^u&%s&^u^FFFFFF"), (const wchar_t*)m_TargetName);
 		return szNameLink;
 	}
 }

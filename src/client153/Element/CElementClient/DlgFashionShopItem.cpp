@@ -405,7 +405,7 @@ void CDlgFashionShopItem::UpdatePrice()
 	int price = CalculatePrice();
 	if (m_pTxt_Price){
 		ACString strText;
-		strText.Format(GetStringFromTable(11310), GetGameUIMan()->GetCashText(price));
+		strText.Format(GetStringFromTable(11310), (const wchar_t*)GetGameUIMan()->GetCashText(price));
 		m_pTxt_Price->SetText(strText);
 	}
 	if (m_pTxt_NoDiscountPrice){
@@ -413,7 +413,7 @@ void CDlgFashionShopItem::UpdatePrice()
 		if (status >= 4 && status <= 12){
 			m_pTxt_NoDiscountPrice->Show(true);
 			ACString strText;
-			strText.Format(GetStringFromTable(11311), GetGameUIMan()->GetCashText(CECShopBase::GetOriginalPrice(price, status)));
+			strText.Format(GetStringFromTable(11311), (const wchar_t*)GetGameUIMan()->GetCashText(CECShopBase::GetOriginalPrice(price, status)));
 			m_pTxt_NoDiscountPrice->SetText(strText);
 		}else{
 			m_pTxt_NoDiscountPrice->Show(false);
@@ -505,7 +505,7 @@ void CDlgFashionShopItem::InitTimeSelection(const GSHOP_ITEM *pGShopItem){
 			m_pBtn_Time[i]->Show(true);
 			if (pGShopItem->buy[buyIndex].time != 0){
 				ACString strText;
-				strText.Format(GetStringFromTable(824), pGameUIMan->GetShopItemFormatTime(pGShopItem->buy[i].time));
+				strText.Format(GetStringFromTable(824), (const wchar_t*)pGameUIMan->GetShopItemFormatTime(pGShopItem->buy[i].time));
 				m_pBtn_Time[i]->SetHint(strText);
 			}else{
 				m_pBtn_Time[i]->SetHint(GetStringFromTable(825));

@@ -897,7 +897,7 @@ void CDlgShop::OnItemDragDrop(CECIvtrItem* pIvtrSrc, int iSrc, PAUIOBJECT pObjSr
 			ACString strDesc, strPrice;
 			__int64 iiMoney = (__int64)pIvtrSrc->GetUnitPrice()*GetHostPlayer()->GetCashMoneyRate()*sellCount;
 			strPrice = A3DCOLOR_TO_STRING(GetGameUIMan()->GetPriceColor(iiMoney)) + g_pGame->GetFormattedPrice(iiMoney);
-			strDesc.Format(GetGameUIMan()->GetStringFromTable(10015), strPrice);
+			strDesc.Format(GetGameUIMan()->GetStringFromTable(10015), (const wchar_t*)strPrice);
 			GetGameUIMan()->MessageBox("", strDesc, MB_OK, A3DCOLORRGB(255, 255, 255));
 		}
 

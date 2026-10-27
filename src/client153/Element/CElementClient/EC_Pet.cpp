@@ -196,7 +196,7 @@ void CECPet::BuildCompleteName()
 			strMasterName = pPlayer->GetNameInCountryWar();
 	}
 	
-	m_strCompName.Format(g_pGame->GetFixedMsgTab()->GetWideString(FIXMSG_WHOSETHING), strMasterName, m_strName);
+	m_strCompName.Format(g_pGame->GetFixedMsgTab()->GetWideString(FIXMSG_WHOSETHING), (const wchar_t*)strMasterName, (const wchar_t*)m_strName);
 	m_pPateName->SetText(m_strCompName, false);
 }
 

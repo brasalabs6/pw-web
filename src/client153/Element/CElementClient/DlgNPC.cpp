@@ -2149,7 +2149,7 @@ void CDlgNPC::SelectListItem(int index)
 						bOK = false;
 
 					strTemp.Format(GetStringFromTable(9112)
-						, (pInfo->GetLevel() < pConfig->require_level) ? strColorRed : strColorWhite
+						, (const wchar_t*)((pInfo->GetLevel() < pConfig->require_level) ? strColorRed : strColorWhite)
 						, pConfig->require_level+1);
 
 					strMsg += strNextLine;
@@ -2168,7 +2168,7 @@ void CDlgNPC::SelectListItem(int index)
 
 							CECIvtrItem *pItem = CECIvtrItem::CreateItem(pConfig->require_item[i].id, 0, 1);
 							strTemp.Format(GetStringFromTable(9113)
-								, (count < pConfig->require_item[i].count) ? strColorRed : strColorWhite
+								, (const wchar_t*)((count < pConfig->require_item[i].count) ? strColorRed : strColorWhite)
 								, pItem->GetName()
 								, pConfig->require_item[i].count);
 							delete pItem;
@@ -2369,7 +2369,7 @@ void CDlgNPC::SelectListItem(int index)
 					if (iLevel < REQUIRE_LEVEL) bOK = false;
 					
 					strTemp.Format(GetStringFromTable(9766)
-						, (iLevel < REQUIRE_LEVEL) ? strColorRed : strColorWhite
+						, (const wchar_t*)((iLevel < REQUIRE_LEVEL) ? strColorRed : strColorWhite)
 						, REQUIRE_LEVEL);
 					
 					strMsg += strNextLine;
@@ -2384,7 +2384,7 @@ void CDlgNPC::SelectListItem(int index)
 					
 					CECIvtrItem *pItem = CECIvtrItem::CreateItem(REQUIRE_ITEM, 0, 1);
 					strTemp.Format(GetStringFromTable(9767)
-						, (count < REQUIRE_COUNT) ? strColorRed : strColorWhite
+						, (const wchar_t*)((count < REQUIRE_COUNT) ? strColorRed : strColorWhite)
 						, pItem->GetName()
 						, REQUIRE_COUNT);
 					delete pItem;
@@ -2399,7 +2399,7 @@ void CDlgNPC::SelectListItem(int index)
 						bool bLeader = (pTeam->GetLeaderID() == pHost->GetCharacterID());
 						if (!bLeader) bOK = false;
 						strTemp.Format(GetStringFromTable(9771)
-							, (!bLeader) ? strColorRed : strColorWhite
+							, (const wchar_t*)((!bLeader) ? strColorRed : strColorWhite)
 							, GetStringFromTable(bLeader ? 9772 : 9773));
 						strMsg += strNextLine;
 						strMsg += strTemp;
@@ -2409,7 +2409,7 @@ void CDlgNPC::SelectListItem(int index)
 					bool bCoolDown = pHost->GetCoolTime(GP_CT_COUNTRY_BATTLE_APPLY) > 0;
 					if (bCoolDown)	bOK = false;
 					strTemp.Format(GetStringFromTable(9774)
-						, bCoolDown ? strColorRed : strColorWhite
+						, (const wchar_t*)(bCoolDown ? strColorRed : strColorWhite)
 						, GetStringFromTable(bCoolDown ? 9772 : 9773));
 					strMsg += strNextLine;
 					strMsg += strTemp;
@@ -2476,7 +2476,7 @@ void CDlgNPC::SelectListItem(int index)
 					if (iLevel < REQUIRE_LEVEL) bOK = false;
 					
 					strTemp.Format(GetStringFromTable(9766)
-						, (iLevel < REQUIRE_LEVEL) ? strColorRed : strColorWhite
+						, (const wchar_t*)((iLevel < REQUIRE_LEVEL) ? strColorRed : strColorWhite)
 						, REQUIRE_LEVEL);
 					
 					strMsg += strNextLine;
@@ -2488,8 +2488,8 @@ void CDlgNPC::SelectListItem(int index)
 					if (iLevel2 < REQUIRE_LEVEL2) bOK = false;
 
 					strTemp.Format(GetStringFromTable(10135)
-						, (iLevel2 < REQUIRE_LEVEL2) ? strColorRed : strColorWhite
-						, GetGameRun()->GetLevel2NameForCondition(REQUIRE_LEVEL2));
+						, (const wchar_t*)((iLevel2 < REQUIRE_LEVEL2) ? strColorRed : strColorWhite)
+						, (const wchar_t*)GetGameRun()->GetLevel2NameForCondition(REQUIRE_LEVEL2));
 										
 					strMsg += strNextLine;
 					strMsg += strTemp;
@@ -2498,7 +2498,7 @@ void CDlgNPC::SelectListItem(int index)
 					bool bCoolDown = pHost->GetCoolTime(GP_CT_CROSS_SERVER_APPLY) > 0;
 					if (bCoolDown)	bOK = false;
 					strTemp.Format(GetStringFromTable(9774)
-						, bCoolDown ? strColorRed : strColorWhite
+						, (const wchar_t*)(bCoolDown ? strColorRed : strColorWhite)
 						, GetStringFromTable(bCoolDown ? 9772 : 9773));
 
 					strMsg += strNextLine;

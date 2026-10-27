@@ -205,7 +205,7 @@ void CDlgActivity::UpdateActivityList(bool bUpdateStatus)
 			continue;
 		}
 
-		strLine.Format(_AL("%s\t%s\t%s\t%s"), pAct->p->name, GetRequireLevelStr(pAct), GetRequireCountStr(pAct), GetRequireTimeStr(pAct, false));
+		strLine.Format(_AL("%s\t%s\t%s\t%s"), pAct->p->name, (const wchar_t*)GetRequireLevelStr(pAct), (const wchar_t*)GetRequireCountStr(pAct), (const wchar_t*)GetRequireTimeStr(pAct, false));
 		if( GetHostPlayer()->GetAutoTeam()->GetType() == CECAutoTeam::TYPE_ACTIVITY &&
 			GetHostPlayer()->GetAutoTeam()->GetCurGoal() == pAct->p->id )
 			strLine += GetStringFromTable(8047);
@@ -572,7 +572,7 @@ ACString CDlgActivity::GetRequireTimeStr(const Activity* pAct, bool bFullTime)
 	if( bFullTime )
 	{
 		ACString strTemp;
-		strTemp.Format(GetStringFromTable(8044), strTime);
+		strTemp.Format(GetStringFromTable(8044), (const wchar_t*)strTime);
 		str += strTemp;
 	}
 	else

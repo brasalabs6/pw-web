@@ -134,27 +134,27 @@ void CDlgMailRead::ReadMail(void *pData)
 		case _AUCTION_ITEM_SOLD:
 			strSubject = GetStringFromTable(5101);
 			strContent.Format(GetStringFromTable(5201),
-				aid, pItem->GetName(), strCount);
+				aid, pItem->GetName(), (const wchar_t*)strCount);
 			break;
 		case _AUCTION_BID_WIN:
 			strSubject = GetStringFromTable(5102);
 			strContent.Format(GetStringFromTable(5202),
-				aid, pItem->GetName(), strCount);
+				aid, pItem->GetName(), (const wchar_t*)strCount);
 			break;
 		case _AUCTION_BID_LOSE:
 			strSubject = GetStringFromTable(5103);
 			strContent.Format(GetStringFromTable(5203),
-				aid, pItem->GetName(), strCount);
+				aid, pItem->GetName(), (const wchar_t*)strCount);
 			break;
 		case _AUCTION_BID_CANCEL:
 			strSubject = GetStringFromTable(5104);
 			strContent.Format(GetStringFromTable(5204),
-				aid, pItem->GetName(), strCount);
+				aid, pItem->GetName(), (const wchar_t*)strCount);
 			break;
 		case _AUCTION_BID_TIMEOUT:
 			strSubject = GetStringFromTable(5105);
 			strContent.Format(GetStringFromTable(5205),
-				aid, pItem->GetName(), strCount);
+				aid, pItem->GetName(), (const wchar_t*)strCount);
 			break;
 		}
 		delete pItem;
@@ -220,65 +220,65 @@ void CDlgMailRead::ReadMail(void *pData)
 				case WEBTRADE_CANCEL_POST:
 					strSubject = GetStringFromTable(5110);
 					if (posttype == 1){
-						strContent.Format(GetStringFromTable(5210), strTradeID, money);
+						strContent.Format(GetStringFromTable(5210), (const wchar_t*)strTradeID, money);
 					}
 					else if(posttype==4){
-						strContent.Format(GetStringFromTable(5222), strTradeID);
+						strContent.Format(GetStringFromTable(5222), (const wchar_t*)strTradeID);
 					}
 					else{
-						strContent.Format(GetStringFromTable(5211), strTradeID, strName, strCount);
+						strContent.Format(GetStringFromTable(5211), (const wchar_t*)strTradeID, (const wchar_t*)strName, (const wchar_t*)strCount);
 					}
 					break;
 
 				case WEBTRADE_POST_EXPIRE:
 					strSubject = GetStringFromTable(5111);
 					if (posttype == 1){
-						strContent.Format(GetStringFromTable(5212), strTradeID, money);
+						strContent.Format(GetStringFromTable(5212), (const wchar_t*)strTradeID, money);
 					}
 					else if(posttype==4){
-						strContent.Format(GetStringFromTable(5223), strTradeID);
+						strContent.Format(GetStringFromTable(5223), (const wchar_t*)strTradeID);
 					}
 					else{
-						strContent.Format(GetStringFromTable(5213), strTradeID, strName, strCount);
+						strContent.Format(GetStringFromTable(5213), (const wchar_t*)strTradeID, (const wchar_t*)strName, (const wchar_t*)strCount);
 					}
 					break;
 
 				case WEBTRADE_SOLD:
 					strSubject = GetStringFromTable(5112);
 					if (posttype == 1){
-						strContent.Format(GetStringFromTable(5214), strTradeID, money);
+						strContent.Format(GetStringFromTable(5214), (const wchar_t*)strTradeID, money);
 					}
 					else if(posttype==4){
-						strContent.Format(GetStringFromTable(5224), strTradeID);
+						strContent.Format(GetStringFromTable(5224), (const wchar_t*)strTradeID);
 					}
 					else{
-						strContent.Format(GetStringFromTable(5215), strTradeID, strName, strCount);
+						strContent.Format(GetStringFromTable(5215), (const wchar_t*)strTradeID, (const wchar_t*)strName, (const wchar_t*)strCount);
 					}
 					break;
 					
 				case WEBTRADE_BUY:
 					strSubject = GetStringFromTable(5113);
 					if (posttype == 1){
-						strContent.Format(GetStringFromTable(5216), strTradeID, money);
+						strContent.Format(GetStringFromTable(5216), (const wchar_t*)strTradeID, money);
 					}
 					else if(posttype==4){
-						strContent.Format(GetStringFromTable(5225), strTradeID);
+						strContent.Format(GetStringFromTable(5225), (const wchar_t*)strTradeID);
 					}
 					else{
-						strContent.Format(GetStringFromTable(5217), strTradeID, strName, strCount);
+						strContent.Format(GetStringFromTable(5217), (const wchar_t*)strTradeID, (const wchar_t*)strName, (const wchar_t*)strCount);
 					}
 					break;
 					
 				case WEBTRADE_POST_FAILED:
 					strSubject = GetStringFromTable(5114);
 					if (posttype == 1){
-						strContent.Format(GetStringFromTable(5218), strTradeID, money);
+						strContent.Format(GetStringFromTable(5218), (const wchar_t*)strTradeID, money);
 					}
 					else if(posttype==4){
-						strContent.Format(GetStringFromTable(5226), strTradeID);
+						strContent.Format(GetStringFromTable(5226), (const wchar_t*)strTradeID);
 					}
 					else{
-						strContent.Format(GetStringFromTable(5219), strTradeID, strName, strCount);
+						strContent.Format(GetStringFromTable(5219), (const wchar_t*)strTradeID, (const wchar_t*)strName, (const wchar_t*)strCount);
 					}
 					break;
 				}
@@ -311,7 +311,7 @@ void CDlgMailRead::ReadMail(void *pData)
 						}
 					}
 					strSubject = GetStringFromTable(5115);
-					strContent.Format(GetStringFromTable(5220), sa_id, strName, strCount, money / 100);
+					strContent.Format(GetStringFromTable(5220), sa_id, (const wchar_t*)strName, (const wchar_t*)strCount, money / 100);
 				}
 				break;
 
@@ -352,7 +352,7 @@ void CDlgMailRead::ReadMail(void *pData)
 			case PLAYERPRESENT_GIVE:
 				{
 					strSubject = GetStringFromTable(5119);
-					strContent.Format(GetStringFromTable(5229), rolename);
+					strContent.Format(GetStringFromTable(5229), (const wchar_t*)rolename);
 				}
 				
 				break;
@@ -385,7 +385,7 @@ void CDlgMailRead::ReadMail(void *pData)
 						}
 
 						// 目前仅显示好友，帮派成员，陌生人。等级和职业信息先不显示。
-						temp.Format(GetStringFromTable(10404), rolename,strHint, GetGameUIMan()->GetItemName(itemid),pQShopDlg->GetFormatTime(index,slot),pQShopDlg->GetCashText(pQShopDlg->GetItemPrice(index,slot)));
+						temp.Format(GetStringFromTable(10404), (const wchar_t*)rolename,(const wchar_t*)strHint, (const wchar_t*)GetGameUIMan()->GetItemName(itemid),(const wchar_t*)pQShopDlg->GetFormatTime(index,slot),(const wchar_t*)pQShopDlg->GetCashText(pQShopDlg->GetItemPrice(index,slot)));
 						CDlgGivingFor* pDlg = dynamic_cast<CDlgGivingFor*>(GetGameUIMan()->GetDialog("Win_GivingFor"));
 						pDlg->SetMailAskForData(roleid,mailHeader.id,itemid,index,slot);
 						PAUIDIALOG pMsgDlg;

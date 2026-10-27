@@ -54,7 +54,7 @@ struct TypeAt
 template<class TValueList>
 struct Length
 {
-	enum { value = TL::Length<TValueList::TheTypeList>::value };
+	enum { value = TL::Length<typename TValueList::TheTypeList>::value };	//	typename: dependent type.
 };
 
 
@@ -86,7 +86,7 @@ template<DWORD Index, class TValueList>
 inline typename VL::TypeAt<TValueList, Index>::Result & GetValue(TValueList & valueList, DWORD2Type<Index>)
 {
 //	_CrtDbgReport(_CRT_WARN, NULL, 0, NULL, "Enter VL::GetValue()\n");
-	VL::TypeAt<TValueList, Index>::Result *pValue = NULL;
+	typename VL::TypeAt<TValueList, Index>::Result *pValue = NULL;
 	Private::GetValueHelper<Index>::In(valueList, pValue);
 	ASSERT(pValue);
 	return *pValue;
@@ -100,8 +100,10 @@ namespace Private
 	template<DWORD Index>
 	struct GetValueConstHelper
 	{
+//\tOriginal wrote 'typename const VL::TypeAt<...>'; MSVC ignored the misplaced 'typename'. Moved 'const' after it so the
+//\tdependent name stays well-formed; the type is still reference-to-pointer-to-const-Result, behavior unchanged.
 		template<class TValueList>
-		static void In(const TValueList &valueList, typename const VL::TypeAt<TValueList, Index>::Result *& pValue)
+		static void In(const TValueList &valueList, const typename VL::TypeAt<TValueList, Index>::Result *& pValue)
 		{
 			GetValueConstHelper<Index - 1>::In(valueList.nextList_, pValue);
 		}
@@ -109,7 +111,7 @@ namespace Private
 	template<> struct GetValueConstHelper<0>
 	{
 		template<class TValueList>
-		static void In(const TValueList &valueList, typename const VL::TypeAt<TValueList, 0>::Result *& pValue)
+		static void In(const TValueList &valueList, const typename VL::TypeAt<TValueList, 0>::Result *& pValue)
 		{
 			pValue = &valueList.value_;
 		}
@@ -117,10 +119,11 @@ namespace Private
 } // end name sapce Private
 
 template<DWORD Index, class TValueList>
-inline typename const VL::TypeAt<TValueList, Index>::Result & GetValueConst(const TValueList & valueList, DWORD2Type<Index>)
+//\tSame misplaced-'typename' fix as GetValueConstHelper: 'const' moved after the dependent qualified name, behavior unchanged.
+inline const typename VL::TypeAt<TValueList, Index>::Result & GetValueConst(const TValueList & valueList, DWORD2Type<Index>)
 {
 //	_CrtDbgReport(_CRT_WARN, NULL, 0, NULL, "Enter VL::GetValueConst()\n");
-	const VL::TypeAt<TValueList, Index>::Result *pValue = NULL;
+	const typename VL::TypeAt<TValueList, Index>::Result *pValue = NULL;
 	Private::GetValueConstHelper<Index>::In(valueList, pValue);
 	ASSERT(pValue);
 	return *pValue;
@@ -166,7 +169,8 @@ inline void SetValue(TValueList &valueList, DWORD2Type<Index>, const ValueType &
 template<DWORD Index, class TValueList>
 inline void SetToDefaultValue(TValueList & valueList, DWORD2Type<Index>)
 {
-	typedef VL::TypeAt<TValueList, Index>::Result ValueType;
+//\tMSVC resolved the dependent nested type without 'typename'; 'typename' added for dependent-name correctness, behavior unchanged.
+	typedef typename VL::TypeAt<TValueList, Index>::Result ValueType;
 	VL::SetValue(valueList, DWORD2Type<Index>(), ValueType());
 }
 
@@ -237,7 +241,8 @@ namespace Private
 			if (valueList1.value_ != valueList2.value_)
 				return false;
 			else
-				return CompareHelper<TValueList1::NextValueListType>::In(valueList1.nextList_, valueList2.nextList_);
+	//\t'typename' added before dependent NextValueListType; original MSVC build resolved it without the keyword, behavior unchanged.
+			return CompareHelper<typename TValueList1::NextValueListType>::In(valueList1.nextList_, valueList2.nextList_);
 		}
 		template<> static bool In(const TValueList1 & valueList1, const NullValueList & valueList2)
 		{
@@ -299,7 +304,8 @@ namespace Private
 		static void In(TValueList &valueList, TFunctor &func)
 		{
 			func(valueList.value_);
-			ForEachHelper<TValueList::NextValueListType>::In(valueList.nextList_, func);
+//\t'typename' added before dependent NextValueListType; original MSVC build resolved it without the keyword, behavior unchanged.
+			ForEachHelper<typename TValueList::NextValueListType>::In(valueList.nextList_, func);
 		}
 	};
 	template<> struct ForEachHelper<NullValueList>
@@ -330,7 +336,8 @@ namespace Private
 		static void In(const TValueList &valueList, TFunctor &func)
 		{
 			func(valueList.value_);
-			ForEachHelperConst<TValueList::NextValueListType>::In(valueList.nextList_, func);
+//\t'typename' added before dependent NextValueListType; original MSVC build resolved it without the keyword, behavior unchanged.
+			ForEachHelperConst<typename TValueList::NextValueListType>::In(valueList.nextList_, func);
 		}
 	};
 	template<> struct ForEachHelperConst<NullValueList>
@@ -372,7 +379,9 @@ namespace Private
 template<class TValueList, typename ValueType>
 inline void SetValueAll(TValueList &valueList, const ValueType & value)
 {
-	VL::ForEach(valueList, Private::SetValueAllFunctor<ValueType>(value));
+//\tFunctor bound to a named local: MSVC allowed passing the temporary to ForEach(TFunctor &); standard C++ does not. Same call, behavior unchanged.
+	Private::SetValueAllFunctor<ValueType> setValueAllFunctor(value);
+	VL::ForEach(valueList, setValueAllFunctor);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -519,8 +528,10 @@ inline void GetFirstNContent(
 
 template<class TValueList>
 void SetFirstNContent(
-						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0)
+						 TValueList & valueList,
+//\tSetFirstNContent family: original wrote 'typename const VL::TypeAt<...>'; MSVC ignored the misplaced 'typename'.
+//\t'const' moved after the dependent name, parameter type still const Result &, behavior unchanged.
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0)
 {
 	valueList.value_ = val0;
 }
@@ -528,8 +539,8 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1);
@@ -538,9 +549,9 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2);
@@ -549,10 +560,10 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3);
@@ -561,11 +572,11 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3,
-						 typename const VL::TypeAt<TValueList, 4>::Result & val4)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3,
+						 const typename VL::TypeAt<TValueList, 4>::Result & val4)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3, val4);
@@ -574,12 +585,12 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3,
-						 typename const VL::TypeAt<TValueList, 4>::Result & val4,
-						 typename const VL::TypeAt<TValueList, 5>::Result & val5)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3,
+						 const typename VL::TypeAt<TValueList, 4>::Result & val4,
+						 const typename VL::TypeAt<TValueList, 5>::Result & val5)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3, val4, val5);
@@ -588,13 +599,13 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3,
-						 typename const VL::TypeAt<TValueList, 4>::Result & val4,
-						 typename const VL::TypeAt<TValueList, 5>::Result & val5,
-						 typename const VL::TypeAt<TValueList, 6>::Result & val6)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3,
+						 const typename VL::TypeAt<TValueList, 4>::Result & val4,
+						 const typename VL::TypeAt<TValueList, 5>::Result & val5,
+						 const typename VL::TypeAt<TValueList, 6>::Result & val6)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3, val4, val5, val6);
@@ -603,14 +614,14 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3,
-						 typename const VL::TypeAt<TValueList, 4>::Result & val4,
-						 typename const VL::TypeAt<TValueList, 5>::Result & val5,
-						 typename const VL::TypeAt<TValueList, 6>::Result & val6,
-						 typename const VL::TypeAt<TValueList, 7>::Result & val7)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3,
+						 const typename VL::TypeAt<TValueList, 4>::Result & val4,
+						 const typename VL::TypeAt<TValueList, 5>::Result & val5,
+						 const typename VL::TypeAt<TValueList, 6>::Result & val6,
+						 const typename VL::TypeAt<TValueList, 7>::Result & val7)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3, val4, val5, val6, val7);
@@ -619,15 +630,15 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3,
-						 typename const VL::TypeAt<TValueList, 4>::Result & val4,
-						 typename const VL::TypeAt<TValueList, 5>::Result & val5,
-						 typename const VL::TypeAt<TValueList, 6>::Result & val6,
-						 typename const VL::TypeAt<TValueList, 7>::Result & val7,
-						 typename const VL::TypeAt<TValueList, 8>::Result & val8)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3,
+						 const typename VL::TypeAt<TValueList, 4>::Result & val4,
+						 const typename VL::TypeAt<TValueList, 5>::Result & val5,
+						 const typename VL::TypeAt<TValueList, 6>::Result & val6,
+						 const typename VL::TypeAt<TValueList, 7>::Result & val7,
+						 const typename VL::TypeAt<TValueList, 8>::Result & val8)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3, val4, val5, val6, val7, val8);
@@ -636,16 +647,16 @@ void SetFirstNContent(
 template<class TValueList>
 void SetFirstNContent(
 						 TValueList & valueList, 
-						 typename const VL::TypeAt<TValueList, 0>::Result & val0,
-						 typename const VL::TypeAt<TValueList, 1>::Result & val1,
-						 typename const VL::TypeAt<TValueList, 2>::Result & val2,
-						 typename const VL::TypeAt<TValueList, 3>::Result & val3,
-						 typename const VL::TypeAt<TValueList, 4>::Result & val4,
-						 typename const VL::TypeAt<TValueList, 5>::Result & val5,
-						 typename const VL::TypeAt<TValueList, 6>::Result & val6,
-						 typename const VL::TypeAt<TValueList, 7>::Result & val7,
-						 typename const VL::TypeAt<TValueList, 8>::Result & val8,
-						 typename const VL::TypeAt<TValueList, 9>::Result & val9)
+						 const typename VL::TypeAt<TValueList, 0>::Result & val0,
+						 const typename VL::TypeAt<TValueList, 1>::Result & val1,
+						 const typename VL::TypeAt<TValueList, 2>::Result & val2,
+						 const typename VL::TypeAt<TValueList, 3>::Result & val3,
+						 const typename VL::TypeAt<TValueList, 4>::Result & val4,
+						 const typename VL::TypeAt<TValueList, 5>::Result & val5,
+						 const typename VL::TypeAt<TValueList, 6>::Result & val6,
+						 const typename VL::TypeAt<TValueList, 7>::Result & val7,
+						 const typename VL::TypeAt<TValueList, 8>::Result & val8,
+						 const typename VL::TypeAt<TValueList, 9>::Result & val9)
 {
 	valueList.value_ = val0;
 	SetFirstNContent(valueList.nextList_, val1, val2, val3, val4, val5, val6, val7, val8, val9);

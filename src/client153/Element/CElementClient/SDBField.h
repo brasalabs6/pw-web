@@ -15,6 +15,90 @@
 
 namespace SimpleDB
 {
+	//	FieldPrivate moved above Field: MSVC resolved FieldPrivate::ToString from the template body lazily;
+	//	clang requires the namespace declared before use. Same overloads, behavior unchanged.
+	namespace FieldPrivate
+	{
+		inline ACString ToString(bool value)
+		{
+			return (value ? _AL("true") : _AL("false"));
+		}
+		inline ACString ToString(short value)
+		{
+			ACString result;
+			result.Format(_AL("%d"), value);
+			return result;
+		}
+		inline ACString ToString(int value)
+		{
+			ACString result;
+			result.Format(_AL("%d"), value);
+			return result;
+		}
+		inline ACString ToString(long value)
+		{
+			ACString result;
+			result.Format(_AL("%d"), value);
+			return result;
+		}
+		inline ACString ToString(unsigned short value)
+		{
+			ACString result;
+			result.Format(_AL("%u"), value);
+			return result;
+		}
+#ifdef ANGELICA_2_2
+		inline ACString ToString(wchar_t value)
+		{
+			ACString result;
+			result.Format(_AL("%u"), value);
+			return result;
+		}
+#endif
+		inline ACString ToString(unsigned int value)
+		{
+			ACString result;
+			result.Format(_AL("%u"), value);
+			return result;
+		}
+		inline ACString ToString(unsigned long value)
+		{
+			ACString result;
+			result.Format(_AL("%u"), value);
+			return result;
+		}
+		inline ACString ToString(__int64 value)
+		{
+			ACString result;
+			result.Format(_AL("%I64d"), value);
+			return result;
+		}
+		inline ACString ToString(float value)
+		{
+			ACString result;
+			result.Format(_AL("%f"), value);
+			return result;
+		}
+		inline ACString ToString(double value)
+		{
+			ACString result;
+			result.Format(_AL("%g"), value);
+			return result;
+		}
+		inline ACString ToString(AWString value)
+		{
+			return value;
+		}
+		inline ACString ToString(AString value)
+		{
+			return AS2AC(value);
+		}
+		template<class TType>
+		inline ACString ToString(const TType & value)
+		{
+			return value.ToString();
+		}
+	}
 	template<typename TValueType>
 	struct Field
 	{
@@ -153,86 +237,4 @@ namespace SimpleDB
 		}
 	};
 
-	namespace FieldPrivate
-	{
-		inline ACString ToString(bool value)
-		{
-			return (value ? _AL("true") : _AL("false"));
-		}
-		inline ACString ToString(short value)
-		{
-			ACString result;
-			result.Format(_AL("%d"), value);
-			return result;
-		}
-		inline ACString ToString(int value)
-		{
-			ACString result;
-			result.Format(_AL("%d"), value);
-			return result;
-		}
-		inline ACString ToString(long value)
-		{
-			ACString result;
-			result.Format(_AL("%d"), value);
-			return result;
-		}
-		inline ACString ToString(unsigned short value)
-		{
-			ACString result;
-			result.Format(_AL("%u"), value);
-			return result;
-		}
-#ifdef ANGELICA_2_2
-		inline ACString ToString(wchar_t value)
-		{
-			ACString result;
-			result.Format(_AL("%u"), value);
-			return result;
-		}
-#endif
-		inline ACString ToString(unsigned int value)
-		{
-			ACString result;
-			result.Format(_AL("%u"), value);
-			return result;
-		}
-		inline ACString ToString(unsigned long value)
-		{
-			ACString result;
-			result.Format(_AL("%u"), value);
-			return result;
-		}
-		inline ACString ToString(__int64 value)
-		{
-			ACString result;
-			result.Format(_AL("%I64d"), value);
-			return result;
-		}
-		inline ACString ToString(float value)
-		{
-			ACString result;
-			result.Format(_AL("%f"), value);
-			return result;
-		}
-		inline ACString ToString(double value)
-		{
-			ACString result;
-			result.Format(_AL("%g"), value);
-			return result;
-		}
-		inline ACString ToString(AWString value)
-		{
-			return value;
-		}
-		inline ACString ToString(AString value)
-		{
-			return AS2AC(value);
-		}
-		template<class TType>
-		inline ACString ToString(const TType & value)
-		{
-			return value.ToString();
-		}
-	}
 }

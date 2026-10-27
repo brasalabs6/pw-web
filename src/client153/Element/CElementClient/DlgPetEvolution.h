@@ -9,8 +9,8 @@
 #include "AUIImagePicture.h"
 #include "AUIStillImageButton.h"
 #include "AUIProgress.h"
-#include <A3DGeometry.h >
-#include <AUIComboBox.h >
+#include <A3DGeometry.h>
+#include <AUIComboBox.h>
 
 class CECModel;
 

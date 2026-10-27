@@ -108,7 +108,7 @@ ACString CDlgWikiRecipe::ShowSpecficLinkCommand::GetLinkText() const
 {
 	ACString strLinkedName;
 	
-	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), m_Name);
+	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), (const wchar_t*)m_Name);
 
 	return strLinkedName;
 }

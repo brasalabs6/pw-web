@@ -22,7 +22,7 @@ template
 	// template. so we use ProductCreator instead.
 	// if you don't offer a ErrorHandler, the default behavior
 	// is ASSERT and return NULL
-	ProductCreator ErrorHandler = 0
+	ProductCreator ErrorHandler = nullptr	//	nullptr: the same null constant, allowed in converted constant expressions.
 >
 class Factory
 {

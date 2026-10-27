@@ -225,7 +225,7 @@ bool CDlgEarthBagRank::AppendLine(PAUILISTBOX pLstBox, int rank, int id, int lev
 		strName = _AL("-");
 	}
 
-	strText.Format(_AL("%d\t%s\t%d\t%d"), rank, strName, level, value);
+	strText.Format(_AL("%d\t%s\t%d\t%d"), rank, (const wchar_t*)strName, level, value);
 	int nItem = pLstBox->AddString(strText) -1;
 	pLstBox->SetItemData(nItem, (DWORD)id, LST_INDEX_PLAYER);
 	pLstBox->SetItemData(nItem, bNeedGetPlayerName ? 1 : 0, LST_INDEX_NEED_PLAYER);

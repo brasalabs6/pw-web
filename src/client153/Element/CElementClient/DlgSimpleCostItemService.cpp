@@ -227,7 +227,7 @@ const char *CDlgChangeGenderPolicy::GetMessageBoxName()const{
 ACString CDlgChangeGenderPolicy::ColorString(const ACString &strMessage)const{
 	ACString result;
 	if (!strMessage.IsEmpty()){
-		result.Format(CECUIHelper::GetGameUIMan()->GetStringFromTable(11442), strMessage);
+		result.Format(CECUIHelper::GetGameUIMan()->GetStringFromTable(11442), (const wchar_t*)strMessage);
 	}
 	return result;
 }
@@ -314,7 +314,7 @@ bool CDlgChangeGenderPolicy::CheckIsEquippingAnyFashion(ACString &strMessage)con
 		result = true;
 	}
 	if (!strTemp.IsEmpty()){
-		strMessage.Format(CECUIHelper::GetGameUIMan()->GetStringFromTable(11444), strTemp);
+		strMessage.Format(CECUIHelper::GetGameUIMan()->GetStringFromTable(11444), (const wchar_t*)strTemp);
 	}
 	return result;
 }
@@ -381,7 +381,7 @@ bool CDlgChangeGenderPolicy::CheckHasGenderRelatedTask(ACString &strMessage)cons
 			}
 		}
 		if (!strTemp.IsEmpty()){
-			strMessage.Format(CECUIHelper::GetGameUIMan()->GetStringFromTable(11446), strTemp);
+			strMessage.Format(CECUIHelper::GetGameUIMan()->GetStringFromTable(11446), (const wchar_t*)strTemp);
 		}
 	}
 	return result;

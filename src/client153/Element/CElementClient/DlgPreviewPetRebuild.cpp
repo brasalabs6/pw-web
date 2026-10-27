@@ -227,7 +227,7 @@ void CDlgPreviewPetRebuild::OnTick()
 		a_ClampFloor(leftTime, 0);
 		
 		ACString strText;
-		strText.Format(GetStringFromTable(9721), GetGameUIMan()->GetFormatTime(leftTime));
+		strText.Format(GetStringFromTable(9721), (const wchar_t*)GetGameUIMan()->GetFormatTime(leftTime));
 		m_pLabelTime->SetText(strText);
 	}
 	AnimationTick();
@@ -354,7 +354,7 @@ void CDlgPreviewPetRebuild::SetOldInfo(int idx, bool bNature)
 		str.Format(GetStringFromTable(10103),_AL(""));
 		GetDlgItem("Lbl_Nature2")->SetText(str);
 
-		str.Format(GetStringFromTable(10103),pPet->GetNature());
+		str.Format(GetStringFromTable(10103),(const wchar_t*)pPet->GetNature());
 		GetDlgItem("Lbl_Nature1")->SetText(str);		
 
 		for (i=0;i<GP_PET_NATURE_SKILL_NUM + GP_PET_NATURE_SKILL_NUM;i++)

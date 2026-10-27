@@ -91,7 +91,7 @@ void CDlgReincarnationRewrite::Update()
 		PAUIOBJECT pObj = GetDlgItem("Txt_RewriteInfo");
 		if(pObj) {
 			long ltime = tome.reincarnations[index].timestamp;
-			tm birth_time = *localtime(&ltime);
+			tm birth_time = *localtime((const time_t*)&ltime);
 			strText.Format(GetStringFromTable(10812), birth_time.tm_year + 1900, 
 				birth_time.tm_mon + 1, birth_time.tm_mday, 
 				pHost->GetName(), tome.reincarnations[index].level, index + 1);

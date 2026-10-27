@@ -101,7 +101,9 @@ public:
 		return VL::GetValue(*this, DWORD2Type<Index>());
 	}
 	template<DWORD Index>
-	typename const TypeAt<Index>::Result & FieldAt(DWORD2Type<Index>) const
+//\tOriginal wrote 'typename const TypeAt<...>' (MSVC ignored the misplaced 'typename'); 'const' moved after the
+//\tdependent name in FieldAt/operator[]/GetFieldValue so the type stays reference-to-const-Result, behavior unchanged.
+	const typename TypeAt<Index>::Result & FieldAt(DWORD2Type<Index>) const
 	{
 		return VL::GetValueConst(*this, DWORD2Type<Index>());
 	}
@@ -112,13 +114,13 @@ public:
 		return FieldAt(DWORD2Type<Index>());
 	}
 	template<DWORD Index>
-	typename const TypeAt<Index>::Result & operator [] (DWORD2Type<Index>) const
+	const typename TypeAt<Index>::Result & operator [] (DWORD2Type<Index>) const
 	{
 		return FieldAt(DWORD2Type<Index>());
 	}
 
 	template<DWORD Index>
-	typename const TL::TypeAt<TTypeList, Index>::Result & GetFieldValue(DWORD2Type<Index>) const
+	const typename TL::TypeAt<TTypeList, Index>::Result & GetFieldValue(DWORD2Type<Index>) const
 	{
 		return FieldAt(STATIC_DWORD_INDEX(Index)).Value();
 	}

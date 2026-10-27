@@ -12,7 +12,8 @@
 
 #include <AUIManager.h>
 
-static const int PAGE_SIZE = 10;
+//\tRenamed from PAGE_SIZE: platform seam defines PAGE_SIZE as a macro (65536); the original MSVC constant of 10 is preserved.
+static const int PVP_RANK_PAGE_SIZE = 10;
 
 //	class CDlgFactionPVPRank
 
@@ -108,8 +109,8 @@ void CDlgFactionPVPRank::UpdateCurrentPage()
 	m_pLst_Result->ResetContent();
 	if (m_currentPage >= 0){
 		CECFactionPVPModel &factionPVPModel = CECFactionPVPModel::Instance();
-		int beginIndex = m_currentPage * PAGE_SIZE;
-		int endIndex = min(beginIndex+PAGE_SIZE, factionPVPModel.ReportListCount());
+		int beginIndex = m_currentPage * PVP_RANK_PAGE_SIZE;
+		int endIndex = min(beginIndex+PVP_RANK_PAGE_SIZE, factionPVPModel.ReportListCount());
 		abase::vector<int> unknownIDs;
 		CECGameRun *pGameRun = GetGameRun();
 		for (int i = beginIndex; i < endIndex; ++ i)
@@ -218,8 +219,8 @@ void CDlgFactionPVPRank::UpdateRankList(const CECFactionPVPModel *p)
 {
 	if (p->ReportListReady()){
 		m_reportCount = p->ReportListCount();
-		m_pageCount = m_reportCount / PAGE_SIZE;
-		if (m_reportCount % PAGE_SIZE){
+		m_pageCount = m_reportCount / PVP_RANK_PAGE_SIZE;
+		if (m_reportCount % PVP_RANK_PAGE_SIZE){
 			++ m_pageCount;
 		}
 	}else{

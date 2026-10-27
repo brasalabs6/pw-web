@@ -888,7 +888,7 @@ namespace CECUIHelper
 		pEditboxItem->SetName(strName);
 		if(bNeedInfo){
 			ACString strInfo;
-			strInfo.Format(_AL("%s%s"), A3DCOLOR_TO_STRING(clrName), strName);
+			strInfo.Format(_AL("%s%s"), (const wchar_t*)A3DCOLOR_TO_STRING(clrName), (const wchar_t*)strName);
 			pEditboxItem->SetInfo(strInfo);
 		}
 		result = (ACHAR)AUICOMMON_ITEM_CODE_START + pEditboxItem->Serialize();		

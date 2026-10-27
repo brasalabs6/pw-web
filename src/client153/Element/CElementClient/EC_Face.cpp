@@ -461,7 +461,7 @@ bool CECFace::Init(int nCharacter, int nGender, int nFaceID)
 	if (!m_pSkinModel->BindSkeletonFile(strBone))
 	{
 		delete m_pSkinModel;
-		a_LogOutput(1, "CECFace::Init, failed to bind bone file %s", strBone);
+		a_LogOutput(1, "CECFace::Init, failed to bind bone file %s", (const char*)strBone);
 		return false;
 	}
 
@@ -474,7 +474,7 @@ bool CECFace::Init(int nCharacter, int nGender, int nFaceID)
 	//	A3DSkinMan
 	if (!(m_pFaceSkin = g_pGame->LoadA3DSkin(strSkin, true)))
 	{
-		a_LogOutput(1, "CECFace::Init, Falied to load skin %s", strSkin);
+		a_LogOutput(1, "CECFace::Init, Falied to load skin %s", (const char*)strSkin);
 		return false;
 	}
 	m_pFaceSkin->SetAlphaSortWeight(FACE_SKIN_SORT_FACE);

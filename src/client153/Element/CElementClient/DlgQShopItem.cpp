@@ -271,8 +271,8 @@ void CDlgQShopItem::SetPriceText(int nPrice, unsigned int status)
 	{
 		// 打折
 		strPrice.Format(GetStringFromTable(8590),
-			pShop->GetCashText(nPrice),
-			pShop->GetCashText(CECShopBase::GetOriginalPrice(nPrice, status)));
+			(const wchar_t*)pShop->GetCashText(nPrice),
+			(const wchar_t*)pShop->GetCashText(CECShopBase::GetOriginalPrice(nPrice, status)));
 	}
 	else
 	{
@@ -378,7 +378,7 @@ void CDlgQShopItem::SetItem(int dlgpostion, int itemindex)
 				m_pBtn_Time[i]->Show(true);
 				if( (*items)[itemindex].buy[BuyIndex].time != 0 )
 				{
-					strText.Format(GetStringFromTable(824), GetFormatTime((*items)[itemindex].buy[i].time));
+					strText.Format(GetStringFromTable(824), (const wchar_t*)GetFormatTime((*items)[itemindex].buy[i].time));
 					m_pBtn_Time[i]->SetHint(strText);
 				}
 				else

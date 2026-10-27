@@ -212,8 +212,20 @@ struct ULARGE_INTEGER {
 #define GENERIC_WRITE 0x40000000u
 #define FILE_SHARE_READ 1u
 #define FILE_SHARE_WRITE 2u
-#define OPEN_EXISTING 3u
+#define CREATE_NEW 1u
 #define CREATE_ALWAYS 2u
+#define OPEN_EXISTING 3u
+#define OPEN_ALWAYS 4u
+#define TRUNCATE_EXISTING 5u
+#define FILE_ATTRIBUTE_READONLY 1u
+#define FILE_ATTRIBUTE_HIDDEN 2u
+#define FILE_ATTRIBUTE_SYSTEM 4u
+#define FILE_ATTRIBUTE_DIRECTORY 0x10u
+#define FILE_FLAG_WRITE_THROUGH 0x80000000u
+#define FILE_FLAG_NO_BUFFERING 0x20000000u
+
+//	The SDK 'byte' type some headers use.
+typedef BYTE byte;
 #define FILE_ATTRIBUTE_NORMAL 0x80u
 #define INVALID_FILE_ATTRIBUTES 0xFFFFFFFFu
 #define FORMAT_MESSAGE_FROM_SYSTEM 0x1000u
@@ -265,6 +277,13 @@ inline LONG InterlockedCompareExchange(volatile LONG *value, LONG exchange,
 }
 
 //	Time: the platform clock backs the tick counters (same source as ATime).
+//	The message loop's quit signal: the browser loop adapter consumes the
+//	quit flag; the seam records it.
+inline void PostQuitMessage(int exitCode) {
+  extern int pw153_quit_code;
+  pw153_quit_code = exitCode;
+}
+
 //	mmsystem's tick: the same platform clock as GetTickCount.
 #define PW153_TIMEGETTIME_IN_WINDOWS
 inline DWORD timeGetTime() {
@@ -516,6 +535,16 @@ inline float max(float a, float b) { return a > b ? a : b; }
 inline double min(double a, double b) { return a < b ? a : b; }
 inline double max(double a, double b) { return a > b ? a : b; }
 
+//	The MSVC _snprintf: the documented truncating semantics over the real
+//	std::snprintf (returns the would-be length, always nul-terminates).
+inline int _snprintf(char *buffer, std::size_t size, const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int written = std::vsnprintf(buffer, size, format, args);
+  va_end(args);
+  return written;
+}
+
 //	The wide CRT conversions are the port's domain under -fshort-wchar.
 inline int _wtoi(const wchar_t *text) { return pw153::platform::wide_toi(text); }
 inline std::int64_t _wtoi64(const wchar_t *text) { return pw153::platform::wide_toi64(text); }
@@ -539,6 +568,29 @@ inline short GetAsyncKeyState(int key) { return GetKeyState(key); }
 #define ERROR_PATH_NOT_FOUND 3
 #define ERROR_ACCESS_DENIED 5
 #define ERROR_INVALID_HANDLE 6
+
+//	File creation/open: the documented Win32 surface over fopen (the
+//	read/write/seek the AFile family maps through stdio already).
+inline HANDLE CreateFileA(const char *name, DWORD access, DWORD share,
+                          void *security, DWORD disposition, DWORD flags,
+                          HANDLE templateFile) {
+  (void)share;
+  (void)security;
+  (void)flags;
+  (void)templateFile;
+  const char *mode = (access & GENERIC_WRITE) ? (disposition == CREATE_ALWAYS ? "wb+" : "rb+") : "rb";
+  FILE *stream = std::fopen(name, mode);
+  return stream ? reinterpret_cast<HANDLE>(stream) : INVALID_HANDLE_VALUE;
+}
+inline HANDLE CreateFileW(const wchar_t *name, DWORD access, DWORD share,
+                          void *security, DWORD disposition, DWORD flags,
+                          HANDLE templateFile) {
+  std::string narrow;
+  if (!pw153::platform::utf16_to_utf8(name, narrow))
+    return INVALID_HANDLE_VALUE;
+  return CreateFileA(narrow.c_str(), access, share, security, disposition,
+                     flags, templateFile);
+}
 
 //	Directory creation: the real POSIX mkdir with the Win32 return contract.
 #include <sys/stat.h>	//	mkdir.

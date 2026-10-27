@@ -116,7 +116,7 @@ void CDlgReincarnation::Update()
 			int attri_point(0);
 			int count = iLevel - 100;
 			a_Clamp(count, -1, int(sizeof(ATTRIBUTE_POINT) / sizeof(ATTRIBUTE_POINT[0])));
-			for (i = -1; i < count; ++i)
+			for (int i = -1; i < count; ++i)	//	original relied on MSVC for-scoping leakage.
 				attri_point += ATTRIBUTE_POINT[i + 1];
 			strText.Format(_AL("%d"), attri_point);
 			pObj->SetText(strText);

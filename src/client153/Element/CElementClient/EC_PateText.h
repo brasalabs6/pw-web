@@ -15,6 +15,11 @@
 #include "AArray.h"
 #include "AAssist.h"
 #include "AUICommon.h"
+//\tSeam windowsx.h must be parsed before FWFlatCollector.h: the reference
+//\tCodeTemplate.h redefines GET_X_LPARAM/GET_Y_LPARAM as macros, which would
+//\totherwise break the seam's inline functions of the same name. The original
+//\tMSVC build resolved both from the Windows SDK with identical semantics.
+#include <windowsx.h>
 #include "../../CFWEditorLib/FWFlatCollector.h"
 
 ///////////////////////////////////////////////////////////////////////////

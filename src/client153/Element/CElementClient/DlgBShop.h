@@ -11,6 +11,7 @@
 #include "AUITextArea.h"
 #include "hashmap.h"
 #include "gnoctets.h"
+#include <AList2.h>	//	the original relied on include order.
 
 namespace GNET
 {

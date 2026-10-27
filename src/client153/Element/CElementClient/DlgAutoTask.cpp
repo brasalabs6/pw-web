@@ -161,7 +161,7 @@ void CDlgAutoTask::UpdateAutoDelTask(unsigned long taskID, unsigned long remainT
 				m_pImgAutoTask->SetProperty("Gfx File", &prop);
 				m_strGfx = prop.fn;
 				if (!m_pImgAutoTask->GetGfx()){
-					a_LogOutput(1, "CDlgAutoTask::UpdateAutoDelTask, unable to load gfx %s", m_strGfx);
+					a_LogOutput(1, "CDlgAutoTask::UpdateAutoDelTask, unable to load gfx %s", (const char*)m_strGfx);
 				}
 			}
 		}
@@ -230,7 +230,7 @@ void CDlgAutoTask::OnTick()
 
 		pObj->Show(true);
 		ACString szTxt;
-		szTxt.Format(GetStringFromTable(7628), GetGameUIMan()->GetFormatTimeSimple(m_RemainTime));
+		szTxt.Format(GetStringFromTable(7628), (const wchar_t*)GetGameUIMan()->GetFormatTimeSimple(m_RemainTime));
 		pObj->SetText(szTxt);
 	}
 	else

@@ -300,7 +300,7 @@ bool CAutoHome::GetNameFromRowCol(int r, int c, AString& strName)
 	strCol.Format("%d", c);
 	if (r < 10)
 		strCol = "0" + strCol;
-	strName.Format("%s_%s", strRow, strCol);
+	strName.Format("%s_%s", (const char*)strRow, (const char*)strCol);
 
 	return true;
 }
@@ -311,7 +311,7 @@ bool CAutoHome::GetHomeFileName(AString& strFile)
 	AString strHomeName;
 	GetNameFromRowCol(m_nRowIndex, m_nColIndex, strHomeName);
 	AString strPath = m_pAutoScene->GetAutoSceneConfig()->GetScenePath();
-	strFile.Format("%s\\%s.action", strPath, strHomeName);
+	strFile.Format("%s\\%s.action", (const char*)strPath, (const char*)strHomeName);
 
 	return true;
 }

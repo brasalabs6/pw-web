@@ -139,7 +139,8 @@ public:
 		return VL::GetValue(tablesValueList_, DWORD2Type<Index>());
 	}
 	template<DWORD Index>
-	typename const TypeAt<Index>::Result & GetTableAt(DWORD2Type<Index>) const
+//\tOriginal wrote 'typename const TypeAt<...>'; MSVC ignored the misplaced 'typename'; 'const' moved after the dependent name, behavior unchanged.
+	const typename TypeAt<Index>::Result & GetTableAt(DWORD2Type<Index>) const
 	{
 		return VL::GetValueConst(tablesValueList_, DWORD2Type<Index>());
 	}

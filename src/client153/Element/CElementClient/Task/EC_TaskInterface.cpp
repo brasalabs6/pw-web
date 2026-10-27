@@ -279,7 +279,7 @@ void TaskInterface::ShowPunchBagMessage(bool bSucced,bool bMax,unsigned long Mon
 	ACString str;
 	if (!bSucced)
 	{
-		str.Format(pGameUI->GetStringFromTable(303),strNpcName);
+		str.Format(pGameUI->GetStringFromTable(303),(const wchar_t*)strNpcName);
 		pGameUI->MessageBox("",str,MB_OK,A3DCOLORRGBA(255, 255, 255, 160));
 	}
 	

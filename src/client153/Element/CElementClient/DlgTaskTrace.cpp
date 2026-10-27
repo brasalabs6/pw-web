@@ -108,9 +108,9 @@ ACString TaskNameHoverCommand::GetLinkText() const
 {
 	ACString szNameLink;
 	if (m_bError)
-		szNameLink.Format(_AL("&^%s%s&"), COLOR_RED, m_TaskName);
+		szNameLink.Format(_AL("&^%s%s&"), (const wchar_t*)COLOR_RED, (const wchar_t*)m_TaskName);
 	else
-		szNameLink.Format(_AL("&^%s%s&"), COLOR_YELLOW, m_TaskName);
+		szNameLink.Format(_AL("&^%s%s&"), (const wchar_t*)COLOR_YELLOW, (const wchar_t*)m_TaskName);
 	return szNameLink;
 }
 
@@ -609,7 +609,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 											ACString hint;
 											ACString taskname = pTemp->GetName();
 											DeleteColorStr(taskname);
-											hint.Format(_AL("^ffcb4a%s^ffffff\rMaterial para coletar: %s (%d/%d)"), taskname, pMatter->GetName(), gained, toget);
+											hint.Format(_AL("^ffcb4a%s^ffffff\rMaterial para coletar: %s (%d/%d)"), (const wchar_t*)taskname, pMatter->GetName(), gained, toget);
 											pMatter->m_pHint = hint;
 										}
 									}
@@ -632,7 +632,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 										ACString hint;
 										ACString taskname = pTemp->GetName();
 										DeleteColorStr(taskname);
-										hint.Format(_AL("^ffcb4a%s^ffffff\rMaterial para coletar: %s (%d/%d)"), taskname, pMatter->GetName(), gained, toget);
+										hint.Format(_AL("^ffcb4a%s^ffffff\rMaterial para coletar: %s (%d/%d)"), (const wchar_t*)taskname, pMatter->GetName(), gained, toget);
 										pMatter->m_pHint = hint;										
 									}
 									else
@@ -660,7 +660,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 								ACString hint;
 								ACString taskname = pTemp->GetName();
 								DeleteColorStr(taskname);
-								hint.Format(_AL("^ffcb4a%s^ffffff\rItem para coletar: %s (%d/%d)"), taskname, pMatter->GetName(), gained, toget);
+								hint.Format(_AL("^ffcb4a%s^ffffff\rItem para coletar: %s (%d/%d)"), (const wchar_t*)taskname, pMatter->GetName(), gained, toget);
 								pMatter->m_pHint = hint;
 							}
 						}
@@ -696,7 +696,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 								ACString hint;
 								ACString taskname = pTemp->GetName();
 								DeleteColorStr(taskname);
-								hint.Format(_AL("^ffcb4a%s^ffffff\rItem necessário: %s (%d/%d)"), taskname, pNPC->GetName(), gained, toget);
+								hint.Format(_AL("^ffcb4a%s^ffffff\rItem necessário: %s (%d/%d)"), (const wchar_t*)taskname, pNPC->GetName(), gained, toget);
 								pNPC->m_pHint = hint;
 							}
 						}
@@ -761,7 +761,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 								ACString hint;
 								ACString taskname = pTemp->GetName();
 								DeleteColorStr(taskname);
-								hint.Format(_AL("^ffcb4a%s^ffffff\rMaterial para coleta: %s (%d/%d)"), taskname, pMatter->GetName(), gained, toget);
+								hint.Format(_AL("^ffcb4a%s^ffffff\rMaterial para coleta: %s (%d/%d)"), (const wchar_t*)taskname, pMatter->GetName(), gained, toget);
 								pMatter->m_pHint = hint;
 							}
 							/*Ate aqui*/
@@ -816,7 +816,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 							ACString hint;
 							ACString taskname = pTemp->GetName();
 							DeleteColorStr(taskname);
-							hint.Format(_AL("^ffcb4a%s^ffffff\rMonstro para matar: %s (%d/%d)"), taskname, pNPC->GetName(), killed, tokill);
+							hint.Format(_AL("^ffcb4a%s^ffffff\rMonstro para matar: %s (%d/%d)"), (const wchar_t*)taskname, pNPC->GetName(), killed, tokill);
 							pNPC->m_pHint = hint;
 						}
 					}
@@ -942,7 +942,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 		{
 			this->AppendText(strIndent);
 			strTemp.Format(pUIMan->GetStringFromTable(9397),
-						   pUIMan->GetRealmName(pHost->GetRealmLevel()), pUIMan->GetRealmName(pTemp->m_ulReachRealmLevel));
+						   (const wchar_t*)pUIMan->GetRealmName(pHost->GetRealmLevel()), (const wchar_t*)pUIMan->GetRealmName(pTemp->m_ulReachRealmLevel));
 			this->AppendText(strTemp);
 			this->AppendText(_AL("\r"));
 		}
@@ -1401,7 +1401,7 @@ void CDlgTaskTrace::OnCommand_Chat(const char *szCommand)
 			if (pTemp->m_ulReachRealmLevel)
 			{
 				strText += strIndent;
-				strTemp.Format(pUIMan->GetStringFromTable(9397), pUIMan->GetRealmName(pHost->GetRealmLevel()), pUIMan->GetRealmName(pTemp->m_ulReachRealmLevel));
+				strTemp.Format(pUIMan->GetStringFromTable(9397), (const wchar_t*)pUIMan->GetRealmName(pHost->GetRealmLevel()), (const wchar_t*)pUIMan->GetRealmName(pTemp->m_ulReachRealmLevel));
 				strText += strTemp;
 				strText += _AL("\r");
 			}
@@ -1764,7 +1764,7 @@ void CDlgTaskTrace::AppendColorText(ACString &strTask, const ACString &strColor)
 {
 	ACString strText;
 	DeleteColorStr(strTask);
-	strText.Format(_AL("%s%s"), strColor, strTask);
+	strText.Format(_AL("%s%s"), (const wchar_t*)strColor, (const wchar_t*)strTask);
 	AppendText(strText);
 	AppendText(_AL("\r"));
 }

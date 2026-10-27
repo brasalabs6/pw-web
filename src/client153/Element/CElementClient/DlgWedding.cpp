@@ -1367,9 +1367,9 @@ void CDlgWedding::RebuildSessionList()
 			//	增加一行
 			strStartTime = GetSessionTimeString(cur.start_time);
 			strEndTime = GetSessionTimeString(cur.end_time);
-			strLineText.Format(strLineFormat, strStartTime, strEndTime,
-				(cur.status>=0&&cur.status<sizeof(strStatus)/sizeof(strStatus[0]))?strStatus[cur.status]:strNone,
-				(cur.groom>0 && cur.bride>0)?strQuery:strNone);
+			strLineText.Format(strLineFormat, (const wchar_t*)strStartTime, (const wchar_t*)strEndTime,
+				(const wchar_t*)((cur.status>=0&&cur.status<sizeof(strStatus)/sizeof(strStatus[0]))?strStatus[cur.status]:strNone),
+				(const wchar_t*)((cur.groom>0 && cur.bride>0)?strQuery:strNone));
 			m_pTxt_List1->AddString(strLineText);
 			UpdateSessionListHint(m_pTxt_List1->GetCount()-1);
 
@@ -1473,9 +1473,9 @@ void CDlgWedding::UpdatePlayerNames()
 		CSplit s(strLineText);
 		vec = s.Split(_AL("\t"));
 		strLineText.Format(strFormat,
-			vec[0],		//	起止时间
-			vec[1],		//	预订状态
-			strName1, strName2);	//	预订人（新查询到的）
+			(const wchar_t*)vec[0],		//	起止时间
+			(const wchar_t*)vec[1],		//	预订状态
+			(const wchar_t*)strName1, (const wchar_t*)strName2);	//	预订人（新查询到的）
 
 		m_pTxt_List1->SetText(i, strLineText);
 		UpdateSessionListHint(i);

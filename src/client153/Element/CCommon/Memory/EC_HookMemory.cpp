@@ -402,7 +402,7 @@ void g_EnableMemoryHistory()
 	_mkdir(cur_dir);
 	char mem_file_name_prefix[MAX_PATH] = "";
 	time_t t = time(0);
-	tm cur_tm = *localtime(&t);
+	tm cur_tm = *localtime((const time_t*)&t);
 	sprintf(mem_file_name_prefix,
 		"%s\\%d-%d-%d_%d-%d-%d",
 		cur_dir,
@@ -463,7 +463,7 @@ void g_MemoryDump()
 	
 	char mem_file_name_prefix[MAX_PATH] = "";
 	time_t t = time(0);
-	tm cur_tm = *localtime(&t);
+	tm cur_tm = *localtime((const time_t*)&t);
 	sprintf(mem_file_name_prefix,
 		"logs\\%d-%d-%d_%d-%d-%d",
 		cur_tm.tm_year+1900,
