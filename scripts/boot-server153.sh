@@ -18,6 +18,7 @@ OUT="$REPO_ROOT/dist/server153"
 WAIT=20
 STOP=0
 FRESH=0
+NOGS=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -26,6 +27,8 @@ while [ $# -gt 0 ]; do
     --wait) WAIT="${2:?}"; shift 2 ;;
     --stop) STOP=1; shift ;;
     --fresh) FRESH=1; shift ;;
+    --no-gs) NOGS=1; shift ;; # gs runs via scripts/gs-server153.sh (gs-ours,
+                              # package gamed dir with converted gshopsev)
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
 done
@@ -35,6 +38,11 @@ LOGS="$RUN/logs"
 mkdir -p "$RUN" "$LOGS"
 
 DAEMONS=(gauthd gdeliveryd gamedbd uniquenamed gfaction gacd logservice glinkd gs)
+
+# Declared before stop_all: the --stop path runs before the conf-fix section.
+declare -A BIN=( [gauthd]=gauthd [gdeliveryd]=gdeliveryd [gamedbd]=gamedbd
+                 [uniquenamed]=uniquenamed [gfaction]=gfactiond [gacd]=gacd
+                 [logservice]=logservice [glinkd]=glinkd [gs]=gs )
 
 stop_all() {
   local d p
@@ -59,9 +67,6 @@ fi
 declare -A BASE=( [gauthd]=gauthd.conf [gdeliveryd]=gamesys.conf [gamedbd]=gamesys.conf
                   [uniquenamed]=gamesys.conf [gfaction]=gamesys.conf [gacd]=gamesys.conf
                   [logservice]=logservice.conf [glinkd]=gamesys.conf )
-declare -A BIN=( [gauthd]=gauthd [gdeliveryd]=gdeliveryd [gamedbd]=gamedbd
-                 [uniquenamed]=uniquenamed [gfaction]=gfactiond [gacd]=gacd
-                 [logservice]=logservice [glinkd]=glinkd [gs]=gs )
 
 for d in "${!BASE[@]}"; do
   cp "$SRC/cnet/$d/${BASE[$d]}" "$RUN/$d.conf"
