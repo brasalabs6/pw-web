@@ -414,16 +414,10 @@ typedef LRESULT *LPRESULT;
 // The browser host supplies screen coordinates from pointer events.
 extern "C" void pw153_set_cursor_position(LONG x, LONG y);
 BOOL GetCursorPos(POINT *point);
-inline BOOL ScreenToClient(HWND hWnd, POINT *point) {
-  (void)hWnd;
-  (void)point;
-  return TRUE;
-}
-inline BOOL ClientToScreen(HWND hWnd, POINT *point) {
-  (void)hWnd;
-  (void)point;
-  return TRUE;
-}
+// Coordinates refer to the browser host's single canvas, in CSS pixels.
+extern "C" void pw153_set_canvas_origin(LONG x, LONG y);
+BOOL ScreenToClient(HWND hWnd, POINT *point);
+BOOL ClientToScreen(HWND hWnd, POINT *point);
 
 //	The GetAncestor constants.
 #define GA_PARENT 1

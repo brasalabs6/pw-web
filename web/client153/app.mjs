@@ -48,8 +48,14 @@ function frame(){
  }
  requestAnimationFrame(frame);
 }
-window.addEventListener('pointermove',event=>{if(runtime)runtime._pw153_set_cursor_position(event.screenX,event.screenY);});
-canvas.addEventListener('pointerdown',event=>{if(runtime)runtime._pw153_set_cursor_position(event.screenX,event.screenY);});
+function updatePointer(event){
+ if(!runtime)return;
+ const rect=canvas.getBoundingClientRect();
+ runtime._pw153_set_cursor_position(event.screenX,event.screenY);
+ runtime._pw153_set_canvas_origin(Math.round(event.screenX-event.clientX+rect.left),Math.round(event.screenY-event.clientY+rect.top));
+}
+window.addEventListener('pointermove',updatePointer);
+canvas.addEventListener('pointerdown',updatePointer);
 canvas.addEventListener('pointerdown',event=>{drag={x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);});
 canvas.addEventListener('pointermove',event=>{if(!drag)return;yaw+=(event.clientX-drag.x)*.01;pitch=Math.max(-1.4,Math.min(1.4,pitch+(event.clientY-drag.y)*.01));drag={x:event.clientX,y:event.clientY};});
 canvas.addEventListener('pointerup',()=>{drag=null;});canvas.addEventListener('pointercancel',()=>{drag=null;});

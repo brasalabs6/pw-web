@@ -12,9 +12,15 @@ class CursorPositionTest(unittest.TestCase):
     def test_host_position(self):
         code = '''#include "Windows.h"
 extern "C" void pw153_set_cursor_position(LONG, LONG);
+extern "C" void pw153_set_canvas_origin(LONG, LONG);
 int main() {
   POINT p{77, 88};
   if (GetCursorPos(&p) || p.x != 77 || p.y != 88) return 1;
+  if (ScreenToClient(nullptr, &p) || ClientToScreen(nullptr, &p)) return 5;
+  pw153_set_canvas_origin(-200, 100);
+  if (!ScreenToClient(nullptr, &p) || p.x != 277 || p.y != -12) return 6;
+  if (!ClientToScreen(nullptr, &p) || p.x != 77 || p.y != 88) return 7;
+  if (ScreenToClient(nullptr, nullptr) || ClientToScreen(nullptr, nullptr)) return 8;
   pw153_set_cursor_position(-120, 347);
   if (!GetCursorPos(&p) || p.x != -120 || p.y != 347) return 2;
   if (GetCursorPos(nullptr)) return 3;
