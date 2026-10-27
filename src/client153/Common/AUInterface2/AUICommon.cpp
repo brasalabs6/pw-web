@@ -136,7 +136,7 @@ bool AUI_ReportError(int nLine, const char *pszFile, const char* szMsg, vector<C
 					{
 						AString str;
 						args[i].RetrieveAString(str);
-						strTemp.Format("\"%s\"",str);
+						strTemp.Format("\"%s\"", (const char*)str);
 						break;
 					}
 					case CScriptValue::SVT_ARRAY:
@@ -164,7 +164,7 @@ bool AUI_ReportError(int nLine, const char *pszFile, const char* szMsg, vector<C
 		strParams = " ";
 	}
 	AString strMsg;
-	strMsg.Format("%s %s %s %d",szMsg,strParams,pszFile,nLine);
+	strMsg.Format("%s %s %s %d",szMsg,(const char*)strParams,pszFile,nLine);
 	a_LogOutput(1, strMsg);
 	if( !_report_error_no_assert )
 		ASSERT(!"reached AUI_ReportError");
@@ -184,7 +184,7 @@ bool SetAUIObjectPropertyType(const char* strPropName, AUIObjectPropertyValue ty
 		if( it->second == type )
 			return true;
 		else
-			return AUI_ReportError("SetAUIObjectPropertyType(), \"%s\" has multiple definition!", strPropName);
+			return AUI_ReportError("SetAUIObjectPropertyType(), \"%s\" has multiple definition!", (const char*)strPropName);
 	}
 	mapAUIObjectPropertyType[strPropName] = type;
 	return true;

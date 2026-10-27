@@ -14,6 +14,9 @@
 #ifndef PW153_PLATFORM_D3D8_H
 #define PW153_PLATFORM_D3D8_H
 
+#define D3D_OK 0
+#define D3DLOCK_READONLY 0x0010
+
 #include "Windows.h"
 
 //	D3DX math aliases: the ported A3D math carries the same layouts and the
