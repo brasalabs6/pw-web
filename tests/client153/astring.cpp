@@ -1,5 +1,6 @@
 #include "AString.h"
 #include <cstring>
+#include <cstdio>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -25,6 +26,12 @@ int main() {
   formatted.Format("%s!", static_cast<const char *>(formatted));
   CHECK(shared == "wolf A 1.25 1234567890123 %");
   CHECK(formatted == "wolf A 1.25 1234567890123 %!");
+  AString name("control"), command("open"), sound("click");
+  char saved[128];
+  std::snprintf(saved, sizeof(saved), " \"%s\" \"%s\" \"%s\" %d %d %d %d",
+                static_cast<const char *>(name), static_cast<const char *>(command),
+                static_cast<const char *>(sound), 1, 2, 3, 4);
+  CHECK(std::strcmp(saved, " \"control\" \"open\" \"click\" 1 2 3 4") == 0);
   std::string large(9000, 'x');
   formatted.Format("%s:%d", large.c_str(), 42);
   CHECK(formatted.GetLength() == 9003);

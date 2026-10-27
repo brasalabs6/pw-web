@@ -282,8 +282,8 @@ void AUIObject::Enable(bool bEnable)
 bool AUIObject::Save(FILE *file)
 {
 	// We don't save control keyword here.
-	fprintf(file, " \"%s\" \"%s\" \"%s\" %d %d %d %d", m_szName,
-		m_strCommand, m_strSound, m_x, m_y, m_nWidth, m_nHeight);
+	fprintf(file, " \"%s\" \"%s\" \"%s\" %d %d %d %d", (const char*)m_szName,
+		(const char*)m_strCommand, (const char*)m_strSound, m_x, m_y, m_nWidth, m_nHeight);
 
 	return true;
 }
