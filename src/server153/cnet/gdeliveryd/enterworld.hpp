@@ -49,7 +49,13 @@ class EnterWorld : public GNET::Protocol
 	}
 	void Process(Manager *manager, Manager::Session::ID sid)
 	{
+		// pw-web trace: BEFORE the usercontainer lock — distinguishes "never
+		// dispatched" (no trace at all) from "blocked on the lock" (first
+		// trace only). The single priority-101 pool worker was observed stuck
+		// while EnterWorld tasks starved in the queue (TaskQueueSize=7).
+		Log::log(LOG_DEBUG, "[enterworld] roleid=%d Process entered, acquiring usercontainer lock", roleid);
 		Thread::RWLock::WRScoped l(UserContainer::GetInstance().GetLocker());
+		Log::log(LOG_DEBUG, "[enterworld] roleid=%d lock acquired", roleid);
 		PlayerInfo * pinfo = UserContainer::GetInstance().FindRole(roleid);
 		if (NULL==pinfo)
 		{

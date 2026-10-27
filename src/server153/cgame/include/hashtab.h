@@ -310,6 +310,10 @@ public:
 
 	iterator find(const key_type& __key) 
 	{
+		// pw-web guard: an empty bucket vector made get_hash divide by zero
+		// (gs SIGFPE, trap divide error at hashtab get_hash) and would index
+		// _buckets[0] out of bounds. Return end() for an empty table instead.
+		if (_buckets.empty()) return iterator((_Node*)0, this);
 		size_type __n = get_hash(__key);
 		_Node* __first;
 		for ( __first = _buckets[__n];
@@ -321,6 +325,8 @@ public:
 	
 	const_iterator find(const key_type& __key) const
 	{
+		// pw-web guard: see the non-const find above.
+		if (_buckets.empty()) return const_iterator((_Node*)0, this);
 		size_type __n = get_hash(__key);
 		_Node* __first;
 		for ( __first = _buckets[__n];

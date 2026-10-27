@@ -21,6 +21,9 @@ sed -i -E '/^\[GAuthClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29200/port\t\
 sed -i -E '/^\[GAntiCheatClient\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*29701/port\t\t=\t29702/
            /^\[GLinkServer1\]/,/^\[/ s/port[[:space:]]*=[[:space:]]*9001/port\t\t=\t29000/' "$RUN/glinkd.conf"
 sed -i -E 's/table_charset[[:space:]]*=[[:space:]]*UCS2/table_charset\t\t=\tGBK/' "$RUN/gdeliveryd.conf" "$RUN/gfaction.conf"
+# [ThreadPool]: one priority-101 worker starves the enter-world flow when
+# blocked (EnterWorld/CreateRole/RoleList all queue at 101).
+sed -i -E 's|^threads[[:space:]]*=.*|threads\t\t=\t(1,3)(100,1)(101,4)(0,1)|' "$RUN/gdeliveryd.conf"
 sed -i '/^\[GameDBServer\]/a accepted_zone_list\t=\t1\ncross_zone_pos\t\t=\t-476:337:609,548:337:609,-476:337:-415,548:337:-415' "$RUN/gamedbd.conf"
 sed -i -E 's|^tables[[:space:]]*=.*|tables\t\t=\tauction,base,city,clsconfig,config,crslogicuid,equipment,factionfortress,factioninfo,factionname,factionrelation,force,friendext,friends,globalcontrol,gtask,inventory,kingelection,mailbox,mappassword,messages,mndomainbonus,mndomaininfo,mnfactionapplyinfo,mnfactioninfo,order,playerprofile,playershop,recalluser,rolename,rolenamehis,sellpoint,serverdata,shoplog,solochallengerank,status,storehouse,syslog,task,translog,uniquedata,user,userfaction,userstore,waitdel,weborderitem,webtrade,webtradesold|' "$RUN/gamedbd.conf"
 cat >> "$RUN/gamedbd.conf" <<'EOF'
@@ -39,7 +42,7 @@ sed -i -E '/^\[GAuthServer\]/,/^\[/{
 for d in gauthd gamedbd uniquenamed gfaction; do
   mkdir -p "$SRV/cnet/$d"/{dbhome,dbdata,dblogs,backup}
 done
-mkdir -p "$SRV/cnet/gamedbd"/{dbhomewdb,backupwdb} "$SRV/cnet/uniquenamed"/{dbhomewdb,backupwdb}
+mkdir -p "$SRV/cnet/gamedbd"/{dbhomewdb,backupwdb} "$SRV/cnet/uniquenamed"/{dbhomewdb,unamewdb,backupwdb}
 mkdir -p "$SRV/cnet/logservice/logs"
 
 start() { # start <dir> <bin> [args...]

@@ -97,6 +97,12 @@ sed -i '/^\[GLinkServer1\]/a edition\t\t=\t300000917d576784405750f171575122b6' "
 # conversion then produces garbage and the daemons refuse to start.
 sed -i -E 's/table_charset[[:space:]]*=[[:space:]]*UCS2/table_charset\t\t=\tGBK/' "$RUN/gdeliveryd.conf" "$RUN/gfaction.conf"
 
+# gdeliveryd: the committed [ThreadPool] has ONE priority-101 worker.
+# EnterWorld/CreateRole/RoleList queue at 101; a single blocked worker
+# starves the whole enter-world flow (observed live: TaskQueueSize stuck
+# at 7 with all workers idle in futex, EnterWorld::Process never entered).
+sed -i -E 's|^threads[[:space:]]*=.*|threads\t\t=\t(1,3)(100,1)(101,4)(0,1)|' "$RUN/gdeliveryd.conf"
+
 # gamedbd: InitGameDB requires accepted_zone_list (single zone here) and a
 # cross_zone_pos with exactly 4 "x:y:z" entries; these keys are absent from
 # the committed gamesys.conf. The code also opens ~48 storages via GetStorage()
@@ -133,7 +139,7 @@ sed -i -E '/^\[GAuthServer\]/,/^\[/{
 # state left by a hard kill can permanently break gamedbd startup).
 if [ "$FRESH" -eq 1 ]; then
   for d in gauthd gamedbd uniquenamed gfaction; do
-    rm -rf "$SRC/cnet/$d"/{dbhome,dbdata,dblogs,backup,dbhomewdb,backupwdb}
+    rm -rf "$SRC/cnet/$d"/{dbhome,dbdata,dblogs,backup,dbhomewdb,unamewdb,backupwdb}
   done
 fi
 
