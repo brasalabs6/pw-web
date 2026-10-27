@@ -76,7 +76,7 @@ public: //	Operations
   int Append(const AArray<T, ARG_T> &src);
 
   //	Set element at specified position
-  void SetAt(int iIndex, ARG_T Elem) { (*this)[iIndex] = Elem; }
+  void SetAt(int iIndex, const T &Elem) { (*this)[iIndex] = Elem; }
   //	Get element at specified position
   T GetAt(int iIndex) const { return (*this)[iIndex]; }
   //	Set element at specified position, grow array if necessary

@@ -9,7 +9,7 @@
 #include "A3DDevice.h"
 #include "A3DTexture.h"
 #include "A3DFlatCollector.h"
-#include "A3DGdi.h"
+#include "A3DGDI.h"
 #include "A3DGFXEx.h"
 #include "CSplit.h"
 #include "AUILabel.h"

@@ -14,7 +14,7 @@
 #include "EC_GameSession.h"
 #include "EC_CountryConfig.h"
 #include "A3DDevice.h"
-#include "A3DGdi.h"
+#include "A3DGDI.h"
 #include "AUIDef.h"
 #include "AUIManager.h"
 #include <A2DSprite.h>

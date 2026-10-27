@@ -239,6 +239,14 @@ A unidade verificada avançou até outro include com caixa diferente
 (`A3DGdi.h`). Passaram 25 testes nativos e 20 WASM; a integração gráfica
 real e a contagem após essas correções ainda estão pendentes.
 
+O ciclo seguinte gerou 239/787 objetos WASM. Para o erro de cópia de planos,
+`AArray::SetAt` aceita uma referência constante e o teste cobre a cópia de
+uma coleção constante em nativo e WASM. Foram adicionados `PVOID`, uma
+declaração opaca de `LPEXCEPTION_POINTERS` e comparação de strings sem
+distinguir maiúsculas, além da correção de cinco includes `A3DGDI.h`. A
+declaração de exceção não implementa SEH. Passaram 28 testes nativos e 23
+WASM; a próxima medição de objetos está em andamento.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

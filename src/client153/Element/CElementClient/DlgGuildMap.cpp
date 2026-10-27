@@ -17,7 +17,7 @@
 
 #include "A2DSprite.h"
 #include "A3DDevice.h"
-#include "A3DGdi.h"
+#include "A3DGDI.h"
 #include "globaldataman.h"
 #include "Home\\ClosedArea.h"
 #include "A3DFlatCollector.h"

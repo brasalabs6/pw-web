@@ -28,9 +28,12 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <strings.h>
 #include <string>
 #include <string_view>
 #include <thread>
+
+inline int stricmp(const char *lhs, const char *rhs) { return ::strcasecmp(lhs, rhs); }
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -56,12 +59,15 @@ typedef std::uint64_t UINT64;
 typedef std::int64_t INT64;
 typedef wchar_t WCHAR;
 typedef wchar_t TCHAR;
+typedef void *PVOID;
 typedef void *LPVOID;
 typedef const void *LPCVOID;
 typedef char *LPSTR;
 typedef const char *LPCSTR;
 typedef wchar_t *LPWSTR;
 typedef const wchar_t *LPCWSTR;
+struct _EXCEPTION_POINTERS;
+typedef _EXCEPTION_POINTERS *LPEXCEPTION_POINTERS;
 typedef void *HANDLE;
 typedef void *HFONT;
 typedef void *HBITMAP;
