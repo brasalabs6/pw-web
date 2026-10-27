@@ -50,6 +50,9 @@ done
 
 # 3) mall files: package layout is 196-byte GSHOP_ITEM (no min_vip_level in
 #    buy[], no buy_times_limit/mode); this source expects 220 bytes.
+# python3 guard: the runtime container may lack python3; the conversion is
+# only needed on first staging (the .old backup marks it done).
+if command -v python3 >/dev/null 2>&1; then
 python3 - "$PKGGAMED/config" <<'EOF'
 import struct, sys, os
 def convert(path, out):
@@ -79,6 +82,11 @@ for name in ('gshopsev.data', 'gshopsev1.data'):
         os.rename(p, o)          # first run: keep the original as .old
     convert(o, p)
 EOF
+else
+  for name in gshopsev.data gshopsev1.data; do
+    [ -f "$PKGGAMED/config/$name.old" ] || echo "gs: WARNING: python3 unavailable and $name.old backup missing — mall conversion not verified" >&2
+  done
+fi
 
 # 4) start (reference procedure from the package's start script)
 ( cd "$PKGGAMED" && LD_LIBRARY_PATH="$PKGGAMED" \

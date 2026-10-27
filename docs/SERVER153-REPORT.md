@@ -3,18 +3,26 @@
 **Data:** 2026-10-26. **Build revision:** `7dde52fa03d3` (ver `src/server153/PROVENANCE.md`).
 **Autorização:** `docs/LEGAL.md` (decisão 2026-10-25, escopo do port contratado).
 
-## 0. RESULTADO PRINCIPAL (2026-10-26 22:22)
+## 0. RESULTADO PRINCIPAL (atualizado 2026-10-27)
 
-**Servidor completo rodando localmente com entrada no mundo comprovada contra o
-cliente real PWBR 1.5.3 v145 (Build 2555) via Wine.** Fluxo validado com evidência
-(`dist/server153/runtime/logs`, `world2.log`):
+**Dois resultados distintos, com autoria precisa:**
 
-```
-cliente real → serverlist (patcher) → glinkd:29000 (challenge: version 0x010503
-+ edition pin) → MatrixPasswd retcode=0 (dev-auth) → userlogin → rolelist →
-criação de personagem (roleid=1040) → enterworld result=0 →
-"gameserver 101, 用户数目:1" (1 jogador no mundo)
-```
+1. **Cadeia completa do servidor provada com o cliente virtual in-tree (`gclient`),
+   2026-10-26 22:22–22:30** (`src/server153/cnet/logservice/logs/world2.log`):
+   login → criação de role (roleid=1040, via `gclient/makechoice.h`, prompt
+   interativo `c` + `0 3 100000`) → enterworld →
+   `gameserver 101, 用户数目:1` (1 jogador no mundo por 4+ min). Isso prova
+   glinkd → gdeliveryd → gamedbd → gs com os data files v145.
+2. **Cliente real PWBR 1.5.3 v145 (Build 2555, via Wine): login comprovado;
+   criação de personagem estava bloqueada** por divergência de wire format
+   (§4.2 item 9), **corrigida em 2026-10-27** (commit 0c445e35) e comprovada por
+   teste de conformância byte a byte (`tests/server153_createrole_wire.cpp`).
+   A entrada no mundo com o cliente real **pende do teste do operador**.
+
+Login do cliente real com evidência (traces glinkd, 2026-10-27 09:23):
+challenge → Response → MatrixPasswd2 retcode=0 → KeyExchange → userlogin2
+retcode=0 → OnlineAnnounce → ChangeState(GRoleList) → RoleList_Re (lista
+vazia decodifica) → cliente abre a tela de criação.
 
 Conta de teste: `1000000` / `1000000` (numérica, múltiplo de 16 — exigência do
 dev-auth desta árvore; ver §4).
@@ -104,6 +112,21 @@ de tradução. Cada uma causava segfault na inicialização:
 8. **serverlist da patcher**: o cliente com `startbypatcher` lê
    `patcher/server/serverlist.txt` (não o do element) e exige cabeçalho de
    grupo: `grupo\r\n\r\nnome\tporta:host\tid\r\n` em UTF-16LE com BOM.
+9. **Divergência de wire format em `RoleInfo` (bloqueava a criação de
+   personagem no cliente real)**: o commit upstream 8aa72d3 adicionou o 24º
+   campo `Octets rank` a `RoleInfo` para um cliente chinês mais novo; o binário
+   PWBR 2018 envia o formato de 23 campos. Evidência: pacote real capturado
+   `[decode] type=84 size=1704` (o layout de 24 campos prevê 1705 — exatamente
+   um Octets vazio a mais); o servidor lia `rank` na posição do byte de
+   comprimento de `referid` e lançava exceção ao ler `referid` além do fim →
+   `Decode Error`. Confirmado pela fonte de era correspondente (árvore
+   `20141231`, `rpcalls.xml`: 23 campos) e pela source completa do cliente
+   (`Source Cliente.rar`, `EC_LoginUIMan.cpp`: 39 slots de equipment, nome
+   UTF-16, custom_data de 176 bytes). Fix: remoção de `rank` (commit 0c445e35)
+   + teste de conformância de wire byte a byte
+   (`tests/server153_createrole_wire.cpp`, integrado ao `verify.sh`).
+   Nota: `GRoleStatus.rank` (renomeado de `reserved2` pelo mesmo commit
+   upstream) é compatível no wire enquanto vazio e permanece.
 
 ### 4.3 Config/ambiente (documentados no `scripts/boot-server153.sh`)
 
@@ -126,6 +149,13 @@ de tradução. Cada uma causava segfault na inicialização:
 - WDB (gamedbd) não tem recuperação de estado CORRUPT (`truncate()` retorna
   CORRUPT): estado de shutdown sujo trava o boot; `--fresh` limpa o storage
   vazio para validação.
+- **Makefiles do upstream não rastreiam dependências de headers**: editar
+  `cnet/rpcdata/*` NÃO suja os `.o` dos daemons — `make` não reconstrói nada
+  (o estágio glinkd passou em 0s com binário antigo; o cliente real continuou
+  recebendo Decode Error após a correção de `RoleInfo`). Após editar
+  `rpcdata/` ou qualquer header compartilhado, reconstrua com `make -B` os
+  daemons afetados (glinkd, gdeliveryd, gamedbd, gclient, gdbclient para
+  `roleinfo`) e confira o mtime do binário.
 
 ## 5. Tamanhos medidos (2026-10-26)
 
