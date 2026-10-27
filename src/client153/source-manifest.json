@@ -8861,6 +8861,22 @@
     {
       "path": "Common/Output/include/aui/WndThreadManager.h",
       "sha256": "40ab369786b188d7c7dd55cb97d09f7362fa01d90e4fe76989a9f51ab1b9e08c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DCamera.cpp",
+      "sha256": "8f858576cfa676db9ee94f21d4ebebed144d290d3fd75ff04b86e64e8135acbc"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DCameraBase.cpp",
+      "sha256": "711167bcb652ce17262644391eec97d4d4bfefeacccff446ea694c8ca7a7e4e2"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DLightMan.cpp",
+      "sha256": "3fe086b5df906993e5e5e2478eca82439597c6a7ab8ff5ce5d64d080a91fd969"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DFrustum.cpp",
+      "sha256": "3a1ac82a5526bfba6a0a746b2a8bebf2a635c49fb6f12dd0d5f1508d50a1619b"
     }
   ],
   "adaptations": [

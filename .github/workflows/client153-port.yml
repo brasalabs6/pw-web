@@ -38,6 +38,7 @@ jobs:
         run: |
           emcmake cmake -S . -B build/client153-wasm -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug
           cmake --build build/client153-wasm --parallel 2
+          cmake --build build/client153-wasm --target client153_engine_original --parallel 2
           ctest --test-dir build/client153-wasm --output-on-failure
           test -s build/client153-wasm/browser/client153.mjs
           test -s build/client153-wasm/browser/client153.wasm

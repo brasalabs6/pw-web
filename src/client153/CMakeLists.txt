@@ -39,6 +39,28 @@ if(EMSCRIPTEN)
   target_compile_options(client153_common PUBLIC -fexceptions)
   target_link_options(client153_common INTERFACE -fexceptions)
 endif()
+
+# Original engine compilation target; linking the complete renderer is still pending.
+if(EMSCRIPTEN)
+  add_library(client153_engine_original OBJECT EXCLUDE_FROM_ALL
+    Angelica2/Angelica3D/Source/A3DCamera.cpp
+    Angelica2/Angelica3D/Source/A3DCameraBase.cpp
+    Angelica2/Angelica3D/Source/A3DLightMan.cpp
+    Angelica2/Angelica3D/Source/A3DFrustum.cpp)
+  target_include_directories(client153_engine_original PRIVATE
+    platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
+    Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
+    Angelica2/Output/amsdk/include
+    Angelica2/Output/3rdsdk/include)
+  target_compile_features(client153_engine_original PRIVATE cxx_std_17)
+  target_compile_definitions(client153_engine_original PRIVATE WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
+  target_compile_options(client153_engine_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+endif()
+
 add_library(client153_formats STATIC
   Angelica2/Angelica3D/port/mox.h
   Angelica2/Angelica3D/port/dds.h
