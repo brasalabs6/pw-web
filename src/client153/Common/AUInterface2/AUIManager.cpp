@@ -1158,7 +1158,7 @@ bool AUIManager::MessageBox(const char *pszName, const ACHAR *pszText,
 
 	strcpy(p.fn, m_szMsgBoxFrame);
 	bval = pDlg->SetProperty("Frame Image", &p);
-	if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set dialog property [Frame Image] to file [%s]", m_szMsgBoxFrame);
+	if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set dialog property [Frame Image] to file [%s]", (const char*)m_szMsgBoxFrame);
 
 	// Text label.
 	pLabel = (PAUILABEL)pDlg->CreateControl(m_pA3DEngine, m_pA3DDevice, AUIOBJECT_TYPE_LABEL);
@@ -1191,11 +1191,11 @@ bool AUIManager::MessageBox(const char *pszName, const ACHAR *pszText,
 
 		strcpy(p.fn, m_szMsgBoxButton);
 		bval = pButton[0]->SetProperty("Up Frame File", &p);
-		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Up Frame File] to file [%s]", m_szMsgBoxButton);
+		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Up Frame File] to file [%s]", (const char*)m_szMsgBoxButton);
 
 		strcpy(p.fn, m_szMsgBoxButtonDown);
 		bval = pButton[0]->SetProperty("Down Frame File", &p);
-		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Down Frame File] to file [%s]", m_szMsgBoxButtonDown);
+		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Down Frame File] to file [%s]", (const char*)m_szMsgBoxButtonDown);
 
 		// ignore error
 		strcpy(p.fn, m_szMsgBoxButtonHover);
@@ -1220,11 +1220,11 @@ bool AUIManager::MessageBox(const char *pszName, const ACHAR *pszText,
 
 		strcpy(p.fn, m_szMsgBoxButton);
 		bval = pButton[1]->SetProperty("Up Frame File", &p);
-		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Up Frame File] to file [%s]", m_szMsgBoxButton);
+		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Up Frame File] to file [%s]", (const char*)m_szMsgBoxButton);
 
 		strcpy(p.fn, m_szMsgBoxButtonDown);
 		bval = pButton[1]->SetProperty("Down Frame File", &p);
-		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Down Frame File] to file [%s]", m_szMsgBoxButtonDown);
+		if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIManager::MessageBox(), failed to set first button property [Down Frame File] to file [%s]", (const char*)m_szMsgBoxButtonDown);
 
 		// ignore error
 		strcpy(p.fn, m_szMsgBoxButtonHover);
