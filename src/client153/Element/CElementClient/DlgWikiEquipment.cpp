@@ -55,7 +55,9 @@ bool CDlgWikiEquipment::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LI
 	if(pDlg)
 	{
 		// ensure the provider is correct
-		pDlg->SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+		//	One-shot use: the setter clones the provider synchronously; a local is safe.
+		WikiElementDataProvider essenceProvider(ID_SPACE_ESSENCE);
+		pDlg->SetContentProvider(&essenceProvider);
 		pDlg->RefreshByNewCommand(&WikiSearchBySpecificID(m_ItemID), true);
 		return true;
 	}
@@ -78,6 +80,7 @@ CDlgWikiEquipment::CDlgWikiEquipment()
 ,m_pBtn_Drop(NULL)
 ,m_pBtn_RandomProperty(NULL)
 ,m_pEP(NULL)
+,m_EssenceProvider(ID_SPACE_ESSENCE)
 {
 }
 bool CDlgWikiEquipment::OnInitDialog()
@@ -97,7 +100,7 @@ void CDlgWikiEquipment::ResetSearchCommand()
 {
 	CDlgWikiByNameBase::ResetSearchCommand();
 
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+	SetContentProvider(&m_EssenceProvider);
 	SetSearchCommand(&WikiSearchEquipmentByName());
 }
 

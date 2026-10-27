@@ -122,13 +122,18 @@ def main():
     #	headers; the SDK's AUIDialog.h uses AUIComboBox without including it.
     #	The widget chain compiles against the port; the D3D font headers stay
     #	out of this prelude (they belong to the renderer cycle).
-    aui_dir = Path('Common') / 'Output' / 'include' / 'aui'
-    for widget in ('AUIListBox.h', 'AUIComboBox.h', 'AUIEditBox.h', 'AUILabel.h',
-                   'AUIStillImageButton.h', 'AUICheckBox.h', 'AUIImagePicture.h',
-                   'AUIDialog.h'):
-        aui = source_path(root, adapted_root, aui_dir / widget)
-        if aui.is_file():
-            forced += ['-include', str(aui)]
+    #	Prefer the adapted AUI library copies (the full header set lives in
+    #	Common/AUInterface2; the prebuilt SDK include dir only carries part of
+    #	it, so its same-dir chains break).
+    for aui_dir in (Path('Common') / 'AUInterface2', Path('Common') / 'Output' / 'include' / 'aui'):
+        widgets = [w for w in ('AUIListBox.h', 'AUIComboBox.h', 'AUIEditBox.h', 'AUILabel.h',
+                               'AUIStillImageButton.h', 'AUICheckBox.h', 'AUIImagePicture.h',
+                               'AUIDialog.h')
+                  if source_path(root, adapted_root, aui_dir / w).is_file()]
+        if len(widgets) == 8:
+            for widget in widgets:
+                forced += ['-include', str(source_path(root, adapted_root, aui_dir / widget))]
+            break
     sdk_forward = args.port_root.parent / 'platform' / 'common' / 'sdk_forward.h' if args.port_root else None
     if sdk_forward and sdk_forward.is_file():
         forced += ['-include', str(sdk_forward.resolve())]
@@ -136,6 +141,10 @@ def main():
     achar = args.port_root / 'AngelicaCommon' / 'Header' / 'AChar.h' if args.port_root else None
     if achar and achar.is_file():
         forced += ['-include', str(achar.resolve())]
+    #	The original precompiled header also supplied the ATime tick surface.
+    atime = args.port_root / 'AngelicaCommon' / 'Header' / 'ATime.h' if args.port_root else None
+    if atime and atime.is_file():
+        forced += ['-include', str(atime.resolve())]
     entry = resolve_windows(project.parent, args.entry)
     entry_path = source_path(root, adapted_root, entry.relative_to(root))
     command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar', '-sUSE_ZLIB=1'] + forced + [str(entry_path)]

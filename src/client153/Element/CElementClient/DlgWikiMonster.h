@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DlgWikiByNameBase.h"
+#include "WikiSearchCommand.h"	//	the member provider types live here.
 #include "AUILabel.h"
 #include "AUIListBox.h"
 #include "AUIStillImageButton.h"
@@ -75,4 +76,7 @@ private:
 	
 	PAUISTILLIMAGEBUTTON m_pBtn_Drop;
 	PAUISTILLIMAGEBUTTON m_pBtn_Task;
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns the provider as a member with the same configuration.
+	WikiElementDataProvider m_EssenceProvider;
 };

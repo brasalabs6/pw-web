@@ -858,7 +858,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 				this->AppendText(strName);
 			}
 		}
-		for (i = 0; i < MAX_PLAYER_WANTED; i++)
+		for (int i = 0; i < MAX_PLAYER_WANTED; i++)	//	original relied on MSVC for-scoping leakage.
 		{
 			if (tsi.m_PlayerWanted[i].m_ulPlayersToKill == 0)
 				break;
@@ -1308,7 +1308,7 @@ void CDlgTaskTrace::OnCommand_Chat(const char *szCommand)
 					strText += strName;
 				}
 			}
-			for (i = 0; i < MAX_PLAYER_WANTED; i++)
+			for (int i = 0; i < MAX_PLAYER_WANTED; i++)	//	original relied on MSVC for-scoping leakage.
 			{
 				if (tsi.m_PlayerWanted[i].m_ulPlayersToKill == 0)
 					break;
@@ -1475,7 +1475,7 @@ void CDlgTaskTrace::UpdateContributionTask()
 						AddTaskSetString(id, true, i);
 						TaskSetIDs.insert(id);
 					}
-					for (j = pStorageList->m_StoragesTaskSetCount[i - 1]; j < TASK_STORAGE_LEN; ++j)
+					for (int j = pStorageList->m_StoragesTaskSetCount[i - 1]; j < TASK_STORAGE_LEN; ++j)	//	original relied on MSVC for-scoping leakage.
 					{
 						int id = pStorageList->m_Storages[i - 1][j];
 						if (id == 0)
@@ -1488,7 +1488,7 @@ void CDlgTaskTrace::UpdateContributionTask()
 					// 不奖励贡献度但已领取未完成的任务
 					ActiveTaskEntry *aEntries = pActiveLst->m_TaskEntries;
 					size_t count = sizeof(pEssence->uniform_weight_list) / sizeof(pEssence->uniform_weight_list[0]);
-					for (j = 0; j < pActiveLst->m_uTaskCount; ++j)
+					for (int j = 0; j < pActiveLst->m_uTaskCount; ++j)	//	original relied on MSVC for-scoping leakage.
 					{
 						ActiveTaskEntry &CurEntry = aEntries[j];
 						if (CurEntry.IsFinished())
@@ -1513,7 +1513,7 @@ void CDlgTaskTrace::UpdateContributionTask()
 					}
 
 					// 其余不奖励贡献度的任务
-					for (j = 0; j < (int)count; ++j)
+					for (int j = 0; j < (int)count; ++j)	//	original relied on MSVC for-scoping leakage.
 					{
 						int id = pEssence->uniform_weight_list[j].task_list_config_id;
 						if (TaskSetIDs.find(id) == TaskSetIDs.end())
@@ -1524,7 +1524,7 @@ void CDlgTaskTrace::UpdateContributionTask()
 					if (dt == DT_TASK_LIST_CONFIG && pConfig)
 					{
 						count = sizeof(pConfig->id_tasks) / sizeof(pConfig->id_tasks[0]);
-						for (j = 0; j < (int)count; ++j)
+						for (int j = 0; j < (int)count; ++j)	//	original relied on MSVC for-scoping leakage.
 						{
 							int id = pConfig->id_tasks[j];
 							if (id == 0)

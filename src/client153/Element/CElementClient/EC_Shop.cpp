@@ -263,7 +263,7 @@ bool CECShopBase::CalcBuyIndex(int itemIndex, int *pBuyIndex, int cash/* =-1 */)
 		if (cash == -1){
 			cash = GetCash();
 		}
-		for(i = 0; i < BUY_COUNT; i++)
+		for(int i = 0; i < BUY_COUNT; i++)	//	original relied on MSVC for-scoping leakage.
 		{
 			int BuyIndex = 0;
 			if (m_BuyType == 0)

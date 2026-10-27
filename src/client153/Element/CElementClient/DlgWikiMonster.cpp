@@ -50,7 +50,9 @@ bool CDlgWikiMonster::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LINK
 	if(pDlg)	
 	{
 		// ensure the provider is correct
-		pDlg->SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+		//	One-shot use: the setter clones the provider synchronously; a local is safe.
+		WikiElementDataProvider essenceProvider(ID_SPACE_ESSENCE);
+		pDlg->SetContentProvider(&essenceProvider);
 		pDlg->RefreshByNewCommand(&WikiSearchBySpecificID(m_MonsterID), true);
 		return true;
 	}
@@ -69,6 +71,7 @@ ACString CDlgWikiMonster::ShowSpecficLinkCommand::GetLinkText() const
 
 // =======================================================================
 CDlgWikiMonster::CDlgWikiMonster()
+:m_EssenceProvider(ID_SPACE_ESSENCE)
 {
 	m_pList_Monster = NULL;
 	
@@ -124,7 +127,7 @@ void CDlgWikiMonster::ResetSearchCommand()
 {
 	CDlgWikiByNameBase::ResetSearchCommand();
 	// default search command
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+	SetContentProvider(&m_EssenceProvider);
 	SetSearchCommand(&WikiSearchMonsterByName());
 }
 

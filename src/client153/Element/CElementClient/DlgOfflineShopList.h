@@ -78,12 +78,11 @@ public:
 	
 	
 protected:
-	//	The original took addresses of constructor temporaries (dangling);
-	//	the port owns the providers as members with the same configuration.
+	//	The setters clone synchronously (verified against WikiSearcher.cpp),
+	//	so the original's constructor temporaries were consumed in-statement;
+	//	the port passes named locals at each site.
 	WikiElementDataProvider m_EssenceProvider;
 	WikiSearchItemByName m_ByNameCommand;
-	ShopDataProvider m_ShopProvider;
-	WikiElementDataProvider m_WikiProvider;
 	
 	ACString m_strLastPattern;
 	abase::vector<int> m_ResultID;

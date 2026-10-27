@@ -143,7 +143,7 @@ void CDlgEquipUp::showDialog()
 	}
 	
 	int deltaY(0);
-	for (i = 0; i < (int)m_pProperties.size();i++){
+	for (int i = 0; i < (int)m_pProperties.size();i++){	//	original relied on MSVC for-scoping leakage.
 		m_pProperties[i]->MoveAllItem(deltaY);
 		if (!m_pProperties[i]->m_bActive && !m_pProperties[i]->m_bHided){			
 			m_pProperties[i]->m_bHided = true;
@@ -155,11 +155,11 @@ void CDlgEquipUp::showDialog()
 		}
 		m_pProperties[i]->HideAllItem(m_pProperties[i]->m_bHided);		
 	}
-	for (i= 0; i< (int)m_pMovableItem.size();i++){
+	for (int i= 0; i< (int)m_pMovableItem.size();i++){	//	original relied on MSVC for-scoping leakage.
 		POINT Pos = m_pMovableItem[i]->GetDefaultPos();
 		m_pMovableItem[i]->SetDefaultPos(Pos.x, Pos.y + deltaY);
 	}
-	for (i= 0; i< (int)m_pResizableItem.size();i++){
+	for (int i= 0; i< (int)m_pResizableItem.size();i++){	//	original relied on MSVC for-scoping leakage.
 		SIZE objSize = m_pResizableItem[i]->GetDefaultSize();
 		m_pResizableItem[i]->SetDefaultSize(objSize.cx, objSize.cy+deltaY);
 	}

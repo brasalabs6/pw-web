@@ -339,7 +339,7 @@ void CECTeam::ChangeTeamLeader(int idLeader)
 			}
 		}
 		m_aMembers.RemoveAll();
-		for (i=0; i < aNewMembers.GetSize(); i++)
+		for (int i=0; i < aNewMembers.GetSize(); i++)	//	original relied on MSVC for-scoping leakage.
 			m_aMembers.Add(aNewMembers[i]);
 	}
 }

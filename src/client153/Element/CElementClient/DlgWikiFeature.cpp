@@ -25,6 +25,7 @@ AUI_END_EVENT_MAP()
 
 CDlgWikiFeature::CDlgWikiFeature()
 :m_pList(NULL)
+,m_SerialProvider(0, WikiGuideData().Feature().size())
 {
 }
 
@@ -42,7 +43,7 @@ void CDlgWikiFeature::ResetSearchCommand()
 {
 	CDlgWikiByNameBase::ResetSearchCommand();
 
-	SetContentProvider(&WikiSerialDataProvider(0, WikiGuideData().Feature().size()));
+	SetContentProvider(&m_SerialProvider);
 
 	ACString szTxt = m_pTxt_Search->GetText();
 	

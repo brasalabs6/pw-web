@@ -28,7 +28,9 @@ void CDlgWikiMonsterDrop::SetSearchDataPtr(void* ptr)
 	int maxDrop = !pEssence ? 0 : sizeof(pEssence->drop_matters)/sizeof(pEssence->drop_matters[0]);
 
 	// search from 0 to maxDrop
-	SetContentProvider(!pEssence ? NULL : &WikiSerialDataProvider(0, maxDrop));
+	//	One-shot use: the setter clones the provider synchronously; a local is safe.
+	WikiSerialDataProvider serialProvider(0, maxDrop);
+	SetContentProvider(!pEssence ? NULL : &serialProvider);
 	SetSearchCommand(!pEssence ? NULL : &WikiSearchDropItemOnMonster(pEssence));
 	
 	CDlgWikiBase::SetSearchDataPtr(ptr);

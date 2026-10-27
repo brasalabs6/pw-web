@@ -7,6 +7,7 @@
 #include "DlgWikiByNameBase.h"
 #include "DlgWikiNPCList.h"
 #include "DlgWikiItemConfirm.h"
+#include "WikiSearchCommand.h"	//	the member provider types live here.
 
 #include "AUILabel.h"
 #include "AUIListBox.h"
@@ -85,6 +86,9 @@ protected:
 		PAUILISTBOX m_pList;
 		PAUISTILLIMAGEBUTTON m_pBtn_Prev;
 		PAUISTILLIMAGEBUTTON m_pBtn_Next;
+		//	The original took addresses of constructor temporaries (dangling);
+		//	the port owns the provider as a member with the same configuration.
+		WikiElementDataProvider m_EssenceProvider;
 	};
 	friend class CDlgWikiRecipe::MaterialSearcher;
 
@@ -105,6 +109,9 @@ protected:
 		PAUILISTBOX m_pList;
 		PAUISTILLIMAGEBUTTON m_pBtn_Prev;
 		PAUISTILLIMAGEBUTTON m_pBtn_Next;
+		//	The original took addresses of constructor temporaries (dangling);
+		//	the port owns the provider as a member with the same configuration.
+		WikiElementDataProvider m_EssenceProvider;
 	};
 	friend class CDlgWikiRecipe::ProductSearcher;
 
@@ -150,6 +157,9 @@ public:
 
 private:
 	CacheType m_NPCCache;
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns the provider as a member with the same configuration.
+	WikiElementDataProvider m_EssenceProvider;
 };
 
 class WikiNPCMakeServiceProvider : public WikiNPCEssenceProvider

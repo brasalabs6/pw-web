@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DlgWikiItemListBase.h"
+#include "WikiSearchCommand.h"	//	the member provider types live here.
 
 class CDlgWikiAreaList : public CDlgWikiItemListBase
 {
@@ -19,4 +20,9 @@ protected:
 
 	// derived from AUI
 	virtual bool OnInitDialog();
+
+private:
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns the provider as a member with the same configuration.
+	WikiSerialDataProvider m_SerialProvider;
 };

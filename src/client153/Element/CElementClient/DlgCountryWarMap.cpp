@@ -467,7 +467,7 @@ void CDlgCountryWarMap::UpdateLiveShowImg()
 		}
 	}
 	CECHostPlayer::BATTLEINFO::DeathContainer* deaths[2] = { &battle_info.OffenseDeaths, &battle_info.DefenceDeaths };
-	for (i = 0; i < 2; ++i) {
+	for (int i = 0; i < 2; ++i) {	//	original relied on MSVC for-scoping leakage.
 		if (m_LiveShowDeathImages[i] == NULL) {
 			A2DSprite* pImg = NULL;
 			CECDomainCountry::Load2DSprite(pImg, SKULL_PATH[i]);

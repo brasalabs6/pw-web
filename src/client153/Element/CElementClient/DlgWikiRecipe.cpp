@@ -118,6 +118,7 @@ ACString CDlgWikiRecipe::ShowSpecficLinkCommand::GetLinkText() const
 // =======================================================================
 CDlgWikiRecipe::MaterialSearcher::MaterialSearcher(CDlgWikiRecipe* pDlg)
 :m_pDlg(pDlg)
+,m_EssenceProvider(ID_SPACE_RECIPE)
 {
 	m_pList = dynamic_cast<PAUILISTBOX>(pDlg->GetDlgItem("List_Material"));
 	ASSERT(m_pList);
@@ -128,7 +129,7 @@ CDlgWikiRecipe::MaterialSearcher::MaterialSearcher(CDlgWikiRecipe* pDlg)
 	m_pBtn_Prev->Enable(false);
 	m_pBtn_Next->Enable(false);
 
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_RECIPE));
+	SetContentProvider(&m_EssenceProvider);
 }
 
 bool CDlgWikiRecipe::MaterialSearcher::ConfirmSearch(unsigned int id)
@@ -255,6 +256,7 @@ const RECIPE_ESSENCE * CDlgWikiRecipe::MaterialSearcher::GetCurEssence() const
 // =======================================================================
 CDlgWikiRecipe::ProductSearcher::ProductSearcher(CDlgWikiRecipe* pDlg)
 :m_pDlg(pDlg)
+,m_EssenceProvider(ID_SPACE_RECIPE)
 {
 	m_pList = dynamic_cast<PAUILISTBOX>(pDlg->GetDlgItem("List_Product"));
 	ASSERT(m_pList);
@@ -265,7 +267,7 @@ CDlgWikiRecipe::ProductSearcher::ProductSearcher(CDlgWikiRecipe* pDlg)
 	m_pBtn_Prev->Enable(false);
 	m_pBtn_Next->Enable(false);
 
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_RECIPE));
+	SetContentProvider(&m_EssenceProvider);
 }
 
 bool CDlgWikiRecipe::ProductSearcher::ConfirmSearch(unsigned int id)
@@ -531,8 +533,9 @@ void CDlgWikiRecipe::OnEventLButtonDBCLK_ListProduct(WPARAM wParam, LPARAM lPara
 // WikiNPCMakingCache
 // =======================================================================
 WikiNPCMakingCache::WikiNPCMakingCache()
+:m_EssenceProvider(ID_SPACE_ESSENCE)
 {
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+	SetContentProvider(&m_EssenceProvider);
 	Refresh(&WikiSearchNPCByServiceMake());
 }
 

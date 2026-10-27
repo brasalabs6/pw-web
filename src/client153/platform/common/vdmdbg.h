@@ -18,24 +18,9 @@
 
 #define MAX_MODULE_NAME32 255
 
-#ifndef PW153_MODULEENTRY32W_DEFINED
-#define PW153_MODULEENTRY32W_DEFINED
-struct tagMODULEENTRY32W {
-  DWORD dwSize;
-  DWORD th32ModuleID;
-  DWORD th32ProcessID;
-  DWORD GlblcntUsage;
-  DWORD ProccntUsage;
-  BYTE *modBaseAddr;
-  DWORD modBaseSize;
-  HMODULE hModule;
-  wchar_t szModule[MAX_MODULE_NAME32 + 1];
-  wchar_t szExePath[MAX_PATH];
-};
-
-typedef struct tagMODULEENTRY32W MODULEENTRY32W;
-typedef MODULEENTRY32W *LPMODULEENTRY32W;
-#endif	//	PW153_MODULEENTRY32W_DEFINED
+/*	The MODULEENTRY32W layout lives in the tlhelp32 seam;
+	the VDM header reuses it.	*/
+#include "tlhelp32.h"
 
 //	VDM task enumeration callback: receives the process info per 16-bit task.
 typedef BOOL( *TASKENUMPROCEX)(DWORD dwThreadId, WORD hMod16, WORD hTask16,

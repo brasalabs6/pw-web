@@ -538,17 +538,17 @@ void CShopItemSearcher::DoSearch(const ACString& strText)
 	if(pCommand)
 	{
 		ACString strOld = pCommand->GetPattern();
-		//	Member providers: the original pointed at constructor temporaries
-		//	(dangling); the port owns the objects with the same configuration.
+		//	Named locals: the setter clones synchronously (WikiSearcher.cpp),
+		//	so the original's temporaries were consumed in-statement.
 		if(!strOld.IsEmpty() && m_ResultID.size() && strText.Find(pCommand->GetPattern())>=0)
 		{
-			m_ShopProvider = ShopDataProvider(&m_BackupID[0],m_BackupID.size());
-			SetContentProvider(&m_ShopProvider);
+			ShopDataProvider shopProvider(&m_BackupID[0],m_BackupID.size());
+			SetContentProvider(&shopProvider);
 		}
 		else
 		{
-			m_WikiProvider = WikiElementDataProvider(ID_SPACE_ESSENCE);
-			SetContentProvider(&m_WikiProvider);
+			WikiElementDataProvider wikiProvider(ID_SPACE_ESSENCE);
+			SetContentProvider(&wikiProvider);
 		}
 		
 		pCommand->SetPattern(strText);

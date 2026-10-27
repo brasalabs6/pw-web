@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DlgWikiByNameBase.h"
+#include "WikiSearchCommand.h"	//	the member provider types live here.
 #include "AUIListBox.h"
 
 class CDlgWikiFeature : public CDlgWikiByNameBase
@@ -34,4 +35,7 @@ protected:
 	
 private:
 	PAUILISTBOX m_pList;
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns the provider as a member with the same configuration.
+	WikiSerialDataProvider m_SerialProvider;
 };

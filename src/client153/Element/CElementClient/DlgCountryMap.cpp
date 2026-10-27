@@ -123,7 +123,7 @@ bool CDlgCountryMap::OnInitDialog()
 		if( pImg && pImg->GetImage() ) 
 			pImg->GetImage()->SetLinearFilter(true);
 	}
-	for( i=0;i<DOMAIN2_INFO::COUNTRY_COUNT;i++ )
+	for( int i=0;i<DOMAIN2_INFO::COUNTRY_COUNT;i++ )	//	original relied on MSVC for-scoping leakage.
 	{
 		_snprintf(szName, 40, "Lbl_Name%d", i+1);
 		DDX_Control(szName, m_pLbl_KingName[i]);

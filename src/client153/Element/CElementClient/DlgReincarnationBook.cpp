@@ -107,6 +107,7 @@ void CDlgReincarnationBook::Update()
 		}
 		if (tome.reincarnations[i].level < 105) bReach105EveryTime = false;
 	}
+	unsigned int i = tome.reincarnations.size();	//	original relied on MSVC for-scoping leakage.
 	while (true){
 		strTemp.Format("Txt_Reincar%d", i + 1);
 		pObj = GetDlgItem(strTemp);

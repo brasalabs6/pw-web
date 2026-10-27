@@ -15,12 +15,13 @@ AUI_BEGIN_EVENT_MAP(CDlgWikiAreaList, CDlgWikiItemListBase)
 AUI_END_EVENT_MAP()
 
 CDlgWikiAreaList::CDlgWikiAreaList()
+:m_SerialProvider(0, WikiGuideData().Area().size())
 {
 }
 
 bool CDlgWikiAreaList::OnInitDialog()
 {
-	SetContentProvider(&WikiSerialDataProvider(0, WikiGuideData().Area().size()));
+	SetContentProvider(&m_SerialProvider);
 	return CDlgWikiItemListBase::OnInitDialog();
 }
 

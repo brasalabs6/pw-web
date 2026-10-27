@@ -19,12 +19,13 @@ AUI_BEGIN_EVENT_MAP(CDlgWikiMonsterList, CDlgWikiItemListBase)
 AUI_END_EVENT_MAP()
 
 CDlgWikiMonsterList::CDlgWikiMonsterList()
+:m_EssenceProvider(ID_SPACE_ESSENCE)
 {
 }
 
 bool CDlgWikiMonsterList::OnInitDialog()
 {
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
+	SetContentProvider(&m_EssenceProvider);
 	return CDlgWikiItemListBase::OnInitDialog();
 }
 

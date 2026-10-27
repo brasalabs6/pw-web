@@ -5,6 +5,7 @@
 #pragma once
 
 #include "DlgWikiByNameBase.h"
+#include "WikiSearchCommand.h"	//	the member provider types live here.
 #include "AUILabel.h"
 #include "AUIListBox.h"
 #include "AUIStillImageButton.h"
@@ -68,4 +69,7 @@ private:
 	CDlgWikiBase* m_pDlgTask;
 
 	WikiItemProp* m_pEP;
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns the provider as a member with the same configuration.
+	WikiElementDataProvider m_EssenceProvider;
 };
