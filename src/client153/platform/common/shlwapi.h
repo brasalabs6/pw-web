@@ -12,6 +12,7 @@
 
 #include "Windows.h"
 #include <cstring>
+#include <sys/stat.h>
 
 inline LPSTR PathFindFileNameA(const char *path) {
   if (!path)
@@ -32,6 +33,12 @@ inline void PathStripPathA(char *path) {
 }
 
 //	File existence: the real filesystem check (the documented semantics).
+inline BOOL PathFileExistsA(const char *path) {
+  if (!path || !*path) return FALSE;
+  struct stat info;
+  return ::stat(path, &info) == 0 ? TRUE : FALSE;
+}
+
 inline BOOL PathFileExistsW(const wchar_t *path) {
   if (!path)
     return FALSE;

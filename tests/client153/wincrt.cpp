@@ -1,5 +1,6 @@
 #include "Windows.h"
 #include "dsound.h"
+#include "shlwapi.h"
 #include <cstddef>
 #include <stdexcept>
 
@@ -14,4 +15,6 @@ int main() {
     throw std::runtime_error("case-insensitive ordering");
   if (strcmpi("Align", "aLIGN") != 0 || strcmpi("Alpha", "beta") >= 0)
     throw std::runtime_error("strcmpi case-insensitive comparison");
+  if (!PathFileExistsA(".") || PathFileExistsA("") || PathFileExistsA(nullptr))
+    throw std::runtime_error("ANSI path existence");
 }

@@ -5,6 +5,7 @@
 static_assert(sizeof(D3DCAPS8) == 212, "D3DCAPS8 size");
 static_assert(D3D_OK == 0, "D3D success code");
 static_assert(D3DLOCK_READONLY == 0x0010, "D3D read-only lock flag");
+static_assert(D3DTSS_BORDERCOLOR == 15, "D3D border color state");
 static_assert(D3DCLEAR_TARGET == 1 && D3DCLEAR_ZBUFFER == 2, "D3D clear flags");
 static_assert((D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1) == 0x01c4,
               "transformed textured vertex format");
