@@ -8881,6 +8881,10 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DViewport.cpp",
       "sha256": "710682aee7f8a3233fabbb4de2dea75b589aae26089d585f156e5f447b4f52ab"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DLight.cpp",
+      "sha256": "6eeb5775382f8bb056584d5bd446487a922e375af68271db46d69658d5b5ae9d"
     }
   ],
   "adaptations": [
