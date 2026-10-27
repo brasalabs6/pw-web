@@ -36,6 +36,7 @@ class A3DSkySphere;
 class A3DViewport;
 class CECViewport;
 class CECGameRun;
+class CECScene;
 class CECPlayerMan;
 class CECNPCMan;
 class CECMatterMan;

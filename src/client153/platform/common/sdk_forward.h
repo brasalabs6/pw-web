@@ -12,6 +12,7 @@
 #define PW153_PLATFORM_SDK_FORWARD_H
 
 class A2DSpriteItem;
+class A3DAdditionalView;
 class A3DTerrain2Render;
 
 #endif // PW153_PLATFORM_SDK_FORWARD_H

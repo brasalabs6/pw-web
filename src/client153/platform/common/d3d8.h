@@ -20,6 +20,7 @@
 //	original D3DX headers wrap them.
 #include "A3DVector.h"
 #include "A3DMatrix.h"
+#include "A3DQuaternion.h"
 typedef A3DVECTOR3 D3DXVECTOR3;
 typedef A3DMATRIX4 D3DXMATRIX;
 typedef A3DQUATERNION D3DXQUATERNION;
@@ -135,6 +136,7 @@ struct D3DCAPS8 {
   float GuardBandTop;
   float GuardBandRight;
   float GuardBandBottom;
+  float ExtentsAdjust;
   DWORD StencilCaps;
   DWORD FVFCaps;
   DWORD TextureOpCaps;
@@ -145,9 +147,15 @@ struct D3DCAPS8 {
   DWORD MaxUserClipPlanes;
   DWORD MaxVertexBlendMatrices;
   DWORD MaxVertexBlendMatrixIndex;
-  float MinPointSize;
   float MaxPointSize;
-  DWORD TextureCaps2;
+  DWORD MaxPrimitiveCount;
+  DWORD MaxVertexIndex;
+  DWORD MaxStreams;
+  DWORD MaxStreamStride;
+  DWORD VertexShaderVersion;
+  DWORD MaxVertexShaderConst;
+  DWORD PixelShaderVersion;
+  float MaxPixelShaderValue;
 };
 
 struct IDirect3D8 : IUnknownD3D {

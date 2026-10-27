@@ -230,6 +230,15 @@ WASM. Foram ajustados nove includes que dependiam de resolução sem distinção
 de maiúsculas do Windows. Passaram 24 testes nativos e 19 WASM; o build de
 objetos seguinte está em andamento.
 
+Na compilação seguinte foram gerados 218/787 objetos WASM. Os primeiros
+erros de 77 e 47 unidades apontavam para declarações ausentes de `CECScene`
+e `A3DAdditionalView`; elas agora referenciam as classes reais existentes.
+O layout de `D3DCAPS8` também foi corrigido e conferido contra o header local
+do Wine: `client153_d3d8_caps` verifica tamanho e offsets em nativo e WASM.
+A unidade verificada avançou até outro include com caixa diferente
+(`A3DGdi.h`). Passaram 25 testes nativos e 20 WASM; a integração gráfica
+real e a contagem após essas correções ainda estão pendentes.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

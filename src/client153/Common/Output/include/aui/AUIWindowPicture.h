@@ -7,7 +7,7 @@
 #define _AUIWINDOWPICTURE_H_
 
 #include "AUIEditBox.h"
-#include "wndthreadmanager.h"
+#include "WndThreadManager.h"
 class A2DSprite;
 
 class CPWMessageTranslate
