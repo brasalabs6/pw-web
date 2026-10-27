@@ -209,7 +209,7 @@ void CChariot::ExtractChariotFromData()
 		}
 	}
 	
-	for (i=0;i<m_chariot_vec.size();i++)
+	for (unsigned int i=0;i<m_chariot_vec.size();i++)	//	original relied on MSVC for-scoping leakage.
 	{
 		for (unsigned int j=0;j<m_chariot_vec[i].size();j++)
 		{

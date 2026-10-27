@@ -1295,12 +1295,12 @@ unsigned long WINAPI  CExplorerMan::DownloadThread(LPVOID pDlgExplorer)
 {
 	CExplorerMan *hDlgExplorer = (CExplorerMan *)pDlgExplorer;
 	int iRet = -1;
-	__try
+	try
 	{
 		hDlgExplorer->ThreadRun();
 		iRet = 0;
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)
 	{
 		hDlgExplorer->m_hDownloadThread = NULL;
 		hDlgExplorer->m_dwDownloadThreadId =0;

@@ -1364,11 +1364,11 @@ void CECGameRun::CheckDefenceCode()
 			continue;
 		}
 
-		__try
+		try
 		{
 			CheckDefenceCodeImpl();
 		}
-		__except (glb_HandleException(GetExceptionInformation()))
+		catch (...)))
 		{
 			a_LogOutput(1, "exception occured in defence thread (@@CECGameRun::CheckDefenceCodeImpl)!");
 		}

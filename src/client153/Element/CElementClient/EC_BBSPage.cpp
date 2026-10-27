@@ -364,11 +364,11 @@ UINT WINAPI DownloadPage(LPVOID pParam)
 {
 	UINT ret;
 
-	__try
+	try
 	{
 		ret = _DownloadPageImpl(pParam);
 	}
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		a_LogOutput(1, "Exception occurred in DownloadPage thread... mini dumped!");
 	}
@@ -441,11 +441,11 @@ UINT WINAPI ParsePage(LPVOID pParam)
 	DownloadedPagesInfo* pageinfo=DownloadedPages.GetPagesInfo(page->m_iNewPageNumber);
 	pageinfo->AddRefInThread();
 		
-	__try
+	try
 	{
 		ret = _ParsePageImpl(page, pageinfo);
 	}
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		a_LogOutput(1, "Exception occurred in ParsePage thread... mini dumped!");
 	}

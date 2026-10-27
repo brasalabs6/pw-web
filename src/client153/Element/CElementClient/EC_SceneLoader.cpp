@@ -951,7 +951,7 @@ static DWORD WINAPI LoaderThreadFunc(LPVOID lpParam)
 
 #ifndef _NOMINIDUMP
 
-	__try
+	try
 	{
 
 #endif
@@ -960,9 +960,9 @@ static DWORD WINAPI LoaderThreadFunc(LPVOID lpParam)
 
 #ifndef _NOMINIDUMP
 
-	}	//	__try
+	}	//	try
 
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		::OutputDebugString(_AL("Exception occurred...\n"));
 		a_LogOutput(1, "Exception occurred... mini dumped in loader thread!");

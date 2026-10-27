@@ -34,7 +34,7 @@ BOOL WINAPI EnumProcs(PROCENUMPROC lpProc, LPARAM lParam) {
    if (Engine::GetInstance().HasToolHelp32() )
    {
 
-      __try {
+      try {
 
          // Get a handle to a Toolhelp snapshot of all processes.
          hSnapShot = Engine::GetInstance().CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -78,14 +78,15 @@ BOOL WINAPI EnumProcs(PROCENUMPROC lpProc, LPARAM lParam) {
                bFlag = FALSE;
          }
 
-      } __finally {
-		  if( hSnapShot )
-			CloseHandle(hSnapShot);
       }
+      //	__finally -> scope-exit cleanup (runs on both paths, matching the
+      //	original's semantics).
+      if( hSnapShot )
+		CloseHandle(hSnapShot);
 
    } else if (Engine::GetInstance().HasPSAPI() ) {
 
-      __try {
+      try {
 
          dwSize2 = 256 * sizeof(DWORD);
          do {
@@ -157,11 +158,11 @@ BOOL WINAPI EnumProcs(PROCENUMPROC lpProc, LPARAM lParam) {
             }
          }
 
-      } __finally {
-
-         if (lpdwPIDs)
-            HeapFree(GetProcessHeap(), 0, lpdwPIDs);
       }
+      //	__finally -> scope-exit cleanup (runs on both paths, matching the
+      //	original's semantics).
+      if (lpdwPIDs)
+         HeapFree(GetProcessHeap(), 0, lpdwPIDs);
    } else
       return FALSE;
 

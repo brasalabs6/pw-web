@@ -462,11 +462,11 @@ extern CRITICAL_SECTION	locker;
 static DWORD WINAPI DefenceThreadFunc(LPVOID lpParam)
 {
 	// Do nothing on defence thread
-	__try
+	try
 	{
 		g_pGame->GetGameRun()->CheckDefenceCode();
 	}
-	__except (glb_HandleException(GetExceptionInformation()))//(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)))//(EXCEPTION_EXECUTE_HANDLER)
 	{
 		a_LogOutput(1, "exception occured in defence thread (@CECGameRun::CheckDefenceCode)!");
 	}
@@ -514,7 +514,7 @@ static DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 	int iRet = -1;
 
 #ifndef _NOMINIDUMP	
-	__try
+	try
 	{
 #endif
 
@@ -522,7 +522,7 @@ static DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
 
 #ifndef _NOMINIDUMP	
 	}
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		::OutputDebugString(_AL("Exception occurred...\n"));
 		a_LogOutput(1, "Exception occurred in render thread... mini dumped!");
@@ -810,7 +810,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	
 #ifndef _NOMINIDUMP
 
-	__try
+	try
 	{
 
 #endif
@@ -1102,9 +1102,9 @@ _exit:
 
 #ifndef _NOMINIDUMP
 
-	}	//	__try
+	}	//	try
 
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		::OutputDebugString(_AL("Exception occurred...\n"));
 		a_LogOutput(1, "Exception occurred... mini dumped!");

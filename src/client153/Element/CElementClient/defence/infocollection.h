@@ -114,7 +114,7 @@ namespace Collector
 				unsigned int tuint = 0;
 				unsigned int t_ct;
 
-				__try {
+				try {
 					__asm rdtsc;
 					__asm mov t_ct, eax;
 					__asm mov tuint, edx;
@@ -123,7 +123,7 @@ namespace Collector
 					__asm sub edx, tuint;
 					__asm sbb eax, t_ct;
 					__asm mov t_ct, eax;
-				} __except( EXCEPTION_EXECUTE_HANDLER ) { 
+				} catch (...) { 
 					t_ct = 0;
 				}
 				engine.SetCPUCT(t_ct);

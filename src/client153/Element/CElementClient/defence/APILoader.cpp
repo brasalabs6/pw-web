@@ -406,7 +406,7 @@ bool APILoader::_Run(WORD id)
 	LPVOID entry = GetEntryParsed(id);
 	if ( !entry ) return false;
 	int r;
-	__try
+	try
 	{
 		__asm
 		{
@@ -415,7 +415,7 @@ bool APILoader::_Run(WORD id)
 			mov r,eax
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)
 	{
 		r = GetExceptionCode();
 	}
@@ -428,7 +428,7 @@ bool APILoader::_Run(WORD id, DWORD p1)
 	LPVOID entry = GetEntryParsed(id);
 	if ( !entry ) return false;
 	int r;
-	__try
+	try
 	{
 		__asm
 		{
@@ -438,7 +438,7 @@ bool APILoader::_Run(WORD id, DWORD p1)
 			mov r,eax
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)
 	{
 		r = GetExceptionCode();
 	}
@@ -451,7 +451,7 @@ bool APILoader::_Run(WORD id, DWORD p1, DWORD p2)
 	LPVOID entry = GetEntryParsed(id);
 	if ( !entry ) return false;
 	int r;
-	__try
+	try
 	{
 		__asm
 		{
@@ -462,7 +462,7 @@ bool APILoader::_Run(WORD id, DWORD p1, DWORD p2)
 			mov r,eax
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)
 	{
 		r = GetExceptionCode();
 	}
@@ -475,7 +475,7 @@ bool APILoader::_Run(WORD id, DWORD p1, DWORD p2, DWORD p3)
 	LPVOID entry = GetEntryParsed(id);
 	if ( !entry ) return false;
 	int r;
-	__try
+	try
 	{
 		__asm
 		{
@@ -487,7 +487,7 @@ bool APILoader::_Run(WORD id, DWORD p1, DWORD p2, DWORD p3)
 			mov r,eax
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	catch (...)
 	{
 		r = GetExceptionCode();
 	}
@@ -625,11 +625,11 @@ void WINAPI Register(WORD id, LPVOID entry)  { loader.Register(id, entry); }
 const char* WINAPI GetString(WORD id) { return loader.GetString(id); }
 bool WINAPI Parse(LPVOID buffer, DWORD size)
 {
-	__try
+	try
 	{
 		return loader.Parse(buffer, size);
 	}
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		APIData *data = (APIData *)buffer;
 		if (data == NULL)

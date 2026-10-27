@@ -106,15 +106,15 @@ public:
 	CParamImp(
 		ACString strName, 
 		DataType valInit, 
-		int nDisplayType = TYPE_NORMAL, 
+		int nDisplayType = CParam::TYPE_NORMAL, 
 		const CParamArray *pDisplayValues = NULL) 
-		: CParamImpBase<DataType>(strName, valInit, nDisplayType, pDisplayValues)
+		: CParamImpBase<DataType>(strName, valInit, nDisplayType, pDisplayValues)	//	qualified: dependent-base lookup.
 	{
 	}
 	virtual CParam * Clone() const 
 	{ 
 		CParamImp<DataType> *pNewParam =
-			new CParamImp<DataType>(GetName(), GetTrueValue(), GetDisplayType(), &GetDisplayValues());
+			new CParamImp<DataType>(this->GetName(), this->GetTrueValue(), this->GetDisplayType(), &this->GetDisplayValues());	//	this->: dependent-base lookup.
 		return pNewParam;
 	}
 };

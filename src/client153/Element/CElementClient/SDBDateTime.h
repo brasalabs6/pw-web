@@ -18,6 +18,7 @@
 #include <ATime.h>
 #include <AAssist.h>
 #include "SDBArchive.h"
+#include "widestr.h"	//	_stscanf maps to the 16-bit wide seam.
 #include <tchar.h>
 
 #pragma warning (disable : 4786)
@@ -150,18 +151,18 @@ public:
 	}
 	void FromString(ACString stringValue)
 	{
-		_stscanf(stringValue, _AL("%04u-%02u-%02u %02u:%02u:%02u"), 
+		pw153::platform::wide_sscanf(stringValue, _AL("%04u-%02u-%02u %02u:%02u:%02u"), 
 			&year_, &month_, &day_, &hour_, &minute_, &second_);
 	}
 	void FromStringDatePart(ACString stringValue)
 	{
-		_stscanf(stringValue, _AL("%04u-%02u-%02u"), 
+		pw153::platform::wide_sscanf(stringValue, _AL("%04u-%02u-%02u"), 
 			&year_, &month_, &day_);
 		hour_ = minute_ = second_ = 0;
 	}
 	void FromStringTimePart(ACString stringValue)
 	{
-		_stscanf(stringValue, _AL("%02u:%02u:%02u"), 
+		pw153::platform::wide_sscanf(stringValue, _AL("%02u:%02u:%02u"), 
 			&hour_, &minute_, &second_);
 		year_ = month_ = day_ = 0;
 	}

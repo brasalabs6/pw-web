@@ -458,11 +458,12 @@ void CDlgShopSearchBase::ClearSearchHint(bool bClearTxt)
 //////////////////////////////////////////////////////////////////////////
 
 
-CShopItemSearcher::CShopItemSearcher():m_pList(NULL)
+CShopItemSearcher::CShopItemSearcher()
+	:m_pList(NULL), m_EssenceProvider(ID_SPACE_ESSENCE), m_ByNameCommand(false)
 {
 	ResetSearchCommand();
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
-	SetSearchCommand(&WikiSearchItemByName(false)); // including equipment
+	SetContentProvider(&m_EssenceProvider);	//	member objects: the original pointed at constructor temporaries.
+	SetSearchCommand(&m_ByNameCommand); // including equipment
 }
 
 void CShopItemSearcher::OnBeginSearch()

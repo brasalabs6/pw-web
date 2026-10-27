@@ -590,7 +590,7 @@ LRESULT CPWBrowser::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
 VOID CALLBACK APCMoveWindowProc(ULONG_PTR dwParam)
 {
-	__try
+	try
 	{
 		CPWBrowser* pbrowser=(CPWBrowser*)dwParam;
 		if(IsWindow(pbrowser->m_hWnd))
@@ -598,7 +598,7 @@ VOID CALLBACK APCMoveWindowProc(ULONG_PTR dwParam)
 			pbrowser->MoveWindowOld();
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER )
+	catch (...)
 	{
 		
 	}
@@ -606,12 +606,12 @@ VOID CALLBACK APCMoveWindowProc(ULONG_PTR dwParam)
 
 VOID CALLBACK APCDestroyWindowProc(ULONG_PTR dwParam)
 {
-	__try
+	try
 	{
 		CPWBrowser* pbrowser=(CPWBrowser*)dwParam;
 		delete pbrowser;
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER )
+	catch (...)
 	{
 		
 	}

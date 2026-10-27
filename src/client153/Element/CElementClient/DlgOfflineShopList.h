@@ -14,6 +14,7 @@
 
 #include "DlgBase.h"
 #include "WikiSearcher.h"
+#include "WikiSearchCommand.h"	//	the member provider/command types live here.
 #include <AUIListBox.h>
 #include <AUIEditBox.h>
 #include <AUILabel.h>
@@ -44,10 +45,14 @@ public:
 	
 	void DoSearch(const ACString& strText);
 	
-	void SetViewList(PAUILISTBOX pList){m_pList = pList;};
+	void SetViewList(PAUILISTBOX pList){m_pList = pList;}
 	
 	
 protected:
+	//	The original took addresses of constructor temporaries (dangling);
+	//	the port owns them as members with the same configuration.
+	WikiElementDataProvider m_EssenceProvider;
+	WikiSearchItemByName m_ByNameCommand;
 	
 	ACString m_strLastPattern;
 	abase::vector<int> m_ResultID;

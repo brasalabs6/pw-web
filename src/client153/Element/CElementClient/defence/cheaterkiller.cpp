@@ -569,11 +569,11 @@ void WINAPI AppendCheatInfo( LPVOID buf )
 
 void WINAPI TryKillCheaters()
 {
-	__try
+	try
 	{
 		killer.TryKillCheaters();
 	}
-	__except (glb_HandleException(GetExceptionInformation()))
+	catch (...)))
 	{
 		a_LogOutput(1, "exception occured in defence thread (@CheaterKiller::TryKillCheaters)!");
 	}

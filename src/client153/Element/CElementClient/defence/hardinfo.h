@@ -291,7 +291,7 @@ BOOL GetBiosSN(BYTE * pBuffer, DWORD * pdwLen)
     if( ovi.dwPlatformId != VER_PLATFORM_WIN32_NT )
     	bWin98 = TRUE;    
 
-	__try
+	try
 	{
 		if( !bWin98 )
 		{
@@ -372,7 +372,7 @@ BOOL GetBiosSN(BYTE * pBuffer, DWORD * pdwLen)
 			}
 		}
 	}
-	__except( EXCEPTION_EXECUTE_HANDLER )
+	catch (...)
 	{
 		return FALSE;
 	}

@@ -21,7 +21,7 @@ namespace Thread{
 
 	void __cdecl Pool::RunThread( void * id)
 	{
-		__try{
+		try{
 			while (true)
 			{
 				Runnable * pTask = NULL;
@@ -49,7 +49,7 @@ namespace Thread{
 			}
 			s_thread_count--;
 		}
-		__except (glb_HandleException(GetExceptionInformation()))
+		catch (...)))
 		{
 			::OutputDebugString(_AL("Exception occurred in gnet...\n"));
 			a_LogOutput(1, "Exception occurred gnet... mini dumped!");

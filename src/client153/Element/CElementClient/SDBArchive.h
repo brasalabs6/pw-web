@@ -75,10 +75,11 @@ public:
 #endif
 	Archive& operator << ( int i )
 	{ Write(&i, sizeof(int)); return *this; }
-	Archive& operator << ( __int64 i )
-	{ Write(&i, sizeof(__int64)); return *this; }
-	Archive& operator << ( long l )
-	{ Write(&l, sizeof(LONG)); return *this; }
+	Archive& operator << ( std::int64_t i )
+	{ Write(&i, sizeof(std::int64_t)); return *this; }
+	//	The original's long overload was 32-bit - identical to the int
+	//	overload on this target (LONG is int32_t); removed to avoid the
+	//	redeclaration (same 4-byte behavior via the int overload).
 	Archive& operator << ( DWORD dw )
 	{ Write(&dw, sizeof(DWORD)); return *this; }
 	Archive& operator << ( float f )
@@ -119,10 +120,11 @@ public:
 #endif
 	Archive& operator >> ( int & i )
 	{ Read(&i, sizeof(int)); return *this; }
-	Archive& operator >> ( __int64 & i )
-	{ Read(&i, sizeof(__int64)); return *this; }
-	Archive& operator >> ( LONG & l )
-	{ Read(&l, sizeof(LONG)); return *this; }
+	Archive& operator >> ( std::int64_t & i )
+	{ Read(&i, sizeof(std::int64_t)); return *this; }
+	//	The original's long& overload was 32-bit - identical to the int&
+	//	overload on this target (LONG is int32_t); removed to avoid the
+	//	redeclaration (same 4-byte behavior via the int& overload).
 	Archive& operator >> ( DWORD & dw )
 	{ Read(&dw, sizeof(DWORD)); return *this; }
 	Archive& operator >> ( float & f )
