@@ -8889,6 +8889,14 @@
     {
       "path": "Angelica2/Angelica3D/Source/A2DSprite.cpp",
       "sha256": "64ff57f8d84317057b2a441c822873f8d2012a20ce61ae2ec704bb68836aa69c"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp",
+      "sha256": "3ce573fef64708b9ba53ecd6c914acef28ff803f55ee0d8c2901b43977ad8dd1"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Header/AMPI.h",
+      "sha256": "0545aaf4b9c5467b9cacad92671755fd6bb4ea4b1b813238cc58f1b37b5ccf04"
     }
   ],
   "adaptations": [

@@ -51,11 +51,12 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A2DSprite.cpp
     Angelica2/Angelica3D/Source/A3DSkinModel.cpp
     Angelica2/Angelica3D/Source/A3DSkin.cpp
-    Angelica2/Angelica3D/Source/A3DLight.cpp)
+    Angelica2/Angelica3D/Source/A3DLight.cpp
+    Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp)
   target_include_directories(client153_engine_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
-    Angelica2/Output/amsdk/include
+    Angelica2/Output/amsdk/include Angelica2/AngelicaMedia/Header
     Angelica2/Output/3rdsdk/include)
   target_compile_features(client153_engine_original PRIVATE cxx_std_17)
   target_compile_definitions(client153_engine_original PRIVATE WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
