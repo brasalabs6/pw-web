@@ -6,6 +6,7 @@
 #include <set>
 #include <queue>
 #include <algorithm>
+#include <cstdio>
 #include <functional>
 
 #include "gnpassiveio.h"
@@ -13,8 +14,7 @@
 #include "gnmarshal.h"
 #include "gnthread.h"
 #include "gntimer.h"
-#define ZLIB_WINAPI
-#include "zlib.h"
+#include <zlib.h>
 
 namespace GNET
 {
@@ -109,7 +109,7 @@ public:
 			void Close() 
 			{ 
 				if (!Closing()){
-					_snprintf(errormsg, ERRSIZE, "Active close\n");
+					std::snprintf(errormsg, ERRSIZE, "Active close\n");
 					NetSession::Close();
 				}
 			}
@@ -216,7 +216,7 @@ public:
 				}
 				else
 				{
-					_snprintf(errormsg, 128, "Local timeout\n");
+					std::snprintf(errormsg, 128, "Local timeout\n");
 					NetSession::Close();
 				}
 			}
@@ -396,7 +396,7 @@ private:
 				is >> Marshal::Begin >> CompactUINT(type) >> CompactUINT(size) >> Marshal::Rollback;
 				if (!is.session->StatePolicy(type) || !is.session->manager->InputPolicy(type, size))
 				{
-					_snprintf(errormsg, ERRSIZE, "Policy violation type=%d size=%d\n", type, size);
+					std::snprintf(errormsg, ERRSIZE, "Policy violation type=%d size=%d\n", type, size);
 					throw Protocol::Exception();
 				}
 				is.check_policy = false;
@@ -414,7 +414,7 @@ private:
             if (protocol)
             {
 				protocol->Destroy();
-				_snprintf(errormsg, ERRSIZE, "Decode error %d\n", type);
+				std::snprintf(errormsg, ERRSIZE, "Decode error %d\n", type);
                 throw Protocol::Exception();
             }
 			is >> Marshal::Rollback;
@@ -471,13 +471,13 @@ public:
 	~ProtocolBinder()
 	{
 		Thread::RWLock::WRScoped l(locker_vector);
-		std::for_each(pv.begin(), pv.end(), std::mem_fun(&Protocol::Destroy));
+		std::for_each(pv.begin(), pv.end(), std::mem_fn(&Protocol::Destroy));
 	}
 	explicit ProtocolBinder(Type type) : Protocol(type) { }
 	ProtocolBinder(const ProtocolBinder &rhs) : Protocol(rhs)
 	{
 		Thread::RWLock::RDScoped l(rhs.locker_vector);
-		std::transform(rhs.pv.begin(), rhs.pv.end(), std::back_inserter(pv), std::mem_fun(&Protocol::Clone));
+		std::transform(rhs.pv.begin(), rhs.pv.end(), std::back_inserter(pv), std::mem_fn(&Protocol::Clone));
 	}
 	OctetsStream& marshal(OctetsStream &os) const
 	{

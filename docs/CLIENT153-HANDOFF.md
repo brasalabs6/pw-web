@@ -207,6 +207,14 @@ busca sem distinguir maiúsculas. Agora passam 22 testes nativos e 18 WASM.
 O ciclo atual compila objetos WASM para medir falhas posteriores à sintaxe;
 esses números não representam um executável ligado nem um cliente jogável.
 
+A primeira compilação de objetos deste ciclo gerou 122/787 objetos WASM;
+280 unidades paravam na ambiguidade de `recv`. As chamadas GNET foram
+adaptadas, e `client153_gnet_stream` usa sockets locais e a sessão original
+para testar envio e recebimento em nativo, também com ASan/UBSan. O mesmo
+teste foi compilado para objeto WASM, sem execução de transporte no browser.
+O probe usa o zlib do Emscripten em vez do cabeçalho do SDK Windows. Passaram
+23 testes nativos e 18 WASM; outra compilação de objetos está em andamento.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

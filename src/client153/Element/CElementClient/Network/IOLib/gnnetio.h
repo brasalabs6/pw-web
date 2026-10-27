@@ -1,6 +1,9 @@
 #ifndef __NETIO_H
 #define __NETIO_H
 
+#include <algorithm>
+#include <climits>
+#include <cstdio>
 #include <string>
 #include <map>
 
@@ -138,7 +141,7 @@ class StreamIO : public NetIO
 	void PollIn()
 	{		
 		int recv_bytes;
-		if ((recv_bytes = recv(fd, (char*)ibuf->end(), ibuf->capacity() - ibuf->size(), 0)) > 0)
+		if ((recv_bytes = recv(fd, (char*)ibuf->end(), static_cast<int>(std::min(ibuf->capacity() - ibuf->size(), static_cast<size_t>(INT_MAX))), 0)) > 0)
 		{
 			ibuf->resize(ibuf->size() + recv_bytes);
 			return;
@@ -148,14 +151,14 @@ class StreamIO : public NetIO
 		{
 			obuf->clear();
 			session->closing = true;
-			_snprintf(errormsg, ERRSIZE, "Pollin: errno=%d \n", err);
+			std::snprintf(errormsg, ERRSIZE, "Pollin: errno=%d \n", err);
 		}
 	}
 
 	void PollOut()
 	{
 		int send_bytes;
-		if ((send_bytes = send(fd,(const char*) obuf->begin(), obuf->size(), 0)) > 0)
+		if ((send_bytes = send(fd,(const char*) obuf->begin(), static_cast<int>(std::min(obuf->size(), static_cast<size_t>(INT_MAX))), 0)) > 0)
 		{
 			obuf->erase(obuf->begin(), (char*)obuf->begin() + send_bytes);
 			return;
@@ -164,7 +167,7 @@ class StreamIO : public NetIO
 		if(send_bytes!=SOCKET_ERROR || err!=WSAEWOULDBLOCK)
 		{
 			obuf->clear();
-			_snprintf(errormsg, 128, "Pollout: errno=%d \n", err);
+			std::snprintf(errormsg, 128, "Pollout: errno=%d \n", err);
 			session->closing = true;
 		}
 	}
@@ -215,7 +218,7 @@ class DgramClientIO : public NetIO
 	void PollIn()
 	{
 		int recv_bytes;
-		if ((recv_bytes = recv(fd, (char*)ibuf->end(), ibuf->capacity() - ibuf->size(),0)) > 0)
+		if ((recv_bytes = recv(fd, (char*)ibuf->end(), static_cast<int>(std::min(ibuf->capacity() - ibuf->size(), static_cast<size_t>(INT_MAX))),0)) > 0)
 		{
 			ibuf->resize(ibuf->size() + recv_bytes);
 			return;
@@ -231,7 +234,7 @@ class DgramClientIO : public NetIO
 		session->OnSend();
 		if (obuf->size())
 		{
-			sendto(fd, (const char*)obuf->begin(), obuf->size(), 0, peer, peer.GetLen());
+			::sendto(fd, static_cast<const void*>(obuf->begin()), obuf->size(), 0, static_cast<const sockaddr*>(peer), static_cast<socklen_t>(peer.GetLen()));
 			obuf->clear();
 		}
 		return session->closing ? -1 : IO_POLLIN;
@@ -300,7 +303,7 @@ class DgramServerIO : public NetIO
 			session->OnSend();
 			if (obuf->size())
 			{
-				sendto(fd, (const char*)obuf->begin(), obuf->size(), 0, sa, sa.GetLen());
+				::sendto(fd, static_cast<const void*>(obuf->begin()), obuf->size(), 0, static_cast<const sockaddr*>(sa), static_cast<socklen_t>(sa.GetLen()));
 				obuf->clear();
 			}
 			if (session->closing)

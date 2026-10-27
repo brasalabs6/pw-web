@@ -45,6 +45,11 @@ def source_path(root, adapted_root, relative):
     return root / relative
 
 
+def portable_include_dirs(root, includes):
+    windows_zlib = root / 'Angelica2' / 'Output' / '3rdsdk' / 'include' / 'zlib'
+    return [path for path in includes if path != windows_zlib]
+
+
 def object_command(command, object_dir, source_path):
     digest = hashlib.sha256(source_path.encode('utf-8')).hexdigest()
     return [part for part in command if part != '-fsyntax-only'] + [
@@ -87,6 +92,7 @@ def main():
     tools = {t.attrib['Name']: t.attrib for t in config.findall('Tool')}
     cc = tools['VCCLCompilerTool']
     includes = [resolve_windows(project.parent, p) for p in cc['AdditionalIncludeDirectories'].split(';')]
+    includes = portable_include_dirs(root, includes)
     if args.adapted_root:
         #	Mirror every reference include dir that exists in the adapted
         #	tree, ahead of the reference, so include chains stay inside the
@@ -127,7 +133,7 @@ def main():
         forced += ['-include', str(sdk_forward.resolve())]
     entry = resolve_windows(project.parent, args.entry)
     entry_path = source_path(root, adapted_root, entry.relative_to(root))
-    command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar'] + forced + [str(entry_path)]
+    command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar', '-sUSE_ZLIB=1'] + forced + [str(entry_path)]
     if args.port_root:
         for path in port_include_dirs(args.port_root):
             if not path.is_dir():

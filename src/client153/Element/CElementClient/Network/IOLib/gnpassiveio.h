@@ -1,6 +1,8 @@
 #ifndef __PASSIVEIO_H
 #define __PASSIVEIO_H
 
+#include <strings.h>
+
 #include <sys/types.h>
 
 #include "gnconf.h"
@@ -26,7 +28,7 @@ class PassiveIO : PollIO
 	{
 		if (type == STREAM)
 		{
-			SOCKET s = accept(fd, 0, 0);
+			SOCKET s = accept(fd, nullptr, static_cast<int*>(nullptr));
 			if (s != INVALID_SOCKET)
 			{
 				Thread::Mutex::Scoped l(PollIO::LockerNew());
@@ -71,7 +73,7 @@ public:
 		SOCKET s;
 		char optval = 1;
 		Type t;
-		if (!stricmp(type.c_str(), "tcp"))
+		if (!strcasecmp(type.c_str(), "tcp"))
 		{
 			t = STREAM;
 			s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -97,7 +99,7 @@ public:
 			optval = atoi(conf->find(section, "listen_backlog").c_str());
 			listen (s, optval ? optval : SOMAXCONN);
 		}
-		else if (!stricmp(type.c_str(), "udp"))
+		else if (!strcasecmp(type.c_str(), "udp"))
 		{
 			t = DGRAM;
 			s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);

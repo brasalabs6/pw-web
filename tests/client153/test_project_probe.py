@@ -10,6 +10,12 @@ spec.loader.exec_module(probe)
 
 
 class ProjectPaths(unittest.TestCase):
+    def test_uses_toolchain_zlib_instead_of_windows_sdk_zlib(self):
+        root = Path('/reference')
+        windows_zlib = root / 'Angelica2/Output/3rdsdk/include/zlib'
+        other = root / 'other/zlib'
+        self.assertEqual(probe.portable_include_dirs(root, [windows_zlib, other]), [other])
+
     def test_prefers_adapted_source_and_falls_back_to_reference(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

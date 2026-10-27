@@ -18,10 +18,14 @@ bool PollIO::wakeup_flag = false;
 class Reader : public GNET::PollIO {
 public:
   explicit Reader(int socket) : PollIO(socket) {}
-  bool called = false;
+  int calls = 0;
 private:
   int UpdateEvent() override { return IO_POLLIN; }
-  void PollIn() override { called = true; }
+  void PollIn() override {
+    char byte;
+    if (recv(fd, &byte, 1, 0) != 1) throw std::runtime_error("recv");
+    ++calls;
+  }
 };
 
 int main() {
@@ -30,7 +34,9 @@ int main() {
   Reader reader(sockets[1]);
   if (send(sockets[0], "x", 1, 0) != 1) throw std::runtime_error("send");
   GNET::PollIO::Poll(10);
-  if (!reader.called) throw std::runtime_error("read event was not delivered");
+  if (reader.calls != 1) throw std::runtime_error("read event was not delivered");
+  GNET::PollIO::Poll(0);
+  if (reader.calls != 1) throw std::runtime_error("unexpected second read event");
   closesocket(sockets[0]);
   closesocket(sockets[1]);
 }

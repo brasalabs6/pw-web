@@ -1,6 +1,8 @@
 #ifndef __ACTIVEIO_H
 #define __ACTIVEIO_H
 
+#include <strings.h>
+
 #include "gnconf.h"
 #include "gnpollio.h"
 #include "gnnetio.h"
@@ -81,7 +83,7 @@ public:
 		SOCKET s;
 		int optval = 1;
 		Type t;
-		if (!stricmp(type.c_str(), "tcp"))
+		if (!strcasecmp(type.c_str(), "tcp"))
 		{
 			t = STREAM;
 			struct sockaddr_in *addr = sa;
@@ -101,7 +103,7 @@ public:
 			optval = atoi(conf->find(section, "tcp_nodelay").c_str());
 			if (optval) setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char*)&optval, sizeof(optval));
 		}
-		else if (!stricmp(type.c_str(), "udp"))
+		else if (!strcasecmp(type.c_str(), "udp"))
 		{
 			struct sockaddr_in *addr = sa;
 			memset(addr, 0, sizeof(*addr));
