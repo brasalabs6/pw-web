@@ -258,3 +258,8 @@ inline BOOL CloseHandle(HANDLE handle) {
 }
 
 #endif // PW153_PLATFORM_WINSYNC_H
+
+#ifndef CreateMutex
+#define CreateMutex(attributes, initialOwner, name) \
+  CreateMutexW(attributes, initialOwner, name)
+#endif

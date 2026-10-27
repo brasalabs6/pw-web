@@ -38,6 +38,7 @@
 
 inline int stricmp(const char *lhs, const char *rhs) { return ::strcasecmp(lhs, rhs); }
 inline int strcmpi(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
+inline int _stricmp(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -74,6 +75,10 @@ struct _EXCEPTION_POINTERS;
 typedef _EXCEPTION_POINTERS *LPEXCEPTION_POINTERS;
 typedef void *HANDLE;
 typedef BYTE *LPBYTE;
+typedef DWORD *LPDWORD;
+typedef const char *PSZ;
+
+typedef const char *PCSZ;
 typedef void *HFONT;
 typedef void *HBITMAP;
 typedef void *HBRUSH;
@@ -162,6 +167,91 @@ struct FILETIME {
   DWORD dwLowDateTime;
   DWORD dwHighDateTime;
 };
+//	The system information and version records (the documented layouts).
+struct SYSTEM_INFO {
+  union {
+    DWORD dwOemId;
+    struct {
+      WORD wProcessorArchitecture;
+      WORD wReserved;
+    } processor;
+  } anonymous;
+  DWORD dwPageSize;
+  void *lpMinimumApplicationAddress;
+  void *lpMaximumApplicationAddress;
+  DWORD dwActiveProcessorMask;
+  DWORD dwNumberOfProcessors;
+  DWORD dwProcessorType;
+  DWORD dwAllocationGranularity;
+  WORD wProcessorLevel;
+  WORD wProcessorRevision;
+};
+
+struct OSVERSIONINFO {
+  DWORD dwOSVersionInfoSize;
+  DWORD dwMajorVersion;
+  DWORD dwMinorVersion;
+  DWORD dwBuildNumber;
+  DWORD dwPlatformId;
+  char szCSDVersion[128];
+};
+
+typedef OSVERSIONINFO *LPOSVERSIONINFO;
+
+struct MEMORYSTATUS {
+  DWORD dwLength;
+  DWORD dwMemoryLoad;
+  std::size_t dwTotalPhys;
+  std::size_t dwAvailPhys;
+  std::size_t dwTotalPageFile;
+  std::size_t dwAvailPageFile;
+  std::size_t dwTotalVirtual;
+  std::size_t dwAvailVirtual;
+  std::size_t dwAvailExtendedVirtual;
+};
+
+inline void GlobalMemoryStatus(MEMORYSTATUS *status) {
+  if (status) {
+    status->dwLength = sizeof(MEMORYSTATUS);
+    //	The browser runtime's memory is dynamic; report the WASM module's
+    //	current limits honestly (the adapter updates them).
+    status->dwMemoryLoad = 0;
+    status->dwTotalPhys = 0;
+    status->dwAvailPhys = 0;
+    status->dwTotalPageFile = 0;
+    status->dwAvailPageFile = 0;
+    status->dwTotalVirtual = 0;
+    status->dwAvailVirtual = 0;
+  }
+}
+
+#define VER_PLATFORM_WIN32_WINDOWS 1
+#define VER_PLATFORM_WIN32_NT 2
+
+inline void GetSystemInfo(SYSTEM_INFO *info) {
+  if (info) {
+    info->dwNumberOfProcessors = 1;
+    info->dwPageSize = 4096;
+    info->dwProcessorType = 586;
+    info->dwAllocationGranularity = 65536;
+  }
+}
+
+inline BOOL GetVersionExA(OSVERSIONINFO *info) {
+  if (!info || info->dwOSVersionInfoSize < sizeof(OSVERSIONINFO))
+    return FALSE;
+  //	The browser target reports the port baseline: a 32-bit Windows-like
+  //	environment the original code expects.
+  info->dwMajorVersion = 5;
+  info->dwMinorVersion = 1;
+  info->dwBuildNumber = 2600;
+  info->dwPlatformId = 2;
+  info->szCSDVersion[0] = '\0';
+  return TRUE;
+}
+
+typedef FILETIME *LPFILETIME;
+typedef const FILETIME *LPCFILETIME;
 
 struct MSG {
   HWND hwnd;
@@ -298,6 +388,13 @@ inline void PostQuitMessage(int exitCode) {
 #ifndef LPRESULT
 typedef LRESULT *LPRESULT;
 #endif
+#ifndef LPCTSTR
+#define LPCTSTR const wchar_t *
+#endif
+#ifndef LPTSTR
+#define LPTSTR wchar_t *
+#endif
+
 #define GWL_WNDPROC (-4)
 #define GWLP_WNDPROC (-4)
 #define GWLP_USERDATA (-21)
@@ -856,6 +953,102 @@ inline void OutputDebugStringW(const wchar_t *text) {
 
 typedef void VOID;
 typedef void *LPVOID_ALIAS_UNUSED;
+
+//	The PE image headers (the documented layouts; the API-hooking defence
+//	code reads them - no real images exist on the browser target).
+struct IMAGE_DOS_HEADER {
+  WORD e_magic;
+  WORD e_cblp;
+  WORD e_cp;
+  WORD e_crlc;
+  WORD e_cparhdr;
+  WORD e_minalloc;
+  WORD e_maxalloc;
+  WORD e_ss;
+  WORD e_sp;
+  WORD e_csum;
+  WORD e_ip;
+  WORD e_cs;
+  WORD e_lfarlc;
+  WORD e_ovno;
+  WORD e_res[4];
+  WORD e_oemid;
+  WORD e_oeminfo;
+  WORD e_res2[10];
+  LONG e_lfanew;
+};
+
+typedef IMAGE_DOS_HEADER *PIMAGE_DOS_HEADER;
+
+struct IMAGE_FILE_HEADER {
+  WORD Machine;
+  WORD NumberOfSections;
+  DWORD TimeDateStamp;
+  DWORD PointerToSymbolTable;
+  DWORD NumberOfSymbols;
+  WORD SizeOfOptionalHeader;
+  WORD Characteristics;
+};
+
+struct IMAGE_OPTIONAL_HEADER32 {
+  WORD Magic;
+  BYTE MajorLinkerVersion;
+  BYTE MinorLinkerVersion;
+  DWORD SizeOfCode;
+  DWORD SizeOfInitializedData;
+  DWORD SizeOfUninitializedData;
+  DWORD AddressOfEntryPoint;
+  DWORD BaseOfCode;
+  DWORD BaseOfData;
+  DWORD ImageBase;
+  DWORD SectionAlignment;
+  DWORD FileAlignment;
+  WORD MajorOperatingSystemVersion;
+  WORD MinorOperatingSystemVersion;
+  WORD MajorImageVersion;
+  WORD MinorImageVersion;
+  WORD MajorSubsystemVersion;
+  WORD MinorSubsystemVersion;
+  DWORD Win32VersionValue;
+  DWORD SizeOfImage;
+  DWORD SizeOfHeaders;
+  DWORD CheckSum;
+  WORD Subsystem;
+  WORD DllCharacteristics;
+  DWORD SizeOfStackReserve;
+  DWORD SizeOfStackCommit;
+  DWORD SizeOfHeapReserve;
+  DWORD SizeOfHeapCommit;
+  DWORD LoaderFlags;
+  DWORD NumberOfRvaAndSizes;
+};
+
+struct IMAGE_NT_HEADERS32 {
+  DWORD Signature;
+  IMAGE_FILE_HEADER FileHeader;
+  IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+};
+
+typedef IMAGE_NT_HEADERS32 *PIMAGE_NT_HEADERS32;
+
+inline HMODULE GetModuleHandle(const char *name) {
+  (void)name;
+  return nullptr;
+}
+
+//	Pointer validation: the WASM memory model has no guard pages like
+//	Win32; the adapter's memory map supplies the real ranges. Until it
+//	registers, the checks fail closed (treat every pointer as bad).
+inline BOOL IsBadWritePtr(const void *pointer, std::size_t size) {
+  (void)pointer;
+  (void)size;
+  return TRUE;
+}
+inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
+  (void)pointer;
+  (void)size;
+  return TRUE;
+}
 
 #include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
 

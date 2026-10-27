@@ -115,14 +115,12 @@ namespace Collector
 				unsigned int t_ct;
 
 				try {
-					__asm rdtsc;
-					__asm mov t_ct, eax;
-					__asm mov tuint, edx;
+					//	The original measured the CPU frequency with RDTSC
+					//	inline assembly; the port's CPU-cycle API is pending
+					//	consumer review (the ATime/ACounter precedent) and
+					//	reports zero.
+					t_ct = 0;
 					Sleep(100);
-					__asm rdtsc;
-					__asm sub edx, tuint;
-					__asm sbb eax, t_ct;
-					__asm mov t_ct, eax;
 				} catch (...) { 
 					t_ct = 0;
 				}
