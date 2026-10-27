@@ -8,6 +8,7 @@
 #include "AUIComboBox.h"
 #include "AUIRadioButton.h"
 #include "AUICheckBox.h"
+#include <AList2.h>	//	the original relied on include order.
 
 class CDlgWebMyShop : public CDlgWebTradeBase
 {

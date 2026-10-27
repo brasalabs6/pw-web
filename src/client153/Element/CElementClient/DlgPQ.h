@@ -94,7 +94,7 @@ protected:
 	PAUILABEL m_pLab_Radio[NUM_PROFESSION+1];
 	int GetAllProfID(){ return NUM_PROFESSION; }
 
-	enum {PAGE_SIZE = 7, RANDOM_COUNT = 5};
+	enum {DLGPQ_PAGE_SIZE = 7, RANDOM_COUNT = 5};	//	DLGPQ_PAGE_SIZE renamed: the limits.h macro shreds the identifier.
 	struct RankListItemUI;
 	friend struct RankListItemUI;
 	struct RankListItemUI
@@ -115,7 +115,7 @@ protected:
 			Txt_Contribution->Show(bShow);
 		}
 	};
-	RankListItemUI m_rankListUI[PAGE_SIZE];
+	RankListItemUI m_rankListUI[DLGPQ_PAGE_SIZE];
 	PAUILABEL m_pTxt_Time;   // Estimated time left for another update of rank list
 	int m_lastProfSelected;  // Last selected radio button: equals to profession
 	PAUISCROLL m_pScl_List;  // Scroll bar to select part of current profession rank list

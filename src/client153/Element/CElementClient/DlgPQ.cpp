@@ -81,7 +81,7 @@ bool CDlgPQ::OnInitDialog()
 
 		DDX_Control("Txt_Time", m_pTxt_Time);
 		AString strText;
-		for (int i = 0; i < PAGE_SIZE; ++ i)
+		for (int i = 0; i < DLGPQ_PAGE_SIZE; ++ i)
 		{
 			RankListItemUI &item = m_rankListUI[i];
 
@@ -224,14 +224,14 @@ void CDlgPQ::RefreshRankUI()
 	bool bFirstShow = m_pScl_List->GetScrollBegin() == m_pScl_List->GetScrollEnd();
 	const RankList &rList = GetRankList(m_lastProfSelected);
 	int listSize = (int)rList.size();
-	if (listSize <= PAGE_SIZE)
+	if (listSize <= DLGPQ_PAGE_SIZE)
 	{
 		m_pScl_List->SetBarLevel(0);
 		m_pScl_List->Show(false);
 	}
 	else
 	{
-		m_pScl_List->SetScrollRange(0, listSize-PAGE_SIZE);
+		m_pScl_List->SetScrollRange(0, listSize-DLGPQ_PAGE_SIZE);
 		m_pScl_List->SetScrollStep(1);
 		m_pScl_List->SetBarLength(-1);
 		m_pScl_List->Show(true);
@@ -248,7 +248,7 @@ void CDlgPQ::RefreshRankUI()
 			if (item.roleid == GetHostPlayer()->GetCharacterID())
 			{
 				// Change start to my index
-				start = (i/PAGE_SIZE)*PAGE_SIZE;
+				start = (i/DLGPQ_PAGE_SIZE)*DLGPQ_PAGE_SIZE;
 				break;
 			}
 		}
@@ -258,7 +258,7 @@ void CDlgPQ::RefreshRankUI()
 	int digit(0);
 
 	// Update current rank list part (except Award info)
-	for (int i = 0; i < PAGE_SIZE; ++ i)
+	for (int i = 0; i < DLGPQ_PAGE_SIZE; ++ i)
 	{
 		int iRankItem = start+i;
 
@@ -342,7 +342,7 @@ void CDlgPQ::RefreshRankUI()
 
 		AString strFile;
 		ACString strHint;
-		int end = min(start+PAGE_SIZE, listSize);  // [start, end) corresponds to current display
+		int end = min(start+DLGPQ_PAGE_SIZE, listSize);  // [start, end) corresponds to current display
 		for (unsigned long i(0); i<pAwardInfo->m_ulRankingAwardNum; ++i)
 		{
 			const RANKING_AWARD &award = pAwardInfo->m_RankingAward[i];
@@ -358,7 +358,7 @@ void CDlgPQ::RefreshRankUI()
 				}
 			}
 
-			for (int j=0; j <PAGE_SIZE; ++j)
+			for (int j=0; j <DLGPQ_PAGE_SIZE; ++j)
 			{
 				int iRankItem = start+j;				
 				RankListItemUI & itemUI = m_rankListUI[j];
