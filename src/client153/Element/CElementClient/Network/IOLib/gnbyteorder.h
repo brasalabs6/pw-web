@@ -1,6 +1,8 @@
 #ifndef __BYTEORDER_H
 #define __BYTEORDER_H
 
+#include <cstdint>
+
 namespace GNET
 {
 
@@ -14,22 +16,13 @@ namespace GNET
 		//	Adapted from original Element/CElementClient/Network/IOLib/gnbyteorder.h : x86-only inline asm (='q' constraint) replaced with portable byte swap
 		return (unsigned short)((x << 8) | (x >> 8));
 	}
-	inline unsigned long byteorder_32(unsigned long x)
+	inline std::uint32_t byteorder_32(std::uint32_t x)
 	{
-		__asm__ ("bswap %0" : "=r"(x) : "0"(x));
-		return x;
+		return __builtin_bswap32(x);
 	}
-	inline unsigned long long byteorder_64(unsigned long long x)
+	inline std::uint64_t byteorder_64(std::uint64_t x)
 	{
-		union
-		{
-			unsigned long long __ll;
-			unsigned long __l[2];
-		} i, o;
-		i.__ll = x;
-		o.__l[0] = byteorder_32(i.__l[1]);
-		o.__l[1] = byteorder_32(i.__l[0]);
-		return o.__ll;
+		return __builtin_bswap64(x);
 	}
 #elif defined WIN32
 	inline unsigned __int16 byteorder_16(unsigned __int16 x)

@@ -2,6 +2,7 @@
 #define __MARSHAL_H
 
 #include <algorithm>
+#include <climits>
 #include <string>
 #include <vector>
 #include "gnbyteorder.h"
@@ -9,6 +10,9 @@
 
 namespace GNET
 {
+
+template<typename Container> class STLContainer;
+template<typename Container> STLContainer<Container> MarshalContainer(const Container &c);
 
 template<typename T>
 inline T& remove_const(const T &t) { return const_cast<T&>(t); }
@@ -47,9 +51,9 @@ public:
 			pop_byte(s);
 			return byteorder_16(s);
 		}
-		unsigned long pop_byte_32() const
+		std::uint32_t pop_byte_32() const
 		{
-			unsigned long l;
+			std::uint32_t l;
 			pop_byte(l);
 			return byteorder_32(l);
 		}
@@ -171,8 +175,10 @@ public:
 		OctetsStream& operator << (unsigned short x)     { return push_byte(byteorder_16(x)); }
 		OctetsStream& operator << (int x)                { return push_byte(byteorder_32(x)); }
 		OctetsStream& operator << (unsigned int x)       { return push_byte(byteorder_32(x)); }
+#if ULONG_MAX == UINT32_MAX
 		OctetsStream& operator << (long x)               { return push_byte(byteorder_32(x)); }
 		OctetsStream& operator << (unsigned long x)      { return push_byte(byteorder_32(x)); }
+#endif
 		OctetsStream& operator << (std::int64_t x)          { return push_byte(byteorder_64(x)); }
 		OctetsStream& operator << (std::uint64_t x) { return push_byte(byteorder_64(x)); }
 		OctetsStream& operator << (float x)              { return push_byte(byteorder_32(*(unsigned long*)&x)); }
@@ -252,6 +258,7 @@ public:
 			remove_const(x) = pop_byte_32();
 			return *this;
 		}
+#if ULONG_MAX == UINT32_MAX
 		const OctetsStream& operator >> (const long &x) const
 		{
 			remove_const(x) = pop_byte_32();
@@ -262,6 +269,7 @@ public:
 			remove_const(x) = pop_byte_32();
 			return *this;
 		}
+#endif
 		const OctetsStream& operator >> (const std::int64_t &x) const
 		{
 			remove_const(x) = pop_byte_64();
@@ -349,6 +357,23 @@ public:
 
 };
 
+class CompactUINT : public Marshal
+{
+	unsigned int *pi;
+public:
+	explicit CompactUINT(const unsigned int &i): pi(&remove_const(i)) { }
+
+	OctetsStream& marshal(OctetsStream &os) const
+	{
+		return os.compact_uint32(*pi);
+	}
+	const OctetsStream& unmarshal(const OctetsStream &os)
+	{
+		return os.uncompact_uint32(*pi);
+	}
+};
+
+
 template<typename Container>
 class STLContainer : public Marshal
 {
@@ -365,7 +390,7 @@ public:
 	const OctetsStream& unmarshal(const OctetsStream &os)
 	{
 		pc->clear();
-		size_t size;
+		unsigned int size;
 		for (os >> CompactUINT(size); size > 0; --size)
 		{
 			typename Container::value_type tmp;
@@ -382,21 +407,6 @@ inline STLContainer<Container> MarshalContainer(const Container &c)
 	return STLContainer<Container> (remove_const(c));
 }
 
-class CompactUINT : public Marshal
-{
-	unsigned int *pi;
-public:
-	explicit CompactUINT(const unsigned int &i): pi(&remove_const(i)) { }
-
-	OctetsStream& marshal(OctetsStream &os) const
-	{
-		return os.compact_uint32(*pi);
-	}
-	const OctetsStream& unmarshal(const OctetsStream &os)
-	{
-		return os.uncompact_uint32(*pi);
-	}
-};
 
 class CompactSINT : public Marshal
 {

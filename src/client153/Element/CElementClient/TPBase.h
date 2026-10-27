@@ -12,14 +12,10 @@
 struct NullType {};
 
 template<typename T1, typename T2>
-struct IsSameType
-{
-private:
-	template<typename U> struct Helper { enum { value = 0}; };
-	template<> struct Helper<T1> { enum { value = 1 }; };
-public:
-	enum { value = (Helper<T2>::value == 1 ? 1 : 0) };
-};
+struct IsSameType { enum { value = 0 }; };
+
+template<typename T>
+struct IsSameType<T, T> { enum { value = 1 }; };
 
 template<bool Value>
 struct Bool2Type

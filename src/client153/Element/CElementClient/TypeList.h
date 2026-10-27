@@ -127,7 +127,7 @@ namespace Private
 			typedef typename TTypeList::Head Head;
 			typedef typename TTypeList::Tail Tail;
 		public:
-			typedef typename TypeAtHelper<Index - 1>::In<Tail>::Result Result;
+			typedef typename TypeAtHelper<Index - 1>::template In<Tail>::Result Result;
 		};
 	};
 	template<> struct TypeAtHelper<0> 
@@ -145,7 +145,7 @@ namespace Private
 
 template<class TTypeList, DWORD Index> struct TypeAt
 {
-	typedef typename Private::TypeAtHelper<Index>::In<TTypeList>::Result Result;
+	typedef typename Private::TypeAtHelper<Index>::template In<TTypeList>::Result Result;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -170,7 +170,7 @@ template<> struct TypeList2PtrTypeList<NullType>
 template<class TTypeList>
 struct TypeList2ConstPtrTypeList
 {
-	typedef TypeList<typename const TTypeList::Head *, typename TypeList2ConstPtrTypeList<typename TTypeList::Tail>::Result> Result;
+	typedef TypeList<const typename TTypeList::Head *, typename TypeList2ConstPtrTypeList<typename TTypeList::Tail>::Result> Result;
 };
 template<> struct TypeList2ConstPtrTypeList<NullType>
 {
@@ -188,7 +188,7 @@ namespace Private
 		template<class TTypeList>
 		struct In
 		{
-			typedef TypeList<typename TTypeList::Head, typename HeadSubTypeListHelper<HeadN - 1>::In<TTypeList::Tail>::Result> Result;
+			typedef TypeList<typename TTypeList::Head, typename HeadSubTypeListHelper<HeadN - 1>::template In<TTypeList::Tail>::Result> Result;
 		};
 	};
 	template<> struct HeadSubTypeListHelper<0>
@@ -203,7 +203,7 @@ namespace Private
 template<class TTypeList, DWORD HeadN>
 struct HeadSubTypeList
 {
-	typedef typename Private::HeadSubTypeListHelper<HeadN>::In<TTypeList>::Result Result;
+	typedef typename Private::HeadSubTypeListHelper<HeadN>::template In<TTypeList>::Result Result;
 };
 
 

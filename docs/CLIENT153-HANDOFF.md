@@ -164,6 +164,17 @@ O probe agora seleciona a cópia adaptada também para `--entry`, com fallback
 para a referência quando ela não existe. Antes disso, esse modo podia reportar
 erros de um arquivo diferente daquele testado com `--all`.
 
+Na última varredura anterior à correção do GNET, 109 de 787 unidades passaram
+na checagem sintática; 146 paravam em `CompactUINT`. Sua definição agora
+precede o uso e o byte swap usa instruções portáveis com larguras explícitas.
+Uma unidade desse grupo avançou até os erros seguintes de threads e
+configuração. O teste `client153_gnet_marshal` confere os bytes de uma
+codificação e o round-trip de uma sequência em nativo e WASM; ele não é uma
+validação do protocolo ponta a ponta. Os cabeçalhos `TPBase.h` e `TypeList.h`
+também receberam correções de sintaxe, cobertas por `client153_typelist`.
+Após essas mudanças, passaram 19 testes nativos e 18 WASM. A nova varredura
+completa ainda precisa ser consultada para medir o impacto total.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

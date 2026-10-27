@@ -117,7 +117,7 @@ inline BOOL ReleaseSemaphore(HANDLE handle, LONG count, LONG *previous) {
 }
 
 //	Threads: std::thread with a completion event for the timed-join wait.
-#if defined(_MSC_VER) || defined(__EMSCRIPTEN__)
+#if defined(_MSC_VER)
 typedef unsigned(__stdcall *ThreadStart)(void *);
 #else
 typedef unsigned (*ThreadStart)(void *);
