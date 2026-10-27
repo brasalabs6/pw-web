@@ -28,6 +28,14 @@ int main() {
   wchar_t long_result[400];
   CHECK(pw153::platform::wide_sprintf(long_result, L"%s", long_text) == 300);
   CHECK(AWString(long_result) == long_text);
+  wchar_t bounded[5] = {L'?', L'?', L'?', L'?', L'!'};
+  CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abc") == 3);
+  CHECK(bounded[3] == 0 && bounded[4] == L'!');
+  CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abcd") == 4);
+  CHECK(bounded[3] == L'd' && bounded[4] == L'!');
+  CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abcdef") == -1);
+  CHECK(bounded[3] == L'd' && bounded[4] == L'!');
+  CHECK(pw153::platform::wide_snprintf(nullptr, 0, L"%s", L"x") == -1);
   char long_narrow[301];
   for (int i = 0; i < 300; ++i) long_narrow[i] = 'x';
   long_narrow[300] = 0;

@@ -92,7 +92,7 @@ wchar_t parse_spec(const wchar_t *&cursor, Spec &spec, va_list *args) {
 // Composes "%<flags>*.*<conv>" and formats through the narrow CRT, which
 // applies width/precision/padding; the ASCII result is then widened.
 template <typename Value>
-void emit_numeric(wchar_t *&out, const Spec &spec, const char *conversion,
+void emit_numeric(std::vector<wchar_t> &out, const Spec &spec, const char *conversion,
                   Value value) {
   char flags[8] = {0};
   std::size_t f = 0;
@@ -112,11 +112,11 @@ void emit_numeric(wchar_t *&out, const Spec &spec, const char *conversion,
   std::snprintf(narrow, sizeof(narrow), format, spec.width,
                 spec.hasPrecision ? spec.precision : -1, value);
   const std::size_t len = std::strlen(narrow);
-  widen_copy(out, narrow, len);
-  out += len;
+  for (std::size_t i = 0; i < len; ++i)
+    out.push_back(static_cast<unsigned char>(narrow[i]));
 }
 
-void pad_and_emit(wchar_t *&out, const wchar_t *body, std::size_t bodyLen,
+void pad_and_emit(std::vector<wchar_t> &out, const wchar_t *body, std::size_t bodyLen,
                   const Spec &spec) {
   const int width = spec.width;
   const std::size_t padding =
@@ -125,29 +125,29 @@ void pad_and_emit(wchar_t *&out, const wchar_t *body, std::size_t bodyLen,
           : 0;
   if (!spec.left)
     for (std::size_t i = 0; i < padding; ++i)
-      *out++ = L' ';
+      out.push_back(L' ');
   for (std::size_t i = 0; i < bodyLen; ++i)
-    *out++ = body[i];
+    out.push_back(body[i]);
   if (spec.left)
     for (std::size_t i = 0; i < padding; ++i)
-      *out++ = L' ';
+      out.push_back(L' ');
 }
 
 } // namespace
 
-int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
+static std::vector<wchar_t> wide_format_buffer(const wchar_t *format, va_list args) {
   va_list list;
   va_copy(list, args);
-  wchar_t *cursorOut = out;
+  std::vector<wchar_t> cursorOut;
   const wchar_t *cursor = format;
   while (*cursor) {
     if (*cursor != L'%') {
-      *cursorOut++ = *cursor++;
+      cursorOut.push_back(*cursor++);
       continue;
     }
     ++cursor;
     if (*cursor == L'%') {
-      *cursorOut++ = L'%';
+      cursorOut.push_back(L'%');
       ++cursor;
       continue;
     }
@@ -239,14 +239,14 @@ int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
       char narrow[32];
       std::snprintf(narrow, sizeof(narrow), "%p", value);
       const std::size_t len = std::strlen(narrow);
-      widen_copy(cursorOut, narrow, len);
-      cursorOut += len;
+      for (std::size_t i = 0; i < len; ++i)
+        cursorOut.push_back(static_cast<unsigned char>(narrow[i]));
       continue;
     }
     case L'n': {
       int *target = va_arg(list, int *);
       if (target)
-        *target = static_cast<int>(cursorOut - out);
+        *target = static_cast<int>(cursorOut.size());
       continue;
     }
     default:
@@ -257,9 +257,26 @@ int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
     }
     pad_and_emit(cursorOut, body, bodyLen, spec);
   }
-  *cursorOut = L'\0';
   va_end(list);
-  return static_cast<int>(cursorOut - out);
+  return cursorOut;
+}
+
+int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
+  const auto result = wide_format_buffer(format, args);
+  for (std::size_t i = 0; i < result.size(); ++i) out[i] = result[i];
+  out[result.size()] = 0;
+  return static_cast<int>(result.size());
+}
+
+int wide_snprintf(wchar_t *out, std::size_t count, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const auto result = wide_format_buffer(format, args);
+  va_end(args);
+  const std::size_t copied = result.size() < count ? result.size() : count;
+  for (std::size_t i = 0; i < copied; ++i) out[i] = result[i];
+  if (result.size() < count) out[result.size()] = 0;
+  return result.size() > count ? -1 : static_cast<int>(result.size());
 }
 
 namespace {

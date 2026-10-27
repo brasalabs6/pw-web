@@ -1166,7 +1166,7 @@ ACString EditBoxItemBase::Serialize() const
 	switch (m_type)
 	{
 	case enumEICoord:
-		_snwprintf(buf, 64, L"<%d><%d><%d><%d><", m_type, m_dwColor, m_bUnderLine, m_bSameColor ? m_dwColor : m_dwUnderLineColor);
+		pw153::platform::wide_snprintf(buf, 63, L"<%d><%d><%d><%d><", m_type, m_dwColor, m_bUnderLine, m_bSameColor ? m_dwColor : m_dwUnderLineColor);
 		str = buf + m_strName;
 		str += L"><";
 		str += m_strInfo;
@@ -1174,19 +1174,19 @@ ACString EditBoxItemBase::Serialize() const
 		break;
 
 	case enumEIImage:
-		_snwprintf(buf, 64, L"<%d><%d><%d><%d><%f><", m_type, m_dwColor, m_nImageIndex, m_nImageFrame, m_fImageScale);
+		pw153::platform::wide_snprintf(buf, 63, L"<%d><%d><%d><%d><%f><", m_type, m_dwColor, m_nImageIndex, m_nImageFrame, m_fImageScale);
 		str = buf + m_strInfo;
 		str += L">";
 		break;
 
 	case enumEIBox:
-		_snwprintf(buf, 64, L"<%d><%d><%d><%f><", m_type, m_dwColor, m_nColorboxWidth, m_fBoxHeightScale);
+		pw153::platform::wide_snprintf(buf, 63, L"<%d><%d><%d><%f><", m_type, m_dwColor, m_nColorboxWidth, m_fBoxHeightScale);
 		str = buf + m_strInfo;
 		str += L">";
 		break;
 
 	case enumEITask:
-		_snwprintf(buf, 64, L"<%d><", m_type);
+		pw153::platform::wide_snprintf(buf, 63, L"<%d><", m_type);
 		str = buf + m_strName;
 		str += L"><";
 		str += m_strInfo;
@@ -1194,7 +1194,7 @@ ACString EditBoxItemBase::Serialize() const
 		break;
 
 	default:
-		swprintf(buf, L"<%d><", m_type);
+		pw153::platform::wide_snprintf(buf, 63, L"<%d><", m_type);
 		str = buf + m_strInfo;
 		str += L">";
 		break;
