@@ -8885,6 +8885,10 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DLight.cpp",
       "sha256": "6eeb5775382f8bb056584d5bd446487a922e375af68271db46d69658d5b5ae9d"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A2DSprite.cpp",
+      "sha256": "64ff57f8d84317057b2a441c822873f8d2012a20ce61ae2ec704bb68836aa69c"
     }
   ],
   "adaptations": [
