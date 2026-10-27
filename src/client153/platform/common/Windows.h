@@ -616,6 +616,11 @@ inline void OutputDebugStringW(const wchar_t *text) {
   if (pw153::platform::utf16_to_utf8(text, narrow))
     std::fputs(narrow.c_str(), stderr);
 }
+#ifdef UNICODE
+#define OutputDebugString OutputDebugStringW
+#else
+#define OutputDebugString OutputDebugStringA
+#endif
 
 #define ZeroMemory(destination, length) memset((destination), 0, (length))
 #define CopyMemory(destination, source, length) memcpy((destination), (source), (length))
