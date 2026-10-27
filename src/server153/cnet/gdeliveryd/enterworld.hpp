@@ -54,34 +54,44 @@ class EnterWorld : public GNET::Protocol
 		// trace only). The single priority-101 pool worker was observed stuck
 		// while EnterWorld tasks starved in the queue (TaskQueueSize=7).
 		Log::log(LOG_DEBUG, "[enterworld] roleid=%d Process entered, acquiring usercontainer lock", roleid);
-		Thread::RWLock::WRScoped l(UserContainer::GetInstance().GetLocker());
-		Log::log(LOG_DEBUG, "[enterworld] roleid=%d lock acquired", roleid);
-		PlayerInfo * pinfo = UserContainer::GetInstance().FindRole(roleid);
-		if (NULL==pinfo)
+		PlayerInfo * pinfo = NULL;
+		UserInfo* user = NULL;
 		{
-			Log::log(LOG_DEBUG, "[enterworld] roleid=%d NOT in usercontainer (login state lost?)", roleid);
-			return;
-		}
-		if (pinfo->linksid!=sid || pinfo->localsid!=localsid )
-		{
-			Log::log(LOG_DEBUG, "[enterworld] roleid=%d session mismatch: pinfo(linksid=%d,localsid=%d) packet(sid=%d,localsid=%d)",
-				roleid, pinfo->linksid, pinfo->localsid, sid, localsid);
-			return;
-		}
-		UserInfo* user = pinfo->user;
-		if(user->status!=_STATUS_READYGAME)
-		{
-			Log::log(LOG_DEBUG, "[enterworld] roleid=%d user status=%d != READYGAME(%d)", roleid, user->status, _STATUS_READYGAME);
-			return;
-		}
-		user->status=_STATUS_ONGAME;
-		pinfo->ingame = true;
-		user->GetLocktime(locktime, timeout, settime);
+			Thread::RWLock::WRScoped l(UserContainer::GetInstance().GetLocker());
+			Log::log(LOG_DEBUG, "[enterworld] roleid=%d lock acquired", roleid);
+			pinfo = UserContainer::GetInstance().FindRole(roleid);
+			if (NULL==pinfo)
+			{
+				Log::log(LOG_DEBUG, "[enterworld] roleid=%d NOT in usercontainer (login state lost?)", roleid);
+				return;
+			}
+			if (pinfo->linksid!=sid || pinfo->localsid!=localsid )
+			{
+				Log::log(LOG_DEBUG, "[enterworld] roleid=%d session mismatch: pinfo(linksid=%d,localsid=%d) packet(sid=%d,localsid=%d)",
+					roleid, pinfo->linksid, pinfo->localsid, sid, localsid);
+				return;
+			}
+			user = pinfo->user;
+			if(user->status!=_STATUS_READYGAME)
+			{
+				Log::log(LOG_DEBUG, "[enterworld] roleid=%d user status=%d != READYGAME(%d)", roleid, user->status, _STATUS_READYGAME);
+				return;
+			}
+			user->status=_STATUS_ONGAME;
+			pinfo->ingame = true;
+			user->GetLocktime(locktime, timeout, settime);
 
-		Log::log(LOG_DEBUG, "[enterworld] roleid=%d dispatching to gameid=%d", roleid, pinfo->gameid);
-		GProviderServer::GetInstance()->DispatchProtocol(pinfo->gameid,this);
-		int now = Timer::GetTime();
-		FriendextinfoManager::GetInstance()->UpdateRoleLoginTime(pinfo,now);
+			Log::log(LOG_DEBUG, "[enterworld] roleid=%d dispatching to gameid=%d", roleid, pinfo->gameid);
+			GProviderServer::GetInstance()->DispatchProtocol(pinfo->gameid,this);
+			int now = Timer::GetTime();
+			FriendextinfoManager::GetInstance()->UpdateRoleLoginTime(pinfo,now);
+		}
+		// pw-web fix: everything below must run OUTSIDE the usercontainer
+		// lock. AnnouncePlayerOnline -> WalkUser takes a nested RDScoped on
+		// the same rwlock: glibc returns EDEADLK, the nested Scoped
+		// destructor unlocks anyway and the outer destructor unlocks AGAIN —
+		// the double-unlock corrupts the rwlock (observed live: every later
+		// WR acquisition blocks forever, EnterWorld starves at the lock).
 		//Announce Player Online
 		AnnouncePlayerOnline(*user);
 
