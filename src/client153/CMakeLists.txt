@@ -76,6 +76,7 @@ if(EMSCRIPTEN)
     Common/AUInterface2/AUIPicture.cpp
     Common/AUInterface2/AUIRadioButton.cpp
     Common/AUInterface2/A2DDotLine.cpp
+    Common/AUInterface2/A2DDotLineMan.cpp
     Common/AUInterface2/A3DAlterableSkinModel.cpp
     Common/AUInterface2/AUI.cpp
     Common/AUInterface2/AUICTranslate.cpp
