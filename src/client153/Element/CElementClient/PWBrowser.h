@@ -147,7 +147,7 @@ public:
 		{
 			READYSTATE rstate;
 			VARIANT_BOOL bBusy;
-			HRESULT hr1 = m_pWB2->get_ReadyState(&rstate);
+			HRESULT hr1 = m_pWB2->get_ReadyState((long*)&rstate);	//	the original passed READYSTATE* through the long* (MSVC pun).
 			HRESULT hr2 = m_pWB2->get_Busy(&bBusy);
 			if(SUCCEEDED(hr1)&&SUCCEEDED(hr2))
 			{
@@ -173,7 +173,7 @@ public:
 		WaitForSingleObject(m_hUrlMutex,INFINITE);
 
 		if(((IWebBrowser2*)m_pWB2))
-			m_pWB2->QueryInterface(IID_IDispatch,(void**)&spDisp);
+			m_pWB2->QueryInterface(IID_IDispatch(),(void**)&spDisp);	//	the port exposes the GUID through an accessor.
 
 		ReleaseMutex(m_hUrlMutex);
 		return spDisp;
@@ -217,7 +217,7 @@ public:
 
 		CComPtr<IHTMLDocument> spDoc = GetDocument();
 		if (spDoc)
-			spDoc->QueryInterface(IID_IHTMLDocument2,(void**)&spDoc2);
+			spDoc->QueryInterface(IID_IHTMLDocument2(),(void**)&spDoc2);	//	the port exposes the GUID through an accessor.
 
 		ReleaseMutex(m_hUrlMutex);
 		return spDoc2;
@@ -244,7 +244,7 @@ public:
 		
 		CComPtr<IHTMLElement> spElement = GetElement();
 		if (spElement)
-			spElement->QueryInterface(IID_IHTMLElement2, (void **)&spElement2);
+			spElement->QueryInterface(IID_IHTMLElement2(), (void **)&spElement2);	//	the port exposes the GUID through an accessor.
 
 		ReleaseMutex(m_hUrlMutex);
 		return spElement2;
@@ -270,7 +270,7 @@ public:
 
 		CComPtr<IHTMLStyle> spStyle = GetStyle();
 		if (spStyle)
-			spStyle->QueryInterface(IID_IHTMLStyle2,(void**)&spStyle2);
+			spStyle->QueryInterface(IID_IHTMLStyle2(),(void**)&spStyle2);	//	the port exposes the GUID through an accessor.
 
 		ReleaseMutex(m_hUrlMutex);
 		return spStyle2;
@@ -283,7 +283,7 @@ public:
 
 		CComPtr<IHTMLStyle> spStyle = GetStyle();
 		if (spStyle)
-			spStyle->QueryInterface(IID_IHTMLStyle3,(void**)&spStyle3);
+			spStyle->QueryInterface(IID_IHTMLStyle3(),(void**)&spStyle3);	//	the port exposes the GUID through an accessor.
 
 		ReleaseMutex(m_hUrlMutex);
 		return spStyle3;
@@ -311,7 +311,7 @@ public:
 		if (spElement2)
 		{
 			long nScrollPos;
-			spElement2->get_scrollTop( &nScrollPos ); 
+			spElement2->get_scrollTop( (LONG*)&nScrollPos );	//	the original local was 32-bit LONG. 
 			ReleaseMutex(m_hUrlMutex);
 			return nScrollPos;
 		}
@@ -348,7 +348,7 @@ public:
 		
 		CComPtr<IHTMLElement2> spElement2 = GetElement2();
 		if (spElement2)
-			spElement2->put_scrollTop(nDelta);
+			spElement2->put_scrollTop((LONG)nDelta);
 
 		ReleaseMutex(m_hUrlMutex);
 	}
@@ -418,7 +418,7 @@ private:
 
 class ATL_NO_VTABLE CPWIEDocHostUIHandler :
 public CComObjectRootEx<CComSingleThreadModel>,//<CComMultiThreadModel>,
-public IDispatchImpl<IDocHostUIHandlerDispatch, &IID_IDocHostUIHandlerDispatch, &LIBID_ATLLib>
+public IDispatchImpl<IDocHostUIHandlerDispatch>	//	the adapter resolves the dispatch by type; the GUID params default.
 {
 public:
 	BEGIN_COM_MAP(CPWIEDocHostUIHandler)
@@ -519,8 +519,8 @@ public:
 
 class ATL_NO_VTABLE CPWIESink :
 public CComObjectRootEx<CComSingleThreadModel>,//<CComMultiThreadModel>,
-//public IDispatchImpl<IDocHostUIHandlerDispatch, &IID_IDocHostUIHandlerDispatch, &LIBID_ATLLib>,
-public IDispEventImpl<PWSINKID_FRONTEVENTS, CPWIESink, &DIID_DWebBrowserEvents2>
+//public IDispatchImpl<IDocHostUIHandlerDispatch>	//	the adapter resolves the dispatch by type.
+public IDispEventImpl<PWSINKID_FRONTEVENTS, CPWIESink>	//	the adapter binds the sink by type.
 {
 
 private:
@@ -555,20 +555,20 @@ public:
 
 	}
 	BEGIN_COM_MAP(CPWIESink)
-		COM_INTERFACE_ENTRY_IID(DIID_DWebBrowserEvents2, CPWIESink)
+		COM_INTERFACE_ENTRY_IID(DIID_DWebBrowserEvents2(), CPWIESink)
 		//COM_INTERFACE_ENTRY(IDispatch)
 	END_COM_MAP()
 		
 	BEGIN_SINK_MAP(CPWIESink)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, OnBeforeNavigate2)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_NAVIGATECOMPLETE2, OnNavigateComplete2)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_NEWWINDOW2, OnNewWindow2)	
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_NEWWINDOW3, OnNewWindow3)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_ONQUIT, OnQuit)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_WINDOWCLOSING, OnWindowClosing)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_FILEDOWNLOAD, OnFileDownLoad)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_NAVIGATEERROR, OnNavigateError)
-	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2, DISPID_DOCUMENTCOMPLETE, DocumentComplete)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_BEFORENAVIGATE2, OnBeforeNavigate2)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_NAVIGATECOMPLETE2, OnNavigateComplete2)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_NEWWINDOW2, OnNewWindow2)	
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_NEWWINDOW3, OnNewWindow3)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_ONQUIT, OnQuit)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_WINDOWCLOSING, OnWindowClosing)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_FILEDOWNLOAD, OnFileDownLoad)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_NAVIGATEERROR, OnNavigateError)
+	SINK_ENTRY_EX(PWSINKID_FRONTEVENTS, DIID_DWebBrowserEvents2(), DISPID_DOCUMENTCOMPLETE, DocumentComplete)
 	END_SINK_MAP()
 		
 	// OnBeforeNavigate2
@@ -644,7 +644,7 @@ public:
 
 class ATL_NO_VTABLE CPWBackIESink :
 public CComObjectRootEx<CComSingleThreadModel>,//<CComMultiThreadModel>,
-public IDispEventImpl<PWSINKID_BACKEVENTS, CPWBackIESink, &DIID_DWebBrowserEvents2>
+public IDispEventImpl<PWSINKID_BACKEVENTS, CPWBackIESink>	//	the adapter binds the sink by type.
 {
 private:
 	CComPtr<IUnknown> m_pUnkIE;
@@ -678,12 +678,12 @@ public:
 
 	}
 	BEGIN_COM_MAP(CPWBackIESink)
-		COM_INTERFACE_ENTRY_IID(DIID_DWebBrowserEvents2, CPWBackIESink)
+		COM_INTERFACE_ENTRY_IID(DIID_DWebBrowserEvents2(), CPWBackIESink)
 	END_COM_MAP()
 		
 	BEGIN_SINK_MAP(CPWBackIESink)
-	SINK_ENTRY_EX(PWSINKID_BACKEVENTS, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, OnBeforeNavigate2)
-	SINK_ENTRY_EX(PWSINKID_BACKEVENTS, DIID_DWebBrowserEvents2, DISPID_ONQUIT, OnQuit)
+	SINK_ENTRY_EX(PWSINKID_BACKEVENTS, DIID_DWebBrowserEvents2(), DISPID_BEFORENAVIGATE2, OnBeforeNavigate2)
+	SINK_ENTRY_EX(PWSINKID_BACKEVENTS, DIID_DWebBrowserEvents2(), DISPID_ONQUIT, OnQuit)
 	END_SINK_MAP()
 		
 	// OnBeforeNavigate2

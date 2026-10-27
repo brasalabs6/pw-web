@@ -24,7 +24,7 @@
 namespace pw153::platform {
 
 struct SyncObject {
-  enum class Kind { Event, Semaphore, Thread };
+  enum class Kind { Event, Semaphore, Thread, Mutex };
   explicit SyncObject(Kind k) : kind(k) {}
   virtual ~SyncObject() = default;
   const Kind kind;
@@ -67,6 +67,14 @@ inline void ResetEventState(WinEvent *event) {
   event->signaled = false;
 }
 
+struct WinMutex : SyncObject {
+  explicit WinMutex(bool initialOwned)
+      : SyncObject(Kind::Mutex), owned(initialOwned) {}
+  std::mutex mutex;
+  std::condition_variable cv;
+  bool owned;
+};
+
 } // namespace pw153::platform
 
 //	Events: real condition-variable backed flags.
@@ -90,6 +98,30 @@ inline BOOL ResetEvent(HANDLE handle) {
   if (!event)
     return FALSE;
   pw153::platform::ResetEventState(event);
+  return TRUE;
+}
+
+inline HANDLE CreateMutexW(void *attributes, BOOL initialOwner,
+                          const wchar_t *name) {
+  (void)name;
+  (void)attributes;
+  return new pw153::platform::WinMutex(initialOwner != 0);
+}
+
+inline HANDLE CreateMutexA(void *attributes, BOOL initialOwner,
+                          const char * /*name*/) {
+  return CreateMutexW(attributes, initialOwner, nullptr);
+}
+
+inline BOOL ReleaseMutex(HANDLE handle) {
+  auto *mutex = static_cast<pw153::platform::WinMutex *>(handle);
+  if (!mutex)
+    return FALSE;
+  std::lock_guard<std::mutex> lock(mutex->mutex);
+  if (!mutex->owned)
+    return FALSE;
+  mutex->owned = false;
+  mutex->cv.notify_all();
   return TRUE;
 }
 
@@ -179,6 +211,14 @@ inline DWORD WaitForSingleObject(HANDLE handle, DWORD milliseconds) {
     --semaphore->count;
     return WAIT_OBJECT_0;
   }
+  if (object->kind == pw153::platform::SyncObject::Kind::Mutex) {
+    auto *mutexObject = static_cast<pw153::platform::WinMutex *>(object);
+    std::unique_lock<std::mutex> lock(mutexObject->mutex);
+    if (!mutexObject->cv.wait_for(lock, timeout, [&] { return !mutexObject->owned; }))
+      return WAIT_TIMEOUT;
+    mutexObject->owned = true;
+    return WAIT_OBJECT_0;
+  }
   auto *thread = static_cast<pw153::platform::WinThread *>(object);
   {
     std::unique_lock<std::mutex> lock(thread->mutex);
@@ -200,6 +240,9 @@ inline BOOL CloseHandle(HANDLE handle) {
     return TRUE;
   case pw153::platform::SyncObject::Kind::Semaphore:
     delete static_cast<pw153::platform::WinSemaphore *>(object);
+    return TRUE;
+  case pw153::platform::SyncObject::Kind::Mutex:
+    delete static_cast<pw153::platform::WinMutex *>(object);
     return TRUE;
   case pw153::platform::SyncObject::Kind::Thread: {
     auto *thread = static_cast<pw153::platform::WinThread *>(object);

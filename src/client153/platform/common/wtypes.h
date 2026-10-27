@@ -15,13 +15,19 @@
 
 #include "Windows.h"
 
+struct IUnknown;
+
 typedef wchar_t OLECHAR;
 typedef OLECHAR *BSTR;
 typedef const OLECHAR *LPCOLESTR;
 typedef OLECHAR *LPOLESTR;
 typedef unsigned short VARIANT_BOOL;
+
+#define VARIANT_TRUE static_cast<VARIANT_BOOL>(0xFFFF)
+#define VARIANT_FALSE static_cast<VARIANT_BOOL>(0)
 typedef double DATE;
 typedef WORD VARTYPE;
+typedef DWORD TYMED;
 typedef std::int64_t LONGLONG;
 typedef std::int64_t LARGE_INTEGER_TYPE_UNUSED;
 typedef std::uint64_t ULONGLONG_;
@@ -63,5 +69,19 @@ struct tagVARIANT {
 #define VT_BSTR 8
 #define VT_BOOL 11
 #define VT_I8 20
+
+struct FORMATETC {
+  unsigned short clipFormat;
+  void *ptd;
+  DWORD aspect;
+  LONG index;
+  TYMED medium;
+};
+
+struct STGMEDIUM {
+  TYMED type;
+  void *unionPointer;
+  IUnknown *unknown;
+};
 
 #endif // PW153_PLATFORM_WTYPES_H

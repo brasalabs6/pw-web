@@ -1,0 +1,116 @@
+/*
+ * FILE: atlwin.h (platform seam)
+ *
+ * DESCRIPTION: The ATL windowing surface the browser-dialog wrapper uses
+ * (CWindow, the message-map macros and CWindowImpl through SafeWinImpl.h).
+ * The windowing types carry the documented members; the browser-dialog
+ * adapter (HTML overlay in the UI cycle) supplies the runtime - the message
+ * pump maps to the browser event loop.
+ *
+ * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.
+ */
+
+#ifndef PW153_PLATFORM_ATLWIN_H
+#define PW153_PLATFORM_ATLWIN_H
+
+#include "Windows.h"
+
+//	The ATL version gate SafeWinImpl.h checks.
+#define _ATL_VER 0x0800
+
+//	The ATL window state flags.
+#define WINSTATE_DESTROYED 0x00000002
+
+//	The windowing result and string types (the documented Win32 values).
+#ifndef LRESULT
+#define LRESULT LONG_PTR
+#endif
+#ifndef LPRESULT
+typedef LRESULT *LPRESULT;
+#endif
+#ifndef LPCTSTR
+#define LPCTSTR const wchar_t *
+#endif
+#define WS_OVERLAPPEDWINDOW 0x00CF0000L
+#define WS_POPUP 0x80000000L
+#define WS_CHILD 0x40000000L
+#define WS_VISIBLE 0x10000000L
+
+class CWindow {
+public:
+  CWindow() : m_hWnd(nullptr) {}
+  CWindow(HWND hWnd) : m_hWnd(hWnd) {}
+  operator HWND() const { return m_hWnd; }
+  HWND m_hWnd;
+};
+
+//\tThe message-map macros: the original expanded to ATL's message map
+//\tmachinery; the adapter's dispatch consumes the same entries.
+#define BEGIN_MSG_MAP(theClass) \
+public: \
+  LRESULT ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &handled) { \
+    (void)hWnd; (void)uMsg; (void)wParam; (void)lParam; handled = TRUE; \
+    LRESULT result = 0;
+#define MESSAGE_HANDLER(msg, func) \
+    if (uMsg == (msg)) { result = func(uMsg, wParam, lParam, handled); if (handled) return result; }
+#define END_MSG_MAP() \
+    return result; \
+  }
+
+#define DECLARE_WND_CLASS(className) \
+  static LPCTSTR GetWndClassName() { return className; }
+
+typedef LRESULT (*WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+
+//\tThe ATL control traits (the documented defaults).
+class CControlWinTraits {
+public:
+  static DWORD GetWndStyle(DWORD style) { return style | WS_CHILD | WS_VISIBLE; }
+  static DWORD GetWndExStyle(DWORD exStyle) { return exStyle; }
+};
+
+//\t_ATL_MSG: the current-message record SafeWinImpl threads through the
+//\twindow procedure.
+struct _ATL_MSG {
+  HWND hWnd;
+  UINT message;
+  WPARAM wParam;
+  LPARAM lParam;
+  _ATL_MSG *previous;
+  BOOL handled;
+  LRESULT result;
+  _ATL_MSG(HWND window, UINT msg, WPARAM wp, LPARAM lp)
+      : hWnd(window), message(msg), wParam(wp), lParam(lp),
+        previous(nullptr), handled(FALSE), result(0) {}
+};
+
+//\tCWindowImpl: the window implementation base. The adapter's dispatch
+//\tcreates the platform window (an overlay element on the browser target).
+template <class T, class Base = CWindow, class Traits = CControlWinTraits>
+class CWindowImpl : public Base {
+public:
+  HWND Create(HWND parent, RECT &bounds, LPCTSTR title = (LPCTSTR)0,
+              DWORD style = 0, DWORD exStyle = 0) {
+    (void)parent;
+    (void)bounds;
+    (void)title;
+    (void)style;
+    (void)exStyle;
+    //\tThe browser-dialog adapter supplies the real window; until it
+    //\tregisters, creation fails explicitly (no fake HWND).
+    m_hWnd = nullptr;
+    return m_hWnd;
+  }
+  BOOL DestroyWindow() { return TRUE; }
+  _ATL_MSG *m_pCurrentMsg = nullptr;
+  HWND m_hWnd = nullptr;
+  WNDPROC m_pfnSuperWindowProc = &DefWindowProcWrapper;
+  static LRESULT DefWindowProcWrapper(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    return ::DefWindowProc(hWnd, msg, wParam, lParam);
+  }
+  LRESULT DefWindowProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+    return ::DefWindowProc(m_hWnd, msg, wParam, lParam);
+  }
+};
+
+#endif // PW153_PLATFORM_ATLWIN_H

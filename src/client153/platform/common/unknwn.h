@@ -13,6 +13,17 @@
 
 #include "Windows.h"
 
+#define __RPC_FAR
+#define STDMETHODCALLTYPE
+
+#define STDMETHOD(method) virtual HRESULT method
+#define STDMETHOD_(type, method) virtual type method
+#define STDMETHODIMP HRESULT STDMETHODCALLTYPE
+#define STDMETHODIMP_(type) type STDMETHODCALLTYPE
+#define PURE = 0
+#define __stdcall
+#define STDMETHODCALLTYPE
+
 struct IUnknown {
   virtual ~IUnknown() = default;
   virtual HRESULT QueryInterface(const void *riid, void **ppvObject) = 0;

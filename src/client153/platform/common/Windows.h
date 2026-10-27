@@ -24,6 +24,8 @@
 #include "utf16.h"
 
 #include <algorithm>
+#include <unistd.h>	//	getcwd/chdir/mkdir.
+#include <sys/stat.h>	//	stat/mkdir.
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -125,6 +127,7 @@ struct RECT {
 };
 
 typedef RECT *LPRECT;
+typedef const RECT *LPCRECT;
 typedef DWORD COLORREF;
 typedef BOOL (*WNDENUMPROC)(HWND, LPARAM);
 struct GUITHREADINFO {
@@ -168,6 +171,8 @@ struct MSG {
   DWORD time;
   POINT pt;
 };
+
+typedef MSG *LPMSG;
 
 struct NOTIFYICONDATA {
   DWORD cbSize;
@@ -285,6 +290,219 @@ inline LONG InterlockedCompareExchange(volatile LONG *value, LONG exchange,
 inline void PostQuitMessage(int exitCode) {
   extern int pw153_quit_code;
   pw153_quit_code = exitCode;
+}
+
+#ifndef LRESULT
+#define LRESULT LONG_PTR
+#endif
+#ifndef LPRESULT
+typedef LRESULT *LPRESULT;
+#endif
+#define GWL_WNDPROC (-4)
+#define GWLP_WNDPROC (-4)
+#define GWLP_USERDATA (-21)
+#define GWL_STYLE (-16)
+#define GWL_USERDATA (-21)
+
+//	The cursor position: the input adapter supplies the real position;
+//	headless it stays at the origin.
+inline BOOL GetCursorPos(POINT *point) {
+  if (point) {
+    point->x = 0;
+    point->y = 0;
+  }
+  return TRUE;
+}
+inline BOOL ScreenToClient(HWND hWnd, POINT *point) {
+  (void)hWnd;
+  (void)point;
+  return TRUE;
+}
+inline BOOL ClientToScreen(HWND hWnd, POINT *point) {
+  (void)hWnd;
+  (void)point;
+  return TRUE;
+}
+
+//	The GetAncestor constants.
+#define GA_PARENT 1
+#define GA_ROOT 2
+#define GA_ROOTOWNER 3
+
+inline HWND GetAncestor(HWND hWnd, UINT flags) {
+  (void)hWnd;
+  (void)flags;
+  return nullptr;
+}
+
+//	The message sending: the adapter's dispatch supplies the real pump;
+//	headless messages have no handler.
+inline LRESULT SendMessageA(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  (void)hWnd;
+  (void)msg;
+  (void)wParam;
+  (void)lParam;
+  return 0;
+}
+inline LRESULT SendMessageW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  return SendMessageA(hWnd, msg, wParam, lParam);
+}
+
+//	File attributes: the real filesystem stat (the documented semantics).
+inline DWORD GetFileAttributesA(const char *name) {
+  if (!name)
+    return INVALID_FILE_ATTRIBUTES;
+  struct stat info;
+  if (stat(name, &info) != 0)
+    return INVALID_FILE_ATTRIBUTES;
+  DWORD attributes = FILE_ATTRIBUTE_NORMAL;
+  if (S_ISDIR(info.st_mode))
+    attributes = FILE_ATTRIBUTE_DIRECTORY;
+  return attributes;
+}
+inline DWORD GetFileAttributesW(const wchar_t *name) {
+  std::string narrow;
+  if (!pw153::platform::utf16_to_utf8(name ? name : L"", narrow))
+    return INVALID_FILE_ATTRIBUTES;
+  return GetFileAttributesA(narrow.c_str());
+}
+
+//	Window checks: the adapter's window registry supplies real windows;
+//	headless there are none.
+inline BOOL IsWindow(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+inline BOOL IsWindowVisible(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+
+//	Dynamic library loading: the browser target has no DLLs; the calls
+//	fail explicitly (the callers' null checks handle it).
+inline HMODULE LoadLibraryA(const char *name) {
+  (void)name;
+  return nullptr;
+}
+inline HMODULE LoadLibraryW(const wchar_t *name) {
+  (void)name;
+  return nullptr;
+}
+inline void *GetProcAddress(HMODULE module, const char *name) {
+  (void)module;
+  (void)name;
+  return nullptr;
+}
+inline BOOL FreeLibrary(HMODULE module) {
+  (void)module;
+  return TRUE;
+}
+inline HMODULE GetModuleHandleA(const char *name) {
+  (void)name;
+  return nullptr;
+}
+inline HMODULE GetModuleHandleW(const wchar_t *name) {
+  (void)name;
+  return nullptr;
+}
+
+//	The working directory: the real POSIX cwd over the wide path
+//	conversion (the documented Win32 semantics).
+inline DWORD GetCurrentDirectoryW(DWORD length, wchar_t *buffer) {
+  char narrow[MAX_PATH];
+  if (!getcwd(narrow, sizeof(narrow)))
+    return 0;
+  std::wstring wide;
+  if (!pw153::platform::utf8_to_utf16(narrow, wide))
+    return 0;
+  if (buffer && length > wide.size()) {
+    std::memcpy(buffer, wide.data(), wide.size() * sizeof(wchar_t));
+    buffer[wide.size()] = L'\0';
+  }
+  return static_cast<DWORD>(wide.size());
+}
+
+inline BOOL SetCurrentDirectoryW(const wchar_t *path) {
+  std::string narrow;
+  if (!pw153::platform::utf16_to_utf8(path ? path : L"", narrow))
+    return FALSE;
+  return chdir(narrow.c_str()) == 0 ? TRUE : FALSE;
+}
+
+inline DWORD GetCurrentDirectoryA(DWORD length, char *buffer) {
+  char narrow[MAX_PATH];
+  if (!getcwd(narrow, sizeof(narrow)))
+    return 0;
+  const DWORD size = static_cast<DWORD>(std::strlen(narrow));
+  if (buffer && length > size)
+    std::strcpy(buffer, narrow);
+  return size;
+}
+
+inline BOOL SetCurrentDirectoryA(const char *path) {
+  return chdir(path) == 0 ? TRUE : FALSE;
+}
+
+//	The MSVC _wfopen: opens through the UTF-8 path conversion (the same
+//	file the fopen path resolves).
+inline FILE *_wfopen(const wchar_t *path, const wchar_t *mode) {
+  std::string narrowPath;
+  if (!pw153::platform::utf16_to_utf8(path ? path : L"", narrowPath))
+    return nullptr;
+  std::string narrowMode;
+  if (!pw153::platform::utf16_to_utf8(mode ? mode : L"", narrowMode))
+    return nullptr;
+  return std::fopen(narrowPath.c_str(), narrowMode.c_str());
+}
+
+//	Window text: the documented Win32 accessors over the adapter's window
+//	registry (headless, the text is stored by the dialog adapter).
+inline BOOL SetWindowTextA(HWND hWnd, const char *text) {
+  (void)hWnd;
+  (void)text;
+  return TRUE;
+}
+inline BOOL SetWindowTextW(HWND hWnd, const wchar_t *text) {
+  (void)hWnd;
+  (void)text;
+  return TRUE;
+}
+inline int GetWindowTextA(HWND hWnd, char *text, int count) {
+  (void)hWnd;
+  if (text && count > 0)
+    text[0] = '\0';
+  return 0;
+}
+
+//	The default window procedure: the adapter's dispatch supplies the real
+//	one; headless, messages have no default handling.
+inline LRESULT DefWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  (void)hWnd;
+  (void)msg;
+  (void)wParam;
+  (void)lParam;
+  return 0;
+}
+
+//	Window data accessors: the documented Win32 semantics over the window
+//	registry the dialog adapter owns (no real windows exist headless).
+inline LONG GetWindowLong(HWND hWnd, int index) {
+  (void)hWnd;
+  (void)index;
+  return 0;
+}
+inline LONG SetWindowLong(HWND hWnd, int index, LONG value) {
+  (void)hWnd;
+  (void)index;
+  (void)value;
+  return 0;
+}
+
+inline LONG_PTR GetWindowLongPtr(HWND hWnd, int index) {
+  return GetWindowLong(hWnd, index);
+}
+inline LONG_PTR SetWindowLongPtr(HWND hWnd, int index, LONG_PTR value) {
+  return SetWindowLong(hWnd, index, static_cast<LONG>(value));
 }
 
 //	mmsystem's tick: the same platform clock as GetTickCount.
@@ -596,7 +814,7 @@ inline HANDLE CreateFileW(const wchar_t *name, DWORD access, DWORD share,
 }
 
 //	Directory creation: the real POSIX mkdir with the Win32 return contract.
-#include <sys/stat.h>	//	mkdir.
+#include <sys/stat.h>
 inline BOOL CreateDirectoryA(const char *path, void *attributes) {
   (void)attributes;
   if (!path || !path[0])
