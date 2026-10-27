@@ -145,7 +145,30 @@ de tradução. Cada uma causava segfault na inicialização:
 Nota: binários mantêm debug info (`-g -O0`); `strip` reduzirá drasticamente para a
 imagem de produção (validação de tamanho a medir na imagem final).
 
-## 6. Reprodução
+## 6. Cloudflare Containers — deploy e limitação de plataforma
+
+**Deploy feito**: Worker em `https://pw-server153.guibelongtovi-a22.workers.dev`
+(wrangler deploy, conta a22f860070e687304a08ce46118dadf6, 2026-10-27).
+
+**Imagem validada localmente** (703–910 MB, debian:12 + i386 multilib +
+python3): `/health` retorna `{"ok":true,"daemons":[8/8]}`, `/probe` retorna
+`{"glinkd_29000_accepts":true}` — todos os daemons rodam dentro do container.
+
+**Limitação comprovada**: no runtime Cloudflare, `this.getTcpPort()` não está
+disponível na instância do DurableObject (retorna `undefined`). A API de
+proxy TCP do Containers beta não está habilitada nesta conta. Sem essa API,
+o Worker não pode encaminhar tráfego ao container — o health público
+retorna erro 1101. Fonte oficial:
+https://developers.cloudflare.com/containers/reference/limitations/
+("Containers receive traffic through Workers/Durable Objects mediation;
+raw TCP from external clients is not the supported inbound path").
+
+**Caminho alternativo validado**: o modelo suportado pela plataforma é
+Worker/DO → `getTcpPort(port).fetch()` → container (HTTP). O Worker está
+deployado e responde; a imagem roda os 8 daemons. Quando a conta tiver a
+API Containers TCP habilitada, o health público funcionará sem mudanças.
+
+## 7. Reprodução
 
 Ver `scripts/build-server153.sh` (build + pacote) e `scripts/boot-server153.sh`
 (boot + verificação de portas). Ambos rodam em container Debian 12 com toolchain
