@@ -18,6 +18,7 @@
 
 class A3DFlatCollector;
 class A3DWireCollector;
+class AUIRichTextPrinter;
 struct TAG_OP_IN_PARAMS
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -375,28 +376,6 @@ protected:
 	ACHAR		m_cCode;
 };
 
-// TagParent type is ignored since 2011-11-24
-template <class Tag, class TagParent = Tag>
-class AUITagRegister
-{
-public:
-	AUITagRegister()
-	{
-		AUIRichTextPrinter::GetSingleton().RegisterTagtype(Tag());
-	}
-};
-
-// unregister of built-in types will be ignored
-template <class Tag>
-class AUITagUnregister
-{
-public:
-	AUITagUnregister()
-	{
-		AUIRichTextPrinter::GetSingleton().UnRegisterTagType(Tag());
-	}
-};
-
 class AUITAG_NODE
 {
 public:
@@ -446,6 +425,28 @@ protected:
 	AUITAG_NODE* m_pNodeRoot;
 	abase::hash_map<const char*, AUITAG_NODE*> m_mpNodesBuildIn;
 	abase::hash_map<const char*, AUITAG_NODE*> m_mpNodesCustom;
+};
+
+// TagParent type is ignored since 2011-11-24
+template <class Tag, class TagParent = Tag>
+class AUITagRegister
+{
+public:
+	AUITagRegister()
+	{
+		AUIRichTextPrinter::GetSingleton().RegisterTagtype(Tag());
+	}
+};
+
+// unregister of built-in types will be ignored
+template <class Tag>
+class AUITagUnregister
+{
+public:
+	AUITagUnregister()
+	{
+		AUIRichTextPrinter::GetSingleton().UnRegisterTagType(Tag());
+	}
 };
 
 class AUITextTagReturn : public AUITextTag
