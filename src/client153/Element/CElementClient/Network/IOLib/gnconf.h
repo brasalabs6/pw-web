@@ -7,10 +7,11 @@
 #include <string>
 #include <sys/stat.h>
 #include <cstdio>
+#include <strings.h>
+#include <unistd.h>
 
 #include "gnthread.h"
 
-#define R_OK 04
 
 namespace GNET
 {
@@ -26,7 +27,7 @@ private:
 	time_t mtime;
 	struct stringcasecmp
 	{
-		bool operator() (const string &x, const string &y) const { return stricmp(x.c_str(), y.c_str()) < 0; }
+		bool operator() (const string &x, const string &y) const { return strcasecmp(x.c_str(), y.c_str()) < 0; }
 	};
 	static Conf instance;
 	typedef std::map<key_type, value_type, stringcasecmp> section_hash;
@@ -37,12 +38,13 @@ private:
 	Conf() : mtime(0) { }
 	void reload()
 	{
-		struct _stat st;
+		struct stat st;
 		Thread::RWLock::WRScoped l(locker);
-		for ( _stat(filename.c_str(), &st); mtime != st.st_mtime; _stat(filename.c_str(), &st) )
+		while (stat(filename.c_str(), &st) == 0 && mtime != st.st_mtime)
 		{
-			mtime = st.st_mtime;
 			FILE *fp = fopen(filename.c_str(), "rt");
+			if (!fp) return;
+			mtime = st.st_mtime;
 			char buffer[1024] = {0};
 			string line;
 			section_type section;
@@ -92,7 +94,7 @@ public:
 	}
 	static Conf *GetInstance(const char *file = NULL)
 	{
-		if (file && _access(file, R_OK) == 0)
+		if (file && access(file, R_OK) == 0)
 		{
 			instance.filename = file;
 			instance.reload();

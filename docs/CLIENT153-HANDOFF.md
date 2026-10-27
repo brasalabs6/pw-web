@@ -156,9 +156,10 @@ opções de socket incorretas. O adaptador agora usa as constantes do sistema e
 desambigua as chamadas; o teste nativo `client153_winsock` verifica troca de
 bytes, `SO_TYPE` e leitura não bloqueante. Os 17 testes nativos e os 16 testes
 WASM existentes passaram; a sintaxe do adaptador foi verificada com `em++`.
-Isso não é uma prova de rede no navegador: `PollIO` usa `select(0, ...)`, que
-não monitora descritores no POSIX, e seu mecanismo de despertar usa UDP local.
-A adaptação do loop e o gateway WebSocket permanecem pendentes.
+Isso não é uma prova de rede no navegador. O `select(0, ...)` original foi
+corrigido para incluir os descritores POSIX e `client153_gnet_poll` confirma
+eventos de leitura em sockets nativos; seu mecanismo de despertar ainda usa
+UDP local. A adaptação do loop e o gateway WebSocket permanecem pendentes.
 
 O probe agora seleciona a cópia adaptada também para `--entry`, com fallback
 para a referência quando ela não existe. Antes disso, esse modo podia reportar
@@ -193,10 +194,18 @@ sintática passou em 112/787; 283 unidades passaram a parar em `min` sem
 namespace e 86 em `CreateEvent`. Essas duas causas foram adaptadas em seguida,
 mas a nova contagem global ainda está em andamento. O GNET usa eventos e
 semáforos existentes e cria threads destacadas; `client153_gnet_thread` testa
-eventos e semáforo nativamente. O pool, `select`, o despertar via UDP e o
+eventos e semáforo nativamente. O pool, o despertar via UDP e o
 transporte WebSocket não foram validados no navegador. Passaram 20 testes
 nativos e 18 WASM; as regras de itens alteradas ainda não foram testadas no
 gameplay.
+
+O ciclo seguinte passou em 120/787 unidades na verificação sintática; os
+maiores grupos eram nomes de diálogos (175) e configuração GNET (158). Foram
+adicionadas declarações antecipadas das classes já existentes e adaptada a
+leitura de configuração; `client153_gnet_conf` verifica a leitura real e a
+busca sem distinguir maiúsculas. Agora passam 22 testes nativos e 18 WASM.
+O ciclo atual compila objetos WASM para medir falhas posteriores à sintaxe;
+esses números não representam um executável ligado nem um cliente jogável.
 
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de

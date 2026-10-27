@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <winsock2.h>
 
 #include "gnthread.h"
 #include "gntimer.h"
@@ -111,20 +112,23 @@ public:
 			wakeup_flag  = false;
 			timeout = 0;
 		}
-		int nevents;		
+		int nfds = 0;
+		for (FDSet::const_iterator i = fdset.begin(); i != fdset.end(); ++i)
+			if ((*i)->fd >= nfds) nfds = (*i)->fd + 1;
+		int nevents;
 		if (timeout < 0){
-			nevents = select(0, &rfds, &wfds, &efds, NULL);
+			nevents = select(nfds, &rfds, &wfds, &efds, NULL);
 		}
 		else
 		{
 			struct timeval tv;
 			tv.tv_sec = timeout / 1000;
 			tv.tv_usec = (timeout - (tv.tv_sec * 1000)) * 1000;
-			nevents = select(0, &rfds, &wfds, &efds, &tv);
+			nevents = select(nfds, &rfds, &wfds, &efds, &tv);
 		}
 		wakeup_scope = false;
 		if (nevents > 0)
-			std::for_each(fdset.begin(), fdset.end(), std::ptr_fun(&TriggerEvent));
+			std::for_each(fdset.begin(), fdset.end(), &TriggerEvent);
 		FD_ZERO(&rfds); 
 		FD_ZERO(&wfds);
 		FD_ZERO(&efds);
@@ -181,7 +185,7 @@ class PollControl : public PollIO
 		sin.sin_addr.s_addr = inet_addr("127.0.0.1");
 		sin.sin_port = htons(0);
 
-		bind(s,(LPSOCKADDR)&sin,sizeof(sin));
+		bind(s,(LPSOCKADDR)&sin,static_cast<int>(sizeof(sin)));
 		struct sockaddr addr;
 		int len = sizeof(struct sockaddr);
 		getsockname(s,&addr, &len);

@@ -2,6 +2,8 @@
 #define __TIMER_H
 
 #include <vector>
+#include <algorithm>
+#include <functional>
 #include <time.h>
 
 namespace GNET
@@ -34,7 +36,7 @@ public:
 		time_t tmp = time(NULL);
 		if (tmp > now)
 		{
-			std::for_each(observers().begin(), observers().end(), std::mem_fun(&Observer::Update));	
+			std::for_each(observers().begin(), observers().end(), std::mem_fn(&Observer::Update));
 			now = tmp;
 		}
 	}
