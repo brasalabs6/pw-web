@@ -148,6 +148,27 @@ compilando para objetos WASM** (probe `objects-cycle8.json`).
 
 ## Estado atual do probe (cycle 8, 109/787)
 
+### Retomada: diagnóstico da rede
+
+O adaptador Winsock anterior redeclarava funções POSIX e usava constantes
+Winsock diretamente nas chamadas POSIX. Isso causava erros de compilação e
+opções de socket incorretas. O adaptador agora usa as constantes do sistema e
+desambigua as chamadas; o teste nativo `client153_winsock` verifica troca de
+bytes, `SO_TYPE` e leitura não bloqueante. Os 17 testes nativos e os 16 testes
+WASM existentes passaram; a sintaxe do adaptador foi verificada com `em++`.
+Isso não é uma prova de rede no navegador: `PollIO` usa `select(0, ...)`, que
+não monitora descritores no POSIX, e seu mecanismo de despertar usa UDP local.
+A adaptação do loop e o gateway WebSocket permanecem pendentes.
+
+O probe agora seleciona a cópia adaptada também para `--entry`, com fallback
+para a referência quando ela não existe. Antes disso, esse modo podia reportar
+erros de um arquivo diferente daquele testado com `--all`.
+
+Para reproduzir os testes, configure os builds nativo e WASM conforme o
+onboarding e execute `cmake --build <build>`, seguido de
+`ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;
+ele não comprova transporte WebSocket.
+
 Grupos restantes, em ordem: `IOMap`/`SOCKET` na cadeia GNET (os headers
 GNET usam `GNET::SockAddr` e `IOMap` próprios — ver `gnpollio.h`), `stricmp`
 (→ `strcasecmp`), `_stat` incompleto (→ `struct stat`), `size_t` vs

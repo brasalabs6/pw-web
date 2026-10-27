@@ -10,6 +10,20 @@ spec.loader.exec_module(probe)
 
 
 class ProjectPaths(unittest.TestCase):
+    def test_prefers_adapted_source_and_falls_back_to_reference(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            reference = root / 'reference'
+            adapted = root / 'adapted'
+            relative = Path('Element/client.cpp')
+            (reference / relative).parent.mkdir(parents=True)
+            (reference / relative).write_text('original')
+            self.assertEqual(probe.source_path(reference, adapted, relative), reference / relative)
+            (adapted / relative).parent.mkdir(parents=True)
+            (adapted / relative).write_text('adapted')
+            self.assertEqual(probe.source_path(reference, adapted, relative), adapted / relative)
+            self.assertEqual(probe.source_path(reference, None, relative), reference / relative)
+
     def test_first_compiler_error_is_grouped_without_local_paths(self):
         output = "/tmp/example/one.cpp:4:9: fatal error: 'Windows.h' file not found\nmore\n"
         self.assertEqual(probe.first_error(output), "fatal error: 'Windows.h' file not found")

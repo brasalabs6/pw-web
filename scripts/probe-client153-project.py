@@ -37,6 +37,14 @@ def port_include_dirs(port_root):
     return paths
 
 
+def source_path(root, adapted_root, relative):
+    if adapted_root:
+        adapted = adapted_root / relative
+        if adapted.is_file():
+            return adapted
+    return root / relative
+
+
 def object_command(command, object_dir, source_path):
     digest = hashlib.sha256(source_path.encode('utf-8')).hexdigest()
     return [part for part in command if part != '-fsyntax-only'] + [
@@ -116,7 +124,10 @@ def main():
     sdk_forward = args.port_root.parent / 'platform' / 'common' / 'sdk_forward.h' if args.port_root else None
     if sdk_forward and sdk_forward.is_file():
         forced += ['-include', str(sdk_forward.resolve())]
-    command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar'] + forced + [str(resolve_windows(project.parent, args.entry))]
+    adapted_root = args.adapted_root.resolve() if args.adapted_root else None
+    entry = resolve_windows(project.parent, args.entry)
+    entry_path = source_path(root, adapted_root, entry.relative_to(root))
+    command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar'] + forced + [str(entry_path)]
     if args.port_root:
         for path in port_include_dirs(args.port_root):
             if not path.is_dir():
@@ -134,16 +145,10 @@ def main():
     if args.all:
         if args.object_dir:
             args.object_dir.mkdir(parents=True, exist_ok=True)
-        source_index = command.index(str(resolve_windows(project.parent, args.entry)))
-        adapted_root = args.adapted_root.resolve() if args.adapted_root else None
+        source_index = command.index(str(entry_path))
         def compile_source(source):
             cmd = command.copy()
-            source_path = root / source['path']
-            if adapted_root:
-                adapted = adapted_root / source['path']
-                if adapted.is_file():
-                    source_path = adapted
-            cmd[source_index] = str(source_path)
+            cmd[source_index] = str(source_path(root, adapted_root, source['path']))
             if args.object_dir:
                 cmd = object_command(cmd, args.object_dir.resolve(), source['path'])
             try:
