@@ -15,7 +15,7 @@
 #include "EC_IvtrItem.h"
 #include "EC_Skill.h"
 #include "AFI.h"
-#include "AUIEditbox.h"
+#include "AUIEditBox.h"
 #include "AUICTranslate.h"
 #include "elementdataman.h"
 

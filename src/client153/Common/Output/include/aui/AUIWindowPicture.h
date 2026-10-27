@@ -6,7 +6,7 @@
 #ifndef _AUIWINDOWPICTURE_H_
 #define _AUIWINDOWPICTURE_H_
 
-#include "AUIEditbox.h"
+#include "AUIEditBox.h"
 #include "wndthreadmanager.h"
 class A2DSprite;
 

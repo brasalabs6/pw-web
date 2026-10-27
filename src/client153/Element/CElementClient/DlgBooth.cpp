@@ -5,7 +5,7 @@
 #include "AFI.h"
 #include "AUICTranslate.h"
 #include "AUIImagePicture.h"
-#include "AUIEditbox.h"
+#include "AUIEditBox.h"
 #include "AUICombobox.h"
 #include "DlgBooth.h"
 #include "DlgInputNO.h"

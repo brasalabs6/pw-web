@@ -7,7 +7,7 @@
 
 #include "DlgBase.h"
 #include "hashmap.h"
-#include "IOLib/Gnoctets.h"
+#include "IOLib/gnoctets.h"
 #include "AUIListBox.h"
 #include "AUIStillImageButton.h"
 #include "AUIDialog.h"

@@ -2,7 +2,7 @@
 // Creator	: Xiao Zhou
 // Date		: 2007/10/17
 
-#include "AUIEditbox.h"
+#include "AUIEditBox.h"
 #include "DlgAutoLock.h"
 #include "EC_GameUIMan.h"
 #include "EC_HostPlayer.h"

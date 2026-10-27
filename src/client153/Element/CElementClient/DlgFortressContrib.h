@@ -5,7 +5,7 @@
 #pragma once
 
 #include "DlgBase.h"
-#include "AUIEditbox.h"
+#include "AUIEditBox.h"
 
 class CDlgFortressContrib : public CDlgBase
 {

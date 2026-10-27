@@ -223,6 +223,13 @@ arquivos; a unidade usada para reprodução avançou para `a_sprintf`. Uma nova
 compilação de objetos está em andamento para medir o efeito global. A
 adaptação dos mapas ainda não foi validada em gameplay.
 
+Após os mapas, 192/787 unidades geraram objetos WASM. O erro mais frequente
+era a sintaxe de iteradores dependentes em `ec_observer.h`; ela foi corrigida
+e `client153_observer` verifica registro, notificações e remoção em nativo e
+WASM. Foram ajustados nove includes que dependiam de resolução sem distinção
+de maiúsculas do Windows. Passaram 24 testes nativos e 19 WASM; o build de
+objetos seguinte está em andamento.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

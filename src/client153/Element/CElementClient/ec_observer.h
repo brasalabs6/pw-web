@@ -36,7 +36,7 @@ template <typename Model>
 class CECObservable
 {
 public:
-	typedef typename CECObserver<typename Model>			Observer;
+	typedef CECObserver<Model>			Observer;
 
 private:
 	struct ObserverImpl
@@ -98,12 +98,12 @@ public:
 		return bRegistered;
 	}
 	bool UnregisterObserver(Observer *pObserver){
-		Observers::iterator it = std::find(m_observers.begin(), m_observers.end(), pObserver);
+		typename Observers::iterator it = std::find(m_observers.begin(), m_observers.end(), pObserver);
 		return UnregisterObserverImpl(it);
 	}
 	void NotifyObservers(const CECObservableChange *pChange){
 		const Model *pModel = AsModel();
-		Observers::iterator it = m_observers.begin();
+		typename Observers::iterator it = m_observers.begin();
 		while (it != m_observers.end()){
 			ObserverImpl &observerImpl = *it;
 			observerImpl.m_observer->OnModelChange(pModel, pChange);

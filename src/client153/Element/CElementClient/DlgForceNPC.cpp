@@ -19,7 +19,7 @@
 #include "EC_GameSession.h"
 #include "AUICTranslate.h"
 #include "EC_Utility.h"
-#include "AUIEditbox.h"
+#include "AUIEditBox.h"
 #include "EC_ForceMgr.h"
 
 #define new A_DEBUG_NEW
