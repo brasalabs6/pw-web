@@ -106,7 +106,7 @@ if(EMSCRIPTEN)
     Angelica2/Output/3rdsdk/include Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
     Angelica2/Output/afsdk/include Angelica2/Output/amsdk/include)
   target_compile_features(client153_aui_original PRIVATE cxx_std_17)
-  target_compile_definitions(client153_aui_original PRIVATE WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
+  target_compile_definitions(client153_aui_original PRIVATE WIN32 NDEBUG _LIB UNICODE _ANGELICA2 _CRT_SECURE_NO_WARNINGS)
   target_compile_options(client153_aui_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
