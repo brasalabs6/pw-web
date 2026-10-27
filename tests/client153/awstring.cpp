@@ -1,4 +1,5 @@
 #include "AWString.h"
+#include "widestr.h"
 #include <stdexcept>
 #define CHECK(x) do { if (!(x)) throw std::runtime_error(#x); } while (false)
 int main() {
@@ -16,6 +17,11 @@ int main() {
   AWString formatted;
   formatted.Format(L"%s %d %.2f %I64d %%", L"Lobo", 42, 1.25, 1234567890123LL);
   CHECK(formatted == L"Lobo 42 1.25 1234567890123 %");
+  AWString font(L"Fonte");
+  wchar_t font_record[256];
+  pw153::platform::wide_sprintf(font_record, L"%s###%d###%d###%d###%d",
+                                static_cast<const wchar_t*>(font), 1, 2, 0, 1);
+  CHECK(AWString(font_record) == L"Fonte###1###2###0###1");
   AWString number(L"9223372036854775807");
   CHECK(number.ToInt64() == 9223372036854775807LL);
 }

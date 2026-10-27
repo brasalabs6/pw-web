@@ -204,7 +204,7 @@ bool AUILabel::Save(FILE *file)
 
 	ACHAR szFontName[256];
 	a_sprintf(szFontName, _AL("%s###%d###%d###%d###%d"),
-		m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
+		(const ACHAR*)m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
 	int idStrFont = m_pParent->AddStringToTable(szFontName);
 	if( idStrFont < 0 ) return false;
 
