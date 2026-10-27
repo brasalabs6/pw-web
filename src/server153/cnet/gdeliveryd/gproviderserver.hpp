@@ -155,8 +155,13 @@ public:
 	static int FindGameServer(const point_t& pt, int worldtag)
 	{
 		Thread::RWLock::RDScoped	lock(instance.locker_gameservermap);
+		// pw-web trace: role placement evidence (which provider matches and why)
+		Log::log(LOG_DEBUG, "FindGameServer: pt=(%.1f,%.1f,%.1f) worldtag=%d candidates=%d",
+			pt.x, pt.y, pt.z, worldtag, instance.gameservermap.size());
 		for (GameServerMap::iterator it=instance.gameservermap.begin(); it!=instance.gameservermap.end(); it++)
 		{
+			Log::log(LOG_DEBUG, "FindGameServer: candidate id=%d tag=%d enclosed=%d",
+				(*it).first, (*it).second.worldtag, (*it).second.region.IsEnclosed(pt));
 			if ((*it).second.worldtag==worldtag && (*it).second.region.IsEnclosed(pt)) return (*it).first;
 		}
 		return _GAMESERVER_ID_INVALID;

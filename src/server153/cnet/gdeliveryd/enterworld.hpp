@@ -51,16 +51,28 @@ class EnterWorld : public GNET::Protocol
 	{
 		Thread::RWLock::WRScoped l(UserContainer::GetInstance().GetLocker());
 		PlayerInfo * pinfo = UserContainer::GetInstance().FindRole(roleid);
-		if (NULL==pinfo) return;
-		if (pinfo->linksid!=sid || pinfo->localsid!=localsid )
+		if (NULL==pinfo)
+		{
+			Log::log(LOG_DEBUG, "[enterworld] roleid=%d NOT in usercontainer (login state lost?)", roleid);
 			return;
+		}
+		if (pinfo->linksid!=sid || pinfo->localsid!=localsid )
+		{
+			Log::log(LOG_DEBUG, "[enterworld] roleid=%d session mismatch: pinfo(linksid=%d,localsid=%d) packet(sid=%d,localsid=%d)",
+				roleid, pinfo->linksid, pinfo->localsid, sid, localsid);
+			return;
+		}
 		UserInfo* user = pinfo->user;
 		if(user->status!=_STATUS_READYGAME)
+		{
+			Log::log(LOG_DEBUG, "[enterworld] roleid=%d user status=%d != READYGAME(%d)", roleid, user->status, _STATUS_READYGAME);
 			return;
+		}
 		user->status=_STATUS_ONGAME;
 		pinfo->ingame = true;
 		user->GetLocktime(locktime, timeout, settime);
 
+		Log::log(LOG_DEBUG, "[enterworld] roleid=%d dispatching to gameid=%d", roleid, pinfo->gameid);
 		GProviderServer::GetInstance()->DispatchProtocol(pinfo->gameid,this);
 		int now = Timer::GetTime();
 		FriendextinfoManager::GetInstance()->UpdateRoleLoginTime(pinfo,now);
