@@ -411,15 +411,9 @@ typedef LRESULT *LPRESULT;
 #define GWL_STYLE (-16)
 #define GWL_USERDATA (-21)
 
-//	The cursor position: the input adapter supplies the real position;
-//	headless it stays at the origin.
-inline BOOL GetCursorPos(POINT *point) {
-  if (point) {
-    point->x = 0;
-    point->y = 0;
-  }
-  return TRUE;
-}
+// The browser host supplies screen coordinates from pointer events.
+extern "C" void pw153_set_cursor_position(LONG x, LONG y);
+BOOL GetCursorPos(POINT *point);
 inline BOOL ScreenToClient(HWND hWnd, POINT *point) {
   (void)hWnd;
   (void)point;

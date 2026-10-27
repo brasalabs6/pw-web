@@ -138,7 +138,7 @@ if(EMSCRIPTEN)
     "-sMIN_WEBGL_VERSION=2" "-sMAX_WEBGL_VERSION=2"
     "-sMODULARIZE=1" "-sEXPORT_ES6=1" "-sENVIRONMENT=web"
     "-sFILESYSTEM=1" "-sALLOW_MEMORY_GROWTH=1"
-    "-sEXPORTED_FUNCTIONS=[_malloc,_free,_client_init,_client_load,_client_load_file,_client_texture,_client_texture_name,_client_texture_name_size,_client_mesh_count,_client_draw,_client_error,_client_dispose]"
+    "-sEXPORTED_FUNCTIONS=[_malloc,_free,_client_init,_client_load,_client_load_file,_client_texture,_client_texture_name,_client_texture_name_size,_client_mesh_count,_client_draw,_client_error,_client_dispose,_pw153_set_cursor_position]"
     "-sEXPORTED_RUNTIME_METHODS=[UTF8ToString,HEAPU8,FS]")
   set_target_properties(client153 PROPERTIES SUFFIX ".mjs" RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/browser")
   configure_file("${PROJECT_SOURCE_DIR}/web/client153/index.html" "${CMAKE_BINARY_DIR}/browser/index.html" COPYONLY)
