@@ -411,6 +411,13 @@ typedef LRESULT *LPRESULT;
 #define GWL_STYLE (-16)
 #define GWL_USERDATA (-21)
 
+inline int lstrlenW(const wchar_t *text) {
+  if (!text) return 0;
+  int length = 0;
+  while (text[length]) ++length;
+  return length;
+}
+
 // The browser host supplies screen coordinates from pointer events.
 extern "C" void pw153_set_cursor_position(LONG x, LONG y);
 BOOL GetCursorPos(POINT *point);
@@ -747,6 +754,13 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define WM_NCMOUSEMOVE 0x00A0
 #define WM_NCDESTROY 0x0082
 #define WM_STYLECHANGE 0x007D
+#define WM_INPUTLANGCHANGE 0x0051
+#define WM_IME_STARTCOMPOSITION 0x010D
+#define WM_IME_ENDCOMPOSITION 0x010E
+#define WM_IME_COMPOSITION 0x010F
+#define WM_IME_SETCONTEXT 0x0281
+#define WM_IME_NOTIFY 0x0282
+#define WM_IME_CHAR 0x0286
 #define WM_KEYDOWN 0x0100
 #define WM_KEYUP 0x0101
 #define WM_CHAR 0x0102
