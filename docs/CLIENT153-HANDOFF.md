@@ -401,3 +401,68 @@ os mesmos padrões do jogo (case/for-scoping/etc.).
   (root-owned, sem permissão de escrita, assets autorizados não estão
   mais lá) — builds voltaram para o workspace (8,6G livres); testes que
   dependem de assets pulam por design.
+
+---
+
+# Atualização do handoff — Grok → Codex (2026-10-27, quarta rodada)
+
+Estado até `8636c6de` (tudo pushed, árvore limpa). Campanha: **578/787 TUs
+do jogo (73,4%)** + AUI 25/46 no probe com `--extra-project`.
+
+## Commits desta rodada (pós-quota do Codex)
+
+- `02d66f0e` — WIP final do Codex validado (constantes D3DFVF_* com
+  static_assert) + o documento de retomada do Grok
+  (docs/CLIENT153-RESUMPTION-GROK.md)
+- `f16ed51f` — **o seam ATL completo** (a frente de 10 TUs que dois
+  subagentes não conseguiram): atlbase.h (CComPtr/CComQIPtr/CComBSTR/
+  CComVariant/CComObject/CComObjectRootEx/CComSingleThreadModel/
+  IDispatchImpl/IDispEventImpl, macros COM map/sink map, ativação COM via
+  registry de adaptadores — classes desconhecidas falham explicitamente),
+  atlwin.h (CWindow/message maps/CWindowImpl com o window-proc threading),
+  atlhost.h (CAxWindow/AtlAxGetControl), EXDISPID.H/exdisp.h (IWebBrowser2,
+  IDispatch, MSHTML document/element/style/input, GUIDs como accessores,
+  monikers de download), shlobj/shlwapi/htmlhelp seams. Os 10 TUs passaram
+  a barreira: 2 compilam limpos, 8 avançaram para erros individuais.
+- `8636c6de` — **o seam Psapi.h** (6 TUs): enumeração de processos falha
+  explicitamente com ERROR_CALL_NOT_IMPLEMENTED (o padrão tlhelp32); o bloco
+  RDTSC inline-asm reporta zero (API de ciclos pendente). Superfície Win32:
+  MEMORYSTATUS, SYSTEM_INFO, OSVERSIONINFO, headers PE, mutexes reais,
+  diretório de trabalho, atributos de arquivo, cursor, SendMessage,
+  LoadLibrary/GetProcAddress (falha explícita — sem DLLs no browser).
+
+## Próximos passos (na ordem)
+
+1. **Long tail dos 8+5 TUs das frentes atlbase/Psapi** — erros individuais:
+   EnumWin32Pro.cpp:84 "expected catch" (um `__except` residual do meu regex
+   SEH — verificar a forma), Process.cpp:11 identificador, replaceapi.cpp:15
+   GetModuleHandle (a forma sem sufixo — o seam tem GetModuleHandleA/W),
+   tracer.cpp:80 mais inline-asm MSVC (adaptar como o RDTSC), shlobj.h
+   E_FAIL (a ordem de include — o define E_FAIL precisa vir antes do uso),
+   ElementClient.cpp via EC_WinAPI.h (ShlObj.h resolvido, verificar o
+   próximo erro).
+2. **Grupos restantes do probe** (objects-resume2.json): varargs AWString
+   (8+3+3), Wininet.h (4), EL_GrassLand.h/A3DGfxEx.h (case variants),
+   A3DVECTOR3 temporários (3), AList2 (3), expected identifier (4).
+3. **O PRIMEIRO LINK REAL** (o marco m-link): com 578+ objetos, ligar o
+   entry ElementClient.cpp + libs do port (WASM builds em
+   build/client153-wasm-tests) + objetos AUI num módulo carregável. O
+   trial-link anterior deu 12 símbolos indefinidos, todos do jogo/AUI,
+   zero de plataforma. Os 12 somem quando os TUs deles compilarem.
+4. Depois: boot no Chromium headless (m-boot), caminho com servidor
+   (m-server), entrega (m-delivery).
+
+## Armadilhas desta rodada (novas)
+
+- **Structs antes das definições**: ao adicionar blocos ao Windows.h,
+  verificar a posição — LPMSG/PE headers quebraram porque referenciavam
+  tipos definidos depois. O Windows.h tem uma ordem interna (tipos →
+  structs → funções inline → includes de seams no fim).
+- **replace() silencioso**: um `s.replace()` sem match retorna a string
+  original sem erro — verificar `assert old in s` ANTES de confiar (o bloco
+  CSIDL/shlobj "foi adicionado" duas vezes sem ter sido).
+- **Comentário inline engolindo `);`**: de novo no A3DPlants — comentários
+  de adaptação SEMPRE em linha separada.
+- **Chamada de macro vs função**: os GUIDs como accessores exigem `()` em
+  cada call site (IID_IDispatch() etc.) — o Codex vai encontrar os que
+  faltam pelos erros "cannot take the address of an rvalue".
