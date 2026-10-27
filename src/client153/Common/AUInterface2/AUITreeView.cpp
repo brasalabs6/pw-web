@@ -575,8 +575,8 @@ bool AUITreeView::OnDlgItemMessage(UINT msg, WPARAM wParam, LPARAM lParam)
 	rcScroll.SetRect(rcScroll.left * fWindowScale, rcScroll.top * fWindowScale,
 		rcScroll.right * fWindowScale, rcScroll.bottom * fWindowScale);
 
-	int nItemIndent = max(1, (m_nItemIndent + m_nTextIndent) * fWindowScale);
-	int nItemHeight = max(1, m_nItemHeight + m_nLineSpace * fWindowScale);
+	int nItemIndent = max(1.0f, (m_nItemIndent + m_nTextIndent) * fWindowScale);
+	int nItemHeight = max(1.0f, m_nItemHeight + m_nLineSpace * fWindowScale);
 	int nLinesPP = (int)((m_rcText.Height() + m_nLineSpace * fWindowScale) / nItemHeight);
 
 	A3DRECT rcVScrollArea(m_nWidth - rcScroll.Width(), rcUp.Height(), m_nWidth, m_nHeight - rcDown.Height());
@@ -943,8 +943,8 @@ bool AUITreeView::Render(void)
 			cx = sLimit.cx / 2;
 			cy = sLimit.cy / 2;
 		}
-		int nItemIndent = max(1, (m_nItemIndent + m_nTextIndent) * fWindowScale);
-		int nItemHeight = max(1, m_nItemHeight + m_nLineSpace * fWindowScale);
+		int nItemIndent = max(1.0f, (m_nItemIndent + m_nTextIndent) * fWindowScale);
+		int nItemHeight = max(1.0f, m_nItemHeight + m_nLineSpace * fWindowScale);
 		
 		ptPos.x += m_nOffX;
 		ptPos.y += m_nOffY;
@@ -1158,8 +1158,8 @@ bool AUITreeView::RenderVScroll()
 		cx = sLimit.cx / 2;
 		cy = sLimit.cy / 2;
 	}
-	int nItemIndent = max(1, (m_nItemIndent + m_nTextIndent) * fWindowScale);
-	int nItemHeight = max(1, m_nItemHeight + m_nLineSpace * fWindowScale);
+	int nItemIndent = max(1.0f, (m_nItemIndent + m_nTextIndent) * fWindowScale);
+	int nItemHeight = max(1.0f, m_nItemHeight + m_nLineSpace * fWindowScale);
 	A3DRECT rcUp = m_pA2DSprite[AUITREEVIEW_RECT_UP]->GetItem(0)->GetRect();
 	A3DRECT rcDown = m_pA2DSprite[AUITREEVIEW_RECT_DOWN]->GetItem(0)->GetRect();
 	A3DRECT rcScroll = m_pA2DSprite[AUITREEVIEW_RECT_VSCROLL]->GetItem(0)->GetRect();
@@ -1925,8 +1925,8 @@ P_AUITREEVIEW_ITEM AUITreeView::HitTest(int x, int y, bool *pbOnIcon)
 	if( !m_rcText.PtInRect(x, y) )
 		return NULL;
 
-	int nItemIndent = max(1, (m_nItemIndent + m_nTextIndent) * fWindowScale);
-	int nItemHeight = max(1, m_nItemHeight + m_nLineSpace * fWindowScale);
+	int nItemIndent = max(1.0f, (m_nItemIndent + m_nTextIndent) * fWindowScale);
+	int nItemHeight = max(1.0f, m_nItemHeight + m_nLineSpace * fWindowScale);
 
 	x -= cx;
 	y -= cy;
@@ -1989,8 +1989,8 @@ bool AUITreeView::RebuildVisibleItems()
 	int cx = sLimit.cx / 2;
 	int cy = sLimit.cy / 2;
 	float fWindowScale = m_pParent->GetAUIManager()->GetWindowScale() * m_pParent->GetScale();
-	int nItemIndent = max(1, (m_nItemIndent + m_nTextIndent) * fWindowScale);
-	int nItemHeight = max(1, m_nItemHeight + m_nLineSpace * fWindowScale);
+	int nItemIndent = max(1.0f, (m_nItemIndent + m_nTextIndent) * fWindowScale);
+	int nItemHeight = max(1.0f, m_nItemHeight + m_nLineSpace * fWindowScale);
 	int nLinesPP = (m_nHeight - sLimit.cy + m_nLineSpace * fWindowScale) / nItemHeight;
 	A3DRECT rcScroll(0, 0, 0, 0);
 	if( m_pA2DSprite[AUITREEVIEW_RECT_VSCROLL] ) 
@@ -2099,7 +2099,7 @@ bool AUITreeView::AddVisibleItem(P_AUITREEVIEW_ITEM pItem)
 	if( m_pFont )
 	{
 		float fWindowScale = m_pParent->GetAUIManager()->GetWindowScale() * m_pParent->GetScale();
-		int nItemIndent = max(1, (m_nItemIndent + m_nTextIndent) * fWindowScale);
+		int nItemIndent = max(1.0f, (m_nItemIndent + m_nTextIndent) * fWindowScale);
 	
 		if( m_bAutoWrap )
 		{
@@ -2396,7 +2396,7 @@ bool AUITreeView::Resize()
 		nIconH = max(nIconH, m_pA2DSprite[AUITREEVIEW_RECT_LEAF]->GetHeight());
 	if (m_pA2DSprite[AUITREEVIEW_RECT_LEAFCHECK])
 		nIconH = max(nIconH, m_pA2DSprite[AUITREEVIEW_RECT_LEAFCHECK]->GetHeight());
-	m_nItemHeight = max(nTextH, nIconH*fWindowScale);	
+	m_nItemHeight = max((float)nTextH, nIconH*fWindowScale);
 
 	if( m_pAUIFrame )
 		m_pAUIFrame->SetScale(m_pParent->GetAUIManager()->GetWindowScale() * m_pParent->GetScale());
@@ -2557,7 +2557,7 @@ int AUITreeView::GetHitArea(int x, int y)
 int AUITreeView::GetLastVisibleItem()
 {
 	float fWindowScale = m_pParent->GetAUIManager()->GetWindowScale() * m_pParent->GetScale();
-	int nItemHeight = max(1, m_nItemHeight + m_nLineSpace * fWindowScale);
+	int nItemHeight = max(1.0f, m_nItemHeight + m_nLineSpace * fWindowScale);
 	int nLinesPP = (int)((m_rcText.Height() + m_nLineSpace * fWindowScale) / nItemHeight);
 	
 	int nStart = m_nFirstItem;
