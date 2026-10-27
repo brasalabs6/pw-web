@@ -481,5 +481,7 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 typedef void VOID;
 typedef void *LPVOID_ALIAS_UNUSED;
 
+#include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
+
 #endif // PW153_PLATFORM_WINDOWS_H
 
