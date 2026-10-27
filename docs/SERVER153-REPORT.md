@@ -127,6 +127,38 @@ de tradução. Cada uma causava segfault na inicialização:
    (`tests/server153_createrole_wire.cpp`, integrado ao `verify.sh`).
    Nota: `GRoleStatus.rank` (renomeado de `reserved2` pelo mesmo commit
    upstream) é compatível no wire enquanto vazio e permanece.
+10. **Spawn de personagem novo no mundo paralelo (design original, não
+    bug)**: a criação carrega o template da classe via
+    `GameDBManager::GetClsDetail` do storage `clsconfig`, importado a cada
+    boot do arquivo `cnet/gamedbd/clsconfig`. Tanto o arquivo vendored
+    (hrace009, 90KB) quanto o original do pacote PWBR (61KB, md5
+    dd08cebb…) fazem o spawn no **is61** (worldtag 161, `parallelworld_server
+    = 1` no gs.conf) — o novo personagem nasce no mundo paralelo por design
+    do reino original. Substituímos pelo arquivo original do pacote.
+11. **Arquitetura de fork do gs**: o binário `gs` faz fork de um processo
+    por instância (cmdline `gs01 … is61`) e o processo pai sai. A saída do
+    pai crasha com SIGFPE (backtrace gdb: `~ClassInfo` do `libskill.so`
+    apaga do registro de classes já destruído — ordem de destruição entre
+    DSOs; divisão por zero em `hashtab::get_hash`). Guard adicionado ao
+    `find` do hashtab (tabela vazia → end()); o caminho do `erase` na
+    saída permanece crashando de forma cosmética — os processos das
+    instâncias (netos) sobrevivem.
+12. **Corrupção do rwlock do UserContainer (bloqueava a entrada no mundo
+    — corrigido)**: `EnterWorld::Process` segurava o write lock e chamava
+    `AnnouncePlayerOnline → WalkUser`, que pega `RDScoped` aninhado no
+    MESMO rwlock. glibc retorna EDEADLK, o destrutor aninhado destrava, e
+    o destrutor externo destrava DE NOVO — o double-unlock corrompe a
+    contagem do rwlock e **todo write lock seguinte bloqueia para sempre**
+    (dump gdb: todas as threads em `pthread_rwlock_wrlock` sem nenhum
+    holder). Evidência completa: primeira tentativa de entrada trava, todo
+    EnterWorld seguinte morre de fome no lock (`TaskQueueSize` preso em 7,
+    pico 14122). Fix: side-effects fora da região travada (mesmo padrão do
+    fix anterior do StatusAnnounce). Commit 74df6d67.
+13. **Fila de prioridade 101 do gdeliveryd**: `EnterWorld`, `CreateRole` e
+    `RoleList` despacham com `PriorPolicy=101` para o pool de threads; o
+    conf commitado tem UM worker nessa prioridade. Um worker bloqueado
+    (ex.: pelo rwlock corrompido acima) matava o fluxo inteiro. Runtime
+    conf agora usa `(101,4)`.
 
 ### 4.3 Config/ambiente (documentados no `scripts/boot-server153.sh`)
 
@@ -177,26 +209,42 @@ imagem de produção (validação de tamanho a medir na imagem final).
 
 ## 6. Cloudflare Containers — deploy e limitação de plataforma
 
-**Deploy feito**: Worker em `https://pw-server153.guibelongtovi-a22.workers.dev`
-(wrangler deploy, conta a22f860070e687304a08ce46118dadf6, 2026-10-27).
+**Deploy feito** (2026-10-27, múltiplos): Worker em
+`https://pw-server153.guibelongtovi-a22.workers.dev`, imagem
+`pw-server153-server153-default` (480MB, debian:12 + i386 multilib) no
+registry da conta, container app `pw-server153` no estado `ready`.
 
-**Imagem validada localmente** (703–910 MB, debian:12 + i386 multilib +
-python3): `/health` retorna `{"ok":true,"daemons":[8/8]}`, `/probe` retorna
-`{"glinkd_29000_accepts":true}` — todos os daemons rodam dentro do container.
+**Imagem validada localmente** (docker run, mesmos binários da stack):
+`/health` retorna `{"ok":true,"daemons":[8/8]}` (incluindo uniquenamed —
+o primeiro build quebrava o storage dele: o cleanup do staging copiava o
+WDB `unamewdb` PELA METADE, "Initialize storage environment failed";
+corrigido removendo TODO estado de storage do staging) e `/probe` retorna
+`{"glinkd_29000_accepts":true}`.
 
-**Limitação comprovada**: no runtime Cloudflare, `this.getTcpPort()` não está
-disponível na instância do DurableObject (retorna `undefined`). A API de
-proxy TCP do Containers beta não está habilitada nesta conta. Sem essa API,
-o Worker não pode encaminhar tráfego ao container — o health público
-retorna erro 1101. Fonte oficial:
-https://developers.cloudflare.com/containers/reference/limitations/
-("Containers receive traffic through Workers/Durable Objects mediation;
-raw TCP from external clients is not the supported inbound path").
+**Bug nosso corrigido**: o worker chamava `this.getTcpPort()` — a API
+correta (docs: containers/api/durable-object-container) é
+`this.ctx.container.getTcpPort(port)` com `start({image, enableInternet})`
+para a política `durable_object`. A conclusão anterior de "API não
+disponível na conta" era um bug do worker. O worker agora também expõe
+`/tcpprobe` (`getTcpPort(29000).connect()` do DO — o caminho TCP de
+mediação que o gateway do ADR-0006 usará).
 
-**Caminho alternativo validado**: o modelo suportado pela plataforma é
-Worker/DO → `getTcpPort(port).fetch()` → container (HTTP). O Worker está
-deployado e responde; a imagem roda os 8 daemons. Quando a conta tiver a
-API Containers TCP habilitada, o health público funcionará sem mudanças.
+**Bloqueio atual (comprovado, plataforma)**: com o worker corrigido, o
+`container.start()` falha com a resposta literal do runtime:
+`"There is no container instance that can be provided to this Durable
+Object, try again later"` (HTTP 503 do nosso worker com o detail). Testado
+com instância `lite` (padrão) e `basic` (1GiB), com container app
+recriado do zero (`wrangler containers delete` + deploy) e em múltiplos
+deploys — o scheduler nunca fornece uma instância. O container app fica
+`ready` com 0 instâncias vivas. Sem acesso ao dashboard/suporte da conta
+para diagnosticar o lado da plataforma, o health público permanece
+indisponível: o worker responde 503 + Retry-After com o erro original.
+
+**Caminho alternativo validado**: o modelo suportado (Worker/DO →
+`getTcpPort().fetch()/connect()` → container) está implementado e
+responde; a imagem roda os 8 daemons localmente com health verde. Quando
+a conta obtiver instâncias (limite/capacidade/beta da plataforma), o
+health público funciona sem mudanças no worker.
 
 ## 7. Reprodução
 
