@@ -80,6 +80,7 @@ if(EMSCRIPTEN)
     Common/AUInterface2/AUILabel.cpp
     Common/AUInterface2/AUIModelPicture.cpp
     Common/AUInterface2/A3DFTFont.cpp
+    Common/AUInterface2/AUIDialog.cpp
     Common/AUInterface2/AUIPicture.cpp
     Common/AUInterface2/AUIRadioButton.cpp
     Common/AUInterface2/A2DDotLine.cpp
