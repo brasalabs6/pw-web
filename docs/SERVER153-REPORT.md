@@ -235,10 +235,14 @@ Durable Object, try again later"` (HTTP 503 do nosso worker com o detail).
 Elegibilidade verificada: a conta **está no Workers Paid** — o Worker usa
 Durable Object com storage SQLite (`new_sqlite_classes`), que a doc oficial
 exige plano Paid, e o deploy passa; o operador confirma a assinatura.
-Testado: instância default (lite), nome inválido `basic` corrigido (a lista
-válida de start() é lite/standard-1..4), app recriado do zero
-(`wrangler containers delete` + deploy), múltiplos deploys ao longo de ~8h,
-imagem 480MB no registry da conta, app `ready` com 0 instâncias vivas.
+Testado: instância default (lite) e **`standard-1`** (1/2 vCPU, 4 GiB —
+recusada com o MESMO erro, eliminando hipótese de tamanho), nome inválido
+`basic` corrigido (a lista válida de start() é lite/standard-1..4), app
+recriado do zero (`wrangler containers delete` + deploy), múltiplos
+deploys ao longo de ~8h, imagem 480MB no registry da conta, app `ready`
+com 0 instâncias vivas (API `/containers/applications`: active=0,
+starting=0; os endpoints de log/observabilidade exigem outro escopo de
+token).
 Ação necessária (só via dashboard/suporte): abrir ticket Cloudflare citando
 o erro literal, a conta `a22f860…` e o container app `pw-server153`.
 
