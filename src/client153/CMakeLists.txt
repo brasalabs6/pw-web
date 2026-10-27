@@ -7,6 +7,10 @@ if(EMSCRIPTEN)
   set(PW153_ZLIB_LINK "")
 else()
   find_package(ZLIB REQUIRED)
+
+#	The original client is a UTF-16 (MSVC wchar_t = 16-bit) build; the whole
+#	port compiles with the same width so the original wide sources are kept.
+add_compile_options(-fshort-wchar)
   set(PW153_ZLIB_LINK ZLIB::ZLIB)
 endif()
 

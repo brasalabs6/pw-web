@@ -22,6 +22,7 @@
 
 #include "ABaseDef.h"
 #include "AString.h"
+#include "AWString.h"
 
 #include <cstdlib>
 
@@ -32,6 +33,28 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #define ARAND_MAX	RAND_MAX
+
+#ifdef UNICODE
+	#define ACString		AWString
+	#define AS2AC(s)		AS2WC(s)
+	#define WC2AC(s)		AWString(s)
+	#define AC2AS(s)		WC2AS(s)
+	#define	AC2WC(s)		AWString(s)
+	#define AS2AC_CP(cp, s)	AS2WC(cp, s)
+	#define WC2AC_CP(cp, s)	AWString(s)
+	#define AC2AS_CP(cp, s)	WC2AS(cp, s)
+	#define	AC2WC_CP(cp, s)	AWString(s)
+#else
+	#define ACString		AString
+	#define AS2AC(s)		AString(s)
+	#define WC2AC(s)		WC2AS(s)
+	#define AC2AS(s)		AString(s)
+	#define AC2WC(s)		AS2WC(s)
+	#define AS2AC_CP(cp, s)	AString(s)
+	#define WC2AC_CP(cp, s)	WC2AS(cp, s)
+	#define AC2AS_CP(cp, s)	AString(s)
+	#define AC2WC_CP(cp, s)	AS2WC(cp, s)
+#endif
 
 #define min2(a, b) (((a) > (b)) ? (b) : (a))
 #define min3(a, b, c) (min2(min2((a), (b)), (c)))
@@ -54,6 +77,16 @@ bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult);
 //	Set / Get current character code page
 void a_SetCharCodePage(DWORD dwCodePage);
 DWORD a_GetCharCodePage();
+
+//	Conversion between narrow (UTF-8 in this port) and wide (UTF-16) strings.
+//	The original converted through the Windows code page; the browser port's
+//	narrow encoding is UTF-8 and the wide encoding keeps the original UTF-16
+//	width, so these use the strict platform conversions. Malformed input
+//	yields an empty result; the code-page argument is accepted and unused.
+AWString AS2WC(const char* szAnsi);
+AString WC2AS(const wchar_t* szWide);
+AWString AS2WC(int iCodePage, const char* szAnsi);
+AString WC2AS(int iCodePage, const wchar_t* szWide);
 
 //	Random number generator
 bool a_InitRandom();

@@ -80,3 +80,23 @@ bool utf16_to_utf8(std::u16string_view input, std::string &output) {
   return true;
 }
 } // namespace pw153::platform
+
+
+namespace pw153::platform {
+bool utf8_to_utf16(std::string_view input, std::wstring &output) {
+  std::u16string wide;
+  if (!utf8_to_utf16(input, wide))
+    return false;
+  output.assign(reinterpret_cast<const wchar_t *>(wide.data()), wide.size());
+  return true;
+}
+
+bool utf16_to_utf8(const wchar_t *input, std::string &output) {
+  if (!input)
+    return false;
+  std::size_t length = 0;
+  while (input[length])
+    ++length;
+  return utf16_to_utf8(std::u16string_view(reinterpret_cast<const char16_t *>(input), length), output);
+}
+} // namespace pw153::platform

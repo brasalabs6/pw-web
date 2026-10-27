@@ -3,6 +3,10 @@ project(pw_web_client153 LANGUAGES CXX)
 include(CTest)
 #	Emscripten's zlib port must be requested for every compile and link,
 #	includings test executables defined in this file.
+#	The original client is a UTF-16 (MSVC wchar_t = 16-bit) build; every
+#	port target and test compiles with the same width.
+add_compile_options(-fshort-wchar)
+
 if(EMSCRIPTEN)
   add_compile_options(-sUSE_ZLIB=1)
   add_link_options(-sUSE_ZLIB=1)

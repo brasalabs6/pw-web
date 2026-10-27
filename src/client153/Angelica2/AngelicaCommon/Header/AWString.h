@@ -1,7 +1,7 @@
 /*
  * FILE: AWString.h
  *
- * DESCRIPTION: char16_t String operating class
+ * DESCRIPTION: wchar_t String operating class
  *
  * CREATED BY: duyuxin, 2004/2/10
  *
@@ -14,52 +14,10 @@
 #define _AWString_H_
 
 #include <assert.h>
-#include <cstdio>
+#include <wchar.h>
+#include <stdio.h>
 #include <cstdint>
-//	wchar.h CRT replaced by the portable wide seam.
 #include "widestr.h"
-
-//	Portable wide-string helpers replacing the wchar_t CRT (char16_t has no
-//	standard wcs* functions).
-static inline int WideLen(const char16_t* szStr)
-{
-	int iLen = 0;
-	while (szStr[iLen]) iLen++;
-	return iLen;
-}
-static inline int WideCmp(const char16_t* a, const char16_t* b)
-{
-	int i = 0;
-	while (a[i] && a[i] == b[i]) i++;
-	return (int)a[i] - (int)b[i];
-}
-static inline int WideNCmp(const char16_t* a, const char16_t* b, int n)
-{
-	for (int i = 0; i < n; i++)
-	{
-		if (a[i] != b[i]) return (int)a[i] - (int)b[i];
-		if (!a[i]) return 0;
-	}
-	return 0;
-}
-static inline const char16_t* WideStr(const char16_t* hay, const char16_t* needle)
-{
-	if (!needle[0]) return hay;
-	for (int i = 0; hay[i]; i++)
-	{
-		int j = 0;
-		while (needle[j] && hay[i + j] == needle[j]) j++;
-		if (!needle[j]) return hay + i;
-	}
-	return nullptr;
-}
-static inline const char16_t* WideRChr(const char16_t* s, char16_t ch)
-{
-	const char16_t* last = nullptr;
-	for (int i = 0; s[i]; i++)
-		if (s[i] == ch) last = s + i;
-	return last;
-}
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -98,7 +56,7 @@ public:		//	Types
 		int		iDataLen;	//	Length of data (not including terminator)
 		int		iMaxLen;	//	Maximum length of data (not including terminator)
 		
-		char16_t*	Data()	{ return (char16_t*)(this+1); }	//	char16_t* to managed data
+		wchar_t*	Data()	{ return (wchar_t*)(this+1); }	//	wchar_t* to managed data
 	};
 
 	struct s_DOUBLE
@@ -110,49 +68,49 @@ public:		//	Constructors and Destructors
 
 	AWString() : m_pStr(m_pEmptyStr) {}
 	AWString(const AWString& str);
-	AWString(const char16_t* szStr);
-	AWString(const char16_t* szStr, int iLen);
-	AWString(char16_t ch, int iRepeat);
+	AWString(const wchar_t* szStr);
+	AWString(const wchar_t* szStr, int iLen);
+	AWString(wchar_t ch, int iRepeat);
 	~AWString();
 
 public:		//	Attributes
 
 public:		//	Operations
 
-	const AWString& operator = (char16_t ch);
-	const AWString& operator = (const char16_t* szStr);
+	const AWString& operator = (wchar_t ch);
+	const AWString& operator = (const wchar_t* szStr);
 	const AWString& operator = (const AWString& str);
 
-	const AWString& operator += (char16_t ch);
-	const AWString& operator += (const char16_t* szStr);
+	const AWString& operator += (wchar_t ch);
+	const AWString& operator += (const wchar_t* szStr);
 	const AWString& operator += (const AWString& str);
 
 	friend AWString operator + (const AWString& str1, const AWString& str2) { return AWString(str1, str2); }
-	friend AWString operator + (char16_t ch, const AWString& str) { return AWString(ch, str); }
-	friend AWString operator + (const AWString& str, char16_t ch) { return AWString(str, ch); }
-	friend AWString operator + (const char16_t* szStr, const AWString& str) { return AWString(szStr, str); }
-	friend AWString operator + (const AWString& str, const char16_t* szStr) { return AWString(str, szStr); }
+	friend AWString operator + (wchar_t ch, const AWString& str) { return AWString(ch, str); }
+	friend AWString operator + (const AWString& str, wchar_t ch) { return AWString(str, ch); }
+	friend AWString operator + (const wchar_t* szStr, const AWString& str) { return AWString(szStr, str); }
+	friend AWString operator + (const AWString& str, const wchar_t* szStr) { return AWString(str, szStr); }
 
-	int Compare(const char16_t* szStr) const;
-	int CompareNoCase(const char16_t* szStr) const;
+	int Compare(const wchar_t* szStr) const;
+	int CompareNoCase(const wchar_t* szStr) const;
 
-	bool operator == (char16_t ch) const { return (GetLength() == 1 && m_pStr[0] == ch); }
-	bool operator == (const char16_t* szStr) const;
+	bool operator == (wchar_t ch) const { return (GetLength() == 1 && m_pStr[0] == ch); }
+	bool operator == (const wchar_t* szStr) const;
 	bool operator == (const AWString& str) const;
 
-	bool operator != (char16_t ch) const { return !(GetLength() == 1 && m_pStr[0] == ch); }
-	bool operator != (const char16_t* szStr) const { return !((*this) == szStr); }
+	bool operator != (wchar_t ch) const { return !(GetLength() == 1 && m_pStr[0] == ch); }
+	bool operator != (const wchar_t* szStr) const { return !((*this) == szStr); }
 	bool operator != (const AWString& str) const { return !((*this) == str); }
 
-	bool operator > (const char16_t* szStr) const { return Compare(szStr) > 0; }
-	bool operator < (const char16_t* szStr) const { return Compare(szStr) < 0; }
-	bool operator >= (const char16_t* szStr) const { return !((*this) < szStr); }
-	bool operator <= (const char16_t* szStr) const { return !((*this) > szStr); }
+	bool operator > (const wchar_t* szStr) const { return Compare(szStr) > 0; }
+	bool operator < (const wchar_t* szStr) const { return Compare(szStr) < 0; }
+	bool operator >= (const wchar_t* szStr) const { return !((*this) < szStr); }
+	bool operator <= (const wchar_t* szStr) const { return !((*this) > szStr); }
 
-	char16_t operator [] (int n) const { assert(n >= 0 && n <= GetLength()); return m_pStr[n]; }
-	char16_t& operator [] (int n);
+	wchar_t operator [] (int n) const { assert(n >= 0 && n <= GetLength()); return m_pStr[n]; }
+	wchar_t& operator [] (int n);
 
-	operator const char16_t* () const { return m_pStr; }
+	operator const wchar_t* () const { return m_pStr; }
 
 	//	Get string length
 	int	GetLength()	const { return GetData()->iDataLen; }
@@ -165,25 +123,25 @@ public:		//	Operations
 	//	Convert to lower case
 	void MakeLower();
 	//	Format string
-	AWString& Format(const char16_t* szFormat, ...);
+	AWString& Format(const wchar_t* szFormat, ...);
 
 	//	Get buffer
-	char16_t* GetBuffer(int iMinSize);
+	wchar_t* GetBuffer(int iMinSize);
 	//	Release buffer gotten through GetBuffer()
 	void ReleaseBuffer(int iNewSize=-1);
 	//	Lock buffer
-	char16_t* LockBuffer();
+	wchar_t* LockBuffer();
 	//	Unlock buffer
 	void UnlockBuffer();
 
 	//	Trim left
 	void TrimLeft();
-	void TrimLeft(char16_t ch);
-	void TrimLeft(const char16_t* szChars);
+	void TrimLeft(wchar_t ch);
+	void TrimLeft(const wchar_t* szChars);
 	//	Trim right
 	void TrimRight();
-	void TrimRight(char16_t ch);
-	void TrimRight(const char16_t* szChars);
+	void TrimRight(wchar_t ch);
+	void TrimRight(const wchar_t* szChars);
 
 	//	Cut left sub string
 	void CutLeft(int n);
@@ -191,12 +149,12 @@ public:		//	Operations
 	void CutRight(int n);
 
 	//	Finds a character or substring inside a larger string. 
-	int Find(char16_t ch, int iStart=0) const;
-	int Find(const char16_t* szSub, int iStart=0) const;
+	int Find(wchar_t ch, int iStart=0) const;
+	int Find(const wchar_t* szSub, int iStart=0) const;
 	//	Finds a character inside a larger string; starts from the end. 
-	int ReverseFind(char16_t ch) const;
+	int ReverseFind(wchar_t ch) const;
 	//	Finds the first matching character from a set. 
-	int FindOneOf(const char16_t* szCharSet) const;
+	int FindOneOf(const wchar_t* szCharSet) const;
 
 	//	Get left string
 	inline AWString Left(int n) const;
@@ -216,40 +174,40 @@ public:		//	Operations
 	
 protected:	//	Attributes
 
-	char16_t*		m_pStr;			//	String buffer
-	static char16_t*	m_pEmptyStr;
+	wchar_t*		m_pStr;			//	String buffer
+	static wchar_t*	m_pEmptyStr;
 
 protected:	//	Operations
 
 	//	These constructors are used to optimize operations such as 'operator +'
 	AWString(const AWString& str1, const AWString& str2);
-	AWString(char16_t ch, const AWString& str);
-	AWString(const AWString& str, char16_t ch);
-	AWString(const char16_t* szStr, const AWString& str);
-	AWString(const AWString& str, const char16_t* szStr);
+	AWString(wchar_t ch, const AWString& str);
+	AWString(const AWString& str, wchar_t ch);
+	AWString(const wchar_t* szStr, const AWString& str);
+	AWString(const AWString& str, const wchar_t* szStr);
 
 	//	Get string data
 	s_STRINGDATA* GetData() const { return ((s_STRINGDATA*)m_pStr)-1; }
 
 	//	Safed strlen()
-	static int SafeStrLen(const char16_t* szStr) { return szStr ? (int)WideLen(szStr) : 0; }
+	static int SafeStrLen(const wchar_t* szStr) { return szStr ? pw153::platform::wide_strlen(szStr) : 0; }	//	16-bit seam (system wcslen reads 32-bit units).
 	//	String copy
-	static void StringCopy(char16_t* szDest, const char16_t* szSrc, int iLen);
+	static void StringCopy(wchar_t* szDest, const wchar_t* szSrc, int iLen);
 	//	Alocate string buffer
-	static char16_t* AllocBuffer(int iLen);
+	static wchar_t* AllocBuffer(int iLen);
 	//	Free string data buffer
 	static void FreeBuffer(s_STRINGDATA* pStrData);
 	//	Judge whether two strings are equal
-	static bool StringEqual(const char16_t* s1, const char16_t* s2, int iLen);
+	static bool StringEqual(const wchar_t* s1, const wchar_t* s2, int iLen);
 
 	//	Allocate memory and copy string
-	static char16_t* AllocThenCopy(const char16_t* szSrc, int iLen);
-	static char16_t* AllocThenCopy(const char16_t* szSrc, char16_t ch, int iLen);
-	static char16_t* AllocThenCopy(char16_t ch, const char16_t* szSrc, int iLen);
-	static char16_t* AllocThenCopy(const char16_t* s1, const char16_t* s2, int iLen1, int iLen2);
+	static wchar_t* AllocThenCopy(const wchar_t* szSrc, int iLen);
+	static wchar_t* AllocThenCopy(const wchar_t* szSrc, wchar_t ch, int iLen);
+	static wchar_t* AllocThenCopy(wchar_t ch, const wchar_t* szSrc, int iLen);
+	static wchar_t* AllocThenCopy(const wchar_t* s1, const wchar_t* s2, int iLen1, int iLen2);
 
 	//	Get format string length
-	static int GetFormatLen(const char16_t* szFormat, va_list argList);
+	static int GetFormatLen(const wchar_t* szFormat, va_list argList);
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -316,7 +274,7 @@ double AWString::ToDouble() const
 	if (IsEmpty())
 		return 0.0;
 	
-   const char16_t *endptr = nullptr;
+   const wchar_t *endptr = nullptr;
    return pw153::platform::wide_tod(m_pStr, &endptr);
 }
 

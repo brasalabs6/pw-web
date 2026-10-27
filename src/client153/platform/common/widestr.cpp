@@ -7,16 +7,16 @@
 namespace pw153::platform {
 namespace {
 
-std::size_t wide_length(const char16_t *text) {
+std::size_t wide_length(const wchar_t *text) {
   std::size_t length = 0;
   while (text[length])
     ++length;
   return length;
 }
 
-void widen_copy(char16_t *out, const char *narrow, std::size_t count) {
+void widen_copy(wchar_t *out, const char *narrow, std::size_t count) {
   for (std::size_t i = 0; i < count; ++i)
-    out[i] = static_cast<char16_t>(static_cast<unsigned char>(narrow[i]));
+    out[i] = static_cast<wchar_t>(static_cast<unsigned char>(narrow[i]));
 }
 
 struct Spec {
@@ -34,52 +34,52 @@ struct Spec {
 // Parses flags, width, precision and size modifiers; returns the conversion
 // character and advances the format cursor past it. The va_list pointer keeps
 // the argument stream shared with the caller.
-char16_t parse_spec(const char16_t *&cursor, Spec &spec, va_list *args) {
+wchar_t parse_spec(const wchar_t *&cursor, Spec &spec, va_list *args) {
   spec = Spec{false, false, false, false, false, 0, 0, false, 0};
   while (true) {
-    const char16_t c = *cursor;
-    if (c == u'-')
+    const wchar_t c = *cursor;
+    if (c == L'-')
       spec.left = true;
-    else if (c == u'+')
+    else if (c == L'+')
       spec.plus = true;
-    else if (c == u' ')
+    else if (c == L' ')
       spec.space = true;
-    else if (c == u'0')
+    else if (c == L'0')
       spec.zero = true;
-    else if (c == u'#')
+    else if (c == L'#')
       spec.hash = true;
     else
       break;
     ++cursor;
   }
-  if (*cursor == u'*') {
+  if (*cursor == L'*') {
     spec.width = va_arg(*args, int);
     ++cursor;
   } else
-    while (*cursor >= u'0' && *cursor <= u'9')
-      spec.width = spec.width * 10 + (*cursor++ - u'0');
-  if (*cursor == u'.') {
+    while (*cursor >= L'0' && *cursor <= L'9')
+      spec.width = spec.width * 10 + (*cursor++ - L'0');
+  if (*cursor == L'.') {
     ++cursor;
     spec.hasPrecision = true;
-    if (*cursor == u'*') {
+    if (*cursor == L'*') {
       spec.precision = va_arg(*args, int);
       ++cursor;
     } else
-      while (*cursor >= u'0' && *cursor <= u'9')
-        spec.precision = spec.precision * 10 + (*cursor++ - u'0');
+      while (*cursor >= L'0' && *cursor <= L'9')
+        spec.precision = spec.precision * 10 + (*cursor++ - L'0');
   }
-  if (*cursor == u'h') {
+  if (*cursor == L'h') {
     spec.size = 1;
     ++cursor;
-  } else if (*cursor == u'l' || *cursor == u'F' || *cursor == u'N') {
+  } else if (*cursor == L'l' || *cursor == L'F' || *cursor == L'N') {
     spec.size = 2;
     ++cursor;
-  } else if (*cursor == u'I') {
+  } else if (*cursor == L'I') {
     ++cursor;
-    if (cursor[0] == u'6' && cursor[1] == u'4') {
+    if (cursor[0] == L'6' && cursor[1] == L'4') {
       spec.size = 3;
       cursor += 2;
-    } else if (cursor[0] == u'3' && cursor[1] == u'2') {
+    } else if (cursor[0] == L'3' && cursor[1] == L'2') {
       spec.size = 0;
       cursor += 2;
     }
@@ -90,7 +90,7 @@ char16_t parse_spec(const char16_t *&cursor, Spec &spec, va_list *args) {
 // Composes "%<flags>*.*<conv>" and formats through the narrow CRT, which
 // applies width/precision/padding; the ASCII result is then widened.
 template <typename Value>
-void emit_numeric(char16_t *&out, const Spec &spec, const char *conversion,
+void emit_numeric(wchar_t *&out, const Spec &spec, const char *conversion,
                   Value value) {
   char flags[8] = {0};
   std::size_t f = 0;
@@ -114,7 +114,7 @@ void emit_numeric(char16_t *&out, const Spec &spec, const char *conversion,
   out += len;
 }
 
-void pad_and_emit(char16_t *&out, const char16_t *body, std::size_t bodyLen,
+void pad_and_emit(wchar_t *&out, const wchar_t *body, std::size_t bodyLen,
                   const Spec &spec) {
   const int width = spec.width;
   const std::size_t padding =
@@ -123,48 +123,48 @@ void pad_and_emit(char16_t *&out, const char16_t *body, std::size_t bodyLen,
           : 0;
   if (!spec.left)
     for (std::size_t i = 0; i < padding; ++i)
-      *out++ = u' ';
+      *out++ = L' ';
   for (std::size_t i = 0; i < bodyLen; ++i)
     *out++ = body[i];
   if (spec.left)
     for (std::size_t i = 0; i < padding; ++i)
-      *out++ = u' ';
+      *out++ = L' ';
 }
 
 } // namespace
 
-int wide_vformat(char16_t *out, const char16_t *format, va_list args) {
+int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
   va_list list;
   va_copy(list, args);
-  char16_t *cursorOut = out;
-  const char16_t *cursor = format;
+  wchar_t *cursorOut = out;
+  const wchar_t *cursor = format;
   while (*cursor) {
-    if (*cursor != u'%') {
+    if (*cursor != L'%') {
       *cursorOut++ = *cursor++;
       continue;
     }
     ++cursor;
-    if (*cursor == u'%') {
-      *cursorOut++ = u'%';
+    if (*cursor == L'%') {
+      *cursorOut++ = L'%';
       ++cursor;
       continue;
     }
     Spec spec;
-    const char16_t conversion = parse_spec(cursor, spec, &list);
-    char16_t body[160];
+    const wchar_t conversion = parse_spec(cursor, spec, &list);
+    wchar_t body[160];
     std::size_t bodyLen = 0;
     switch (conversion) {
-    case u'c':
-    case u'C': {
+    case L'c':
+    case L'C': {
       //	Characters arrive through the default argument promotion.
-      body[0] = static_cast<char16_t>(va_arg(list, int));
+      body[0] = static_cast<wchar_t>(va_arg(list, int));
       bodyLen = 1;
       break;
     }
-    case u's': {
-      const char16_t *value = va_arg(list, const char16_t *);
+    case L's': {
+      const wchar_t *value = va_arg(list, const wchar_t *);
       if (!value) {
-        const char16_t nullText[] = u"(null)";
+        const wchar_t nullText[] = L"(null)";
         std::memcpy(body, nullText, sizeof(nullText) - sizeof(nullText[0]));
         bodyLen = 6;
       } else {
@@ -172,15 +172,15 @@ int wide_vformat(char16_t *out, const char16_t *format, va_list args) {
         if (spec.hasPrecision && spec.precision >= 0 &&
             static_cast<std::size_t>(spec.precision) < bodyLen)
           bodyLen = static_cast<std::size_t>(spec.precision);
-        std::memcpy(body, value, bodyLen * sizeof(char16_t));
+        std::memcpy(body, value, bodyLen * sizeof(wchar_t));
       }
       break;
     }
-    case u'S': {
+    case L'S': {
       //	MSVC wide printf: %S is the narrow string in a UNICODE build.
       const char *value = va_arg(list, const char *);
       if (!value) {
-        const char16_t nullText[] = u"(null)";
+        const wchar_t nullText[] = L"(null)";
         std::memcpy(body, nullText, sizeof(nullText) - sizeof(nullText[0]));
         bodyLen = 6;
       } else {
@@ -193,48 +193,48 @@ int wide_vformat(char16_t *out, const char16_t *format, va_list args) {
       }
       break;
     }
-    case u'd':
-    case u'i':
+    case L'd':
+    case L'i':
       if (spec.size == 3)
         emit_numeric(cursorOut, spec, "lld", va_arg(list, std::int64_t));
       else
         emit_numeric(cursorOut, spec, "d", va_arg(list, int));
       continue;
-    case u'u':
+    case L'L':
       if (spec.size == 3)
-        emit_numeric(cursorOut, spec, "llu", va_arg(list, std::uint64_t));
+        emit_numeric(cursorOut, spec, "llL", va_arg(list, std::uint64_t));
       else
-        emit_numeric(cursorOut, spec, "u", va_arg(list, unsigned));
+        emit_numeric(cursorOut, spec, "L", va_arg(list, unsigned));
       continue;
-    case u'x':
+    case L'x':
       if (spec.size == 3)
         emit_numeric(cursorOut, spec, "llx", va_arg(list, std::uint64_t));
       else
         emit_numeric(cursorOut, spec, "x", va_arg(list, unsigned));
       continue;
-    case u'X':
+    case L'X':
       if (spec.size == 3)
         emit_numeric(cursorOut, spec, "llX", va_arg(list, std::uint64_t));
       else
         emit_numeric(cursorOut, spec, "X", va_arg(list, unsigned));
       continue;
-    case u'o':
+    case L'o':
       if (spec.size == 3)
         emit_numeric(cursorOut, spec, "llo", va_arg(list, std::uint64_t));
       else
         emit_numeric(cursorOut, spec, "o", va_arg(list, unsigned));
       continue;
-    case u'f':
-    case u'e':
-    case u'E':
-    case u'g':
-    case u'G': {
+    case L'f':
+    case L'e':
+    case L'E':
+    case L'g':
+    case L'G': {
       const double value = va_arg(list, double);
       char conv[2] = {static_cast<char>(conversion), 0};
       emit_numeric(cursorOut, spec, conv, value);
       continue;
     }
-    case u'p': {
+    case L'p': {
       void *value = va_arg(list, void *);
       char narrow[32];
       std::snprintf(narrow, sizeof(narrow), "%p", value);
@@ -243,7 +243,7 @@ int wide_vformat(char16_t *out, const char16_t *format, va_list args) {
       cursorOut += len;
       continue;
     }
-    case u'n': {
+    case L'n': {
       int *target = va_arg(list, int *);
       if (target)
         *target = static_cast<int>(cursorOut - out);
@@ -257,7 +257,7 @@ int wide_vformat(char16_t *out, const char16_t *format, va_list args) {
     }
     pad_and_emit(cursorOut, body, bodyLen, spec);
   }
-  *cursorOut = u'\0';
+  *cursorOut = L'\0';
   va_end(list);
   return static_cast<int>(cursorOut - out);
 }
@@ -266,29 +266,29 @@ namespace {
 // Copies the numeric prefix (sign, digits, '.', exponent) into a narrow
 // buffer for the narrow CRT; returns the copied length.
 std::size_t copy_numeric_prefix(char *out, std::size_t capacity,
-                                const char16_t *text, std::size_t *consumed) {
+                                const wchar_t *text, std::size_t *consumed) {
   std::size_t i = 0, n = 0;
   auto put = [&](char c) {
     if (n + 1 < capacity)
       out[n++] = c;
   };
-  while (text[i] == u' ' || text[i] == u'\t' || text[i] == u'\n' ||
-         text[i] == u'\r')
+  while (text[i] == L' ' || text[i] == L'\t' || text[i] == L'\n' ||
+         text[i] == L'\r')
     ++i;
-  if (text[i] == u'+' || text[i] == u'-')
+  if (text[i] == L'+' || text[i] == L'-')
     put(static_cast<char>(text[i++]));
-  while (text[i] >= u'0' && text[i] <= u'9')
+  while (text[i] >= L'0' && text[i] <= L'9')
     put(static_cast<char>(text[i++]));
-  if (text[i] == u'.') {
+  if (text[i] == L'.') {
     put(static_cast<char>(text[i++]));
-    while (text[i] >= u'0' && text[i] <= u'9')
+    while (text[i] >= L'0' && text[i] <= L'9')
       put(static_cast<char>(text[i++]));
   }
-  if (text[i] == u'e' || text[i] == u'E') {
+  if (text[i] == L'e' || text[i] == L'E') {
     put(static_cast<char>(text[i++]));
-    if (text[i] == u'+' || text[i] == u'-')
+    if (text[i] == L'+' || text[i] == L'-')
       put(static_cast<char>(text[i++]));
-    while (text[i] >= u'0' && text[i] <= u'9')
+    while (text[i] >= L'0' && text[i] <= L'9')
       put(static_cast<char>(text[i++]));
   }
   out[n] = '\0';
@@ -297,27 +297,27 @@ std::size_t copy_numeric_prefix(char *out, std::size_t capacity,
 }
 } // namespace
 
-std::int64_t wide_toi64(const char16_t *text) {
+std::int64_t wide_toi64(const wchar_t *text) {
   if (!text)
     return 0;
   bool negative = false;
   std::size_t i = 0;
-  while (text[i] == u' ' || text[i] == u'\t' || text[i] == u'\n' ||
-         text[i] == u'\r')
+  while (text[i] == L' ' || text[i] == L'\t' || text[i] == L'\n' ||
+         text[i] == L'\r')
     ++i;
-  if (text[i] == u'-' || text[i] == u'+') {
-    negative = text[i] == u'-';
+  if (text[i] == L'-' || text[i] == L'+') {
+    negative = text[i] == L'-';
     ++i;
   }
   std::int64_t value = 0;
-  while (text[i] >= u'0' && text[i] <= u'9') {
-    value = value * 10 + (text[i] - u'0');
+  while (text[i] >= L'0' && text[i] <= L'9') {
+    value = value * 10 + (text[i] - L'0');
     ++i;
   }
   return negative ? -value : value;
 }
 
-float wide_tof(const char16_t *text) {
+float wide_tof(const wchar_t *text) {
   char narrow[128];
   std::size_t consumed = 0;
   if (!text || copy_numeric_prefix(narrow, sizeof(narrow), text, &consumed) == 0)
@@ -325,7 +325,7 @@ float wide_tof(const char16_t *text) {
   return std::strtof(narrow, nullptr);
 }
 
-double wide_tod(const char16_t *text, const char16_t **endptr) {
+double wide_tod(const wchar_t *text, const wchar_t **endptr) {
   char narrow[128];
   std::size_t consumed = 0;
   if (!text) {
@@ -344,7 +344,7 @@ double wide_tod(const char16_t *text, const char16_t **endptr) {
   return value;
 }
 
-int wide_format(char16_t *out, const char16_t *format, ...) {
+int wide_format(wchar_t *out, const wchar_t *format, ...) {
   va_list args;
   va_start(args, format);
   const int written = wide_vformat(out, format, args);
@@ -352,21 +352,91 @@ int wide_format(char16_t *out, const char16_t *format, ...) {
   return written;
 }
 
-int wide_toi(const char16_t *text) {
+int wide_strlen(const wchar_t *text) {
+  int length = 0;
+  while (text[length])
+    ++length;
+  return length;
+}
+
+int wide_strcmp(const wchar_t *a, const wchar_t *b) {
+  int i = 0;
+  while (a[i] && a[i] == b[i])
+    ++i;
+  return static_cast<int>(a[i]) - static_cast<int>(b[i]);
+}
+
+int wide_strncmp(const wchar_t *a, const wchar_t *b, int n) {
+  for (int i = 0; i < n; ++i) {
+    if (a[i] != b[i])
+      return static_cast<int>(a[i]) - static_cast<int>(b[i]);
+    if (!a[i])
+      return 0;
+  }
+  return 0;
+}
+
+const wchar_t *wide_strstr(const wchar_t *hay, const wchar_t *needle) {
+  if (!needle[0])
+    return hay;
+  for (int i = 0; hay[i]; ++i) {
+    int j = 0;
+    while (needle[j] && hay[i + j] == needle[j])
+      ++j;
+    if (!needle[j])
+      return hay + i;
+  }
+  return nullptr;
+}
+
+const wchar_t *wide_strrchr(const wchar_t *text, wchar_t ch) {
+  const wchar_t *last = nullptr;
+  for (int i = 0; text[i]; ++i)
+    if (text[i] == ch)
+      last = text + i;
+  return last;
+}
+
+int wide_strcspn(const wchar_t *text, const wchar_t *set) {
+  int span = 0;
+  while (text[span]) {
+    int i = 0;
+    while (set[i] && set[i] != text[span])
+      ++i;
+    if (set[i])
+      break;
+    ++span;
+  }
+  return span;
+}
+
+int wide_casecmp(const wchar_t *a, const wchar_t *b) {
+  int i = 0;
+  while (a[i] && b[i]) {
+    wchar_t ca = a[i] >= L'a' && a[i] <= L'z' ? static_cast<wchar_t>(a[i] - 32) : a[i];
+    wchar_t cb = b[i] >= L'a' && b[i] <= L'z' ? static_cast<wchar_t>(b[i] - 32) : b[i];
+    if (ca != cb)
+      return static_cast<int>(ca) - static_cast<int>(cb);
+    ++i;
+  }
+  return static_cast<int>(a[i]) - static_cast<int>(b[i]);
+}
+
+int wide_toi(const wchar_t *text) {
   if (!text)
     return 0;
   bool negative = false;
   std::size_t i = 0;
-  while (text[i] == u' ' || text[i] == u'\t' || text[i] == u'\n' ||
-         text[i] == u'\r')
+  while (text[i] == L' ' || text[i] == L'\t' || text[i] == L'\n' ||
+         text[i] == L'\r')
     ++i;
-  if (text[i] == u'-' || text[i] == u'+') {
-    negative = text[i] == u'-';
+  if (text[i] == L'-' || text[i] == L'+') {
+    negative = text[i] == L'-';
     ++i;
   }
   long value = 0;
-  while (text[i] >= u'0' && text[i] <= u'9') {
-    value = value * 10 + (text[i] - u'0');
+  while (text[i] >= L'0' && text[i] <= L'9') {
+    value = value * 10 + (text[i] - L'0');
     ++i;
   }
   return static_cast<int>(negative ? -value : value);

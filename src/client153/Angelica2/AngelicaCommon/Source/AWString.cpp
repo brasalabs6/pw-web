@@ -1,7 +1,7 @@
 /*
  * FILE: AWString.cpp
  *
- * DESCRIPTION: char16_t String operating class
+ * DESCRIPTION: wchar_t String operating class
  *
  * CREATED BY: duyuxin, 2004/2/10
  *
@@ -14,6 +14,7 @@
 #include "AMemory.h"
 #include <stdarg.h>
 //	tchar.h dropped: the wide seam supplies the conversions.
+#include "widestr.h"
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -40,7 +41,7 @@ struct s_EMPTYSTRING
 {
 	AWString::s_STRINGDATA	Data;
 
-	char16_t	szStr[1];
+	wchar_t	szStr[1];
 
 	s_EMPTYSTRING()
 	{
@@ -53,7 +54,7 @@ struct s_EMPTYSTRING
 
 //	For an empty string, m_pchData will point here
 static s_EMPTYSTRING l_EmptyString;
-char16_t* AWString::m_pEmptyStr = l_EmptyString.szStr;
+wchar_t* AWString::m_pEmptyStr = l_EmptyString.szStr;
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -72,14 +73,14 @@ char16_t* AWString::m_pEmptyStr = l_EmptyString.szStr;
 
 	iLen: length of data (not including terminator)
 */
-char16_t* AWString::AllocBuffer(int iLen)
+wchar_t* AWString::AllocBuffer(int iLen)
 {
 	s_STRINGDATA* pData;
 	char* pBuf;
 
 	if (iLen < 64)
 	{
-		pBuf  = (char*)a_malloc(sizeof (char16_t) * 64 + sizeof (s_STRINGDATA));
+		pBuf  = (char*)a_malloc(sizeof (wchar_t) * 64 + sizeof (s_STRINGDATA));
 		pData = (s_STRINGDATA*)pBuf;
 
 		pData->iRefs	= 1;
@@ -88,7 +89,7 @@ char16_t* AWString::AllocBuffer(int iLen)
 	}
 	else if (iLen < 128)
 	{
-		pBuf  = (char*)a_malloc(sizeof (char16_t) * 128 + sizeof (s_STRINGDATA));
+		pBuf  = (char*)a_malloc(sizeof (wchar_t) * 128 + sizeof (s_STRINGDATA));
 		pData = (s_STRINGDATA*)pBuf;
 
 		pData->iRefs	= 1;
@@ -97,7 +98,7 @@ char16_t* AWString::AllocBuffer(int iLen)
 	}
 	else if (iLen < 256)
 	{
-		pBuf  = (char*)a_malloc(sizeof (char16_t) * 256 + sizeof (s_STRINGDATA));
+		pBuf  = (char*)a_malloc(sizeof (wchar_t) * 256 + sizeof (s_STRINGDATA));
 		pData = (s_STRINGDATA*)pBuf;
 
 		pData->iRefs	= 1;
@@ -106,7 +107,7 @@ char16_t* AWString::AllocBuffer(int iLen)
 	}
 	else if (iLen < 512)
 	{
-		pBuf  = (char*)a_malloc(sizeof (char16_t) * 512 + sizeof (s_STRINGDATA));
+		pBuf  = (char*)a_malloc(sizeof (wchar_t) * 512 + sizeof (s_STRINGDATA));
 		pData = (s_STRINGDATA*)pBuf;
 
 		pData->iRefs	= 1;
@@ -115,7 +116,7 @@ char16_t* AWString::AllocBuffer(int iLen)
 	}
 	else
 	{
-		pBuf  = (char*)a_malloc(sizeof (char16_t) * (iLen + 1) + sizeof (s_STRINGDATA));
+		pBuf  = (char*)a_malloc(sizeof (wchar_t) * (iLen + 1) + sizeof (s_STRINGDATA));
 		pData = (s_STRINGDATA*)pBuf;
 
 		pData->iRefs	= 1;
@@ -123,7 +124,7 @@ char16_t* AWString::AllocBuffer(int iLen)
 		pData->iMaxLen	= iLen;
 	}
 
-	return (char16_t*)(pBuf + sizeof (s_STRINGDATA));
+	return (wchar_t*)(pBuf + sizeof (s_STRINGDATA));
 }
 
 //	Free string data buffer
@@ -145,7 +146,7 @@ void AWString::FreeBuffer(s_STRINGDATA* pStrData)
 }
 
 //	Copy iLen characters from szSrc to szDest and add terminator at the tail of szDest
-void AWString::StringCopy(char16_t* szDest, const char16_t* szSrc, int iLen)
+void AWString::StringCopy(wchar_t* szDest, const wchar_t* szSrc, int iLen)
 {
 	for (int i=0; i < iLen; i++)
 		szDest[i] = szSrc[i];
@@ -154,7 +155,7 @@ void AWString::StringCopy(char16_t* szDest, const char16_t* szSrc, int iLen)
 }
 
 //	Judge whether two strings are equal
-bool AWString::StringEqual(const char16_t* s1, const char16_t* s2, int iLen)
+bool AWString::StringEqual(const wchar_t* s1, const wchar_t* s2, int iLen)
 {
 	for (int i=0; i < iLen; i++)
 	{
@@ -166,24 +167,24 @@ bool AWString::StringEqual(const char16_t* s1, const char16_t* s2, int iLen)
 }
 
 //	Allocate memory and copy string
-char16_t* AWString::AllocThenCopy(const char16_t* szSrc, int iLen)
+wchar_t* AWString::AllocThenCopy(const wchar_t* szSrc, int iLen)
 {
 	if (!iLen)
 		return m_pEmptyStr;
 	
-	char16_t* s = AllocBuffer(iLen);
+	wchar_t* s = AllocBuffer(iLen);
 	StringCopy(s, szSrc, iLen);
 
 	return s;
 }
 
 //	Allocate a new string which is merged by szSrc + ch
-char16_t* AWString::AllocThenCopy(const char16_t* szSrc, char16_t ch, int iLen)
+wchar_t* AWString::AllocThenCopy(const wchar_t* szSrc, wchar_t ch, int iLen)
 {
 	if (!ch)
 		return AllocThenCopy(szSrc, iLen-1);
 
-	char16_t* s = AllocBuffer(iLen);
+	wchar_t* s = AllocBuffer(iLen);
 	StringCopy(s, szSrc, iLen-1);
 
 	s[iLen-1]	= ch;
@@ -193,12 +194,12 @@ char16_t* AWString::AllocThenCopy(const char16_t* szSrc, char16_t ch, int iLen)
 }
 
 //	Allocate a new string which is merged by ch + szSrc
-char16_t* AWString::AllocThenCopy(char16_t ch, const char16_t* szSrc, int iLen)
+wchar_t* AWString::AllocThenCopy(wchar_t ch, const wchar_t* szSrc, int iLen)
 {
 	if (!ch)
 		return l_EmptyString.szStr;
 
-	char16_t* s = AllocBuffer(iLen);
+	wchar_t* s = AllocBuffer(iLen);
 	
 	s[0] = ch;
 	StringCopy(s+1, szSrc, iLen-1);
@@ -207,13 +208,13 @@ char16_t* AWString::AllocThenCopy(char16_t ch, const char16_t* szSrc, int iLen)
 }
 
 //	Allocate a new string which is merged by s1 + s2
-char16_t* AWString::AllocThenCopy(const char16_t* s1, const char16_t* s2, int iLen1, int iLen2)
+wchar_t* AWString::AllocThenCopy(const wchar_t* s1, const wchar_t* s2, int iLen1, int iLen2)
 {
 	if (!iLen2)
 		return AllocThenCopy(s1, iLen1);
 	
 	int iLen = iLen1 + iLen2;
-	char16_t* s = AllocBuffer(iLen);
+	wchar_t* s = AllocBuffer(iLen);
 
 	StringCopy(s, s1, iLen1);
 	StringCopy(s+iLen1, s2, iLen2);
@@ -242,18 +243,18 @@ AWString::AWString(const AWString& str)
 	}
 }
 
-AWString::AWString(const char16_t* szStr)
+AWString::AWString(const wchar_t* szStr)
 {
 	int iLen = SafeStrLen(szStr);
 	m_pStr = AllocThenCopy(szStr, iLen);
 }
 
-AWString::AWString(const char16_t* szStr, int iLen)
+AWString::AWString(const wchar_t* szStr, int iLen)
 {
 	m_pStr = AllocThenCopy(szStr, iLen);
 }
 
-AWString::AWString(char16_t ch, int iRepeat)
+AWString::AWString(wchar_t ch, int iRepeat)
 {
 	m_pStr = AllocBuffer(iRepeat);
 
@@ -268,22 +269,22 @@ AWString::AWString(const AWString& str1, const AWString& str2)
 	m_pStr = AllocThenCopy(str1.m_pStr, str2.m_pStr, str1.GetLength(), str2.GetLength());
 }
 
-AWString::AWString(char16_t ch, const AWString& str)
+AWString::AWString(wchar_t ch, const AWString& str)
 {
 	m_pStr = AllocThenCopy(ch, str.m_pStr, str.GetLength() + 1);
 }
 
-AWString::AWString(const AWString& str, char16_t ch)
+AWString::AWString(const AWString& str, wchar_t ch)
 {
 	m_pStr = AllocThenCopy(str.m_pStr, ch, str.GetLength() + 1);
 }
 
-AWString::AWString(const char16_t* szStr, const AWString& str)
+AWString::AWString(const wchar_t* szStr, const AWString& str)
 {
 	m_pStr = AllocThenCopy(szStr, str.m_pStr, SafeStrLen(szStr), str.GetLength());
 }
 
-AWString::AWString(const AWString& str, const char16_t* szStr)
+AWString::AWString(const AWString& str, const wchar_t* szStr)
 {
 	m_pStr = AllocThenCopy(str.m_pStr, szStr, str.GetLength(), SafeStrLen(szStr));
 }
@@ -299,7 +300,7 @@ AWString::~AWString()
 	m_pStr = m_pEmptyStr;
 }
 
-const AWString& AWString::operator = (char16_t ch)
+const AWString& AWString::operator = (wchar_t ch)
 {
 	if (!ch)
 	{
@@ -327,7 +328,7 @@ const AWString& AWString::operator = (char16_t ch)
 	return *this;
 }
 
-const AWString& AWString::operator = (const char16_t* szStr)
+const AWString& AWString::operator = (const wchar_t* szStr)
 {
 	int iLen = SafeStrLen(szStr);
 	if (!iLen)
@@ -406,7 +407,7 @@ const AWString& AWString::operator = (const AWString& str)
 	return *this;
 }
 
-const AWString& AWString::operator += (char16_t ch)
+const AWString& AWString::operator += (wchar_t ch)
 {
 	if (!ch)
 		return *this;
@@ -436,7 +437,7 @@ const AWString& AWString::operator += (char16_t ch)
 	return *this;
 }
 
-const AWString& AWString::operator += (const char16_t* szStr)
+const AWString& AWString::operator += (const wchar_t* szStr)
 {
 	int iLen2 = SafeStrLen(szStr);
 	if (!iLen2)
@@ -496,35 +497,23 @@ const AWString& AWString::operator += (const AWString& str)
 	return *this;
 }
 
-int AWString::Compare(const char16_t* szStr) const
+int AWString::Compare(const wchar_t* szStr) const
 {
 	if (m_pStr == szStr)
 		return 0;
 
-	return WideCmp(m_pStr, szStr);
+	return pw153::platform::wide_strcmp(m_pStr, szStr);
 }
 
-int AWString::CompareNoCase(const char16_t* szStr) const
+int AWString::CompareNoCase(const wchar_t* szStr) const
 {
 	if (m_pStr == szStr)
 		return 0;
 
-	{
-	//	wcsicmp: portable case-insensitive compare.
-	const char16_t* a = m_pStr;
-	const char16_t* b = szStr;
-	while (*a && *b)
-	{
-		char16_t ca = (*a >= u'a' && *a <= u'z') ? (char16_t)(*a - 32) : *a;
-		char16_t cb = (*b >= u'a' && *b <= u'z') ? (char16_t)(*b - 32) : *b;
-		if (ca != cb) return (int)ca - (int)cb;
-		a++; b++;
-	}
-	return (int)*a - (int)*b;
-}
+	return pw153::platform::wide_casecmp(m_pStr, szStr);	//	wcsicmp.
 }
 
-bool AWString::operator == (const char16_t* szStr) const
+bool AWString::operator == (const wchar_t* szStr) const
 {
 	//	Note: szStr's boundary may be crossed when StringEqual() do
 	//		  read operation, if szStr is shorter than 'this'. Now, this
@@ -547,7 +536,7 @@ bool AWString::operator == (const AWString& str) const
 	return StringEqual(m_pStr, str.m_pStr, iLen);
 }
 
-char16_t& AWString::operator [] (int n)
+wchar_t& AWString::operator [] (int n)
 {
 	ASSERT(n >= 0 && n <= GetLength());
 
@@ -576,8 +565,8 @@ void AWString::MakeUpper()
 	}
 
 	//	_wcsupr: portable in-place uppercase.
-	for (char16_t* p = m_pStr; *p; p++)
-		if (*p >= u'a' && *p <= u'z') *p = (char16_t)(*p - 32);
+	for (wchar_t* p = m_pStr; *p; p++)
+		if (*p >= L'a' && *p <= L'z') *p = (wchar_t)(*p - 32);
 }
 
 //	Convert to lower case
@@ -595,12 +584,12 @@ void AWString::MakeLower()
 	}
 
 	//	_wcslwr: portable in-place lowercase.
-	for (char16_t* p = m_pStr; *p; p++)
-		if (*p >= u'A' && *p <= u'Z') *p = (char16_t)(*p + 32);
+	for (wchar_t* p = m_pStr; *p; p++)
+		if (*p >= L'A' && *p <= L'Z') *p = (wchar_t)(*p + 32);
 }
 
 //	Format string
-AWString& AWString::Format(const char16_t* szFormat, ...)
+AWString& AWString::Format(const wchar_t* szFormat, ...)
 {
 	va_list argList;
 	va_start(argList, szFormat);
@@ -643,7 +632,7 @@ End:
 
 	iMinSize: number of bytes in string buffer user can changed.
 */
-char16_t* AWString::GetBuffer(int iMinSize)
+wchar_t* AWString::GetBuffer(int iMinSize)
 {
 	if (iMinSize < 0)
 	{
@@ -673,7 +662,7 @@ char16_t* AWString::GetBuffer(int iMinSize)
 		}
 		else
 		{
-			char16_t* wszOld = m_pStr;
+			wchar_t* wszOld = m_pStr;
 			m_pStr = AllocBuffer(iMinSize);
 			StringCopy(m_pStr, wszOld, pData->iDataLen);
 			GetData()->iDataLen = pData->iDataLen;
@@ -681,7 +670,7 @@ char16_t* AWString::GetBuffer(int iMinSize)
 	}
 	else if (iMinSize > pData->iMaxLen)
 	{
-		char16_t* szOld = m_pStr;
+		wchar_t* szOld = m_pStr;
 		m_pStr = AllocBuffer(iMinSize);
 		StringCopy(m_pStr, szOld, pData->iDataLen);
 		GetData()->iDataLen = pData->iDataLen;
@@ -727,7 +716,7 @@ void AWString::ReleaseBuffer(int iNewSize/* -1 */)
 }
 
 //	Lock buffer. Locked buffer disable reference counting
-char16_t* AWString::LockBuffer()
+wchar_t* AWString::LockBuffer()
 {
 	if (IsEmpty())
 	{
@@ -779,15 +768,15 @@ void AWString::UnlockBuffer()
 #define FORCE_UNICODE   0x20000
 #define FORCE_INT64     0x40000
 
-int AWString::GetFormatLen(const char16_t* szFormat, va_list argList)
+int AWString::GetFormatLen(const wchar_t* szFormat, va_list argList)
 {
 	if (!szFormat || !szFormat[0])
 		return 0;
 
-	char16_t* pszTemp = NULL;
+	wchar_t* pszTemp = NULL;
 	int iMaxLen = 0, iTempBufLen = 0;
 
-	for (const char16_t* pch = szFormat; *pch != '\0'; pch++)
+	for (const wchar_t* pch = szFormat; *pch != '\0'; pch++)
 	{
 		//	Handle '%' character, but watch out for '%%'
 		if (*pch != '%' || *(++pch) == '%')
@@ -848,7 +837,7 @@ int AWString::GetFormatLen(const char16_t* szFormat, va_list argList)
 
 		// should be on type modifier or specifier
 		int nModifier = 0;
-		if (WideNCmp(pch, u"I64", 3) == 0)
+		if (pw153::platform::wide_strncmp(pch, L"I64", 3) == 0)
 		{
 			pch += 3;
 			nModifier = FORCE_INT64;
@@ -862,7 +851,7 @@ int AWString::GetFormatLen(const char16_t* szFormat, va_list argList)
 			case 'l':
 			case 'F':
 			case 'N':
-			case 'u':
+			case 'L':
 				pch++;
 				break;
 			}
@@ -874,16 +863,16 @@ int AWString::GetFormatLen(const char16_t* szFormat, va_list argList)
 		case 'C':
 
 			iItemLen = 2;
-			va_arg(argList, int);	//	char16_t promotes to int through varargs.
+			va_arg(argList, int);	//	wchar_t promotes to int through varargs.
 			break;
 
 		case 's':	// Strings
 		{
-			const char16_t* pstrNextArg = va_arg(argList, const char16_t*);
+			const wchar_t* pstrNextArg = va_arg(argList, const wchar_t*);
 			if (!pstrNextArg)
 				iItemLen = 6;	//	"(null)"
 			else
-				iItemLen = pstrNextArg[0] == '\0' ? 1 : WideLen(pstrNextArg);
+				iItemLen = pstrNextArg[0] == '\0' ? 1 : pw153::platform::wide_strlen(pstrNextArg);
 
 			break;
 		}
@@ -899,11 +888,11 @@ int AWString::GetFormatLen(const char16_t* szFormat, va_list argList)
 
 		#else	//	ANSI
 
-			const char16_t* pstrNextArg = va_arg(argList, const char16_t*);
+			const wchar_t* pstrNextArg = va_arg(argList, const wchar_t*);
 			if (!pstrNextArg)
 				iItemLen = 6;	//	"(null)"
 			else
-				iItemLen = pstrNextArg[0] == '\0' ? 1 : WideLen(pstrNextArg);
+				iItemLen = pstrNextArg[0] == '\0' ? 1 : pw153::platform::wide_strlen(pstrNextArg);
 
 		#endif
 
@@ -960,16 +949,16 @@ int AWString::GetFormatLen(const char16_t* szFormat, va_list argList)
 				if (iTempBufLen < iSize)
 				{
 					if (!pszTemp)
-						pszTemp = (char16_t*)a_malloc(iSize);
+						pszTemp = (wchar_t*)a_malloc(iSize);
 					else
-						pszTemp = (char16_t*)a_realloc(pszTemp, iSize);
+						pszTemp = (wchar_t*)a_realloc(pszTemp, iSize);
 
 					iTempBufLen = iSize;
 				}
 
 				double f = va_arg(argList, double);
-				pw153::platform::wide_format(pszTemp, u"%*.*f", iWidth, iPrecision+6, f);	//	MSVC swprintf.
-				iItemLen = WideLen(pszTemp);
+				pw153::platform::wide_format(pszTemp, L"%*.*f", iWidth, iPrecision+6, f);	//	MSVC swprintf.
+				iItemLen = pw153::platform::wide_strlen(pszTemp);
 
 				break;
 			}
@@ -1077,7 +1066,7 @@ void AWString::TrimLeft()
 }
 
 //	Trim left
-void AWString::TrimLeft(char16_t ch)
+void AWString::TrimLeft(wchar_t ch)
 {
 	if (!GetLength())
 		return;
@@ -1094,7 +1083,7 @@ void AWString::TrimLeft(char16_t ch)
 }
 
 //	Trim left
-void AWString::TrimLeft(const char16_t* szChars)
+void AWString::TrimLeft(const wchar_t* szChars)
 {
 	if (!GetLength())
 		return;
@@ -1134,7 +1123,7 @@ void AWString::TrimRight()
 }
 
 //	Trim right
-void AWString::TrimRight(char16_t ch)
+void AWString::TrimRight(wchar_t ch)
 {
 	if (!GetLength())
 		return;
@@ -1151,7 +1140,7 @@ void AWString::TrimRight(char16_t ch)
 }
 
 //	Trim right
-void AWString::TrimRight(const char16_t* szChars)
+void AWString::TrimRight(const wchar_t* szChars)
 {
 	if (!GetLength())
 		return;
@@ -1175,7 +1164,7 @@ void AWString::TrimRight(const char16_t* szChars)
 
 //	Finds a character inside a larger string. 
 //	Return -1 for failure.
-int AWString::Find(char16_t ch, int iStart/* 0 */) const
+int AWString::Find(wchar_t ch, int iStart/* 0 */) const
 {
 	int iLen = GetLength();
 	if (!iLen || iStart < 0 || iStart >= iLen)
@@ -1192,13 +1181,13 @@ int AWString::Find(char16_t ch, int iStart/* 0 */) const
 
 //	Finds a substring inside a larger string. 
 //	Return -1 for failure.
-int AWString::Find(const char16_t* szSub, int iStart/* 0 */) const
+int AWString::Find(const wchar_t* szSub, int iStart/* 0 */) const
 {
 	int iLen = GetLength();
 	if (!iLen || iStart < 0 || iStart >= iLen)
 		return -1;
 
-	const char16_t* pTemp = WideStr(m_pStr+iStart, szSub);
+	const wchar_t* pTemp = pw153::platform::wide_strstr(m_pStr+iStart, szSub);
 	if (!pTemp)
 		return -1;
 
@@ -1207,12 +1196,12 @@ int AWString::Find(const char16_t* szSub, int iStart/* 0 */) const
 
 //	Finds a character inside a larger string; starts from the end. 
 //	Return -1 for failure.
-int AWString::ReverseFind(char16_t ch) const
+int AWString::ReverseFind(wchar_t ch) const
 {
 	if (!GetLength())
 		return -1;
 
-	const char16_t* pTemp = WideRChr(m_pStr, ch);
+	const wchar_t* pTemp = pw153::platform::wide_strrchr(m_pStr, ch);
 	if (!pTemp)
 		return -1;
 
@@ -1221,21 +1210,12 @@ int AWString::ReverseFind(char16_t ch) const
 
 //	Finds the first matching character from a set. 
 //	Return -1 for failure.
-int AWString::FindOneOf(const char16_t* szCharSet) const
+int AWString::FindOneOf(const wchar_t* szCharSet) const
 {
 	int iLen = GetLength();
 	if (!iLen)
 		return -1;
 
-	//	wcscspn: portable span until a character from the set.
-	int iSpan = 0;
-	while (m_pStr[iSpan])
-	{
-		const char16_t* c = szCharSet;
-		while (*c && *c != m_pStr[iSpan]) c++;
-		if (*c) break;
-		iSpan++;
-	}
-	return (iSpan == iLen) ? -1 : 0;
+	return ((int)pw153::platform::wide_strcspn(m_pStr, szCharSet) == iLen) ? -1 : 0;
 }
 

@@ -17,6 +17,8 @@
 
 #include "AAssist.h"
 
+#include "utf16.h"
+
 #include <cassert>
 #include <cstring>
 #include <ctime>
@@ -164,6 +166,41 @@ bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult)
 	strcpy(szResult, pch);
 
 	return true;
+}
+
+//	Conversion between narrow (UTF-8) and wide (UTF-16) strings: the strict
+//	platform conversions back these; malformed input yields an empty result
+//	and the code-page argument stays unused (documented port divergence).
+AWString AS2WC(const char* szAnsi)
+{
+	AWString result;
+	if (!szAnsi)
+		return result;
+	std::wstring out;
+	if (pw153::platform::utf8_to_utf16(szAnsi, out))
+		result = AWString(out.c_str(), (int)out.size());
+	return result;
+}
+
+AString WC2AS(const wchar_t* szWide)
+{
+	AString result;
+	if (!szWide)
+		return result;
+	std::string out;
+	if (pw153::platform::utf16_to_utf8(szWide, out))
+		result = out.c_str();
+	return result;
+}
+
+AWString AS2WC(int /*iCodePage*/, const char* szAnsi)
+{
+	return AS2WC(szAnsi);
+}
+
+AString WC2AS(int /*iCodePage*/, const wchar_t* szWide)
+{
+	return WC2AS(szWide);
 }
 
 //	Set current character code page

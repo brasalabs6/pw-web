@@ -51,10 +51,11 @@ typedef int BOOL;
 #define FALSE 0
 
 #ifdef UNICODE
-// Windows wchar_t is 16-bit; WebAssembly/Linux wchar_t is 32-bit.
-// Client strings and serialized protocol fields use UTF-16 code units.
-typedef char16_t ACHAR;
-#define _AL(str) u##str
+// The whole port compiles with -fshort-wchar: wchar_t keeps the original
+// MSVC 16-bit width, so client strings and serialized protocol fields stay
+// UTF-16 code units exactly like the original build.
+typedef wchar_t ACHAR;
+#define _AL(str) L##str
 #else
 typedef char ACHAR;
 #define _AL(str) str
