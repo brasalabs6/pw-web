@@ -189,23 +189,22 @@ de tradução. Cada uma causava segfault na inicialização:
   daemons afetados (glinkd, gdeliveryd, gamedbd, gclient, gdbclient para
   `roleinfo`) e confira o mtime do binário.
 
-## 5. Tamanhos medidos (2026-10-26)
+## 5. Tamanhos medidos (re-medidos 2026-10-27 20:32 UTC)
 
 | Item | Tamanho |
 | --- | --- |
-| Fonte vendored (working tree, 12.299 arquivos + 31 symlinks) | **141 MB** |
-| Por diretório: `cnet` 72 MB, `cskill` 49 MB, `cgame` 13 MB, `share` 7 MB, `PWSL` ~1 MB | — |
+| Árvore de trabalho `src/server153` (COM artefatos de build: .o, binários) | **520 MB** |
+| Por diretório (com build): `cnet` 279 MB, `cgame` 119 MB, `cskill` 111 MB, `share` 12 MB | — |
 | Upstream no GitHub (repo completo, API) | ~37 MB |
-| Pacote de build `pw-server153-*.tar.gz` (binários+libs+configs+relatório) | **~122–128 MB** |
-| `bin/` (10 binários com debug info `-g`): `gs` 58 MB, `gdeliveryd` 64 MB, `gamedbd` 27 MB, `glinkd` 14 MB, `gacd` 14 MB, `gfactiond` 10 MB, `uniquenamed` 7 MB, `gclient` 12 MB, `gauthd` 3,5 MB, `logservice` 2,5 MB | 203 MB |
-| `lib/`: `libskill.so` 82 MB, `libskill.a` 137 MB, `libgsPro2.a` 12 MB, `libdbCli.a` 11 MB, demais ~5 MB | 240 MB |
-| `conf/` (confs + xml coletados) | 932 KB |
-| Imagem Docker de build (debian:12 + toolchain i386) | ~450–720 MB |
-| Imagem Docker de runtime (debian:12 + libs i386) | ~117 MB + pacote |
-| Monorepo: pack total após o vendor (`git count-objects -vH`) | 33,4 MiB |
+| Pacote de build `pw-server153-*.tar.gz` (binários+libs+configs+relatório) — gerado por `scripts/build-server153.sh` (estágio package) e pelo CI (artifact do workflow) | ~122–128 MB |
+| Binários atuais (relink 2026-10-27, com `-g`): `gs` 33 MB, `gdeliveryd` 37 MB, `libskill.so` 34 MB | — |
+| Imagem Docker de runtime (debian:12 + libs i386 + árvore de daemons) | **480 MB** |
+| Monorepo: pack do git (`git count-objects -vH`) | 114,95 MiB |
 
-Nota: binários mantêm debug info (`-g -O0`); `strip` reduzirá drasticamente para a
-imagem de produção (validação de tamanho a medir na imagem final).
+Nota: binários mantêm debug info (`-g -O0`); `strip` reduzirá
+drasticamente para a imagem de produção. Medição anterior (2026-10-26,
+141 MB de fonte sem build) permanece como referência do tamanho de
+source puro.
 
 ## 6. Cloudflare Containers — deploy e limitação de plataforma
 
