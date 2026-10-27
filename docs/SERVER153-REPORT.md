@@ -144,16 +144,17 @@ de tradução. Cada uma causava segfault na inicialização:
     saída permanece crashando de forma cosmética — os processos das
     instâncias (netos) sobrevivem.
 12. **Corrupção do rwlock do UserContainer (bloqueava a entrada no mundo
-    — corrigido)**: `EnterWorld::Process` segurava o write lock e chamava
-    `AnnouncePlayerOnline → WalkUser`, que pega `RDScoped` aninhado no
-    MESMO rwlock. glibc retorna EDEADLK, o destrutor aninhado destrava, e
-    o destrutor externo destrava DE NOVO — o double-unlock corrompe a
-    contagem do rwlock e **todo write lock seguinte bloqueia para sempre**
-    (dump gdb: todas as threads em `pthread_rwlock_wrlock` sem nenhum
-    holder). Evidência completa: primeira tentativa de entrada trava, todo
-    EnterWorld seguinte morre de fome no lock (`TaskQueueSize` preso em 7,
-    pico 14122). Fix: side-effects fora da região travada (mesmo padrão do
-    fix anterior do StatusAnnounce). Commit 74df6d67.
+    — corrigido em DUAS frentes)**: (a) `EnterWorld::Process` segurava o
+    write lock e chamava `AnnouncePlayerOnline → WalkUser`, que pega
+    `RDScoped` aninhado no MESMO rwlock → glibc EDEADLK → o destrutor
+    aninhado destrava → o destrutor externo destrava DE NOVO → contador
+    corrompido (dump gdb ao vivo: `__readers = -6`; todos os writers —
+    EnterWorld, GetRoleBase::Client, SynMutaData, StatusAnnounce —
+    bloqueados em `pthread_rwlock_wrlock` para sempre). Fix 1: side-effects
+    fora da região travada (74df6d67). Fix 2 (estrutural): os wrappers
+    `WRScoped`/`RDScoped` do `share/common/mutex.h` agora só destravam o
+    que conseguiram travar — uma aquisição aninhada (EDEADLK) vira no-op
+    em vez de envenenar o contador. A classe inteira de bug está morta.
 13. **Fila de prioridade 101 do gdeliveryd**: `EnterWorld`, `CreateRole` e
     `RoleList` despacham com `PriorPolicy=101` para o pool de threads; o
     conf commitado tem UM worker nessa prioridade. Um worker bloqueado
@@ -206,51 +207,35 @@ drasticamente para a imagem de produção. Medição anterior (2026-10-26,
 141 MB de fonte sem build) permanece como referência do tamanho de
 source puro.
 
-## 6. Cloudflare Containers — deploy e limitação de plataforma
+## 6. Cloudflare Containers — VALIDADO (health público + probe TCP de mediação)
 
-**Deploy feito** (2026-10-27, múltiplos): Worker em
-`https://pw-server153.guibelongtovi-a22.workers.dev`, imagem
-`pw-server153-server153-default` (480MB, debian:12 + i386 multilib) no
-registry da conta, container app `pw-server153` no estado `ready`.
+**Deploy funcional** (2026-10-27 22:53 UTC): Worker em
+`https://pw-server153.guibelongtovi-a22.workers.dev`, imagem de 480MB no
+registry da conta, container app `pw-server153` (política
+`durable_object`), instância **lite** (1/16 vCPU, 256 MiB — uso medido: 26
+MiB para os 8 daemons + httpd).
 
-**Imagem validada localmente** (docker run, mesmos binários da stack):
-`/health` retorna `{"ok":true,"daemons":[8/8]}` (incluindo uniquenamed —
-o primeiro build quebrava o storage dele: o cleanup do staging copiava o
-WDB `unamewdb` PELA METADE, "Initialize storage environment failed";
-corrigido removendo TODO estado de storage do staging) e `/probe` retorna
-`{"glinkd_29000_accepts":true}`.
+**Evidência pública** (capturada via curl, ver
+`cf-health-evidence.txt` no scratch do goal):
+- `GET /health` → 200 `{"ok":true,"app":"pw-server153",...}`
+- `GET /cgi-bin/health.sh` → 200 `{"ok":true,"daemons_alive":8,"expected":8}`
+  — **os 8 daemons rodando DENTRO do container Cloudflare**
+- `GET /tcpprobe` → 200 `{"glinkd_29000_mediation_tcp":true}` — o glinkd
+  aceita TCP pelo caminho de mediação do Worker/DO
+  (`getTcpPort(29000).connect()`), exatamente o caminho que o gateway do
+  ADR-0006 usará para clientes.
 
-**Bug nosso corrigido**: o worker chamava `this.getTcpPort()` — a API
-correta (docs: containers/api/durable-object-container) é
-`this.ctx.container.getTcpPort(port)` com `start({image, enableInternet})`
-para a política `durable_object`. A conclusão anterior de "API não
-disponível na conta" era um bug do worker. O worker agora também expõe
-`/tcpprobe` (`getTcpPort(29000).connect()` do DO — o caminho TCP de
-mediação que o gateway do ADR-0006 usará).
-
-**Bloqueio atual (comprovado, plataforma — requer ticket de suporte)**: com o
-worker corrigido, o `container.start()` falha com a resposta literal do
-runtime: `"There is no container instance that can be provided to this
-Durable Object, try again later"` (HTTP 503 do nosso worker com o detail).
-Elegibilidade verificada: a conta **está no Workers Paid** — o Worker usa
-Durable Object com storage SQLite (`new_sqlite_classes`), que a doc oficial
-exige plano Paid, e o deploy passa; o operador confirma a assinatura.
-Testado: instância default (lite) e **`standard-1`** (1/2 vCPU, 4 GiB —
-recusada com o MESMO erro, eliminando hipótese de tamanho), nome inválido
-`basic` corrigido (a lista válida de start() é lite/standard-1..4), app
-recriado do zero (`wrangler containers delete` + deploy), múltiplos
-deploys ao longo de ~8h, imagem 480MB no registry da conta, app `ready`
-com 0 instâncias vivas (API `/containers/applications`: active=0,
-starting=0; os endpoints de log/observabilidade exigem outro escopo de
-token).
-Ação necessária (só via dashboard/suporte): abrir ticket Cloudflare citando
-o erro literal, a conta `a22f860…` e o container app `pw-server153`.
-
-**Caminho alternativo validado**: o modelo suportado (Worker/DO →
-`getTcpPort().fetch()/connect()` → container) está implementado e
-responde; a imagem roda os 8 daemons localmente com health verde. Quando
-a conta obtiver instâncias (limite/capacidade/beta da plataforma), o
-health público funciona sem mudanças no worker.
+**Causa raiz do bloqueio anterior (resolvida)**: o entrypoint python3
+(http.server). Bissecção com 8 apps-probe na mesma conta: entrypoints
+busybox-httpd provisionam instantaneamente em qualquer tamanho de imagem
+(testado até 202MB); entrypoints python3 NUNCA provisionam (lite e
+standard-1, caminho direto do binário, via script) — a plataforma recusa
+com "There is no container instance that can be provided to this
+Durable Object". O health server agora é busybox httpd: `/health`
+estático + CGI shell contando os daemons; o probe TCP do glinkd é feito
+pelo Worker pela camada de mediação (mais forte que um connect local).
+Nota: a conta está no Workers Paid (o Worker usa Durable Object com
+storage SQLite, que a doc exige no plano Paid; o deploy passa).
 
 ## 7. Reprodução
 
