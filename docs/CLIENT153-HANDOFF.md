@@ -117,3 +117,94 @@ plano do goal.
 - Card do agente em `~/.agents/running/`: atualize o seu ao assumir.
 - Sem force-push, sem self-merge; `main` é ação humana ao final.
 - Orphan `tests/client153/ski_loader.cpp`: seu WIP antigo, decide você.
+
+---
+
+# Atualização do handoff — Grok → Codex (2026-10-26, segunda rodada)
+
+Estado até `489fa86`. A campanha compile-first avançou de 66 para **109/787 TUs
+compilando para objetos WASM** (probe `objects-cycle8.json`).
+
+## O que mudou desde a primeira rodada do handoff
+
+- **`80616e3`** — fix do track-set compartilhado do skeleton + `AWString`
+  original completo (char16_t → depois trocado para `wchar_t` com
+  `-fshort-wchar`).
+- **`0b78386`** — **source adaptada integral** (2065 arquivos do jogo em
+  `src/client153/Element/`, hashes no manifest), probe com `--adapted-root`
+  + includes espelhados, e os seams: `-fshort-wchar` (CRT wide 16-bit de
+  propriedade do port — o CRT do sistema lê 32 bits; `static_assert`
+  garante o flag), `Windows.h` real (tipos, `CRITICAL_SECTION` re-entrante,
+  `Interlocked`, ticks, `MSG`/`WM_*`/`VK_*`, handles GDI), `d3d8.h`/`d3dx8.h`
+  (assinaturas documentadas das interfaces), forwarders de caixa
+  (`StdIO.h`, `basetsd.h`, `EC_Observer.h`, `ExpTypes.h`, `aarray.h`,
+  `Vector.h`, `a3dtypes`...), `sdk_forward.h` (A2DSpriteItem,
+  A3DTerrain2Render), transcodificação GB18030 de 764 arquivos,
+  typedefs/asm dos headers do jogo corrigidos.
+- **`489fa86`** — seams de rede/sincronização: `winsock2.h` mapeado ao layer
+  POSIX do Emscripten (WebSocket-backed) e `winsync.h` com as primitivas
+  reais de espera (eventos cv, semáforos contadores, threads com join
+  cronometrado). `ws2tcpip.h` para a camada de defesa.
+
+## Estado atual do probe (cycle 8, 109/787)
+
+Grupos restantes, em ordem: `IOMap`/`SOCKET` na cadeia GNET (os headers
+GNET usam `GNET::SockAddr` e `IOMap` próprios — ver `gnpollio.h`), `stricmp`
+(→ `strcasecmp`), `_stat` incompleto (→ `struct stat`), `size_t` vs
+`unsigned int` (114), `typename` no TypeList.h:173 (31 — defeito
+dependent-name no mesmo arquivo), `D3DCAPS8` (20 — já adicionado ao seam,
+recompilar), `A3DFrustum::PLANE` (15 — temporário ligado a referência não-
+const, extensão MSVC), `WTYPES.h` (10 — tipos OLE), `eh.h` (9 — SEH).
+
+## Próximos passos sugeridos (na ordem)
+
+1. **Cadeia GNET** (~142 TUs): os headers GNET (`gnpollio.h`, `gnnetio.h`,
+   `gnactiveio.h`, `gnmarshal.h`) precisam dos tipos de socket do seam
+   (SOCKET/sockaddr já em `winsock2.h` — verificar o que cada header usa;
+   `IOMap` é tipo próprio do GNET). `stricmp` → `strcasecmp`, `_stat` →
+   `struct stat`. A análise winsock completa está no histórico do
+   subagente e em `docs/evidence/client153-adapted-tree.md`.
+2. **size_t vs unsigned int** (114 TUs): assinaturas que passam `unsigned
+   int` onde `size_t&` é esperado — provavelmente `a_malloc`/containers;
+   encontrar o site exato com o probe (`-ferror-limit` alto).
+3. **TypeList.h:173** (31 TUs): `typename` faltando em dependent names
+   (`Observers::iterator`) — fix direto na cópia adaptada.
+4. **A3DFrustum::PLANE** (15 TUs): temporário ligado a referência não-const
+   — adaptar os call sites ou a assinatura na cópia adaptada.
+5. **WTYPES.h/eh.h** (19 TUs): tipos OLE e SEH — ciclos próprios.
+6. Continuar os ciclos: probe → classificar → corrigir a dependência mais
+   bloqueadora → recompilar. Cada milestone = um commit com evidência.
+
+## Infraestrutura e armadilhas (atualizado)
+
+- **Builds no volume de clients** (quota do workspace em 96%):
+  `PW_BUILD=/home/nonexphere/workspace/pw/clients/build/pw-browser-port`;
+  builds: `client153-native`, `client153-wasm-tests`, `client153-sanitize`,
+  `client153-original-objects` (objetos do probe).
+- **`-fshort-wchar` obrigatório** em todos os targets e no probe (o
+  `static_assert` em `utf16.h` falha alto sem ele). O CRT wide do SISTEMA
+  está errado para 16 bits — usar o seam `widestr` (`wide_strlen`,
+  `wide_vformat` etc.), nunca `wcs*` da libc.
+- **Include shadowing**: TUs da referência resolvem includes no próprio
+  diretório primeiro — por isso a árvore adaptada inteira foi copiada e o
+  probe espelha os includes. Novos fixes vão na cópia adaptada
+  (`src/client153/Element/`), nunca na referência.
+- **Probe**: `scripts/probe-client153-project.py --source
+  /home/nonexphere/workspace/pw/pw-web/references/client-153 --emxx
+  .../em++ --port-root src/client153/Angelica2 --adapted-root
+  src/client153 --output artifacts/... --all --jobs 8 --object-dir
+  $PW_BUILD/client153-original-objects`. O prelude força `Windows.h`,
+  `sdk_forward.h` e os widgets AUI (`AUIListBox.h`, `AUIComboBox.h`,
+  `AUIEditBox.h`, `AUILabel.h`, `AUIStillImageButton.h`, `AUICheckBox.h`,
+  `AUIImagePicture.h`, `AUIDialog.h`) — a cadeia de fontes D3D fica fora
+  do prelude de propósito.
+- **Subagentes funcionam bem** (análise read-only + implementação com o
+  modelo DeepSeek `cf-deepseek-v4-flash`): usar para transcodificações,
+  adaptações mecânicas e investigações; o thread principal cuida dos seams
+  de plataforma (arquivos quentes).
+- **Servidor (PR #17)**: o agente paralelo confirmou servidor completo no
+  ar (8 daemons + gs com mundo v145) e handshake do cliente fixado
+  (versão 0x10503 + edition fixada) — consumir o contrato dele no
+  milestone de rede.
+- **Quota de disco**: workspace em 96% (liberado com `git gc`); builds
+  grandes vão para o volume de clients.
