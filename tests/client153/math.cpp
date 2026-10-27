@@ -1,6 +1,7 @@
 #include "A3DMatrix.h"
 #include "A3DQuaternion.h"
 #include "A3DVertex.h"
+#include "d3dx8.h"
 #include <cstddef>
 #include <cmath>
 #include <iostream>
@@ -12,6 +13,13 @@
   } while (false)
 bool near(float a, float b) { return std::abs(a - b) < .0001f; }
 int main() {
+  D3DXMATRIX perspective;
+  CHECK(D3DXMatrixPerspectiveFovLH(&perspective, 1.57079632679f, 2.f, 1.f, 11.f) == &perspective);
+  CHECK(near(perspective._11, .5f) && near(perspective._22, 1.f));
+  CHECK(near(perspective._33, 1.1f) && near(perspective._34, 1.f));
+  CHECK(near(perspective._43, -1.1f) && near(perspective._44, 0.f));
+  CHECK(near((A3DVECTOR3(0, 0, 1) * perspective).z, 0.f));
+  CHECK(near((A3DVECTOR3(0, 0, 11) * perspective).z, 1.f));
   static_assert(sizeof(A3DBVERTEX3) == 48);
   static_assert(offsetof(A3DBVERTEX3, dwMatIndices) == 24);
   static_assert(offsetof(A3DBVERTEX3, vNormal) == 28);
