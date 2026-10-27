@@ -19,15 +19,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSettingGame, CDlgSetting)
 
-AUI_ON_COMMAND("set*", OnCommandSet)
-AUI_ON_COMMAND("Btn_GotoFunction", OnCommandFunction)
+AUI_ON_COMMAND("set*", CDlgSettingGame::OnCommandSet)
+AUI_ON_COMMAND("Btn_GotoFunction", CDlgSettingGame::OnCommandFunction)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgSettingGame, CDlgSetting)
 
-AUI_ON_EVENT("Ch_*", WM_LBUTTONUP, OnLButtonUpChat)
+AUI_ON_EVENT("Ch_*", WM_LBUTTONUP, CDlgSettingGame::OnLButtonUpChat)
 
 AUI_END_EVENT_MAP()
 

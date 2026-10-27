@@ -13,10 +13,10 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeHair, CDlgCustomizeBase)
 
-AUI_ON_EVENT("Img_*", WM_LBUTTONUP, OnLButtonUpListboxHair)
-AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, OnMouseWheelListboxHair)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListboxHair)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListboxHair)
+AUI_ON_EVENT("Img_*", WM_LBUTTONUP, CDlgCustomizeHair::OnLButtonUpListboxHair)
+AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, CDlgCustomizeHair::OnMouseWheelListboxHair)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizeHair::OnMouseWheelListboxHair)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizeHair::OnMouseWheelListboxHair)
 
 AUI_END_EVENT_MAP()
 

@@ -23,17 +23,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgLibProduce, CDlgBase)
 
-AUI_ON_COMMAND("begin",			OnCommand_begin)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("begin",			CDlgLibProduce::OnCommand_begin)
+AUI_ON_COMMAND("IDCANCEL",		CDlgLibProduce::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgLibProduce, CDlgBase)
 
-AUI_ON_EVENT("U_*",			WM_LBUTTONDBLCLK,		OnEventLButtonDown_U)
-AUI_ON_EVENT("U_*",			WM_RBUTTONDOWN,			OnEventLButtonDown_U)
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,			OnEventLButtonDown_Item)
-AUI_ON_EVENT("Btn_Relationship",	WM_LBUTTONDOWN,	OnEventLButtonDown_Relationship)
+AUI_ON_EVENT("U_*",			WM_LBUTTONDBLCLK,		CDlgLibProduce::OnEventLButtonDown_U)
+AUI_ON_EVENT("U_*",			WM_RBUTTONDOWN,			CDlgLibProduce::OnEventLButtonDown_U)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,			CDlgLibProduce::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Btn_Relationship",	WM_LBUTTONDOWN,	CDlgLibProduce::OnEventLButtonDown_Relationship)
 
 AUI_END_EVENT_MAP()
 

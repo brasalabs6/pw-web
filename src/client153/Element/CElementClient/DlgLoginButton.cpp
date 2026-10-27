@@ -12,9 +12,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgLoginButton, CDlgTheme)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("link",			OnCommandLink)
-AUI_ON_COMMAND("changeserver",	OnCommandChangeServer)
+AUI_ON_COMMAND("IDCANCEL",		CDlgLoginButton::OnCommandCancel)
+AUI_ON_COMMAND("link",			CDlgLoginButton::OnCommandLink)
+AUI_ON_COMMAND("changeserver",	CDlgLoginButton::OnCommandChangeServer)
 AUI_END_COMMAND_MAP()
 
 CDlgLoginButton::CDlgLoginButton()

@@ -30,24 +30,24 @@
 
 
 AUI_BEGIN_COMMAND_MAP(CDlgOfflineShopList, CDlgBase)
-AUI_ON_COMMAND("entershop*",	OnCommand_EnterShop)
-AUI_ON_COMMAND("Btn_Search",	OnCommand_SearchItem)
-AUI_ON_COMMAND("Btn_PageUp",	OnCommand_PageUp)
-AUI_ON_COMMAND("Btn_PageDown",	OnCommand_PageDown)
-AUI_ON_COMMAND("Rdo_Sell",		OnCommand_SellList)
-AUI_ON_COMMAND("Rdo_Buy",		OnCommand_BuyList)
+AUI_ON_COMMAND("entershop*",	CDlgOfflineShopList::OnCommand_EnterShop)
+AUI_ON_COMMAND("Btn_Search",	CDlgOfflineShopList::OnCommand_SearchItem)
+AUI_ON_COMMAND("Btn_PageUp",	CDlgOfflineShopList::OnCommand_PageUp)
+AUI_ON_COMMAND("Btn_PageDown",	CDlgOfflineShopList::OnCommand_PageDown)
+AUI_ON_COMMAND("Rdo_Sell",		CDlgOfflineShopList::OnCommand_SellList)
+AUI_ON_COMMAND("Rdo_Buy",		CDlgOfflineShopList::OnCommand_BuyList)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Close",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Set",		OnCommandViewShopList)
+AUI_ON_COMMAND("IDCANCEL",		CDlgOfflineShopList::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Close",		CDlgOfflineShopList::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Set",		CDlgOfflineShopList::OnCommandViewShopList)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgOfflineShopList, CDlgBase)
-AUI_ON_EVENT("*",		WM_MOUSEWHEEL,			OnEventMouseWheel)
-AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,			OnEventMouseWheel)
-AUI_ON_EVENT("Edt_Search",	WM_KEYDOWN,			OnEventKeyDown_Txt_Search)
-AUI_ON_EVENT("Lst_Search",	WM_LBUTTONDBLCLK,	OnEventDBClk_Lst_Search)
+AUI_ON_EVENT("*",		WM_MOUSEWHEEL,			CDlgOfflineShopList::OnEventMouseWheel)
+AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,			CDlgOfflineShopList::OnEventMouseWheel)
+AUI_ON_EVENT("Edt_Search",	WM_KEYDOWN,			CDlgOfflineShopList::OnEventKeyDown_Txt_Search)
+AUI_ON_EVENT("Lst_Search",	WM_LBUTTONDBLCLK,	CDlgOfflineShopList::OnEventDBClk_Lst_Search)
 
 AUI_END_EVENT_MAP()
 

@@ -38,8 +38,8 @@ AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizePreForFree, CDlgCustomizeBase)
 
-AUI_ON_EVENT("ListBox_PreCustomize", WM_LBUTTONUP, OnLButtonUpListBoxPreCus)
-AUI_ON_EVENT("ListBox_PreCustomize", WM_KEYDOWN, OnKeyDownListBoxPreCus)
+AUI_ON_EVENT("ListBox_PreCustomize", WM_LBUTTONUP, CDlgCustomizePreForFree::OnLButtonUpListBoxPreCus)
+AUI_ON_EVENT("ListBox_PreCustomize", WM_KEYDOWN, CDlgCustomizePreForFree::OnKeyDownListBoxPreCus)
 
 AUI_END_EVENT_MAP()
 

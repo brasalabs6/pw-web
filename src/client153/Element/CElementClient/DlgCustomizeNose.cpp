@@ -18,12 +18,12 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeNoseMouth, CDlgCustomizeBase)
 
-AUI_ON_EVENT("Img_*", WM_LBUTTONUP, OnLButtonUpListboxNose)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListboxNose)
-AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, OnMouseWheelListboxNose)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListboxNose)
-AUI_ON_EVENT("Img_Mouth*", WM_LBUTTONUP, OnLButtonUpListboxNose)
-AUI_ON_EVENT("Img_Mouth*", WM_MOUSEWHEEL, OnMouseWheelListboxNose)
+AUI_ON_EVENT("Img_*", WM_LBUTTONUP, CDlgCustomizeNoseMouth::OnLButtonUpListboxNose)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizeNoseMouth::OnMouseWheelListboxNose)
+AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, CDlgCustomizeNoseMouth::OnMouseWheelListboxNose)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizeNoseMouth::OnMouseWheelListboxNose)
+AUI_ON_EVENT("Img_Mouth*", WM_LBUTTONUP, CDlgCustomizeNoseMouth::OnLButtonUpListboxNose)
+AUI_ON_EVENT("Img_Mouth*", WM_MOUSEWHEEL, CDlgCustomizeNoseMouth::OnMouseWheelListboxNose)
 
 AUI_END_EVENT_MAP()
 
@@ -744,13 +744,13 @@ void CDlgCustomizeNoseMouth::ResetDownLip(void)
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeNoseMouth2, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("Reset", OnCommandReset)
-AUI_ON_COMMAND("MoveSlider", OnCommandMoveSlider)
-AUI_ON_COMMAND("Check", OnCommandCheckSync)
-AUI_ON_COMMAND("MoveSlider_ScaleMouthH", OnCommandMoveScaleMouthHSlider)
-AUI_ON_COMMAND("MoveSlider_ScaleMouthH2", OnCommandMoveScaleMouthH2Slider)
-AUI_ON_COMMAND("MoveSlider_OffsetCornerOfMouthSpecial", OnCommandMoveCornerOfMouthSlider)
-AUI_ON_COMMAND("MoveSlider_OffsetCornerOfMouthSpecial2", OnCommandMoveCornerOfMouth2Slider)
+AUI_ON_COMMAND("Reset", CDlgCustomizeNoseMouth2::OnCommandReset)
+AUI_ON_COMMAND("MoveSlider", CDlgCustomizeNoseMouth2::OnCommandMoveSlider)
+AUI_ON_COMMAND("Check", CDlgCustomizeNoseMouth2::OnCommandCheckSync)
+AUI_ON_COMMAND("MoveSlider_ScaleMouthH", CDlgCustomizeNoseMouth2::OnCommandMoveScaleMouthHSlider)
+AUI_ON_COMMAND("MoveSlider_ScaleMouthH2", CDlgCustomizeNoseMouth2::OnCommandMoveScaleMouthH2Slider)
+AUI_ON_COMMAND("MoveSlider_OffsetCornerOfMouthSpecial", CDlgCustomizeNoseMouth2::OnCommandMoveCornerOfMouthSlider)
+AUI_ON_COMMAND("MoveSlider_OffsetCornerOfMouthSpecial2", CDlgCustomizeNoseMouth2::OnCommandMoveCornerOfMouth2Slider)
 
 AUI_END_COMMAND_MAP()
 

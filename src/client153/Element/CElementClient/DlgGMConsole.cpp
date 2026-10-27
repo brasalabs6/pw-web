@@ -33,19 +33,19 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGMConsole, CDlgBase)
 
-AUI_ON_COMMAND("finish", OnCommandFinish)
-AUI_ON_COMMAND("ignore", OnCommandIgnore)
-AUI_ON_COMMAND("select_command", OnCommandDblClickCommand)
-AUI_ON_COMMAND("close", OnCommandClose)
-AUI_ON_COMMAND("refresh", OnCommandRefresh)
-AUI_ON_COMMAND("Btn_Gmconsole2", OnCommandNewGMUI)
+AUI_ON_COMMAND("finish", CDlgGMConsole::OnCommandFinish)
+AUI_ON_COMMAND("ignore", CDlgGMConsole::OnCommandIgnore)
+AUI_ON_COMMAND("select_command", CDlgGMConsole::OnCommandDblClickCommand)
+AUI_ON_COMMAND("close", CDlgGMConsole::OnCommandClose)
+AUI_ON_COMMAND("refresh", CDlgGMConsole::OnCommandRefresh)
+AUI_ON_COMMAND("Btn_Gmconsole2", CDlgGMConsole::OnCommandNewGMUI)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgGMConsole, CDlgBase)
 
 //AUI_ON_EVENT("lbxPlayerMsg", WM_LBUTTONDOWN, OnLButtonUpListboxPlayerMsg)
-AUI_ON_EVENT("lbxPlayerNearby", WM_LBUTTONDOWN, OnLButtonUpListboxPlayerNearby)
+AUI_ON_EVENT("lbxPlayerNearby", WM_LBUTTONDOWN, CDlgGMConsole::OnLButtonUpListboxPlayerNearby)
 
 AUI_END_EVENT_MAP()
 

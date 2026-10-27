@@ -25,17 +25,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTeach, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("movel",		OnCommandMovel)
-AUI_ON_COMMAND("mover",		OnCommandMover)
-AUI_ON_COMMAND("skilltree",	OnCommandSkilltree)
+AUI_ON_COMMAND("IDCANCEL",	CDlgTeach::OnCommandCANCAL)
+AUI_ON_COMMAND("movel",		CDlgTeach::OnCommandMovel)
+AUI_ON_COMMAND("mover",		CDlgTeach::OnCommandMover)
+AUI_ON_COMMAND("skilltree",	CDlgTeach::OnCommandSkilltree)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgTeach, CDlgBase)
 
-AUI_ON_EVENT("Skill_*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Skill_*",	WM_LBUTTONDOWN,	CDlgTeach::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

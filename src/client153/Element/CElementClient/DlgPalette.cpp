@@ -21,7 +21,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgPalette, CDlgPaletteFashion)
-AUI_ON_COMMAND("restore",	OnCommand_ResetColor)
+AUI_ON_COMMAND("restore",	CDlgPalette::OnCommand_ResetColor)
 AUI_END_COMMAND_MAP()
 
 CDlgPalette::CDlgPalette() : CDlgPaletteFashion("surfaces\\图标\\个性化\\调色板.tga") {

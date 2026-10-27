@@ -36,17 +36,17 @@ AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeEye, CDlgCustomizeBase)
 
-AUI_ON_EVENT("Img_*",WM_LBUTTONUP, OnLButtonUpListbox)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("Scroll_*",WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("Img_Brow*",WM_LBUTTONUP, OnLButtonUpListbox)
-AUI_ON_EVENT("Img_Brow*", WM_MOUSEWHEEL, OnMouseWheelListbox)
+AUI_ON_EVENT("Img_*",WM_LBUTTONUP, CDlgCustomizeEye::OnLButtonUpListbox)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListbox)
+AUI_ON_EVENT("Scroll_*",WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListbox)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListbox)
+AUI_ON_EVENT("Img_Brow*",WM_LBUTTONUP, CDlgCustomizeEye::OnLButtonUpListbox)
+AUI_ON_EVENT("Img_Brow*", WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListbox)
 
-AUI_ON_EVENT("ImgThirdEye_*", WM_LBUTTONUP, OnLButtonUpListBoxThirdEye)
-AUI_ON_EVENT("ScrollThirdEye_*", WM_MOUSEWHEEL, OnMouseWheelListboxThirdEye)
-AUI_ON_EVENT("EditThirdEye_*", WM_MOUSEWHEEL, OnMouseWheelListboxThirdEye)
-AUI_ON_EVENT("ImgThirdEye_*", WM_MOUSEWHEEL, OnMouseWheelListboxThirdEye)
+AUI_ON_EVENT("ImgThirdEye_*", WM_LBUTTONUP, CDlgCustomizeEye::OnLButtonUpListBoxThirdEye)
+AUI_ON_EVENT("ScrollThirdEye_*", WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListboxThirdEye)
+AUI_ON_EVENT("EditThirdEye_*", WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListboxThirdEye)
+AUI_ON_EVENT("ImgThirdEye_*", WM_MOUSEWHEEL, CDlgCustomizeEye::OnMouseWheelListboxThirdEye)
 
 AUI_END_EVENT_MAP()
 
@@ -741,17 +741,17 @@ void CDlgCustomizeEye::ShowThirdEye(bool bShow)
 //*********************************
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeEye2, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("OnBtnLeftEye", OnCommandLeftEye)
-AUI_ON_COMMAND("OnBtnRightEye", OnCommandRightEye)
-AUI_ON_COMMAND("MoveSlider_E", OnCommandEyeMoveSlider)
-AUI_ON_COMMAND("EyeCheck", OnCommandEyeSync)
+AUI_ON_COMMAND("OnBtnLeftEye", CDlgCustomizeEye2::OnCommandLeftEye)
+AUI_ON_COMMAND("OnBtnRightEye", CDlgCustomizeEye2::OnCommandRightEye)
+AUI_ON_COMMAND("MoveSlider_E", CDlgCustomizeEye2::OnCommandEyeMoveSlider)
+AUI_ON_COMMAND("EyeCheck", CDlgCustomizeEye2::OnCommandEyeSync)
 
-AUI_ON_COMMAND("MoveSlider_B", OnCommandBrowMoveSlider)
-AUI_ON_COMMAND("OnBtnLeftBrow", OnCommandBrowSwitchToLeft)
-AUI_ON_COMMAND("OnBtnRightBrow", OnCommandBrowSwitchToRight)
-AUI_ON_COMMAND("BrowCheck", OnCommandBrowSync)
+AUI_ON_COMMAND("MoveSlider_B", CDlgCustomizeEye2::OnCommandBrowMoveSlider)
+AUI_ON_COMMAND("OnBtnLeftBrow", CDlgCustomizeEye2::OnCommandBrowSwitchToLeft)
+AUI_ON_COMMAND("OnBtnRightBrow", CDlgCustomizeEye2::OnCommandBrowSwitchToRight)
+AUI_ON_COMMAND("BrowCheck", CDlgCustomizeEye2::OnCommandBrowSync)
 
-AUI_ON_COMMAND("Reset", OnCommandReset)
+AUI_ON_COMMAND("Reset", CDlgCustomizeEye2::OnCommandReset)
 
 AUI_END_COMMAND_MAP()
 

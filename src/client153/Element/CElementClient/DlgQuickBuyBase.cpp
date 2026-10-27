@@ -29,7 +29,7 @@ bool CDlgQuickBuyBase::ConfirmedItem::IsTimeout(DWORD dwCurTickCount)const
 
 //	CDlgQuickBuyBase
 AUI_BEGIN_COMMAND_MAP(CDlgQuickBuyBase, CDlgBase)
-AUI_ON_COMMAND("Btn_QuickBuy",	OnCommandQuickBuy)
+AUI_ON_COMMAND("Btn_QuickBuy",	CDlgQuickBuyBase::OnCommandQuickBuy)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQuickBuyBase, CDlgBase)

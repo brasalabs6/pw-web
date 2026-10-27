@@ -26,10 +26,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAskHelpToGM, CDlgBase)
 
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("cbxType", OnCommandType)
+AUI_ON_COMMAND("confirm", CDlgAskHelpToGM::OnCommandConfirm)
+AUI_ON_COMMAND("cbxType", CDlgAskHelpToGM::OnCommandType)
 
-AUI_ON_COMMAND("Btn_Speak", OnCommandSpeak)
+AUI_ON_COMMAND("Btn_Speak", CDlgAskHelpToGM::OnCommandSpeak)
 
 AUI_END_COMMAND_MAP()
 

@@ -142,10 +142,10 @@ AString CDlgWebListSSOActivity2Navigator::GetNavigateURLFormat()const{
 //	class CDlgWebList
 
 AUI_BEGIN_COMMAND_MAP(CDlgWebList, CDlgBase)
-AUI_ON_COMMAND("Btn_Radio", OnCommand_Btn_Radio)
-AUI_ON_COMMAND("Btn_Pay", OnCommand_Btn_Pay)
-AUI_ON_COMMAND("Btn_Activity", OnCommand_Btn_Activity)
-AUI_ON_COMMAND("Btn_Activity2", OnCommand_Btn_Activity2)
+AUI_ON_COMMAND("Btn_Radio", CDlgWebList::OnCommand_Btn_Radio)
+AUI_ON_COMMAND("Btn_Pay", CDlgWebList::OnCommand_Btn_Pay)
+AUI_ON_COMMAND("Btn_Activity", CDlgWebList::OnCommand_Btn_Activity)
+AUI_ON_COMMAND("Btn_Activity2", CDlgWebList::OnCommand_Btn_Activity2)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWebList, CDlgBase)

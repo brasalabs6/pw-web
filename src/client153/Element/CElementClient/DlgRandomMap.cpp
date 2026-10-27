@@ -24,8 +24,8 @@ AUI_BEGIN_COMMAND_MAP(CDlgRandomMap, CDlgBase)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgRandomMap, CDlgBase)
-AUI_ON_EVENT("*",		WM_LBUTTONUP,	OnEventLButtonUp)
-AUI_ON_EVENT("*",		WM_RBUTTONUP,	OnEventRButtonUp)
+AUI_ON_EVENT("*",		WM_LBUTTONUP,	CDlgRandomMap::OnEventLButtonUp)
+AUI_ON_EVENT("*",		WM_RBUTTONUP,	CDlgRandomMap::OnEventRButtonUp)
 AUI_END_EVENT_MAP()
 
 

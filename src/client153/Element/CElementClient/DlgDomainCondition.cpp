@@ -14,8 +14,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgDomainCondition, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_Cancel", OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Confirm", CDlgDomainCondition::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_Cancel", CDlgDomainCondition::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

@@ -33,19 +33,19 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgHostELF, CDlgBase)
 
-AUI_ON_COMMAND("activation",		OnCommand_Activation)
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
-AUI_ON_COMMAND("max",				OnCommand_Max)
-AUI_ON_COMMAND("min",				OnCommand_Min)
+AUI_ON_COMMAND("activation",		CDlgHostELF::OnCommand_Activation)
+AUI_ON_COMMAND("IDCANCEL",			CDlgHostELF::OnCommand_CANCEL)
+AUI_ON_COMMAND("max",				CDlgHostELF::OnCommand_Max)
+AUI_ON_COMMAND("min",				CDlgHostELF::OnCommand_Min)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgHostELF, CDlgBase)
 
-AUI_ON_EVENT("Skill_*",			WM_LBUTTONUP,		OnEventSkill)
-AUI_ON_EVENT("Skill_*",			WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("Img_Elf",			WM_RBUTTONDOWN,		OnEventRButtonUp)
-AUI_ON_EVENT("Img_Active",		WM_RBUTTONDOWN,		OnEventRButtonUp)
+AUI_ON_EVENT("Skill_*",			WM_LBUTTONUP,		CDlgHostELF::OnEventSkill)
+AUI_ON_EVENT("Skill_*",			WM_LBUTTONDOWN,		CDlgHostELF::OnEventLButtonDown)
+AUI_ON_EVENT("Img_Elf",			WM_RBUTTONDOWN,		CDlgHostELF::OnEventRButtonUp)
+AUI_ON_EVENT("Img_Active",		WM_RBUTTONDOWN,		CDlgHostELF::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

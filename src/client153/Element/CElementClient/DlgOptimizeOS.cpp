@@ -22,8 +22,8 @@ static AString GetDisableMoreMemoryFilePath(){
 
 //	CDlgOptimizeOS
 AUI_BEGIN_COMMAND_MAP(CDlgOptimizeOS, CDlgBase)
-AUI_ON_COMMAND("Btn_Enable", OnCommand_Enable)
-AUI_ON_COMMAND("Btn_Disable", OnCommand_Disable)
+AUI_ON_COMMAND("Btn_Enable", CDlgOptimizeOS::OnCommand_Enable)
+AUI_ON_COMMAND("Btn_Disable", CDlgOptimizeOS::OnCommand_Disable)
 AUI_END_COMMAND_MAP()
 
 CDlgOptimizeOS::CDlgOptimizeOS()

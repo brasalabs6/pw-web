@@ -23,14 +23,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSetting, CDlgBase)
 
-AUI_ON_COMMAND("gamesetting", OnCommandSetting)
-AUI_ON_COMMAND("videosetting", OnCommandSetting)
-AUI_ON_COMMAND("systemsetting", OnCommandSetting)
-AUI_ON_COMMAND("quickkey", OnCommandSetting)
-AUI_ON_COMMAND("default", OnCommandDefault)
-AUI_ON_COMMAND("apply", OnCommandApply)
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("gamesetting", CDlgSetting::OnCommandSetting)
+AUI_ON_COMMAND("videosetting", CDlgSetting::OnCommandSetting)
+AUI_ON_COMMAND("systemsetting", CDlgSetting::OnCommandSetting)
+AUI_ON_COMMAND("quickkey", CDlgSetting::OnCommandSetting)
+AUI_ON_COMMAND("default", CDlgSetting::OnCommandDefault)
+AUI_ON_COMMAND("apply", CDlgSetting::OnCommandApply)
+AUI_ON_COMMAND("confirm", CDlgSetting::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgSetting::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

@@ -33,37 +33,37 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildMan, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("sortname",		OnCommand_sortname)
-AUI_ON_COMMAND("sortjob",		OnCommand_sortjob)
-AUI_ON_COMMAND("sorttitle",		OnCommand_sorttitle)
-AUI_ON_COMMAND("sortlevel",		OnCommand_sortlevel)
-AUI_ON_COMMAND("sortprof",		OnCommand_sortprof)
-AUI_ON_COMMAND("sortcontrib",	OnCommand_sortcontrib)
-AUI_ON_COMMAND("sortol",		OnCommand_sortol)
-AUI_ON_COMMAND("Edit",			OnCommand_Edit)
-AUI_ON_COMMAND("gquit",			OnCommand_gquit)
-AUI_ON_COMMAND("gpass",			OnCommand_gpass)
-AUI_ON_COMMAND("gdemiss",		OnCommand_gdemiss)
-AUI_ON_COMMAND("gpromote",		OnCommand_gpromote)
-AUI_ON_COMMAND("gdemote",		OnCommand_gdemote)
-AUI_ON_COMMAND("gkick",			OnCommand_gkick)
-AUI_ON_COMMAND("gtitle",		OnCommand_gtitle)
-AUI_ON_COMMAND("ginvite",		OnCommand_ginvite)
-AUI_ON_COMMAND("refresh",		OnCommand_refresh)
-AUI_ON_COMMAND("find",          OnCommand_find)
-AUI_ON_COMMAND("Btn_Diplomacy",	OnCommand_Diplomacy)
-AUI_ON_COMMAND("Btn_GTalk",		OnCommandGTTalk)
-AUI_ON_COMMAND("Btn_SendMassMail",OnCommand_SendMassMail)
-AUI_ON_COMMAND("Btn_Aprimoramento",OnCommand_Aprimoramento)	// Alien - adicionado
-AUI_ON_COMMAND("btn_convocar",OnCommand_Convocar)	// Alien - adicionado
+AUI_ON_COMMAND("confirm",		CDlgGuildMan::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGuildMan::OnCommand_CANCEL)
+AUI_ON_COMMAND("sortname",		CDlgGuildMan::OnCommand_sortname)
+AUI_ON_COMMAND("sortjob",		CDlgGuildMan::OnCommand_sortjob)
+AUI_ON_COMMAND("sorttitle",		CDlgGuildMan::OnCommand_sorttitle)
+AUI_ON_COMMAND("sortlevel",		CDlgGuildMan::OnCommand_sortlevel)
+AUI_ON_COMMAND("sortprof",		CDlgGuildMan::OnCommand_sortprof)
+AUI_ON_COMMAND("sortcontrib",	CDlgGuildMan::OnCommand_sortcontrib)
+AUI_ON_COMMAND("sortol",		CDlgGuildMan::OnCommand_sortol)
+AUI_ON_COMMAND("Edit",			CDlgGuildMan::OnCommand_Edit)
+AUI_ON_COMMAND("gquit",			CDlgGuildMan::OnCommand_gquit)
+AUI_ON_COMMAND("gpass",			CDlgGuildMan::OnCommand_gpass)
+AUI_ON_COMMAND("gdemiss",		CDlgGuildMan::OnCommand_gdemiss)
+AUI_ON_COMMAND("gpromote",		CDlgGuildMan::OnCommand_gpromote)
+AUI_ON_COMMAND("gdemote",		CDlgGuildMan::OnCommand_gdemote)
+AUI_ON_COMMAND("gkick",			CDlgGuildMan::OnCommand_gkick)
+AUI_ON_COMMAND("gtitle",		CDlgGuildMan::OnCommand_gtitle)
+AUI_ON_COMMAND("ginvite",		CDlgGuildMan::OnCommand_ginvite)
+AUI_ON_COMMAND("refresh",		CDlgGuildMan::OnCommand_refresh)
+AUI_ON_COMMAND("find",          CDlgGuildMan::OnCommand_find)
+AUI_ON_COMMAND("Btn_Diplomacy",	CDlgGuildMan::OnCommand_Diplomacy)
+AUI_ON_COMMAND("Btn_GTalk",		CDlgGuildMan::OnCommandGTTalk)
+AUI_ON_COMMAND("Btn_SendMassMail",CDlgGuildMan::OnCommand_SendMassMail)
+AUI_ON_COMMAND("Btn_Aprimoramento",CDlgGuildMan::OnCommand_Aprimoramento)	// Alien - adicionado
+AUI_ON_COMMAND("btn_convocar",CDlgGuildMan::OnCommand_Convocar)	// Alien - adicionado
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGuildMan, CDlgBase)
 
-AUI_ON_EVENT("List_Member",	WM_RBUTTONUP,	OnEventRButtonUp)
+AUI_ON_EVENT("List_Member",	WM_RBUTTONUP,	CDlgGuildMan::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

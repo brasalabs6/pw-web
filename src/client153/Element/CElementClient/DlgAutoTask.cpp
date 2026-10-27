@@ -27,13 +27,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgAutoTask, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgAutoTask::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAutoTask, CDlgBase)
-AUI_ON_EVENT("Img_Reward",		WM_LBUTTONDOWN,		OnEventLButtonDown_Img_Reward)
-AUI_ON_EVENT("Img_Reward",		WM_LBUTTONDBLCLK,	OnEventLButtonDown_Img_Reward)
-AUI_ON_EVENT("Img_Reward",		WM_LBUTTONUP,		OnEventLButtonUp_Img_Reward)
+AUI_ON_EVENT("Img_Reward",		WM_LBUTTONDOWN,		CDlgAutoTask::OnEventLButtonDown_Img_Reward)
+AUI_ON_EVENT("Img_Reward",		WM_LBUTTONDBLCLK,	CDlgAutoTask::OnEventLButtonDown_Img_Reward)
+AUI_ON_EVENT("Img_Reward",		WM_LBUTTONUP,		CDlgAutoTask::OnEventLButtonUp_Img_Reward)
 AUI_END_EVENT_MAP()
 
 static const char* DEFAULT_IMG = "version01\\新手宝箱\\宝箱.tga";

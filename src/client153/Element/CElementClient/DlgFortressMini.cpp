@@ -4,11 +4,11 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressMini, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressMini::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressMini, CDlgBase)
-AUI_ON_EVENT("Img_FortressStatus", WM_LBUTTONUP,		OnEventLButtonUp_Img_FortressStatus)
+AUI_ON_EVENT("Img_FortressStatus", WM_LBUTTONUP,		CDlgFortressMini::OnEventLButtonUp_Img_FortressStatus)
 AUI_END_EVENT_MAP()
 
 CDlgFortressMini::CDlgFortressMini()

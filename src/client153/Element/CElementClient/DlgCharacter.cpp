@@ -31,27 +31,27 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCharacter, CDlgBase)
 
-AUI_ON_COMMAND("addauto",		OnCommand_addauto)
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("reset",			OnCommand_reset)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Force",		OnCommand_force)
-AUI_ON_COMMAND("Btn_TitleList",	OnCommand_Title)
-AUI_ON_COMMAND("Btn_Book",		OnCommand_ReincarnationBook)
+AUI_ON_COMMAND("addauto",		CDlgCharacter::OnCommand_addauto)
+AUI_ON_COMMAND("confirm",		CDlgCharacter::OnCommand_confirm)
+AUI_ON_COMMAND("reset",			CDlgCharacter::OnCommand_reset)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCharacter::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Force",		CDlgCharacter::OnCommand_force)
+AUI_ON_COMMAND("Btn_TitleList",	CDlgCharacter::OnCommand_Title)
+AUI_ON_COMMAND("Btn_Book",		CDlgCharacter::OnCommand_ReincarnationBook)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCharacter, CDlgBase)
 
-AUI_ON_EVENT("Img_Char",	WM_MOUSEMOVE,		OnEventMouseMove)
-AUI_ON_EVENT("Img_Char",	WM_LBUTTONDOWN,		OnEventLButtonDown_Size)
-AUI_ON_EVENT("Img_Char",	WM_LBUTTONUP,		OnEventLButtonUp_Size)
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDOWN,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDBLCLK,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDOWN,		OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDBLCLK,		OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONUP,		OnEventLBUttonUp_stop)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONUP,		OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Img_Char",	WM_MOUSEMOVE,		CDlgCharacter::OnEventMouseMove)
+AUI_ON_EVENT("Img_Char",	WM_LBUTTONDOWN,		CDlgCharacter::OnEventLButtonDown_Size)
+AUI_ON_EVENT("Img_Char",	WM_LBUTTONUP,		CDlgCharacter::OnEventLButtonUp_Size)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDOWN,		CDlgCharacter::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDBLCLK,		CDlgCharacter::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDOWN,		CDlgCharacter::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDBLCLK,		CDlgCharacter::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONUP,		CDlgCharacter::OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONUP,		CDlgCharacter::OnEventLBUttonUp_stop)
 
 AUI_END_EVENT_MAP()
 

@@ -13,13 +13,13 @@
 
 
 AUI_BEGIN_COMMAND_MAP(CDlgComplexTitle, CDlgBase)
-AUI_ON_COMMAND("Btn_TitleList",		OnCommandTitleList)
+AUI_ON_COMMAND("Btn_TitleList",		CDlgComplexTitle::OnCommandTitleList)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgComplexTitle, CDlgBase)
-AUI_ON_EVENT("Lst_NameList",	WM_LBUTTONUP,	OnEventSelectList)
-AUI_ON_EVENT("Lst_NameList",	WM_KEYUP,		OnEventSelectList)
-AUI_ON_EVENT("Lst_NameList",	WM_KEYDOWN,		OnEventSelectList)
+AUI_ON_EVENT("Lst_NameList",	WM_LBUTTONUP,	CDlgComplexTitle::OnEventSelectList)
+AUI_ON_EVENT("Lst_NameList",	WM_KEYUP,		CDlgComplexTitle::OnEventSelectList)
+AUI_ON_EVENT("Lst_NameList",	WM_KEYDOWN,		CDlgComplexTitle::OnEventSelectList)
 AUI_END_EVENT_MAP()
 
 static const ACHAR GRAY_COLOR[] = _AL("^6E503A");

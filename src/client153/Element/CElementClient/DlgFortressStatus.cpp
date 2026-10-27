@@ -8,7 +8,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressStatus, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressStatus::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressStatus, CDlgBase)

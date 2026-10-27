@@ -24,15 +24,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgDamageRep, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgDamageRep::OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgDamageRep::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgDamageRep, CDlgBase)
 
-AUI_ON_EVENT("Img_Equip",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_Equip",	WM_RBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Equip",	WM_LBUTTONDOWN,	CDlgDamageRep::OnEventLButtonDown)
+AUI_ON_EVENT("Img_Equip",	WM_RBUTTONDOWN,	CDlgDamageRep::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

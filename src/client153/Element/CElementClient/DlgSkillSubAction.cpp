@@ -20,11 +20,11 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillSubAction, CDlgBase)
 
-AUI_ON_EVENT("BscCmd_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("TeamCmd_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("TradeCmd_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("FaceCmd_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("*",				WM_MOUSEWHEEL,		OnMouseWheel)	
+AUI_ON_EVENT("BscCmd_*",		WM_LBUTTONDOWN,		CDlgSkillSubAction::OnEventLButtonDown)
+AUI_ON_EVENT("TeamCmd_*",		WM_LBUTTONDOWN,		CDlgSkillSubAction::OnEventLButtonDown)
+AUI_ON_EVENT("TradeCmd_*",		WM_LBUTTONDOWN,		CDlgSkillSubAction::OnEventLButtonDown)
+AUI_ON_EVENT("FaceCmd_*",		WM_LBUTTONDOWN,		CDlgSkillSubAction::OnEventLButtonDown)
+AUI_ON_EVENT("*",				WM_MOUSEWHEEL,		CDlgSkillSubAction::OnMouseWheel)
 
 AUI_END_EVENT_MAP()
 

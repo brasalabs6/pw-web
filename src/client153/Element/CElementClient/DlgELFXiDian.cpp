@@ -31,16 +31,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFXiDian, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFXiDian::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFXiDian::OnCommand_Confirm)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFXiDian, CDlgBase)
 
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDOWN,		OnEventLButtonDownAdd)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDOWN,		OnEventLButtonDownMinus)
-AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDOWN,		CDlgELFXiDian::OnEventLButtonDownAdd)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDOWN,		CDlgELFXiDian::OnEventLButtonDownMinus)
+AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		CDlgELFXiDian::OnEventLButtonDown_ELF)
 
 AUI_END_EVENT_MAP()
 

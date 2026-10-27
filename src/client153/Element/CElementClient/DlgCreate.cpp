@@ -17,16 +17,16 @@
 
 //	CDlgCreateProfession
 AUI_BEGIN_COMMAND_MAP(CDlgCreateProfession, CDlgBase)
-AUI_ON_COMMAND("Btn_Prof*", OnCommand_Prof)
-AUI_ON_COMMAND("Btn_Race*", OnCommand_Race)
-AUI_ON_COMMAND("Btn_Confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_Cancel)
-AUI_ON_COMMAND("Btn_PrevRace", OnCommand_PrevRace)
-AUI_ON_COMMAND("Btn_NextRace", OnCommand_NextRace)
+AUI_ON_COMMAND("Btn_Prof*", CDlgCreateProfession::OnCommand_Prof)
+AUI_ON_COMMAND("Btn_Race*", CDlgCreateProfession::OnCommand_Race)
+AUI_ON_COMMAND("Btn_Confirm", CDlgCreateProfession::OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgCreateProfession::OnCommand_Cancel)
+AUI_ON_COMMAND("Btn_PrevRace", CDlgCreateProfession::OnCommand_PrevRace)
+AUI_ON_COMMAND("Btn_NextRace", CDlgCreateProfession::OnCommand_NextRace)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCreateProfession, CDlgBase)
-AUI_ON_EVENT("Btn_Prof*", WM_LBUTTONDBLCLK, OnEventLButtonDblClick_Prof)
+AUI_ON_EVENT("Btn_Prof*", WM_LBUTTONDBLCLK, CDlgCreateProfession::OnEventLButtonDblClick_Prof)
 AUI_END_EVENT_MAP()
 
 CDlgCreateProfession::CDlgCreateProfession()
@@ -359,16 +359,16 @@ void CDlgCreateProfession::OnEventLButtonDblClick_Prof(WPARAM wParam, LPARAM lPa
 
 //	CDlgCreateGenderName
 AUI_BEGIN_COMMAND_MAP(CDlgCreateGenderName, CDlgBase)
-AUI_ON_COMMAND("Btn_Gender*", OnCommand_Gender)
-AUI_ON_COMMAND("Btn_Back", OnCommand_Back)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_Back)
-AUI_ON_COMMAND("Btn_Confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_CancelCreate", OnCommand_Cancel)
-AUI_ON_COMMAND("Chk_SwitchEquip", OnCommand_SwitchEquip)
+AUI_ON_COMMAND("Btn_Gender*", CDlgCreateGenderName::OnCommand_Gender)
+AUI_ON_COMMAND("Btn_Back", CDlgCreateGenderName::OnCommand_Back)
+AUI_ON_COMMAND("IDCANCEL", CDlgCreateGenderName::OnCommand_Back)
+AUI_ON_COMMAND("Btn_Confirm", CDlgCreateGenderName::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_CancelCreate", CDlgCreateGenderName::OnCommand_Cancel)
+AUI_ON_COMMAND("Chk_SwitchEquip", CDlgCreateGenderName::OnCommand_SwitchEquip)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCreateGenderName, CDlgBase)
-AUI_ON_EVENT("DEFAULT_CharName", WM_KEYDOWN, OnEventKeyDown)
+AUI_ON_EVENT("DEFAULT_CharName", WM_KEYDOWN, CDlgCreateGenderName::OnEventKeyDown)
 AUI_END_EVENT_MAP()
 
 bool CDlgCreateGenderName::OnInitDialog()

@@ -37,24 +37,24 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFProp, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("reset",			OnCommand_reset)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("skill",			OnCommand_Genius)
-AUI_ON_COMMAND("equip",			OnCommand_Equip)
-AUI_ON_COMMAND("safe",			OnCommand_Safe)
-AUI_ON_COMMAND("inexp",			OnCommand_InExp)
+AUI_ON_COMMAND("confirm",		CDlgELFProp::OnCommand_confirm)
+AUI_ON_COMMAND("reset",			CDlgELFProp::OnCommand_reset)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFProp::OnCommand_CANCEL)
+AUI_ON_COMMAND("skill",			CDlgELFProp::OnCommand_Genius)
+AUI_ON_COMMAND("equip",			CDlgELFProp::OnCommand_Equip)
+AUI_ON_COMMAND("safe",			CDlgELFProp::OnCommand_Safe)
+AUI_ON_COMMAND("inexp",			CDlgELFProp::OnCommand_InExp)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFProp, CDlgBase)
 
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDOWN,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDBLCLK,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDOWN,		OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDBLCLK,		OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONUP,		OnEventLBUttonUp_stop)
-AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONUP,		OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDOWN,		CDlgELFProp::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONDBLCLK,		CDlgELFProp::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDOWN,		CDlgELFProp::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONDBLCLK,		CDlgELFProp::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Add*",	WM_LBUTTONUP,		CDlgELFProp::OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Minus*",	WM_LBUTTONUP,		CDlgELFProp::OnEventLBUttonUp_stop)
 
 AUI_END_EVENT_MAP()
 

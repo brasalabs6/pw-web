@@ -37,9 +37,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgMeridiansImpact, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Point*", OnCommandOpenGate)
+AUI_ON_COMMAND("Btn_Point*", CDlgMeridiansImpact::OnCommandOpenGate)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL", CDlgMeridiansImpact::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

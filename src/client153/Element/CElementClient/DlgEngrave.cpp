@@ -23,14 +23,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgEngrave, CDlgBase)
-AUI_ON_COMMAND("Btn_Engrave", OnCommand_Engrave)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Cancel", OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Engrave", CDlgEngrave::OnCommand_Engrave)
+AUI_ON_COMMAND("IDCANCEL", CDlgEngrave::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Cancel", CDlgEngrave::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEngrave, CDlgBase)
-AUI_ON_EVENT("U_*", WM_LBUTTONDOWN, OnEventLButtonDown_Img_EngraveConfig)
-AUI_ON_EVENT("Equip_*", WM_LBUTTONDOWN, OnEventLButtonDown_Img_Equip)
+AUI_ON_EVENT("U_*", WM_LBUTTONDOWN, CDlgEngrave::OnEventLButtonDown_Img_EngraveConfig)
+AUI_ON_EVENT("Equip_*", WM_LBUTTONDOWN, CDlgEngrave::OnEventLButtonDown_Img_Equip)
 AUI_END_EVENT_MAP()
 
 //------------------------------------------------------------------------

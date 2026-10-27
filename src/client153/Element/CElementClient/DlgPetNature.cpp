@@ -16,9 +16,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetNature, CDlgBase)
 
-AUI_ON_COMMAND("Btn_PageUp",		OnCommandPre)
-AUI_ON_COMMAND("Btn_PageDown",		OnCommandNext)
-AUI_ON_COMMAND("Btn_Close",			OnCommandCancel)
+AUI_ON_COMMAND("Btn_PageUp",		CDlgPetNature::OnCommandPre)
+AUI_ON_COMMAND("Btn_PageDown",		CDlgPetNature::OnCommandNext)
+AUI_ON_COMMAND("Btn_Close",			CDlgPetNature::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

@@ -46,22 +46,22 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizePre, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("Btn_SaveCustomizeData", OnCommandSaveCusData)
-AUI_ON_COMMAND("Btn_DeleteCustomizeData", OnCommandDeleteCusData)
-AUI_ON_COMMAND("Btn_Random", OnCommandRandomCusData)
+AUI_ON_COMMAND("Btn_SaveCustomizeData", CDlgCustomizePre::OnCommandSaveCusData)
+AUI_ON_COMMAND("Btn_DeleteCustomizeData", CDlgCustomizePre::OnCommandDeleteCusData)
+AUI_ON_COMMAND("Btn_Random", CDlgCustomizePre::OnCommandRandomCusData)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizePre, CDlgCustomizeBase)
 
-AUI_ON_EVENT("ListBox_PreCustomize", WM_LBUTTONUP, OnLButtonUpListBoxPreCus)
-AUI_ON_EVENT("ListBox_PreCustomize", WM_KEYDOWN, OnKeyDownListBoxPreCus)
+AUI_ON_EVENT("ListBox_PreCustomize", WM_LBUTTONUP, CDlgCustomizePre::OnLButtonUpListBoxPreCus)
+AUI_ON_EVENT("ListBox_PreCustomize", WM_KEYDOWN, CDlgCustomizePre::OnKeyDownListBoxPreCus)
 
-AUI_ON_EVENT("Img_*",WM_LBUTTONUP, OnLButtonUpListboxPredefined)
-AUI_ON_EVENT("Scroll_*",WM_MOUSEWHEEL, OnMouseWheelListboxPredefined)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListboxPredefined)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListboxPredefined)
+AUI_ON_EVENT("Img_*",WM_LBUTTONUP, CDlgCustomizePre::OnLButtonUpListboxPredefined)
+AUI_ON_EVENT("Scroll_*",WM_MOUSEWHEEL, CDlgCustomizePre::OnMouseWheelListboxPredefined)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizePre::OnMouseWheelListboxPredefined)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizePre::OnMouseWheelListboxPredefined)
 
 AUI_END_EVENT_MAP()
 

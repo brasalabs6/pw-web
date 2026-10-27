@@ -31,14 +31,14 @@ const A3DCOLOR clHunger[] =
 
 AUI_BEGIN_COMMAND_MAP(CDlgHostPet, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgHostPet::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgHostPet, CDlgBase)
 
-AUI_ON_EVENT("Icon_Head",		WM_LBUTTONUP,		OnEventLButtonUp)
-AUI_ON_EVENT("Icon_Head",		WM_RBUTTONUP,		OnEventRButtonUp)
+AUI_ON_EVENT("Icon_Head",		WM_LBUTTONUP,		CDlgHostPet::OnEventLButtonUp)
+AUI_ON_EVENT("Icon_Head",		WM_RBUTTONUP,		CDlgHostPet::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

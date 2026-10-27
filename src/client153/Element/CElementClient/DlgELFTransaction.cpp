@@ -21,10 +21,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFTransaction, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
-AUI_ON_COMMAND("toprotect",			OnCommand_ToProtect)
-AUI_ON_COMMAND("tofree",			OnCommand_ToFree)
-AUI_ON_COMMAND("changeclear",		OnCommand_StopChange)
+AUI_ON_COMMAND("IDCANCEL",			CDlgELFTransaction::OnCommand_CANCEL)
+AUI_ON_COMMAND("toprotect",			CDlgELFTransaction::OnCommand_ToProtect)
+AUI_ON_COMMAND("tofree",			CDlgELFTransaction::OnCommand_ToFree)
+AUI_ON_COMMAND("changeclear",		CDlgELFTransaction::OnCommand_StopChange)
 
 AUI_END_COMMAND_MAP()
 

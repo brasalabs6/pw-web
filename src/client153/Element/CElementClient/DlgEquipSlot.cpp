@@ -21,15 +21,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgEquipSlot, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgEquipSlot::OnCommandCANCEL)
+AUI_ON_COMMAND("confirm",		CDlgEquipSlot::OnCommandConfirm)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgEquipSlot, CDlgBase)
 
-AUI_ON_EVENT("Img_Equip", WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Equip", WM_LBUTTONDOWN,	CDlgEquipSlot::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

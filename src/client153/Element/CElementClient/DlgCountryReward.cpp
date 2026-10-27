@@ -13,7 +13,7 @@
 #include "countrybattleresult.hpp"
 
 AUI_BEGIN_COMMAND_MAP(CDlgCountryReward, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL",	CDlgCountryReward::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgCountryReward::CDlgCountryReward()

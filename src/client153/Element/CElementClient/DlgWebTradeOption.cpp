@@ -15,10 +15,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgWebTradeOption, CDlgBase)
 
-AUI_ON_COMMAND("Whisper",	OnCommandWhisper)
-AUI_ON_COMMAND("CopyID",	OnCommandCopyID)
-AUI_ON_COMMAND("CopyURL",	OnCommandCopyURL)
-AUI_ON_COMMAND("GotoWeb",	OnCommandGotoWeb)
+AUI_ON_COMMAND("Whisper",	CDlgWebTradeOption::OnCommandWhisper)
+AUI_ON_COMMAND("CopyID",	CDlgWebTradeOption::OnCommandCopyID)
+AUI_ON_COMMAND("CopyURL",	CDlgWebTradeOption::OnCommandCopyURL)
+AUI_ON_COMMAND("GotoWeb",	CDlgWebTradeOption::OnCommandGotoWeb)
 
 AUI_END_COMMAND_MAP()
 

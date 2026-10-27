@@ -35,15 +35,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgHelp, CDlgBase)
 
-AUI_ON_COMMAND("helpmain*", OnCommandHelpMain)
-AUI_ON_COMMAND("wizard",	OnCommandWizard)
-AUI_ON_COMMAND("IDCANCEL",	OnCommandIDCancel)
+AUI_ON_COMMAND("helpmain*", CDlgHelp::OnCommandHelpMain)
+AUI_ON_COMMAND("wizard",	CDlgHelp::OnCommandWizard)
+AUI_ON_COMMAND("IDCANCEL",	CDlgHelp::OnCommandIDCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgHelp, CDlgBase)
 
-AUI_ON_EVENT("Tree", WM_LBUTTONDOWN, OnLButtonDownTree)
+AUI_ON_EVENT("Tree", WM_LBUTTONDOWN, CDlgHelp::OnLButtonDownTree)
 
 AUI_END_EVENT_MAP()
 

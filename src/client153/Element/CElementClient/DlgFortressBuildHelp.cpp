@@ -8,7 +8,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressBuildHelp, CDlgTextHelp)
-AUI_ON_COMMAND("BtnTab_*", OnCommand_Switch)
+AUI_ON_COMMAND("BtnTab_*", CDlgFortressBuildHelp::OnCommand_Switch)
 AUI_END_COMMAND_MAP()
 
 CDlgFortressBuildHelp::CDlgFortressBuildHelp()

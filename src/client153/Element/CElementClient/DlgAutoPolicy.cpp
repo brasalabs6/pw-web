@@ -47,18 +47,18 @@ static const int LIST_TYPE = 2;
 static const int LIST_GROUP = 1; /*Alien - foi adicionado*/
 
 AUI_BEGIN_COMMAND_MAP(CDlgAutoPolicy, CDlgBase)
-AUI_ON_COMMAND("Btn_AutoOpen", OnCommand_StartOrStop)
-AUI_ON_COMMAND("Btn_Confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_Cancel", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_AutoHPMP", OnCommand_SetAutoHPMP)
-AUI_ON_COMMAND("Btn_Add", OnCommand_Add)		/*Alien - foi adicionado*/
-AUI_ON_COMMAND("Btn_Delete", OnCommand_Delete)	/*Alien - foi adicionado*/
-AUI_ON_COMMAND("Rdo_TypeMonster", OnCommand_Switch)
-AUI_ON_COMMAND("RadioButton_122710383", OnCommand_Switch)
+AUI_ON_COMMAND("Btn_AutoOpen", CDlgAutoPolicy::OnCommand_StartOrStop)
+AUI_ON_COMMAND("Btn_Confirm", CDlgAutoPolicy::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_Cancel", CDlgAutoPolicy::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_AutoHPMP", CDlgAutoPolicy::OnCommand_SetAutoHPMP)
+AUI_ON_COMMAND("Btn_Add", CDlgAutoPolicy::OnCommand_Add)		/*Alien - foi adicionado*/
+AUI_ON_COMMAND("Btn_Delete", CDlgAutoPolicy::OnCommand_Delete)	/*Alien - foi adicionado*/
+AUI_ON_COMMAND("Rdo_TypeMonster", CDlgAutoPolicy::OnCommand_Switch)
+AUI_ON_COMMAND("RadioButton_122710383", CDlgAutoPolicy::OnCommand_Switch)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAutoPolicy, CDlgBase)
-AUI_ON_EVENT("Img_Skill*", WM_LBUTTONDOWN, OnEvent_LButtonDown)
+AUI_ON_EVENT("Img_Skill*", WM_LBUTTONDOWN, CDlgAutoPolicy::OnEvent_LButtonDown)
 AUI_END_EVENT_MAP()
 
 CDlgAutoPolicy::CDlgAutoPolicy()

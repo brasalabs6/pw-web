@@ -23,24 +23,24 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAuctionBase, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",			OnCommandCancel)
-AUI_ON_COMMAND("auctionbuylist",	OnCommandAuctionBuyList)
-AUI_ON_COMMAND("auctionlist",		OnCommandAuctionList)
-AUI_ON_COMMAND("auctionselllist",	OnCommandAuctionSellList)
-AUI_ON_COMMAND("auctionmyfavor",	OnCommandAuctionMyFavor)
-AUI_ON_COMMAND("buy",				OnCommandBuy)
-AUI_ON_COMMAND("binbuy",			OnCommandBinBuy)
-AUI_ON_COMMAND("sortid",			OnCommandSortID)
-AUI_ON_COMMAND("sortname",			OnCommandSortName)
-AUI_ON_COMMAND("sorttime",			OnCommandSortTime)
-AUI_ON_COMMAND("sortprice",			OnCommandSortPrice)
-AUI_ON_COMMAND("sortbinprice",		OnCommandSortBinPrice)
+AUI_ON_COMMAND("IDCANCEL",			CDlgAuctionBase::OnCommandCancel)
+AUI_ON_COMMAND("auctionbuylist",	CDlgAuctionBase::OnCommandAuctionBuyList)
+AUI_ON_COMMAND("auctionlist",		CDlgAuctionBase::OnCommandAuctionList)
+AUI_ON_COMMAND("auctionselllist",	CDlgAuctionBase::OnCommandAuctionSellList)
+AUI_ON_COMMAND("auctionmyfavor",	CDlgAuctionBase::OnCommandAuctionMyFavor)
+AUI_ON_COMMAND("buy",				CDlgAuctionBase::OnCommandBuy)
+AUI_ON_COMMAND("binbuy",			CDlgAuctionBase::OnCommandBinBuy)
+AUI_ON_COMMAND("sortid",			CDlgAuctionBase::OnCommandSortID)
+AUI_ON_COMMAND("sortname",			CDlgAuctionBase::OnCommandSortName)
+AUI_ON_COMMAND("sorttime",			CDlgAuctionBase::OnCommandSortTime)
+AUI_ON_COMMAND("sortprice",			CDlgAuctionBase::OnCommandSortPrice)
+AUI_ON_COMMAND("sortbinprice",		CDlgAuctionBase::OnCommandSortBinPrice)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAuctionBase, CDlgBase)
 
-AUI_ON_EVENT("Lst_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown_Lst_Item)
+AUI_ON_EVENT("Lst_Item",	WM_LBUTTONDOWN,	CDlgAuctionBase::OnEventLButtonDown_Lst_Item)
 
 AUI_END_EVENT_MAP()
 

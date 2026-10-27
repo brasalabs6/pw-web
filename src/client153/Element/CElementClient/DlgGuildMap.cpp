@@ -33,15 +33,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildMap, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGuildMap::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGuildMap, CDlgBase)
 
-AUI_ON_EVENT("GuildMap",	WM_MOUSEMOVE,	OnEventMouseMove)
-AUI_ON_EVENT("GuildMap",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("GuildMap",	WM_RBUTTONDOWN,	OnEventRButtonDown)
+AUI_ON_EVENT("GuildMap",	WM_MOUSEMOVE,	CDlgGuildMap::OnEventMouseMove)
+AUI_ON_EVENT("GuildMap",	WM_LBUTTONDOWN,	CDlgGuildMap::OnEventLButtonDown)
+AUI_ON_EVENT("GuildMap",	WM_RBUTTONDOWN,	CDlgGuildMap::OnEventRButtonDown)
 
 AUI_END_EVENT_MAP()
 

@@ -349,13 +349,13 @@ CECModel * CChariot::LoadModel(int id)
 //////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgChariotEnter, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Apply",		OnCommandEnterBattle)
-AUI_ON_COMMAND("Btn_More",		OnCommandAboutChariot)
+AUI_ON_COMMAND("IDCANCEL",		CDlgChariotEnter::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Apply",		CDlgChariotEnter::OnCommandEnterBattle)
+AUI_ON_COMMAND("Btn_More",		CDlgChariotEnter::OnCommandAboutChariot)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgChariotEnter, CDlgBase)
-AUI_ON_EVENT("Img_Chariot0*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Chariot0*",	WM_LBUTTONDOWN,	CDlgChariotEnter::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 CDlgChariotEnter::~CDlgChariotEnter()
@@ -450,10 +450,10 @@ void CDlgChariotEnter::OnEventLButtonDown(WPARAM wParam, LPARAM lParam, AUIObjec
 
 //////////////////////////////////////////////////////////////////////////
 AUI_BEGIN_EVENT_MAP(CDlgChariotInfo, CDlgBase)
-AUI_ON_EVENT("Img_Model",		WM_LBUTTONDOWN,	OnEventLButtonDown_Model)
-AUI_ON_EVENT("Img_Model",		WM_LBUTTONUP,	OnEventLButtonUp_Model)
-AUI_ON_EVENT("Tv_ChariotName",	WM_LBUTTONDOWN,	OnEventLButtonDown_Tree)
-AUI_ON_EVENT("Img_Model",		WM_MOUSEMOVE,	OnEventMouseMove)
+AUI_ON_EVENT("Img_Model",		WM_LBUTTONDOWN,	CDlgChariotInfo::OnEventLButtonDown_Model)
+AUI_ON_EVENT("Img_Model",		WM_LBUTTONUP,	CDlgChariotInfo::OnEventLButtonUp_Model)
+AUI_ON_EVENT("Tv_ChariotName",	WM_LBUTTONDOWN,	CDlgChariotInfo::OnEventLButtonDown_Tree)
+AUI_ON_EVENT("Img_Model",		WM_MOUSEMOVE,	CDlgChariotInfo::OnEventMouseMove)
 AUI_END_EVENT_MAP()
 
 CDlgChariotInfo::~CDlgChariotInfo()
@@ -663,11 +663,11 @@ void CDlgChariotInfo::OnShowDialog()
 
 //////////////////////////////////////////////////////////////////////////
 AUI_BEGIN_COMMAND_MAP(CDlgChariotRevive, CDlgBase)
-AUI_ON_COMMAND("Btn_Revive",		 OnCommandRevive)
+AUI_ON_COMMAND("Btn_Revive",		 CDlgChariotRevive::OnCommandRevive)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgChariotRevive, CDlgBase)
-AUI_ON_EVENT("Img_Chariot0*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Chariot0*",	WM_LBUTTONDOWN,	CDlgChariotRevive::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 
@@ -745,9 +745,9 @@ void CDlgChariotRevive::OnEventLButtonDown(WPARAM wParam, LPARAM lParam, AUIObje
 ////////////////////////////////////
 
 AUI_BEGIN_EVENT_MAP(CDlgChariotOpt, CDlgBase)
-AUI_ON_EVENT("Img_Skill0*",	WM_LBUTTONUP,	OnEventLButtonUp)
-AUI_ON_EVENT("Img_UpData",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Txt_UpData",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Skill0*",	WM_LBUTTONUP,	CDlgChariotOpt::OnEventLButtonUp)
+AUI_ON_EVENT("Img_UpData",	WM_LBUTTONDOWN,	CDlgChariotOpt::OnEventLButtonDown)
+AUI_ON_EVENT("Txt_UpData",	WM_LBUTTONDOWN,	CDlgChariotOpt::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 bool CDlgChariotOpt::OnInitDialog()
@@ -900,7 +900,7 @@ void CDlgChariotOpt::OnTick()
 }
 //////////////////////////////////////
 AUI_BEGIN_COMMAND_MAP(CDlgChariotRankList, CDlgBase)
-AUI_ON_COMMAND("Btn_Refresh",				OnCommandRefresh)
+AUI_ON_COMMAND("Btn_Refresh",				CDlgChariotRankList::OnCommandRefresh)
 AUI_END_COMMAND_MAP()
 
 void CDlgChariotRankList::OnCommandRefresh(const char* szCommand)
@@ -1037,9 +1037,9 @@ void CDlgChariotRankList::OnTick()
 
 //////////////////////////////////////////////////////////////////////////
 AUI_BEGIN_COMMAND_MAP(CDlgChariotScore, CDlgBase)
-AUI_ON_COMMAND("Btn_Quit",				OnCommandExitBattle)
-AUI_ON_COMMAND("Btn_Rank",				OnCommandRankList)
-AUI_ON_COMMAND("Btn_ChariotInfo",		OnCommandQueryAmount)
+AUI_ON_COMMAND("Btn_Quit",				CDlgChariotScore::OnCommandExitBattle)
+AUI_ON_COMMAND("Btn_Rank",				CDlgChariotScore::OnCommandRankList)
+AUI_ON_COMMAND("Btn_ChariotInfo",		CDlgChariotScore::OnCommandQueryAmount)
 AUI_END_COMMAND_MAP()
 
 bool CDlgChariotScore::Release()

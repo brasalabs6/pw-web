@@ -65,11 +65,11 @@ bool CDlgGeneralCardBuySetting::GetSettingShowRollToCardGfx(int rank)
 
 //	class CDlgGeneralCardBuy
 AUI_BEGIN_COMMAND_MAP(CDlgGeneralCardBuy, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommandCancel)
-AUI_ON_COMMAND("Btn_Buy",		OnCommandBuy)
-AUI_ON_COMMAND("Btn_BatchBuy",	OnCommandBatchBuy)
-AUI_ON_COMMAND("Btn_Setting",	OnCommandSetting)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGeneralCardBuy::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgGeneralCardBuy::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Buy",		CDlgGeneralCardBuy::OnCommandBuy)
+AUI_ON_COMMAND("Btn_BatchBuy",	CDlgGeneralCardBuy::OnCommandBatchBuy)
+AUI_ON_COMMAND("Btn_Setting",	CDlgGeneralCardBuy::OnCommandSetting)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGeneralCardBuy, CDlgBase)

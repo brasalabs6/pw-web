@@ -17,14 +17,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgIdentify, CDlgBase)
 
-AUI_ON_COMMAND("start",			OnCommand_start)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("start",			CDlgIdentify::OnCommand_start)
+AUI_ON_COMMAND("IDCANCEL",		CDlgIdentify::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgIdentify, CDlgBase)
 
-AUI_ON_EVENT("Item",		WM_LBUTTONDOWN,		OnEventLButtonDown)
+AUI_ON_EVENT("Item",		WM_LBUTTONDOWN,		CDlgIdentify::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

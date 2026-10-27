@@ -20,14 +20,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetRetrain, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgPetRetrain::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgPetRetrain::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPetRetrain, CDlgBase)
 
-AUI_ON_EVENT("Img_Skill*",	WM_LBUTTONDOWN,	OnEventLButtonDownSkill)
+AUI_ON_EVENT("Img_Skill*",	WM_LBUTTONDOWN,	CDlgPetRetrain::OnEventLButtonDownSkill)
 
 AUI_END_EVENT_MAP()
 

@@ -11,12 +11,12 @@
 #include <AUIDef.h>
 
 AUI_BEGIN_COMMAND_MAP(CDlgShopCartSubList, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgShopCartSubList::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgShopCartSubList, CDlgBase)
-AUI_ON_EVENT("*",		WM_MOUSEWHEEL,	OnEventMouseWheel)
-AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,	OnEventMouseWheel)
+AUI_ON_EVENT("*",		WM_MOUSEWHEEL,	CDlgShopCartSubList::OnEventMouseWheel)
+AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,	CDlgShopCartSubList::OnEventMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgShopCartSubList::CDlgShopCartSubList()

@@ -28,7 +28,7 @@ AUI_BEGIN_COMMAND_MAP(CDlgForceActivity, CDlgBase)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgForceActivity, CDlgBase)
-AUI_ON_EVENT("Img_Canvas", WM_LBUTTONUP,		OnEvent_Canvas)
+AUI_ON_EVENT("Img_Canvas", WM_LBUTTONUP,		CDlgForceActivity::OnEvent_Canvas)
 AUI_END_EVENT_MAP()
 
 CDlgForceActivity::CDlgForceActivity()

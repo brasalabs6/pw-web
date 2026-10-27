@@ -12,8 +12,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildMapTravel, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGuildMapTravel::OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgGuildMapTravel::OnCommandConfirm)
 
 AUI_END_COMMAND_MAP()
 

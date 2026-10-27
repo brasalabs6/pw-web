@@ -48,29 +48,29 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGivingFor, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Search", OnCommandSearch)
-AUI_ON_COMMAND("Btn_RightTurn", OnCommandRightTurn )
-AUI_ON_COMMAND("Btn_LeftTurn",  OnCommandLeftTurn  )
-AUI_ON_COMMAND("Btn_Confirm",   OnCommandConfirm   )
-AUI_ON_COMMAND("Rdo_*",			OnCommandRadioFriend   )
+AUI_ON_COMMAND("Btn_Search", CDlgGivingFor::OnCommandSearch)
+AUI_ON_COMMAND("Btn_RightTurn", CDlgGivingFor::OnCommandRightTurn )
+AUI_ON_COMMAND("Btn_LeftTurn",  CDlgGivingFor::OnCommandLeftTurn  )
+AUI_ON_COMMAND("Btn_Confirm",   CDlgGivingFor::OnCommandConfirm   )
+AUI_ON_COMMAND("Rdo_*",			CDlgGivingFor::OnCommandRadioFriend   )
 
-AUI_ON_COMMAND("Btn_LeftSortName",   OnCommandLeftSortName)
-AUI_ON_COMMAND("Btn_LeftSortLevel",   OnCommandLeftSortLevel)
-AUI_ON_COMMAND("Btn_LeftSortProf",    OnCommandLeftSortProf)
+AUI_ON_COMMAND("Btn_LeftSortName",   CDlgGivingFor::OnCommandLeftSortName)
+AUI_ON_COMMAND("Btn_LeftSortLevel",   CDlgGivingFor::OnCommandLeftSortLevel)
+AUI_ON_COMMAND("Btn_LeftSortProf",    CDlgGivingFor::OnCommandLeftSortProf)
 
-AUI_ON_COMMAND("Btn_RightSortName",   OnCommandRightSortName)
-AUI_ON_COMMAND("Btn_RightSortLevel",  OnCommandRightSortLevel)
-AUI_ON_COMMAND("Btn_RightSortProf",   OnCommandRightSortProf)
+AUI_ON_COMMAND("Btn_RightSortName",   CDlgGivingFor::OnCommandRightSortName)
+AUI_ON_COMMAND("Btn_RightSortLevel",  CDlgGivingFor::OnCommandRightSortLevel)
+AUI_ON_COMMAND("Btn_RightSortProf",   CDlgGivingFor::OnCommandRightSortProf)
 
 
-AUI_ON_COMMAND("Btn_Cancel", OnCommandCancel)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("Btn_Cancel", CDlgGivingFor::OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL", CDlgGivingFor::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGivingFor, CDlgBase)
-AUI_ON_EVENT("Lst_Left",	WM_LBUTTONDBLCLK,	OnEventLButtonDBClick_LeftList)
-AUI_ON_EVENT("Lst_Right",	WM_LBUTTONDBLCLK,	OnEventLButtonDBClick_RightList)
+AUI_ON_EVENT("Lst_Left",	WM_LBUTTONDBLCLK,	CDlgGivingFor::OnEventLButtonDBClick_LeftList)
+AUI_ON_EVENT("Lst_Right",	WM_LBUTTONDBLCLK,	CDlgGivingFor::OnEventLButtonDBClick_RightList)
 AUI_END_EVENT_MAP()
 
 struct SortDataName : public std::binary_function<const SortData&, const SortData&, bool> 

@@ -16,13 +16,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiMonster, CDlgWikiByNameBase)
-AUI_ON_COMMAND("drop", OnCommand_Drop)
-AUI_ON_COMMAND("task", OnCommand_Task)
+AUI_ON_COMMAND("drop", CDlgWikiMonster::OnCommand_Drop)
+AUI_ON_COMMAND("task", CDlgWikiMonster::OnCommand_Task)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiMonster, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Monster",	WM_LBUTTONDOWN,	OnEventLButtonDown_ListMonster)
-AUI_ON_EVENT("List_Monster",	WM_KEYDOWN,		OnEventKeyDown_ListMonster)
+AUI_ON_EVENT("List_Monster",	WM_LBUTTONDOWN,	CDlgWikiMonster::OnEventLButtonDown_ListMonster)
+AUI_ON_EVENT("List_Monster",	WM_KEYDOWN,		CDlgWikiMonster::OnEventKeyDown_ListMonster)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

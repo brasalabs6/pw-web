@@ -19,12 +19,12 @@
 #include "../../CFWEditorLib/FWFlatCollector.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgSkillSubTree, CDlgBase)
-AUI_ON_COMMAND("Btn_TreeClose", OnCommand_TreeClose)
+AUI_ON_COMMAND("Btn_TreeClose", CDlgSkillSubTree::OnCommand_TreeClose)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillSubTree, CDlgBase)
-AUI_ON_EVENT("skill*",	WM_LBUTTONDOWN, OnEventLButtonDown)
+AUI_ON_EVENT("skill*",	WM_LBUTTONDOWN, CDlgSkillSubTree::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 extern CECGame * g_pGame;

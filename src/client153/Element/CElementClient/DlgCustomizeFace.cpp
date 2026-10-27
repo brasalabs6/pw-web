@@ -22,14 +22,14 @@ AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeFace, CDlgCustomizeBase)
 
-AUI_ON_EVENT("E_Face*", WM_LBUTTONUP, OnLButtonUpListbox)
-AUI_ON_EVENT("E_Face*", WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("Img_*", WM_LBUTTONUP, OnLButtonUpListbox)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListbox)
-AUI_ON_EVENT("E_Ear*", WM_LBUTTONUP, OnLButtonUpListbox)
-AUI_ON_EVENT("E_Ear*", WM_MOUSEWHEEL, OnMouseWheelListbox)
+AUI_ON_EVENT("E_Face*", WM_LBUTTONUP, CDlgCustomizeFace::OnLButtonUpListbox)
+AUI_ON_EVENT("E_Face*", WM_MOUSEWHEEL, CDlgCustomizeFace::OnMouseWheelListbox)
+AUI_ON_EVENT("Img_*", WM_LBUTTONUP, CDlgCustomizeFace::OnLButtonUpListbox)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizeFace::OnMouseWheelListbox)
+AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, CDlgCustomizeFace::OnMouseWheelListbox)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizeFace::OnMouseWheelListbox)
+AUI_ON_EVENT("E_Ear*", WM_LBUTTONUP, CDlgCustomizeFace::OnLButtonUpListbox)
+AUI_ON_EVENT("E_Ear*", WM_MOUSEWHEEL, CDlgCustomizeFace::OnMouseWheelListbox)
 
 AUI_END_EVENT_MAP()
 
@@ -462,8 +462,8 @@ void CDlgCustomizeFace::ClearListCtrlAndA2DSprite()
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeFace2, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("MoveSlider", OnCommandMoveSlider)
-AUI_ON_COMMAND("Reset", OnCommandReset)
+AUI_ON_COMMAND("MoveSlider", CDlgCustomizeFace2::OnCommandMoveSlider)
+AUI_ON_COMMAND("Reset", CDlgCustomizeFace2::OnCommandReset)
 
 AUI_END_COMMAND_MAP()
 

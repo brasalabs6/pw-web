@@ -24,8 +24,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomize, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommandOnCancel)
-AUI_ON_COMMAND("IDOK", OnCommandOnOK)
+AUI_ON_COMMAND("IDCANCEL", CDlgCustomize::OnCommandOnCancel)
+AUI_ON_COMMAND("IDOK", CDlgCustomize::OnCommandOnOK)
 
 AUI_END_COMMAND_MAP()
 

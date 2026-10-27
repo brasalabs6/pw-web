@@ -41,14 +41,14 @@ static const char* MERIDIANS_TEXT_GFX[CECMeridians::MeridiansLevelLayer + 1] =
 
 AUI_BEGIN_COMMAND_MAP(CDlgMeridians, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Impact*", OnCommandImpact)
-AUI_ON_COMMAND("fullmeridian", OnCommandFullMeridian)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("Btn_Impact*", CDlgMeridians::OnCommandImpact)
+AUI_ON_COMMAND("fullmeridian", CDlgMeridians::OnCommandFullMeridian)
+AUI_ON_COMMAND("IDCANCEL", CDlgMeridians::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgMeridians, CDlgBase)
-AUI_ON_EVENT("Btn_Impact20",	WM_LBUTTONUP,	OnEventLButtonUp_LevelGfx)
+AUI_ON_EVENT("Btn_Impact20",	WM_LBUTTONUP,	CDlgMeridians::OnEventLButtonUp_LevelGfx)
 AUI_END_EVENT_MAP()
 
 static CECPlayer::MeridiansProp gMeridiansProp;

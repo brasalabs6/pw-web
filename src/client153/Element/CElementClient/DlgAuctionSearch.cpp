@@ -19,17 +19,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAuctionSearch, CDlgBase)
 
-AUI_ON_COMMAND("searchname",		OnCommandSearchName)
-AUI_ON_COMMAND("searchall",			OnCommandSearchAll)
-AUI_ON_COMMAND("searchitem",		OnCommandSearchItem)
+AUI_ON_COMMAND("searchname",		CDlgAuctionSearch::OnCommandSearchName)
+AUI_ON_COMMAND("searchall",			CDlgAuctionSearch::OnCommandSearchAll)
+AUI_ON_COMMAND("searchitem",		CDlgAuctionSearch::OnCommandSearchItem)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAuctionSearch, CDlgBase)
 
-AUI_ON_EVENT("Lst_Item",WM_LBUTTONDOWN,		OnEventLButtonDown_Lst_Item)
-AUI_ON_EVENT("Tv_Item",	WM_LBUTTONDOWN,		OnEventLButtonDown_Tv_Item)
-AUI_ON_EVENT("Tv_Item",	WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK_Tv_Item)
+AUI_ON_EVENT("Lst_Item",WM_LBUTTONDOWN,		CDlgAuctionSearch::OnEventLButtonDown_Lst_Item)
+AUI_ON_EVENT("Tv_Item",	WM_LBUTTONDOWN,		CDlgAuctionSearch::OnEventLButtonDown_Tv_Item)
+AUI_ON_EVENT("Tv_Item",	WM_LBUTTONDBLCLK,	CDlgAuctionSearch::OnEventLButtonDBLCLK_Tv_Item)
 
 AUI_END_EVENT_MAP()
 

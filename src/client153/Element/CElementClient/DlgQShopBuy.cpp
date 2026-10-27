@@ -21,16 +21,16 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgQShopBuy, CDlgBase)
-AUI_ON_COMMAND("Btn_Buy",					OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",					OnCommandCancel)
-AUI_ON_COMMAND("Btn_Cancel",				OnCommandCancel)
-AUI_ON_COMMAND("Btn_Max",					OnCommandMaximum)
-AUI_ON_COMMAND("Btn_Add",					OnCommandAdd)
-AUI_ON_COMMAND("Btn_Minus",					OnCommandMinus)
+AUI_ON_COMMAND("Btn_Buy",					CDlgQShopBuy::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",					CDlgQShopBuy::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Cancel",				CDlgQShopBuy::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Max",					CDlgQShopBuy::OnCommandMaximum)
+AUI_ON_COMMAND("Btn_Add",					CDlgQShopBuy::OnCommandAdd)
+AUI_ON_COMMAND("Btn_Minus",					CDlgQShopBuy::OnCommandMinus)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQShopBuy, CDlgBase)
-AUI_ON_EVENT("*",			WM_MOUSEWHEEL,	OnEventMouseWheel)
+AUI_ON_EVENT("*",			WM_MOUSEWHEEL,	CDlgQShopBuy::OnEventMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgQShopBuy::CDlgQShopBuy():

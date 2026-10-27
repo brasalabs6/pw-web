@@ -16,10 +16,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgExp, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("begin", OnCommand_Begin)
-AUI_ON_COMMAND("stop", OnCommand_Stop)
+AUI_ON_COMMAND("IDCANCEL", CDlgExp::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm", CDlgExp::OnCommand_Confirm)
+AUI_ON_COMMAND("begin", CDlgExp::OnCommand_Begin)
+AUI_ON_COMMAND("stop", CDlgExp::OnCommand_Stop)
 AUI_END_COMMAND_MAP()
 
 bool CDlgExp::OnInitDialog()

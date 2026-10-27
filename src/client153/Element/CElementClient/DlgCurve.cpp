@@ -4,16 +4,16 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgCurve, AUIDialog)
 
-AUI_ON_EVENT("lblViewStub", WM_LBUTTONDOWN, OnLButtonDownGraph)
-AUI_ON_EVENT("lblViewStub", WM_LBUTTONUP, OnLButtonUpGraph)
-AUI_ON_EVENT("lblViewStub", WM_MOUSEMOVE, OnMouseMoveGraph)
+AUI_ON_EVENT("lblViewStub", WM_LBUTTONDOWN, CDlgCurve::OnLButtonDownGraph)
+AUI_ON_EVENT("lblViewStub", WM_LBUTTONUP, CDlgCurve::OnLButtonUpGraph)
+AUI_ON_EVENT("lblViewStub", WM_MOUSEMOVE, CDlgCurve::OnMouseMoveGraph)
 
 AUI_END_EVENT_MAP()
 
 
 AUI_BEGIN_COMMAND_MAP(CDlgCurve, AUIDialog)
 
-AUI_ON_COMMAND("IDOK", OnCommandIDOK)
+AUI_ON_COMMAND("IDOK", CDlgCurve::OnCommandIDOK)
 
 AUI_END_COMMAND_MAP()
 

@@ -80,9 +80,9 @@ ACString CECShopCartBuyCommand::GetMessage()const{
 //	class CDlgShopCart
 
 AUI_BEGIN_COMMAND_MAP(CDlgShopCart, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Close", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Buy", OnCommand_Buy)
+AUI_ON_COMMAND("IDCANCEL", CDlgShopCart::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close", CDlgShopCart::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Buy", CDlgShopCart::OnCommand_Buy)
 AUI_END_COMMAND_MAP()
 
 CDlgShopCart::CDlgShopCart()

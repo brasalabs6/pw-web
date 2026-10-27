@@ -18,14 +18,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgEquipBind, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgEquipBind::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgEquipBind::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEquipBind, CDlgBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	CDlgEquipBind::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

@@ -26,13 +26,13 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSettingSystem, CDlgSetting)
 
-AUI_ON_COMMAND("total", OnCommandTotal)
-AUI_ON_COMMAND("bright", OnCommandBright)
-AUI_ON_COMMAND("water", OnCommandWater)
-AUI_ON_COMMAND("music", OnCommandMusic)
-AUI_ON_COMMAND("ambience", OnCommandSFX)
-AUI_ON_COMMAND("res", OnCommandRes)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("total", CDlgSettingSystem::OnCommandTotal)
+AUI_ON_COMMAND("bright", CDlgSettingSystem::OnCommandBright)
+AUI_ON_COMMAND("water", CDlgSettingSystem::OnCommandWater)
+AUI_ON_COMMAND("music", CDlgSettingSystem::OnCommandMusic)
+AUI_ON_COMMAND("ambience", CDlgSettingSystem::OnCommandSFX)
+AUI_ON_COMMAND("res", CDlgSettingSystem::OnCommandRes)
+AUI_ON_COMMAND("IDCANCEL", CDlgSettingSystem::OnCommandCancel)
 
 
 AUI_END_COMMAND_MAP()

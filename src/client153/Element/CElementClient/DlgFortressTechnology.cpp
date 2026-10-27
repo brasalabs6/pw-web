@@ -10,9 +10,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressTechnology, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Close",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_*",	OnCommand_Upgrade)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressTechnology::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close",	CDlgFortressTechnology::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_*",	CDlgFortressTechnology::OnCommand_Upgrade)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressTechnology, CDlgBase)

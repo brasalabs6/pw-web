@@ -28,22 +28,22 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFittingRoom, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_ResetPlayer",	OnCommand_ResetPlayer)
-AUI_ON_COMMAND("Btn_Palette",		OnCommand_Palette)
+AUI_ON_COMMAND("IDCANCEL",			CDlgFittingRoom::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_ResetPlayer",	CDlgFittingRoom::OnCommand_ResetPlayer)
+AUI_ON_COMMAND("Btn_Palette",		CDlgFittingRoom::OnCommand_Palette)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFittingRoom, CDlgBase)
 
-AUI_ON_EVENT("Equip_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("Equip_*",		WM_RBUTTONDOWN,		OnEventRButtonDown)
-AUI_ON_EVENT("Img_Char",		WM_LBUTTONDOWN,		OnEventLButtonDown_Char)
-AUI_ON_EVENT("Img_Char",		WM_LBUTTONUP,		OnEventLButtonUp_Char)
-AUI_ON_EVENT("Img_Char",		WM_RBUTTONDOWN,		OnEventRButtonDown_Char)
-AUI_ON_EVENT("Img_Char",		WM_RBUTTONUP,		OnEventRButtonUp_Char)
-AUI_ON_EVENT("Img_Char",		WM_MOUSEWHEEL,		OnEventMouseWheel_Char)
-AUI_ON_EVENT("Img_Char",		WM_MOUSEMOVE,		OnEventMouseMove_Char)
+AUI_ON_EVENT("Equip_*",		WM_LBUTTONDOWN,		CDlgFittingRoom::OnEventLButtonDown)
+AUI_ON_EVENT("Equip_*",		WM_RBUTTONDOWN,		CDlgFittingRoom::OnEventRButtonDown)
+AUI_ON_EVENT("Img_Char",		WM_LBUTTONDOWN,		CDlgFittingRoom::OnEventLButtonDown_Char)
+AUI_ON_EVENT("Img_Char",		WM_LBUTTONUP,		CDlgFittingRoom::OnEventLButtonUp_Char)
+AUI_ON_EVENT("Img_Char",		WM_RBUTTONDOWN,		CDlgFittingRoom::OnEventRButtonDown_Char)
+AUI_ON_EVENT("Img_Char",		WM_RBUTTONUP,		CDlgFittingRoom::OnEventRButtonUp_Char)
+AUI_ON_EVENT("Img_Char",		WM_MOUSEWHEEL,		CDlgFittingRoom::OnEventMouseWheel_Char)
+AUI_ON_EVENT("Img_Char",		WM_MOUSEMOVE,		CDlgFittingRoom::OnEventMouseMove_Char)
 
 AUI_END_EVENT_MAP()
 

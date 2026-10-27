@@ -26,13 +26,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiTask, CDlgWikiByNameBase)
-AUI_ON_COMMAND("detail", OnCommand_Detail)
+AUI_ON_COMMAND("detail", CDlgWikiTask::OnCommand_Detail)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiTask, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Task",	WM_LBUTTONDOWN,	OnEventLButtonDown_List)
-AUI_ON_EVENT("List_Task",	WM_KEYDOWN,		OnEventKeyDown_List)
-AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK_Icon)
+AUI_ON_EVENT("List_Task",	WM_LBUTTONDOWN,	CDlgWikiTask::OnEventLButtonDown_List)
+AUI_ON_EVENT("List_Task",	WM_KEYDOWN,		CDlgWikiTask::OnEventKeyDown_List)
+AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	CDlgWikiTask::OnEventLButtonDBLCLK_Icon)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

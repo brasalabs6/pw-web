@@ -33,14 +33,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFGeniusReset, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFGeniusReset::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFGeniusReset::OnCommand_Confirm)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFGeniusReset, CDlgBase)
 
-AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		CDlgELFGeniusReset::OnEventLButtonDown_ELF)
 
 AUI_END_EVENT_MAP()
 

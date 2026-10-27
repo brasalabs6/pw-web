@@ -24,25 +24,25 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendChat, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("send",		OnCommandSend)
-AUI_ON_COMMAND("popface",	OnCommandPopface)
-AUI_ON_COMMAND("history",	OnCommandHistory)
-AUI_ON_COMMAND("save",		OnCommandSave)
-AUI_ON_COMMAND("delall",	OnCommandDelall)
-AUI_ON_COMMAND("minimize",	OnCommandMinimize)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFriendChat::OnCommandCANCAL)
+AUI_ON_COMMAND("send",		CDlgFriendChat::OnCommandSend)
+AUI_ON_COMMAND("popface",	CDlgFriendChat::OnCommandPopface)
+AUI_ON_COMMAND("history",	CDlgFriendChat::OnCommandHistory)
+AUI_ON_COMMAND("save",		CDlgFriendChat::OnCommandSave)
+AUI_ON_COMMAND("delall",	CDlgFriendChat::OnCommandDelall)
+AUI_ON_COMMAND("minimize",	CDlgFriendChat::OnCommandMinimize)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgFriendChat, CDlgBase)
 
-AUI_ON_EVENT("Txt_Content",	WM_SYSCHAR,		OnEventSysChar)
-AUI_ON_EVENT("Txt_Content",	WM_KEYDOWN,		OnEventKeyDown)
-AUI_ON_EVENT("Txt_Chat",	WM_LBUTTONDOWN,	OnEventLButtonDown_Txt_Chat)
-AUI_ON_EVENT("Txt_Chat",	WM_LBUTTONUP,	OnEventLButtonUp_Txt_Chat)
-AUI_ON_EVENT("Txt_Chat",	WM_RBUTTONUP,	OnEventRButtonUp_Txt_Chat)
-AUI_ON_EVENT("Txt_Chat",	WM_MOUSEMOVE,	OnEventMouseMove_Txt_Chat)
+AUI_ON_EVENT("Txt_Content",	WM_SYSCHAR,		CDlgFriendChat::OnEventSysChar)
+AUI_ON_EVENT("Txt_Content",	WM_KEYDOWN,		CDlgFriendChat::OnEventKeyDown)
+AUI_ON_EVENT("Txt_Chat",	WM_LBUTTONDOWN,	CDlgFriendChat::OnEventLButtonDown_Txt_Chat)
+AUI_ON_EVENT("Txt_Chat",	WM_LBUTTONUP,	CDlgFriendChat::OnEventLButtonUp_Txt_Chat)
+AUI_ON_EVENT("Txt_Chat",	WM_RBUTTONUP,	CDlgFriendChat::OnEventRButtonUp_Txt_Chat)
+AUI_ON_EVENT("Txt_Chat",	WM_MOUSEMOVE,	CDlgFriendChat::OnEventMouseMove_Txt_Chat)
 
 AUI_END_EVENT_MAP()
 

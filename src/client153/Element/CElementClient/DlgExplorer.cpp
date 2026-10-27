@@ -129,10 +129,10 @@ BOOL FreeBrowser()
 
 
 AUI_BEGIN_COMMAND_MAP(CDlgExplorer, CDlgBase)
-AUI_ON_COMMAND("Btn_Prev", OnCommand_Prev)
-AUI_ON_COMMAND("Btn_Next", OnCommand_Next)
-AUI_ON_COMMAND("Btn_Refresh", OnCommand_Refresh)
-AUI_ON_COMMAND("Btn_NavigateInOS", OnCommand_OSNavigate)
+AUI_ON_COMMAND("Btn_Prev", CDlgExplorer::OnCommand_Prev)
+AUI_ON_COMMAND("Btn_Next", CDlgExplorer::OnCommand_Next)
+AUI_ON_COMMAND("Btn_Refresh", CDlgExplorer::OnCommand_Refresh)
+AUI_ON_COMMAND("Btn_NavigateInOS", CDlgExplorer::OnCommand_OSNavigate)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgExplorer, CDlgBase)

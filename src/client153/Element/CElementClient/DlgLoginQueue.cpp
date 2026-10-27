@@ -8,9 +8,9 @@
 
 //	class CDlgLoginQueue
 AUI_BEGIN_COMMAND_MAP(CDlgLoginQueue, CDlgBase)
-AUI_ON_COMMAND("Btn_Recharge", OnCommand_Recharge)
-AUI_ON_COMMAND("Btn_Cancel", OnCommandCancel)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("Btn_Recharge", CDlgLoginQueue::OnCommand_Recharge)
+AUI_ON_COMMAND("Btn_Cancel", CDlgLoginQueue::OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL", CDlgLoginQueue::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgLoginQueue::CDlgLoginQueue()

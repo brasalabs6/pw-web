@@ -37,7 +37,7 @@ AUI_BEGIN_COMMAND_MAP(CDlgTreasureMap, CDlgBase)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTreasureMap, CDlgBase)
-AUI_ON_EVENT("Img_01*",			WM_RBUTTONUP,	OnEventRButtonUp)
+AUI_ON_EVENT("Img_01*",			WM_RBUTTONUP,	CDlgTreasureMap::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

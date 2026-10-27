@@ -13,10 +13,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgOptimizeGfx, CDlgOptimizeBase)
-AUI_ON_COMMAND("Btn_Decide", OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_GfxSuggest", OnCommand_Suggest)
-AUI_ON_COMMAND("Btn_GfxSelectAll", OnCommand_SelectAll)
-AUI_ON_COMMAND("Btn_GfxClear", OnCommand_Clear)
+AUI_ON_COMMAND("Btn_Decide", CDlgOptimizeGfx::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_GfxSuggest", CDlgOptimizeGfx::OnCommand_Suggest)
+AUI_ON_COMMAND("Btn_GfxSelectAll", CDlgOptimizeGfx::OnCommand_SelectAll)
+AUI_ON_COMMAND("Btn_GfxClear", CDlgOptimizeGfx::OnCommand_Clear)
 AUI_END_COMMAND_MAP()
 
 

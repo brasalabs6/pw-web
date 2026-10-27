@@ -26,13 +26,13 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGenCardCollection, CDlgBase)
 
-AUI_ON_COMMAND("Btn_PageDown",		OnCommandNext)
-AUI_ON_COMMAND("Btn_PageUp",		OnCommandPrev)
+AUI_ON_COMMAND("Btn_PageDown",		CDlgGenCardCollection::OnCommandNext)
+AUI_ON_COMMAND("Btn_PageUp",		CDlgGenCardCollection::OnCommandPrev)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgGenCardCollection, CDlgBase)
-AUI_ON_EVENT("Img_CardFrame*", WM_LBUTTONDOWN,	 OnEventLButtonDown)
+AUI_ON_EVENT("Img_CardFrame*", WM_LBUTTONDOWN,	 CDlgGenCardCollection::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 /*

@@ -18,19 +18,19 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeEar, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("ChooseBaseEar*", OnCommandChooseEarShape)
-AUI_ON_COMMAND("MoveSlider", OnCommandMoveSlider)
-AUI_ON_COMMAND("Reset", OnCommandReset)
+AUI_ON_COMMAND("ChooseBaseEar*", CDlgCustomizeEar::OnCommandChooseEarShape)
+AUI_ON_COMMAND("MoveSlider", CDlgCustomizeEar::OnCommandMoveSlider)
+AUI_ON_COMMAND("Reset", CDlgCustomizeEar::OnCommandReset)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeEar, CDlgCustomizeBase)
 
-AUI_ON_EVENT("Img_*", WM_LBUTTONUP, OnLButtonUpListboxEarShape)
-AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, OnMouseWheelListboxEarShape)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListboxEarShape)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListboxEarShape)
+AUI_ON_EVENT("Img_*", WM_LBUTTONUP, CDlgCustomizeEar::OnLButtonUpListboxEarShape)
+AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, CDlgCustomizeEar::OnMouseWheelListboxEarShape)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizeEar::OnMouseWheelListboxEarShape)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizeEar::OnMouseWheelListboxEarShape)
 
 AUI_END_EVENT_MAP()
 

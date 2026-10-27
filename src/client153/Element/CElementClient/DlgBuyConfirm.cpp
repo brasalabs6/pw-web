@@ -178,9 +178,9 @@ ACString CECRandShopBuyCommand::GetMessage()const
 
 //	class CDlgBuyConfirm
 AUI_BEGIN_COMMAND_MAP(CDlgBuyConfirm, CDlgBase)
-AUI_ON_COMMAND("IDOK",			OnCommandConfirm)
-AUI_ON_COMMAND("Btn_Protocol",	OnCommandProtocol)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("IDOK",			CDlgBuyConfirm::OnCommandConfirm)
+AUI_ON_COMMAND("Btn_Protocol",	CDlgBuyConfirm::OnCommandProtocol)
+AUI_ON_COMMAND("IDCANCEL",		CDlgBuyConfirm::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgBuyConfirm::CDlgBuyConfirm()

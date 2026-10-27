@@ -26,21 +26,21 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgChannelChat, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCancel)
-AUI_ON_COMMAND("send",		OnCommandSend)
-AUI_ON_COMMAND("leave",		OnCommandLeave)
-AUI_ON_COMMAND("invite",	OnCommandInvite)
-AUI_ON_COMMAND("popface",	OnCommandPopface)
-AUI_ON_COMMAND("minimize",	OnCommandMinimize)
+AUI_ON_COMMAND("IDCANCEL",	CDlgChannelChat::OnCommandCancel)
+AUI_ON_COMMAND("send",		CDlgChannelChat::OnCommandSend)
+AUI_ON_COMMAND("leave",		CDlgChannelChat::OnCommandLeave)
+AUI_ON_COMMAND("invite",	CDlgChannelChat::OnCommandInvite)
+AUI_ON_COMMAND("popface",	CDlgChannelChat::OnCommandPopface)
+AUI_ON_COMMAND("minimize",	CDlgChannelChat::OnCommandMinimize)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgChannelChat, CDlgBase)
 
-AUI_ON_EVENT("Txt_Content",		WM_SYSCHAR,		OnEventSysChar)
-AUI_ON_EVENT("Txt_Content",		WM_KEYDOWN,		OnEventKeyDown)
-AUI_ON_EVENT("List_ChatMember",	WM_LBUTTONUP,	OnEventLButtonUp_ChatMember)
-AUI_ON_EVENT("List_ChatMember",	WM_RBUTTONUP,	OnEventRButtonUp_ChatMember)
+AUI_ON_EVENT("Txt_Content",		WM_SYSCHAR,		CDlgChannelChat::OnEventSysChar)
+AUI_ON_EVENT("Txt_Content",		WM_KEYDOWN,		CDlgChannelChat::OnEventKeyDown)
+AUI_ON_EVENT("List_ChatMember",	WM_LBUTTONUP,	CDlgChannelChat::OnEventLButtonUp_ChatMember)
+AUI_ON_EVENT("List_ChatMember",	WM_RBUTTONUP,	CDlgChannelChat::OnEventRButtonUp_ChatMember)
 
 AUI_END_EVENT_MAP()
 

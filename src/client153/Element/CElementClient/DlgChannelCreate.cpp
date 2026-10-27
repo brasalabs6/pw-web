@@ -12,8 +12,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgChannelCreate, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("enablepw",		OnCommandEnablePW)
+AUI_ON_COMMAND("confirm",		CDlgChannelCreate::OnCommandConfirm)
+AUI_ON_COMMAND("enablepw",		CDlgChannelCreate::OnCommandEnablePW)
 
 AUI_END_COMMAND_MAP()
 

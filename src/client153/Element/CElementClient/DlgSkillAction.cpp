@@ -25,13 +25,13 @@ extern CECGame*		g_pGame;
 
 AUI_BEGIN_COMMAND_MAP(CDlgSkillAction, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Rdo_Stage1",	OnCommand_Evil)
-AUI_ON_COMMAND("Rdo_Stage0",	OnCommand_God)
-AUI_ON_COMMAND("Rdo_SA0",		OnCommand_Skill)
-AUI_ON_COMMAND("Rdo_SA1",		OnCommand_Action)
-AUI_ON_COMMAND("Rdo_SA2",		OnCommand_Pool)
-AUI_ON_COMMAND("Chk_CanBeLearned",	OnCommand_ShowSkillCanLearn)
+AUI_ON_COMMAND("IDCANCEL",		CDlgSkillAction::OnCommand_CANCEL)
+AUI_ON_COMMAND("Rdo_Stage1",	CDlgSkillAction::OnCommand_Evil)
+AUI_ON_COMMAND("Rdo_Stage0",	CDlgSkillAction::OnCommand_God)
+AUI_ON_COMMAND("Rdo_SA0",		CDlgSkillAction::OnCommand_Skill)
+AUI_ON_COMMAND("Rdo_SA1",		CDlgSkillAction::OnCommand_Action)
+AUI_ON_COMMAND("Rdo_SA2",		CDlgSkillAction::OnCommand_Pool)
+AUI_ON_COMMAND("Chk_CanBeLearned",	CDlgSkillAction::OnCommand_ShowSkillCanLearn)
 AUI_END_COMMAND_MAP()
 
 CDlgSkillAction::CDlgSkillAction() {

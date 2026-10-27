@@ -16,7 +16,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetFittingRoom, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",			CDlgPetFittingRoom::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPetFittingRoom, CDlgBase)

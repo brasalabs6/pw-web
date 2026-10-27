@@ -22,20 +22,20 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgLoginServerList, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("sortname",		OnCommandSortName)
-AUI_ON_COMMAND("sortspeed",		OnCommandSortSpeed)
-AUI_ON_COMMAND("sortstats",		OnCommandSortStats)
-AUI_ON_COMMAND("sortother",		OnCommandSortOther)
-AUI_ON_COMMAND("query",         OnCommandQuery)
+AUI_ON_COMMAND("IDCANCEL",		CDlgLoginServerList::OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgLoginServerList::OnCommandConfirm)
+AUI_ON_COMMAND("sortname",		CDlgLoginServerList::OnCommandSortName)
+AUI_ON_COMMAND("sortspeed",		CDlgLoginServerList::OnCommandSortSpeed)
+AUI_ON_COMMAND("sortstats",		CDlgLoginServerList::OnCommandSortStats)
+AUI_ON_COMMAND("sortother",		CDlgLoginServerList::OnCommandSortOther)
+AUI_ON_COMMAND("query",         CDlgLoginServerList::OnCommandQuery)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgLoginServerList, CDlgBase)
 
-AUI_ON_EVENT("Lst_Server",	WM_LBUTTONDOWN,	OnEventSelect_LstServer)
-AUI_ON_EVENT("Lst_Server",	WM_LBUTTONUP,	OnEventSelect_LstServer)
-AUI_ON_EVENT("Lst_ServerGroup", WM_LBUTTONDOWN, OnEventSelect_LstServerGroup)
+AUI_ON_EVENT("Lst_Server",	WM_LBUTTONDOWN,	CDlgLoginServerList::OnEventSelect_LstServer)
+AUI_ON_EVENT("Lst_Server",	WM_LBUTTONUP,	CDlgLoginServerList::OnEventSelect_LstServer)
+AUI_ON_EVENT("Lst_ServerGroup", WM_LBUTTONDOWN, CDlgLoginServerList::OnEventSelect_LstServerGroup)
 
 AUI_END_EVENT_MAP()
 
@@ -433,9 +433,9 @@ void CDlgLoginServerList::SelectServerByName(ACString strServer)
 //	CDlgLoginServerListButton
 
 AUI_BEGIN_COMMAND_MAP(CDlgLoginServerListButton, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("query",         OnCommandQuery)
+AUI_ON_COMMAND("IDCANCEL",		CDlgLoginServerListButton::OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgLoginServerListButton::OnCommandConfirm)
+AUI_ON_COMMAND("query",         CDlgLoginServerListButton::OnCommandQuery)
 AUI_END_COMMAND_MAP()
 
 void CDlgLoginServerListButton::OnCommandCancel(const char* szCommand)

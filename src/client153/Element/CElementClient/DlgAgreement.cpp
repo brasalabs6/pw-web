@@ -22,10 +22,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgAgreement, CDlgTheme)
-AUI_ON_COMMAND("decline", OnCommand_Decline)
-AUI_ON_COMMAND("agree", OnCommand_Agree)
-AUI_ON_COMMAND("IDOK", OnCommand_Confirm)
-AUI_ON_COMMAND("confirm", OnCommand_Confirm)
+AUI_ON_COMMAND("decline", CDlgAgreement::OnCommand_Decline)
+AUI_ON_COMMAND("agree", CDlgAgreement::OnCommand_Agree)
+AUI_ON_COMMAND("IDOK", CDlgAgreement::OnCommand_Confirm)
+AUI_ON_COMMAND("confirm", CDlgAgreement::OnCommand_Confirm)
 AUI_END_COMMAND_MAP()
 
 CDlgAgreement::CDlgAgreement()

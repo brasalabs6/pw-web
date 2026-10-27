@@ -16,17 +16,17 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillSubOther, CDlgBase)
 
-AUI_ON_EVENT("Img_ConSkill*",	WM_LBUTTONDOWN,	OnEventLButtonDownCombo)
-AUI_ON_EVENT("Img_InSkill*",	WM_LBUTTONDOWN,	OnEventLButtonDownFixed)
-AUI_ON_EVENT("Img_ItemSkill*",	WM_LBUTTONDOWN,	OnEventLButtonDownItem)
+AUI_ON_EVENT("Img_ConSkill*",	WM_LBUTTONDOWN,	CDlgSkillSubOther::OnEventLButtonDownCombo)
+AUI_ON_EVENT("Img_InSkill*",	WM_LBUTTONDOWN,	CDlgSkillSubOther::OnEventLButtonDownFixed)
+AUI_ON_EVENT("Img_ItemSkill*",	WM_LBUTTONDOWN,	CDlgSkillSubOther::OnEventLButtonDownItem)
 
 AUI_END_EVENT_MAP()
 
 AUI_BEGIN_COMMAND_MAP(CDlgSkillSubOther, CDlgBase)
 
-AUI_ON_COMMAND("Btn_ConEdi",		OnCommandEdit)
-AUI_ON_COMMAND("Btn_ConDel",		OnCommandDelete)
-AUI_ON_COMMAND("Btn_ConNew",		OnCommandNew)
+AUI_ON_COMMAND("Btn_ConEdi",		CDlgSkillSubOther::OnCommandEdit)
+AUI_ON_COMMAND("Btn_ConDel",		CDlgSkillSubOther::OnCommandDelete)
+AUI_ON_COMMAND("Btn_ConNew",		CDlgSkillSubOther::OnCommandNew)
 
 AUI_END_COMMAND_MAP()
 

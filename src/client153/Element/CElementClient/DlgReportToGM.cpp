@@ -17,7 +17,7 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgReportToGM, CDlgBase)
 
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
+AUI_ON_COMMAND("confirm", CDlgReportToGM::OnCommandConfirm)
 
 AUI_END_COMMAND_MAP()
 

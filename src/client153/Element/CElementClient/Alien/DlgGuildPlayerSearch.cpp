@@ -13,13 +13,13 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgGuildPlayerSearch, CDlgBase)
 
-AUI_ON_EVENT("Btn_Publish",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("Btn_LevelUP",		WM_LBUTTONDOWN,		OnCommand_add)
-AUI_ON_EVENT("Btn_LevelDown",	WM_LBUTTONDOWN,		OnCommand_minus)
-AUI_ON_EVENT("Btn_LevelUP",		WM_LBUTTONDBLCLK,		OnCommand_add)
-AUI_ON_EVENT("Btn_LevelDown",	WM_LBUTTONDBLCLK,		OnCommand_minus)
-AUI_ON_EVENT("Btn_LevelUP",		WM_LBUTTONUP,		OnCommand_cancel)
-AUI_ON_EVENT("Btn_LevelDown",	WM_LBUTTONUP,		OnCommand_cancel)
+AUI_ON_EVENT("Btn_Publish",		WM_LBUTTONDOWN,		CDlgGuildPlayerSearch::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Btn_LevelUP",		WM_LBUTTONDOWN,		CDlgGuildPlayerSearch::OnCommand_add)
+AUI_ON_EVENT("Btn_LevelDown",	WM_LBUTTONDOWN,		CDlgGuildPlayerSearch::OnCommand_minus)
+AUI_ON_EVENT("Btn_LevelUP",		WM_LBUTTONDBLCLK,		CDlgGuildPlayerSearch::OnCommand_add)
+AUI_ON_EVENT("Btn_LevelDown",	WM_LBUTTONDBLCLK,		CDlgGuildPlayerSearch::OnCommand_minus)
+AUI_ON_EVENT("Btn_LevelUP",		WM_LBUTTONUP,		CDlgGuildPlayerSearch::OnCommand_cancel)
+AUI_ON_EVENT("Btn_LevelDown",	WM_LBUTTONUP,		CDlgGuildPlayerSearch::OnCommand_cancel)
 
 AUI_END_EVENT_MAP()
 

@@ -22,15 +22,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetDye, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgPetDye::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgPetDye::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPetDye, CDlgBase)
 
-AUI_ON_EVENT("Img_Item*",	WM_LBUTTONDOWN,	OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,	OnEventLButtonDown_Dye)
+AUI_ON_EVENT("Img_Item*",	WM_LBUTTONDOWN,	CDlgPetDye::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,	CDlgPetDye::OnEventLButtonDown_Dye)
 
 AUI_END_EVENT_MAP()
 

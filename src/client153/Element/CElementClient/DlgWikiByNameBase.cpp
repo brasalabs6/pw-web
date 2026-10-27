@@ -8,13 +8,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiByNameBase, CDlgWikiBase)
-AUI_ON_COMMAND("search", OnCommand_SearchByName)
+AUI_ON_COMMAND("search", CDlgWikiByNameBase::OnCommand_SearchByName)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiByNameBase, CDlgWikiBase)
 
-AUI_ON_EVENT("Txt_Search",	WM_LBUTTONDOWN,	OnEventLButtonDown_Txt_Search)
-AUI_ON_EVENT("Txt_Search",	WM_KEYDOWN,		OnEventKeyDown)
+AUI_ON_EVENT("Txt_Search",	WM_LBUTTONDOWN,	CDlgWikiByNameBase::OnEventLButtonDown_Txt_Search)
+AUI_ON_EVENT("Txt_Search",	WM_KEYDOWN,		CDlgWikiByNameBase::OnEventKeyDown)
 
 AUI_END_EVENT_MAP()
 

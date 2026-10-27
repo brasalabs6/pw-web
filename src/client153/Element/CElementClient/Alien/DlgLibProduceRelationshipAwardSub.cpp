@@ -4,8 +4,8 @@
 #include "DlgLibProduceRelationship.h"
 
 AUI_BEGIN_EVENT_MAP(CDlgLibProduceRelationshipAwardSub, CDlgBase)
-AUI_ON_EVENT("*",				WM_MOUSEWHEEL,	OnMouseWheel)
-AUI_ON_EVENT(NULL,				WM_MOUSEWHEEL,	OnMouseWheel)
+AUI_ON_EVENT("*",				WM_MOUSEWHEEL,	CDlgLibProduceRelationshipAwardSub::OnMouseWheel)
+AUI_ON_EVENT(NULL,				WM_MOUSEWHEEL,	CDlgLibProduceRelationshipAwardSub::OnMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgLibProduceRelationshipAwardSub::CDlgLibProduceRelationshipAwardSub(void)

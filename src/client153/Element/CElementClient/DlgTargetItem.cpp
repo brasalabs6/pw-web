@@ -25,7 +25,7 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgTargetItem, CDlgBase)
 
-AUI_ON_EVENT("Img_Item", WM_LBUTTONDOWN, OnEvent_LButtonDown)
+AUI_ON_EVENT("Img_Item", WM_LBUTTONDOWN, CDlgTargetItem::OnEvent_LButtonDown)
 
 AUI_END_EVENT_MAP()
 

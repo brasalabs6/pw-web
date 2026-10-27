@@ -29,24 +29,24 @@
 #define  LIST_TICK 3000
 
 AUI_BEGIN_COMMAND_MAP(CDlgOfflineShopItemsList, CDlgBase)
-AUI_ON_COMMAND("trade*", OnCommand_BuyOrSell)
-AUI_ON_COMMAND("Btn_Search", OnCommand_SearchItem)
-AUI_ON_COMMAND("Btn_PageUp", OnCommand_PageUp)
-AUI_ON_COMMAND("Btn_PageDown", OnCommand_PageDown)
-AUI_ON_COMMAND("Rdo_Sell", OnCommand_SellList)
-AUI_ON_COMMAND("Rdo_Buy", OnCommand_BuyList)
-AUI_ON_COMMAND("Btn_Back", OnCommand_BackToShop)
+AUI_ON_COMMAND("trade*", CDlgOfflineShopItemsList::OnCommand_BuyOrSell)
+AUI_ON_COMMAND("Btn_Search", CDlgOfflineShopItemsList::OnCommand_SearchItem)
+AUI_ON_COMMAND("Btn_PageUp", CDlgOfflineShopItemsList::OnCommand_PageUp)
+AUI_ON_COMMAND("Btn_PageDown", CDlgOfflineShopItemsList::OnCommand_PageDown)
+AUI_ON_COMMAND("Rdo_Sell", CDlgOfflineShopItemsList::OnCommand_SellList)
+AUI_ON_COMMAND("Rdo_Buy", CDlgOfflineShopItemsList::OnCommand_BuyList)
+AUI_ON_COMMAND("Btn_Back", CDlgOfflineShopItemsList::OnCommand_BackToShop)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Close",		OnCommandCANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgOfflineShopItemsList::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Close",		CDlgOfflineShopItemsList::OnCommandCANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgOfflineShopItemsList, CDlgBase)
-AUI_ON_EVENT("*",		WM_MOUSEWHEEL,			OnEventMouseWheel)
-AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,			OnEventMouseWheel)
-AUI_ON_EVENT("Edt_Search",	WM_KEYDOWN,			OnEventKeyDown_Txt_Search)
-AUI_ON_EVENT("Lst_Search",	WM_LBUTTONDBLCLK,	OnEventDBClk_Lst_Search)
+AUI_ON_EVENT("*",		WM_MOUSEWHEEL,			CDlgOfflineShopItemsList::OnEventMouseWheel)
+AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,			CDlgOfflineShopItemsList::OnEventMouseWheel)
+AUI_ON_EVENT("Edt_Search",	WM_KEYDOWN,			CDlgOfflineShopItemsList::OnEventKeyDown_Txt_Search)
+AUI_ON_EVENT("Lst_Search",	WM_LBUTTONDBLCLK,	CDlgOfflineShopItemsList::OnEventDBClk_Lst_Search)
 AUI_END_EVENT_MAP()
 
 CDlgOfflineShopItemsList::CDlgOfflineShopItemsList()

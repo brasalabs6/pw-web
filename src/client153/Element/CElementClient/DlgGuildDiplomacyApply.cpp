@@ -11,11 +11,11 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildDiplomacyApply, CDlgBase)
-AUI_ON_COMMAND("Btn_Alliance", OnCommand_Btn_Alliance)
-AUI_ON_COMMAND("Btn_Hostility", OnCommand_Btn_Hostility)
-AUI_ON_COMMAND("Btn_Search", OnCommand_Btn_Search)
-AUI_ON_COMMAND("Edt_GuildName", OnCommand_Btn_Search)
-AUI_ON_COMMAND("Btn_Num", OnCommand_Sort_By_NUM)
+AUI_ON_COMMAND("Btn_Alliance", CDlgGuildDiplomacyApply::OnCommand_Btn_Alliance)
+AUI_ON_COMMAND("Btn_Hostility", CDlgGuildDiplomacyApply::OnCommand_Btn_Hostility)
+AUI_ON_COMMAND("Btn_Search", CDlgGuildDiplomacyApply::OnCommand_Btn_Search)
+AUI_ON_COMMAND("Edt_GuildName", CDlgGuildDiplomacyApply::OnCommand_Btn_Search)
+AUI_ON_COMMAND("Btn_Num", CDlgGuildDiplomacyApply::OnCommand_Sort_By_NUM)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGuildDiplomacyApply, CDlgBase)

@@ -34,21 +34,21 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgQShopItem, CDlgBase)
 
-AUI_ON_COMMAND("buy",		OnCommand_Buy)
-AUI_ON_COMMAND("time*",		OnCommand_Time)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Giving",	OnCommand_GivePresent)
-AUI_ON_COMMAND("Btn_For",		OnCommand_AskForPresent)
-AUI_ON_COMMAND("Btn_Batch",		OnCommand_BatchBuy)
+AUI_ON_COMMAND("buy",		CDlgQShopItem::OnCommand_Buy)
+AUI_ON_COMMAND("time*",		CDlgQShopItem::OnCommand_Time)
+AUI_ON_COMMAND("IDCANCEL",	CDlgQShopItem::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Giving",	CDlgQShopItem::OnCommand_GivePresent)
+AUI_ON_COMMAND("Btn_For",		CDlgQShopItem::OnCommand_AskForPresent)
+AUI_ON_COMMAND("Btn_Batch",		CDlgQShopItem::OnCommand_BatchBuy)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQShopItem, CDlgBase)
 
-AUI_ON_EVENT("*",		WM_MOUSEWHEEL,		OnEventMouseWheel)
-AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,		OnEventMouseWheel)
-AUI_ON_EVENT("*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT(NULL,		WM_LBUTTONDOWN,		OnEventLButtonDown)
+AUI_ON_EVENT("*",		WM_MOUSEWHEEL,		CDlgQShopItem::OnEventMouseWheel)
+AUI_ON_EVENT(NULL,		WM_MOUSEWHEEL,		CDlgQShopItem::OnEventMouseWheel)
+AUI_ON_EVENT("*",		WM_LBUTTONDOWN,		CDlgQShopItem::OnEventLButtonDown)
+AUI_ON_EVENT(NULL,		WM_LBUTTONDOWN,		CDlgQShopItem::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

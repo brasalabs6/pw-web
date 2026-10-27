@@ -22,11 +22,11 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTouchShop, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Touch",		OnCommandEnterTouch)
-AUI_ON_COMMAND("btn_buy*",		OnCommandBuy)
-AUI_ON_COMMAND("btn_pageup",	OnCommandPagePrevious)
-AUI_ON_COMMAND("btn_pagedown",	OnCommandPageNext)
-AUI_ON_COMMAND("btn_page*",		OnCommandMainType)
+AUI_ON_COMMAND("Btn_Touch",		CDlgTouchShop::OnCommandEnterTouch)
+AUI_ON_COMMAND("btn_buy*",		CDlgTouchShop::OnCommandBuy)
+AUI_ON_COMMAND("btn_pageup",	CDlgTouchShop::OnCommandPagePrevious)
+AUI_ON_COMMAND("btn_pagedown",	CDlgTouchShop::OnCommandPageNext)
+AUI_ON_COMMAND("btn_page*",		CDlgTouchShop::OnCommandMainType)
 
 AUI_END_COMMAND_MAP()
 

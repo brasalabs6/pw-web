@@ -30,15 +30,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgRandProp, CDlgBase)
 
-AUI_ON_COMMAND("set*",			OnCommand_set)
-AUI_ON_COMMAND("begin",			OnCommand_begin)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("set*",			CDlgRandProp::OnCommand_set)
+AUI_ON_COMMAND("begin",			CDlgRandProp::OnCommand_begin)
+AUI_ON_COMMAND("IDCANCEL",		CDlgRandProp::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgRandProp, CDlgBase)
 
-AUI_ON_EVENT("Item_Target",			WM_LBUTTONUP,	OnEventLButtonUp_Target)
+AUI_ON_EVENT("Item_Target",			WM_LBUTTONUP,	CDlgRandProp::OnEventLButtonUp_Target)
 
 AUI_END_EVENT_MAP()
 

@@ -19,8 +19,8 @@ AUI_BEGIN_COMMAND_MAP(CDlgWikiFeature, CDlgWikiByNameBase)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiFeature, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Feature",	WM_LBUTTONDOWN,	OnEventLButtonDown_List)
-AUI_ON_EVENT("List_Feature",	WM_KEYDOWN,		OnEventKeyDown_List)
+AUI_ON_EVENT("List_Feature",	WM_LBUTTONDOWN,	CDlgWikiFeature::OnEventLButtonDown_List)
+AUI_ON_EVENT("List_Feature",	WM_KEYDOWN,		CDlgWikiFeature::OnEventKeyDown_List)
 AUI_END_EVENT_MAP()
 
 CDlgWikiFeature::CDlgWikiFeature()

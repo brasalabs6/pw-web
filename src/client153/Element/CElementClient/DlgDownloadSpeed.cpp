@@ -16,7 +16,7 @@ static int l_iSpeedValue[] =
 { 65536, 262144, 524288, 1048576, 2097152, 4194304, 0 };
 
 AUI_BEGIN_COMMAND_MAP(CDlgDownloadSpeed, CDlgBase)
-AUI_ON_COMMAND("Btn_Start", OnCommand_Start)
+AUI_ON_COMMAND("Btn_Start", CDlgDownloadSpeed::OnCommand_Start)
 AUI_END_COMMAND_MAP()
 
 CDlgDownloadSpeed::CDlgDownloadSpeed()

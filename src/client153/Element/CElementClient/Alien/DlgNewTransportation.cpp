@@ -17,8 +17,8 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgNewTransportation, CDlgBase)
 
-AUI_ON_EVENT("Btn_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("btn_northLand",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
+AUI_ON_EVENT("Btn_*",		WM_LBUTTONDOWN,		CDlgNewTransportation::OnEventLButtonDown_Item)
+AUI_ON_EVENT("btn_northLand",		WM_LBUTTONDOWN,		CDlgNewTransportation::OnEventLButtonDown_Item)
 
 AUI_END_EVENT_MAP()
 

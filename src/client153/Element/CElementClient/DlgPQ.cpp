@@ -30,14 +30,14 @@ int              CDlgPQ::s_playerNumber;
 time_t           CDlgPQ::m_lastTimeUpdated;
 
 AUI_BEGIN_COMMAND_MAP(CDlgPQ, CDlgTaskTrace)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("rank",     OnCommand_Rank)
-AUI_ON_COMMAND("Rdo_*",    OnCommand_RankList)
+AUI_ON_COMMAND("IDCANCEL", CDlgPQ::OnCommand_CANCEL)
+AUI_ON_COMMAND("rank",     CDlgPQ::OnCommand_Rank)
+AUI_ON_COMMAND("Rdo_*",    CDlgPQ::OnCommand_RankList)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPQ, CDlgTaskTrace)
-AUI_ON_EVENT("*",  WM_MOUSEWHEEL, OnEventMouseWheel)
-AUI_ON_EVENT(NULL, WM_MOUSEWHEEL, OnEventMouseWheel)
+AUI_ON_EVENT("*",  WM_MOUSEWHEEL, CDlgPQ::OnEventMouseWheel)
+AUI_ON_EVENT(NULL, WM_MOUSEWHEEL, CDlgPQ::OnEventMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgPQ::CDlgPQ()

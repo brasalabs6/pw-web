@@ -16,18 +16,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCWindow, CDlgBase)
 
-AUI_ON_COMMAND("select",	OnCommandSelect)
-AUI_ON_COMMAND("refresh",	OnCommandRefresh)
-AUI_ON_COMMAND("clear",		OnCommandClear)
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCancel)
+AUI_ON_COMMAND("select",	CDlgCWindow::OnCommandSelect)
+AUI_ON_COMMAND("refresh",	CDlgCWindow::OnCommandRefresh)
+AUI_ON_COMMAND("clear",		CDlgCWindow::OnCommandClear)
+AUI_ON_COMMAND("IDCANCEL",	CDlgCWindow::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCWindow, CDlgBase)
 
-AUI_ON_EVENT("Img_ZoomIn",			WM_LBUTTONDOWN,		OnEventLButtonDown_Img_ZoomIn)
-AUI_ON_EVENT("Img_ZoomIn",			WM_LBUTTONUP,		OnEventLButtonUp_Img_ZoomIn)
-AUI_ON_EVENT("Img_ZoomIn",			WM_MOUSEMOVE,		OnEventMouseMove_Img_ZoomIn)
+AUI_ON_EVENT("Img_ZoomIn",			WM_LBUTTONDOWN,		CDlgCWindow::OnEventLButtonDown_Img_ZoomIn)
+AUI_ON_EVENT("Img_ZoomIn",			WM_LBUTTONUP,		CDlgCWindow::OnEventLButtonUp_Img_ZoomIn)
+AUI_ON_EVENT("Img_ZoomIn",			WM_MOUSEMOVE,		CDlgCWindow::OnEventMouseMove_Img_ZoomIn)
 
 AUI_END_EVENT_MAP()
 

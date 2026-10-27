@@ -18,16 +18,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgMailToFriends, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("Btn_Send", OnCommandSendMail)
-AUI_ON_COMMAND("Btn_Refresh", OnCommandRefresh)
-AUI_ON_COMMAND("Combo_Model", OnCommandSelectTemplate)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMailToFriends::OnCommandCANCAL)
+AUI_ON_COMMAND("Btn_Send", CDlgMailToFriends::OnCommandSendMail)
+AUI_ON_COMMAND("Btn_Refresh", CDlgMailToFriends::OnCommandRefresh)
+AUI_ON_COMMAND("Combo_Model", CDlgMailToFriends::OnCommandSelectTemplate)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgMailToFriends, CDlgBase)
 
-AUI_ON_EVENT("Lst_Friendlist",	WM_LBUTTONUP,	OnEventSelectList)
+AUI_ON_EVENT("Lst_Friendlist",	WM_LBUTTONUP,	CDlgMailToFriends::OnEventSelectList)
 
 AUI_END_EVENT_MAP()
 

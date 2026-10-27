@@ -24,9 +24,9 @@ AUI_BEGIN_COMMAND_MAP(CDlgNameLink, CDlgBase)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgNameLink, CDlgBase)
-AUI_ON_EVENT("Txt_Link_*",	WM_LBUTTONUP,	OnEventLButtonClick_NameLink)
-AUI_ON_EVENT("Txt_Link_*",	WM_LBUTTONDOWN,	OnEventLButtonClick_NameLink)
-AUI_ON_EVENT("Txt_Link_*",	WM_MOUSEMOVE,	OnEventMouseMove_NameLink)
+AUI_ON_EVENT("Txt_Link_*",	WM_LBUTTONUP,	CDlgNameLink::OnEventLButtonClick_NameLink)
+AUI_ON_EVENT("Txt_Link_*",	WM_LBUTTONDOWN,	CDlgNameLink::OnEventLButtonClick_NameLink)
+AUI_ON_EVENT("Txt_Link_*",	WM_MOUSEMOVE,	CDlgNameLink::OnEventMouseMove_NameLink)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

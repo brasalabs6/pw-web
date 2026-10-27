@@ -26,18 +26,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSkillSubListItem, CDlgBase)
 
-AUI_ON_COMMAND("Btn_SLevelUp", OnCommand_Upgrade)
+AUI_ON_COMMAND("Btn_SLevelUp", CDlgSkillSubListItem::OnCommand_Upgrade)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillSubListItem, CDlgBase)
 
-AUI_ON_EVENT("Img_SIcon",		WM_LBUTTONDOWN, OnSkillPictureDown)
-AUI_ON_EVENT("Btn_SLevelUp",	WM_LBUTTONDOWN, DoNoting)
-AUI_ON_EVENT("*",				WM_LBUTTONDOWN, OnEventLButtonDown)
-AUI_ON_EVENT(NULL,				WM_LBUTTONDOWN, OnEventLButtonDown)
-AUI_ON_EVENT("*",				WM_MOUSEWHEEL,	OnMouseWheel)
-AUI_ON_EVENT(NULL,				WM_MOUSEWHEEL,	OnMouseWheel)
+AUI_ON_EVENT("Img_SIcon",		WM_LBUTTONDOWN, CDlgSkillSubListItem::OnSkillPictureDown)
+AUI_ON_EVENT("Btn_SLevelUp",	WM_LBUTTONDOWN, CDlgSkillSubListItem::DoNoting)
+AUI_ON_EVENT("*",				WM_LBUTTONDOWN, CDlgSkillSubListItem::OnEventLButtonDown)
+AUI_ON_EVENT(NULL,				WM_LBUTTONDOWN, CDlgSkillSubListItem::OnEventLButtonDown)
+AUI_ON_EVENT("*",				WM_MOUSEWHEEL,	CDlgSkillSubListItem::OnMouseWheel)
+AUI_ON_EVENT(NULL,				WM_MOUSEWHEEL,	CDlgSkillSubListItem::OnMouseWheel)
 
 AUI_END_EVENT_MAP()
 

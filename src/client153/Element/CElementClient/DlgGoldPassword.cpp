@@ -10,7 +10,7 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGoldPassword, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
+AUI_ON_COMMAND("confirm",		CDlgGoldPassword::OnCommandConfirm)
 
 AUI_END_COMMAND_MAP()
 

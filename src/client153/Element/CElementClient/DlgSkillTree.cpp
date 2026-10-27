@@ -20,7 +20,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillTree, CDlgBase)
-AUI_ON_EVENT("Skill_*", WM_LBUTTONDOWN, OnEventLButtonSkill)
+AUI_ON_EVENT("Skill_*", WM_LBUTTONDOWN, CDlgSkillTree::OnEventLButtonSkill)
 AUI_END_EVENT_MAP()
 
 CDlgSkillTree::CDlgSkillTree()

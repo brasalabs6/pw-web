@@ -10,7 +10,7 @@
 static const char* COUNTRY_IMG_PATH[DOMAIN2_INFO::COUNTRY_COUNT] = {"number\\青帝.tga", "number\\赤帝.tga", "number\\白帝.tga", "number\\黑帝.tga"};
 
 AUI_BEGIN_COMMAND_MAP(CDlgCountryScore, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL",	CDlgCountryScore::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgCountryScore::CDlgCountryScore()

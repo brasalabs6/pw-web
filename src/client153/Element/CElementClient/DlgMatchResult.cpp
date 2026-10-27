@@ -31,10 +31,10 @@
 const DWORD COOLDOWN_TIME = 10000;
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchModeSelect, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Start",		OnCommandDo)
-AUI_ON_COMMAND("Btn_FixInfo",	OnCommandInfo)
-AUI_ON_COMMAND("Btn_Close",		OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgMatchModeSelect::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Start",		CDlgMatchModeSelect::OnCommandDo)
+AUI_ON_COMMAND("Btn_FixInfo",	CDlgMatchModeSelect::OnCommandInfo)
+AUI_ON_COMMAND("Btn_Close",		CDlgMatchModeSelect::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 	
@@ -89,14 +89,14 @@ int CDlgMatchModeSelect::GetMatchMode()
 //////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchResult, CDlgBase)
-AUI_ON_COMMAND("Btn_SayHi",		OnCommandSayHi)
-AUI_ON_COMMAND("Btn_Chat",		OnCommandChat)
-AUI_ON_COMMAND("Btn_Team",		OnCommandTeam)
-AUI_ON_COMMAND("Btn_Friend",	OnCommandFriend)
-AUI_ON_COMMAND("Btn_Next",		OnCommandNext)
+AUI_ON_COMMAND("Btn_SayHi",		CDlgMatchResult::OnCommandSayHi)
+AUI_ON_COMMAND("Btn_Chat",		CDlgMatchResult::OnCommandChat)
+AUI_ON_COMMAND("Btn_Team",		CDlgMatchResult::OnCommandTeam)
+AUI_ON_COMMAND("Btn_Friend",	CDlgMatchResult::OnCommandFriend)
+AUI_ON_COMMAND("Btn_Next",		CDlgMatchResult::OnCommandNext)
 
-AUI_ON_COMMAND("Btn_Close",		OnCommand_CANCEL)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close",		CDlgMatchResult::OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgMatchResult::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 void CDlgMatchResult::OnShowDialog()
@@ -317,8 +317,8 @@ void CDlgMatchResult::OnMatchResultRe(GNET::Protocol* pProtocl)
 //////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchAward, CDlgBase)
-AUI_ON_COMMAND("btn_getreward",	OnCommandAward)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("btn_getreward",	CDlgMatchAward::OnCommandAward)
+AUI_ON_COMMAND("IDCANCEL",		CDlgMatchAward::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 void CDlgMatchAward::OnShowDialog()
@@ -339,7 +339,7 @@ void CDlgMatchAward::OnCommandAward(const char *szCommand)
 //////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchInfoHint, CDlgBase)
-AUI_ON_COMMAND("Btn_FixInfo",	OnCommandInfo)
+AUI_ON_COMMAND("Btn_FixInfo",	CDlgMatchInfoHint::OnCommandInfo)
 AUI_END_COMMAND_MAP()
 
 void CDlgMatchInfoHint::OnCommandInfo(const char *szCommand)

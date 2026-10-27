@@ -21,9 +21,9 @@
 #include <AUIRadioButton.h>
 
 AUI_BEGIN_EVENT_MAP(CDlgPaletteBase, CDlgBase)
-AUI_ON_EVENT("ImagePicture_ColorPic", WM_LBUTTONDOWN, OnLButtonDownPicPallete)
-AUI_ON_EVENT("ImagePicture_ColorPic", WM_MOUSEMOVE,   OnMouseMovePicPallete)
-AUI_ON_EVENT("Rdo_*", WM_LBUTTONDOWN, OnLButtonDownBaseColor)
+AUI_ON_EVENT("ImagePicture_ColorPic", WM_LBUTTONDOWN, CDlgPaletteBase::OnLButtonDownPicPallete)
+AUI_ON_EVENT("ImagePicture_ColorPic", WM_MOUSEMOVE,   CDlgPaletteBase::OnMouseMovePicPallete)
+AUI_ON_EVENT("Rdo_*", WM_LBUTTONDOWN, CDlgPaletteBase::OnLButtonDownBaseColor)
 AUI_END_EVENT_MAP()
 
 CDlgPaletteBase::CDlgPaletteBase(const AString& strImgFile, bool bChangeColorOnMove /* = true */) 
@@ -120,11 +120,11 @@ void CDlgPaletteBase::OnLButtonDownBaseColor(WPARAM wParam, LPARAM lParam, AUIOb
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgPaletteFashion, CDlgPaletteBase)
-AUI_ON_COMMAND("Rdo_Suite",		OnCommand_Suite)
-AUI_ON_COMMAND("Rdo_UpperBody",	OnCommand_UpperBody)
-AUI_ON_COMMAND("Rdo_LowerBody",	OnCommand_LowerBody)
-AUI_ON_COMMAND("Rdo_Waist",		OnCommand_Waist)
-AUI_ON_COMMAND("Rdo_Shoes",		OnCommand_Shoes)
+AUI_ON_COMMAND("Rdo_Suite",		CDlgPaletteFashion::OnCommand_Suite)
+AUI_ON_COMMAND("Rdo_UpperBody",	CDlgPaletteFashion::OnCommand_UpperBody)
+AUI_ON_COMMAND("Rdo_LowerBody",	CDlgPaletteFashion::OnCommand_LowerBody)
+AUI_ON_COMMAND("Rdo_Waist",		CDlgPaletteFashion::OnCommand_Waist)
+AUI_ON_COMMAND("Rdo_Shoes",		CDlgPaletteFashion::OnCommand_Shoes)
 AUI_END_COMMAND_MAP()
 
 CDlgPaletteFashion::CDlgPaletteFashion(const AString& strImgFile, bool bChangeColorOnMove /* = true */)

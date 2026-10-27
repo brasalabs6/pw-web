@@ -24,16 +24,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgEquipMark, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Look",		OnCommandLook)
+AUI_ON_COMMAND("confirm",		CDlgEquipMark::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgEquipMark::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Look",		CDlgEquipMark::OnCommandLook)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEquipMark, CDlgBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,	OnEventLButtonDown_Dye)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	CDlgEquipMark::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,	CDlgEquipMark::OnEventLButtonDown_Dye)
 
 AUI_END_EVENT_MAP()
 

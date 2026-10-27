@@ -15,14 +15,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAuctionList, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",			OnCommandCancel)
-AUI_ON_COMMAND("auctionbuylist",	OnCommandAuctionBuyList)
-AUI_ON_COMMAND("auctionlist",		OnCommandAuctionList)
-AUI_ON_COMMAND("auctionselllist",	OnCommandAuctionSellList)
-AUI_ON_COMMAND("auctionmyfavor",	OnCommandAuctionMyFavor)
-AUI_ON_COMMAND("buy",				OnCommandBuy)
-AUI_ON_COMMAND("binbuy",			OnCommandBinBuy)
-AUI_ON_COMMAND("giveup",			OnCommandGiveUp)
+AUI_ON_COMMAND("IDCANCEL",			CDlgAuctionList::OnCommandCancel)
+AUI_ON_COMMAND("auctionbuylist",	CDlgAuctionList::OnCommandAuctionBuyList)
+AUI_ON_COMMAND("auctionlist",		CDlgAuctionList::OnCommandAuctionList)
+AUI_ON_COMMAND("auctionselllist",	CDlgAuctionList::OnCommandAuctionSellList)
+AUI_ON_COMMAND("auctionmyfavor",	CDlgAuctionList::OnCommandAuctionMyFavor)
+AUI_ON_COMMAND("buy",				CDlgAuctionList::OnCommandBuy)
+AUI_ON_COMMAND("binbuy",			CDlgAuctionList::OnCommandBinBuy)
+AUI_ON_COMMAND("giveup",			CDlgAuctionList::OnCommandGiveUp)
 
 AUI_END_COMMAND_MAP()
 

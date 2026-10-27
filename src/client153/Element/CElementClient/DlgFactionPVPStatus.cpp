@@ -17,8 +17,8 @@
 //	class CDlgFactionPVPStatus
 
 AUI_BEGIN_COMMAND_MAP(CDlgFactionPVPStatus, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Reward",	OnCommandViewReward)
+AUI_ON_COMMAND("IDCANCEL",		CDlgFactionPVPStatus::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Reward",	CDlgFactionPVPStatus::OnCommandViewReward)
 AUI_END_COMMAND_MAP()
 
 CDlgFactionPVPStatus::CDlgFactionPVPStatus()

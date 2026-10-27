@@ -15,10 +15,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCongregate, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Confirm",	OnCommand_Confrim)
-AUI_ON_COMMAND("Btn_Reject",	OnCommand_Reject)
-AUI_ON_COMMAND("Btn_Later",		OnCommand_Later)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_Later)
+AUI_ON_COMMAND("Btn_Confirm",	CDlgCongregate::OnCommand_Confrim)
+AUI_ON_COMMAND("Btn_Reject",	CDlgCongregate::OnCommand_Reject)
+AUI_ON_COMMAND("Btn_Later",		CDlgCongregate::OnCommand_Later)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCongregate::OnCommand_Later)
 
 AUI_END_COMMAND_MAP()
 

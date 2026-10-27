@@ -15,8 +15,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTaskConfirm, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Done*", OnCommandFinishTask)
-AUI_ON_COMMAND("Btn_Zoom", OnCommandMinimize)
+AUI_ON_COMMAND("Btn_Done*", CDlgTaskConfirm::OnCommandFinishTask)
+AUI_ON_COMMAND("Btn_Zoom", CDlgTaskConfirm::OnCommandMinimize)
 
 AUI_END_COMMAND_MAP()
 
@@ -159,8 +159,8 @@ void CDlgTaskConfirm::OnChangeLayoutEnd(bool bAllDone)
 //////////////////////////////////////////////////////////////////////////
 AUI_BEGIN_COMMAND_MAP(CDlgTaskHintPop, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_ShowTasksToConfirm", OnCommand_PopTaskList)
+AUI_ON_COMMAND("IDCANCEL",	CDlgTaskHintPop::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_ShowTasksToConfirm", CDlgTaskHintPop::OnCommand_PopTaskList)
 
 AUI_END_COMMAND_MAP()
 

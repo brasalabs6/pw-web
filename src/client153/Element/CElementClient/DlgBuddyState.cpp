@@ -15,9 +15,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgBuddyState, CDlgBase)
 
-AUI_ON_COMMAND("bindcancel",	OnCommand_BindCancel)
-AUI_ON_COMMAND("kiss",			OnCommand_Kiss)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_Cancel)
+AUI_ON_COMMAND("bindcancel",	CDlgBuddyState::OnCommand_BindCancel)
+AUI_ON_COMMAND("kiss",			CDlgBuddyState::OnCommand_Kiss)
+AUI_ON_COMMAND("IDCANCEL",		CDlgBuddyState::OnCommand_Cancel)
 
 AUI_END_COMMAND_MAP()
 

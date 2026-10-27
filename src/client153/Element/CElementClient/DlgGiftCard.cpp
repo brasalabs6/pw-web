@@ -9,8 +9,8 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgGiftCard, CDlgBase)
-AUI_ON_COMMAND("Btn_Confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("Btn_Confirm",		CDlgGiftCard::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGiftCard::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgGiftCard::CDlgGiftCard()

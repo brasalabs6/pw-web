@@ -19,9 +19,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAward, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("select",		OnCommand_select)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgAward::OnCommand_confirm)
+AUI_ON_COMMAND("select",		CDlgAward::OnCommand_select)
+AUI_ON_COMMAND("IDCANCEL",		CDlgAward::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

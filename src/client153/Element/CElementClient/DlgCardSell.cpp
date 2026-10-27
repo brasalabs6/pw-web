@@ -16,9 +16,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCardSell, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("cancelsell",	OnCommandCancelSell)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgCardSell::OnCommandConfirm)
+AUI_ON_COMMAND("cancelsell",	CDlgCardSell::OnCommandCancelSell)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCardSell::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

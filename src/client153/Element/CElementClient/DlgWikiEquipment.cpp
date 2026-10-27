@@ -21,14 +21,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiEquipment, CDlgWikiByNameBase)
-AUI_ON_COMMAND("drop", OnCommand_Drop)
-AUI_ON_COMMAND("randomproperty", OnCommand_RandomProperty)
+AUI_ON_COMMAND("drop", CDlgWikiEquipment::OnCommand_Drop)
+AUI_ON_COMMAND("randomproperty", CDlgWikiEquipment::OnCommand_RandomProperty)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiEquipment, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Equipment",	WM_LBUTTONDOWN,	OnEventLButtonDown_List)
-AUI_ON_EVENT("List_Equipment",	WM_KEYDOWN,		OnEventKeyDown_List)
-AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK_Icon)
+AUI_ON_EVENT("List_Equipment",	WM_LBUTTONDOWN,	CDlgWikiEquipment::OnEventLButtonDown_List)
+AUI_ON_EVENT("List_Equipment",	WM_KEYDOWN,		CDlgWikiEquipment::OnEventKeyDown_List)
+AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	CDlgWikiEquipment::OnEventLButtonDBLCLK_Icon)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

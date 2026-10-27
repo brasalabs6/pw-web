@@ -14,9 +14,9 @@ const int CDlgGMDelMsgReason::predefinedReason[] =
 
 AUI_BEGIN_COMMAND_MAP(CDlgGMDelMsgReason, CDlgBase)
 
-AUI_ON_COMMAND("ok", OnCommandOK)
-AUI_ON_COMMAND("cancel", OnCommandCancel)
-AUI_ON_COMMAND("select_reason", OnCommandSelectReason)
+AUI_ON_COMMAND("ok", CDlgGMDelMsgReason::OnCommandOK)
+AUI_ON_COMMAND("cancel", CDlgGMDelMsgReason::OnCommandCancel)
+AUI_ON_COMMAND("select_reason", CDlgGMDelMsgReason::OnCommandSelectReason)
 
 AUI_END_COMMAND_MAP()
 

@@ -14,7 +14,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWebRoleTrade, CDlgWebMyShop)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL",		CDlgWebRoleTrade::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgWebRoleTrade::CDlgWebRoleTrade()

@@ -56,16 +56,16 @@ public:
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiRecipe, CDlgWikiByNameBase)
-AUI_ON_COMMAND("search",		OnCommand_SearchByName)
-AUI_ON_COMMAND("material_prev",	OnCommand_MaterialPrev)
-AUI_ON_COMMAND("material_next",	OnCommand_MaterialNext)
-AUI_ON_COMMAND("product_prev",	OnCommand_ProductPrev)
-AUI_ON_COMMAND("product_next",	OnCommand_ProductNext)
+AUI_ON_COMMAND("search",		CDlgWikiRecipe::OnCommand_SearchByName)
+AUI_ON_COMMAND("material_prev",	CDlgWikiRecipe::OnCommand_MaterialPrev)
+AUI_ON_COMMAND("material_next",	CDlgWikiRecipe::OnCommand_MaterialNext)
+AUI_ON_COMMAND("product_prev",	CDlgWikiRecipe::OnCommand_ProductPrev)
+AUI_ON_COMMAND("product_next",	CDlgWikiRecipe::OnCommand_ProductNext)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiRecipe, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Material",	WM_LBUTTONDBLCLK,	OnEventLButtonDBCLK_ListMaterial)
-AUI_ON_EVENT("List_Product",	WM_LBUTTONDBLCLK,	OnEventLButtonDBCLK_ListProduct)
+AUI_ON_EVENT("List_Material",	WM_LBUTTONDBLCLK,	CDlgWikiRecipe::OnEventLButtonDBCLK_ListMaterial)
+AUI_ON_EVENT("List_Product",	WM_LBUTTONDBLCLK,	CDlgWikiRecipe::OnEventLButtonDBCLK_ListProduct)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

@@ -10,15 +10,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgConsole, CDlgBase)
 
-AUI_ON_COMMAND("Command_Edit",	OnCommandEdit)
+AUI_ON_COMMAND("Command_Edit",	CDlgConsole::OnCommandEdit)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgConsole, CDlgBase)
 
-AUI_ON_EVENT("*",	WM_KEYDOWN,	OnEventKeyDown)
-AUI_ON_EVENT("*",	WM_CHAR,	OnEventChar)
+AUI_ON_EVENT("*",	WM_KEYDOWN,	CDlgConsole::OnEventKeyDown)
+AUI_ON_EVENT("*",	WM_CHAR,	CDlgConsole::OnEventChar)
 
 AUI_END_EVENT_MAP()
 

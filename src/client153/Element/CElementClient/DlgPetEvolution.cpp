@@ -30,16 +30,16 @@
 #define INTERAL_SHORT	100
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetEvolution, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Feed",			OnCommand_AddExp)
-AUI_ON_COMMAND("Btn_Nature",		OnCommand_RebuildNature)
-AUI_ON_COMMAND("Btn_Wash",			OnCommand_RebuildInherit)
-AUI_ON_COMMAND("Btn_PetSkillsTree", OnCommand_NatrueList)
+AUI_ON_COMMAND("IDCANCEL",			CDlgPetEvolution::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Feed",			CDlgPetEvolution::OnCommand_AddExp)
+AUI_ON_COMMAND("Btn_Nature",		CDlgPetEvolution::OnCommand_RebuildNature)
+AUI_ON_COMMAND("Btn_Wash",			CDlgPetEvolution::OnCommand_RebuildInherit)
+AUI_ON_COMMAND("Btn_PetSkillsTree", CDlgPetEvolution::OnCommand_NatrueList)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPetEvolution, CDlgBase)
-AUI_ON_EVENT("Btn_ExpUp",	WM_LBUTTONDOWN,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_ExpDown",	WM_LBUTTONDOWN,		OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_ExpUp",	WM_LBUTTONDOWN,		CDlgPetEvolution::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_ExpDown",	WM_LBUTTONDOWN,		CDlgPetEvolution::OnEventLButtonDown_minus)
 AUI_END_EVENT_MAP()
 
 CDlgPetEvolution::CDlgPetEvolution()

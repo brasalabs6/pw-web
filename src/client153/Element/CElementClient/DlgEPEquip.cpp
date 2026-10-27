@@ -24,14 +24,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgEPEquip, CDlgBase)
 
-AUI_ON_COMMAND("try",		OnCommandTry)
+AUI_ON_COMMAND("try",		CDlgEPEquip::OnCommandTry)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEPEquip, CDlgBase)
 
-AUI_ON_EVENT("Equip_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("Equip_*",		WM_RBUTTONDOWN,		OnEventRButtonDown)
+AUI_ON_EVENT("Equip_*",		WM_LBUTTONDOWN,		CDlgEPEquip::OnEventLButtonDown)
+AUI_ON_EVENT("Equip_*",		WM_RBUTTONDOWN,		CDlgEPEquip::OnEventRButtonDown)
 
 AUI_END_EVENT_MAP()
 

@@ -34,14 +34,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFToPill, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFToPill::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFToPill::OnCommand_Confirm)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFToPill, CDlgBase)
 
-AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		CDlgELFToPill::OnEventLButtonDown_ELF)
 
 AUI_END_EVENT_MAP()
 

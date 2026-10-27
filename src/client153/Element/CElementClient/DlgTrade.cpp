@@ -28,18 +28,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTrade, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("lock",			OnCommandLock)
-AUI_ON_COMMAND("complete",		OnCommandComplete)
-AUI_ON_COMMAND("choosemoney",	OnCommandChoosemoney)
-AUI_ON_COMMAND("disclaimer",	OnCommandDisclaimer)
+AUI_ON_COMMAND("IDCANCEL",		CDlgTrade::OnCommandCANCEL)
+AUI_ON_COMMAND("lock",			CDlgTrade::OnCommandLock)
+AUI_ON_COMMAND("complete",		CDlgTrade::OnCommandComplete)
+AUI_ON_COMMAND("choosemoney",	CDlgTrade::OnCommandChoosemoney)
+AUI_ON_COMMAND("disclaimer",	CDlgTrade::OnCommandDisclaimer)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgTrade, CDlgBase)
 
-AUI_ON_EVENT("I_*", WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("I_*", WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK)
+AUI_ON_EVENT("I_*", WM_LBUTTONDOWN,		CDlgTrade::OnEventLButtonDown)
+AUI_ON_EVENT("I_*", WM_LBUTTONDBLCLK,	CDlgTrade::OnEventLButtonDBLCLK)
 
 AUI_END_EVENT_MAP()
 

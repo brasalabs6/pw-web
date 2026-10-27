@@ -16,8 +16,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgStorageChangePW, CDlgBase)
 
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommandIDCANCEL)
+AUI_ON_COMMAND("confirm", CDlgStorageChangePW::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgStorageChangePW::OnCommandIDCANCEL)
 
 AUI_END_COMMAND_MAP()
 

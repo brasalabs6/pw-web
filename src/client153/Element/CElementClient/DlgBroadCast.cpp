@@ -19,8 +19,8 @@
 #include "EC_GameUIMan.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgBroadCast, CDlgBase)
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("confirm", CDlgBroadCast::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgBroadCast::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgBroadCast, CDlgBase)

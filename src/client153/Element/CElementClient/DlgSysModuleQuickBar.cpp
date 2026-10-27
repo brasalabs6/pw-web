@@ -65,9 +65,9 @@ protected:
 
 AUI_BEGIN_EVENT_MAP(CDlgSysModule, CDlgBase)
 
-AUI_ON_EVENT("Icon_*", WM_RBUTTONUP,	OnEventRButtonUp)
-AUI_ON_EVENT("Icon_*", WM_LBUTTONDBLCLK,OnEventRButtonUp)
-AUI_ON_EVENT("Icon_*", WM_LBUTTONDOWN,  OnEventLButtonDown)
+AUI_ON_EVENT("Icon_*", WM_RBUTTONUP,	CDlgSysModule::OnEventRButtonUp)
+AUI_ON_EVENT("Icon_*", WM_LBUTTONDBLCLK,CDlgSysModule::OnEventRButtonUp)
+AUI_ON_EVENT("Icon_*", WM_LBUTTONDOWN,  CDlgSysModule::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 
@@ -140,14 +140,14 @@ void CDlgSysModule::OnEventRButtonUp(WPARAM wParam, LPARAM lParam, AUIObject *pO
 //////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgSysModQuickBar, CDlgBase)
-AUI_ON_COMMAND("Btn_Add",		OnCommand_add)
-AUI_ON_COMMAND("Btn_Minus",		OnCommand_minus)
-AUI_ON_COMMAND("Btn_AddIcon",	OnCommand_sysmod)
-AUI_ON_COMMAND("Chk_temp",		OnCommand_mini)
+AUI_ON_COMMAND("Btn_Add",		CDlgSysModQuickBar::OnCommand_add)
+AUI_ON_COMMAND("Btn_Minus",		CDlgSysModQuickBar::OnCommand_minus)
+AUI_ON_COMMAND("Btn_AddIcon",	CDlgSysModQuickBar::OnCommand_sysmod)
+AUI_ON_COMMAND("Chk_temp",		CDlgSysModQuickBar::OnCommand_mini)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgSysModQuickBar, CDlgBase)
-AUI_ON_EVENT("Item_*", WM_LBUTTONDOWN,  OnEventLButtonDown)
+AUI_ON_EVENT("Item_*", WM_LBUTTONDOWN,  CDlgSysModQuickBar::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 bool CDlgSysModQuickBar::OnInitDialog()

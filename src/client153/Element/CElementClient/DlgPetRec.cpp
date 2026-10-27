@@ -16,14 +16,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetRec, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgPetRec::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgPetRec::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPetRec, CDlgBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	CDlgPetRec::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

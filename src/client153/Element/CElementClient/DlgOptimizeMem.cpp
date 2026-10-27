@@ -14,8 +14,8 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgOptimizeMem, CDlgOptimizeBase)
-AUI_ON_COMMAND("Btn_Decide", OnCommand_Confirm)
-AUI_ON_COMMAND("Chk_OptimizeMem", OnCommand_OptimizeMem)
+AUI_ON_COMMAND("Btn_Decide", CDlgOptimizeMem::OnCommand_Confirm)
+AUI_ON_COMMAND("Chk_OptimizeMem", CDlgOptimizeMem::OnCommand_OptimizeMem)
 AUI_END_COMMAND_MAP()
 
 

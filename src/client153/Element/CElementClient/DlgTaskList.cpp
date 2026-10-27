@@ -20,14 +20,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTaskList, CDlgTask)
 
-AUI_ON_COMMAND("accept",		OnCommand_Accept)
-AUI_ON_COMMAND("refresh",	OnCommand_Refresh)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("accept",		CDlgTaskList::OnCommand_Accept)
+AUI_ON_COMMAND("refresh",	CDlgTaskList::OnCommand_Refresh)
+AUI_ON_COMMAND("IDCANCEL",		CDlgTaskList::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTaskList, CDlgTask)
-AUI_ON_EVENT("Tv_Quest",		WM_LBUTTONDOWN,		OnEventLButtonDown_Tv_Quest)
+AUI_ON_EVENT("Tv_Quest",		WM_LBUTTONDOWN,		CDlgTaskList::OnEventLButtonDown_Tv_Quest)
 AUI_END_EVENT_MAP()
 
 CDlgTaskList::CDlgTaskList():m_iTaskToDeliverPerDay(-1)

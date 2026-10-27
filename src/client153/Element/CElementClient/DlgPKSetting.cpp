@@ -16,8 +16,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgPKSetting, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
-AUI_ON_COMMAND("Chk_SwitchPK",	OnCommand_pk)
+AUI_ON_COMMAND("confirm",		CDlgPKSetting::OnCommand_Confirm)
+AUI_ON_COMMAND("Chk_SwitchPK",	CDlgPKSetting::OnCommand_pk)
 
 AUI_END_COMMAND_MAP()
 

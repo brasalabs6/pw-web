@@ -21,7 +21,7 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAutoLock, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
+AUI_ON_COMMAND("confirm",		CDlgAutoLock::OnCommand_Confirm)
 
 AUI_END_COMMAND_MAP()
 

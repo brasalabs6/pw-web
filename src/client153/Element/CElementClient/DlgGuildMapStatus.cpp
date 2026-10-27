@@ -28,21 +28,21 @@ const int l_max_sliver = 99;
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildMapStatus, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("allbattletime",	OnCommandAllBattleTime)
-AUI_ON_COMMAND("Btn_Max",		OnCommandMax)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGuildMapStatus::OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgGuildMapStatus::OnCommandConfirm)
+AUI_ON_COMMAND("allbattletime",	CDlgGuildMapStatus::OnCommandAllBattleTime)
+AUI_ON_COMMAND("Btn_Max",		CDlgGuildMapStatus::OnCommandMax)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgGuildMapStatus, CDlgBase)
 
-AUI_ON_EVENT("Btn_Up",			WM_LBUTTONDOWN,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Up",			WM_LBUTTONDBLCLK,	OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Down",		WM_LBUTTONDOWN,		OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Down",		WM_LBUTTONDBLCLK,	OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Up",			WM_LBUTTONUP,		OnEventLBUttonUp_stop)
-AUI_ON_EVENT("Btn_Down",		WM_LBUTTONUP,		OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Up",			WM_LBUTTONDOWN,		CDlgGuildMapStatus::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Up",			WM_LBUTTONDBLCLK,	CDlgGuildMapStatus::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Down",		WM_LBUTTONDOWN,		CDlgGuildMapStatus::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Down",		WM_LBUTTONDBLCLK,	CDlgGuildMapStatus::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Up",			WM_LBUTTONUP,		CDlgGuildMapStatus::OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Down",		WM_LBUTTONUP,		CDlgGuildMapStatus::OnEventLBUttonUp_stop)
 
 AUI_END_EVENT_MAP()
 

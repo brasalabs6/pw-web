@@ -22,13 +22,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgBag, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgBag::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgBag, CDlgBase)
-AUI_ON_EVENT("Item_*", WM_LBUTTONDOWN,   OnLButtonDownItem)
-AUI_ON_EVENT("Item_*", WM_LBUTTONDBLCLK, OnEventLButtonDblclk)
-AUI_ON_EVENT("Item_*", WM_RBUTTONUP,	 OnEventLButtonDblclk)
+AUI_ON_EVENT("Item_*", WM_LBUTTONDOWN,   CDlgBag::OnLButtonDownItem)
+AUI_ON_EVENT("Item_*", WM_LBUTTONDBLCLK, CDlgBag::OnEventLButtonDblclk)
+AUI_ON_EVENT("Item_*", WM_RBUTTONUP,	 CDlgBag::OnEventLButtonDblclk)
 AUI_END_EVENT_MAP()
 
 bool CDlgBag::OnInitDialog()

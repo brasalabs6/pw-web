@@ -23,14 +23,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiItem, CDlgWikiByNameBase)
-AUI_ON_COMMAND("drop", OnCommand_Drop)
-AUI_ON_COMMAND("task", OnCommand_Task)
+AUI_ON_COMMAND("drop", CDlgWikiItem::OnCommand_Drop)
+AUI_ON_COMMAND("task", CDlgWikiItem::OnCommand_Task)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiItem, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown_List)
-AUI_ON_EVENT("List_Item",	WM_KEYDOWN,		OnEventKeyDown_List)
-AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK_Icon)
+AUI_ON_EVENT("List_Item",	WM_LBUTTONDOWN,	CDlgWikiItem::OnEventLButtonDown_List)
+AUI_ON_EVENT("List_Item",	WM_KEYDOWN,		CDlgWikiItem::OnEventKeyDown_List)
+AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	CDlgWikiItem::OnEventLButtonDBLCLK_Icon)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

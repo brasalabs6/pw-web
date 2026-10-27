@@ -23,20 +23,20 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgPetList, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("detail*",	OnCommandDetail)
-AUI_ON_COMMAND("summon*",	OnCommandSummon)
-AUI_ON_COMMAND("recall*",	OnCommandRecall)
-AUI_ON_COMMAND("banish*",	OnCommandBanish)
-AUI_ON_COMMAND("Btn_Page*",	OnCommandPage)
-AUI_ON_COMMAND("Btn_P*",	OnCommandEvolution)
+AUI_ON_COMMAND("IDCANCEL",	CDlgPetList::OnCommand_CANCEL)
+AUI_ON_COMMAND("detail*",	CDlgPetList::OnCommandDetail)
+AUI_ON_COMMAND("summon*",	CDlgPetList::OnCommandSummon)
+AUI_ON_COMMAND("recall*",	CDlgPetList::OnCommandRecall)
+AUI_ON_COMMAND("banish*",	CDlgPetList::OnCommandBanish)
+AUI_ON_COMMAND("Btn_Page*",	CDlgPetList::OnCommandPage)
+AUI_ON_COMMAND("Btn_P*",	CDlgPetList::OnCommandEvolution)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPetList, CDlgBase)
 
-AUI_ON_EVENT("Img_Icon*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_Icon*",	WM_RBUTTONUP,	OnEventRButtonUp)
+AUI_ON_EVENT("Img_Icon*",	WM_LBUTTONDOWN,	CDlgPetList::OnEventLButtonDown)
+AUI_ON_EVENT("Img_Icon*",	WM_RBUTTONUP,	CDlgPetList::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

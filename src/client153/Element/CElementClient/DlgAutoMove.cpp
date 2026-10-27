@@ -23,17 +23,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAutoMove, CDlgBase)
 
-AUI_ON_COMMAND("Confirm",		OnCommand_Confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_Cancel)
-AUI_ON_COMMAND("Stop",			OnCommand_Stop)
-AUI_ON_COMMAND("Apply",			OnCommand_Apply)
+AUI_ON_COMMAND("Confirm",		CDlgAutoMove::OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgAutoMove::OnCommand_Cancel)
+AUI_ON_COMMAND("Stop",			CDlgAutoMove::OnCommand_Stop)
+AUI_ON_COMMAND("Apply",			CDlgAutoMove::OnCommand_Apply)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAutoMove, CDlgBase)
 
-AUI_ON_EVENT("Check_Min",	WM_LBUTTONDOWN,		OnEventLButtonDownMin)
-AUI_ON_EVENT("Chk_Hide",	WM_LBUTTONDOWN,		OnEventLButtonDownMax)
+AUI_ON_EVENT("Check_Min",	WM_LBUTTONDOWN,		CDlgAutoMove::OnEventLButtonDownMin)
+AUI_ON_EVENT("Chk_Hide",	WM_LBUTTONDOWN,		CDlgAutoMove::OnEventLButtonDownMax)
 
 AUI_END_EVENT_MAP()
 

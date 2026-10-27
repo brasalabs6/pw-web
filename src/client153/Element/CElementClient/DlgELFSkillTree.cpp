@@ -11,8 +11,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFSkillTree, CDlgBase)
 
-AUI_ON_COMMAND("Senior",		OnCommand_Senior)
-AUI_ON_COMMAND("Junior",		OnCommand_Junior)
+AUI_ON_COMMAND("Senior",		CDlgELFSkillTree::OnCommand_Senior)
+AUI_ON_COMMAND("Junior",		CDlgELFSkillTree::OnCommand_Junior)
 
 AUI_END_COMMAND_MAP()
 

@@ -18,9 +18,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgQuestion, CDlgBase)
 
-AUI_ON_COMMAND("minimize",		OnCommandMinimize)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("minimize",		CDlgQuestion::OnCommandMinimize)
+AUI_ON_COMMAND("confirm",		CDlgQuestion::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgQuestion::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

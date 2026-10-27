@@ -16,10 +16,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgChannelOption, CDlgBase)
 
-AUI_ON_COMMAND("Whisper",		OnCommandWhisper)
-AUI_ON_COMMAND("FriendInvite",	OnCommandFriendInvite)
-AUI_ON_COMMAND("GroupInvite",	OnCommandGroupInvite)
-AUI_ON_COMMAND("Kick",			OnCommandKick)
+AUI_ON_COMMAND("Whisper",		CDlgChannelOption::OnCommandWhisper)
+AUI_ON_COMMAND("FriendInvite",	CDlgChannelOption::OnCommandFriendInvite)
+AUI_ON_COMMAND("GroupInvite",	CDlgChannelOption::OnCommandGroupInvite)
+AUI_ON_COMMAND("Kick",			CDlgChannelOption::OnCommandKick)
 
 AUI_END_COMMAND_MAP()
 

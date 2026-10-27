@@ -20,8 +20,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgInputName, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgInputName::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgInputName::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

@@ -18,13 +18,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgPwdHint, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("IDOK", OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgPwdHint::OnCommand_CANCEL)
+AUI_ON_COMMAND("IDOK", CDlgPwdHint::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgPwdHint, CDlgBase)
-AUI_ON_EVENT("Txt_Content", WM_LBUTTONDOWN, OnEventLButtonDown_Txt_Content)
-AUI_ON_EVENT("Txt_Content", WM_MOUSEMOVE, OnEventMouseMove_Txt_Content)
+AUI_ON_EVENT("Txt_Content", WM_LBUTTONDOWN, CDlgPwdHint::OnEventLButtonDown_Txt_Content)
+AUI_ON_EVENT("Txt_Content", WM_MOUSEMOVE, CDlgPwdHint::OnEventMouseMove_Txt_Content)
 AUI_END_EVENT_MAP()
 
 bool CDlgPwdHint::OnInitDialog()

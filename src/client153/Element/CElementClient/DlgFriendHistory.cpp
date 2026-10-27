@@ -13,7 +13,7 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgFriendHistory, CDlgBase)
 
-AUI_ON_EVENT("List_Message",	WM_LBUTTONUP,		OnEventLButtonUp)
+AUI_ON_EVENT("List_Message",	WM_LBUTTONUP,		CDlgFriendHistory::OnEventLButtonUp)
 
 AUI_END_EVENT_MAP()
 

@@ -24,14 +24,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgKingAuction, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Confirm", CDlgKingAuction::OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgKingAuction::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgKingAuction, CDlgBase)
 
-AUI_ON_EVENT("Edt_Money", WM_KEYUP, OnEvent_MoneyKeyUp)
+AUI_ON_EVENT("Edt_Money", WM_KEYUP, CDlgKingAuction::OnEvent_MoneyKeyUp)
 
 AUI_END_EVENT_MAP()
 

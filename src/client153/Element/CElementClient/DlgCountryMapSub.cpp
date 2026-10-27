@@ -21,17 +21,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCountryMapSub, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCountryMapSub::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCountryMapSub, CDlgBase)
 
-AUI_ON_EVENT("CountryMap",	WM_MOUSEMOVE,	OnEventMouseMove)
-AUI_ON_EVENT("CountryMap",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("CountryMap",	WM_LBUTTONUP,	OnEventLButtonUp)
-AUI_ON_EVENT("CountryMap",	WM_MOUSEWHEEL,  OnEventMouseWheel)
-AUI_ON_EVENT("CountryMap",	WM_RBUTTONDOWN,	OnEventRButtonDown)
+AUI_ON_EVENT("CountryMap",	WM_MOUSEMOVE,	CDlgCountryMapSub::OnEventMouseMove)
+AUI_ON_EVENT("CountryMap",	WM_LBUTTONDOWN,	CDlgCountryMapSub::OnEventLButtonDown)
+AUI_ON_EVENT("CountryMap",	WM_LBUTTONUP,	CDlgCountryMapSub::OnEventLButtonUp)
+AUI_ON_EVENT("CountryMap",	WM_MOUSEWHEEL,  CDlgCountryMapSub::OnEventMouseWheel)
+AUI_ON_EVENT("CountryMap",	WM_RBUTTONDOWN,	CDlgCountryMapSub::OnEventRButtonDown)
 
 AUI_END_EVENT_MAP()
 

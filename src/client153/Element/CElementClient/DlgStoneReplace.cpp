@@ -26,16 +26,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgStoneReplace, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Replace",	OnCommandReplace)
+AUI_ON_COMMAND("IDCANCEL",		CDlgStoneReplace::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Replace",	CDlgStoneReplace::OnCommandReplace)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgStoneReplace, CDlgBase)
 
-AUI_ON_EVENT("Img_Gem", WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_Gem", WM_LBUTTONDBLCLK,OnEventLButtonDown)
+AUI_ON_EVENT("Img_Gem", WM_LBUTTONDOWN,	CDlgStoneReplace::OnEventLButtonDown)
+AUI_ON_EVENT("Img_Gem", WM_LBUTTONDBLCLK,CDlgStoneReplace::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

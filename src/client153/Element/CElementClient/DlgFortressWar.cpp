@@ -14,16 +14,16 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressWar, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Prev",	OnCommand_Prev)
-AUI_ON_COMMAND("Btn_Next",	OnCommand_Next)
-AUI_ON_COMMAND("Btn_Refresh",	OnCommand_Refresh)
-AUI_ON_COMMAND("Btn_Search",	OnCommand_Search)
-AUI_ON_COMMAND("Btn_DeclareWar",OnCommand_DeclareWar)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFortressWar::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Prev",	CDlgFortressWar::OnCommand_Prev)
+AUI_ON_COMMAND("Btn_Next",	CDlgFortressWar::OnCommand_Next)
+AUI_ON_COMMAND("Btn_Refresh",	CDlgFortressWar::OnCommand_Refresh)
+AUI_ON_COMMAND("Btn_Search",	CDlgFortressWar::OnCommand_Search)
+AUI_ON_COMMAND("Btn_DeclareWar",CDlgFortressWar::OnCommand_DeclareWar)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressWar, CDlgBase)
-AUI_ON_EVENT("Lst_Fortress", WM_LBUTTONDOWN, OnEventLButtonDown_Lst_Fortress)
+AUI_ON_EVENT("Lst_Fortress", WM_LBUTTONDOWN, CDlgFortressWar::OnEventLButtonDown_Lst_Fortress)
 AUI_END_EVENT_MAP()
 
 CDlgFortressWar::CDlgFortressWar()

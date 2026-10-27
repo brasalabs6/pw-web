@@ -11,10 +11,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGMFinishMsg, CDlgBase)
 
-AUI_ON_COMMAND("ok", OnCommandOk)
-AUI_ON_COMMAND("cancel", OnCommandCancel)
-AUI_ON_COMMAND("select_command", OnCommandDblClickCommand)
-AUI_ON_COMMAND("IDCANCEL", OnCommandIDCancel)
+AUI_ON_COMMAND("ok", CDlgGMFinishMsg::OnCommandOk)
+AUI_ON_COMMAND("cancel", CDlgGMFinishMsg::OnCommandCancel)
+AUI_ON_COMMAND("select_command", CDlgGMFinishMsg::OnCommandDblClickCommand)
+AUI_ON_COMMAND("IDCANCEL", CDlgGMFinishMsg::OnCommandIDCancel)
 
 AUI_END_COMMAND_MAP()
 

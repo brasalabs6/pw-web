@@ -18,8 +18,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildCreate, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgGuildCreate::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGuildCreate::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

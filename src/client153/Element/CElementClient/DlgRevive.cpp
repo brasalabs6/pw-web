@@ -18,10 +18,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgRevive, CDlgBase)
 
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("back", OnCommandBack)
-AUI_ON_COMMAND("accept", OnCommandAccept)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("confirm", CDlgRevive::OnCommandConfirm)
+AUI_ON_COMMAND("back", CDlgRevive::OnCommandBack)
+AUI_ON_COMMAND("accept", CDlgRevive::OnCommandAccept)
+AUI_ON_COMMAND("IDCANCEL", CDlgRevive::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

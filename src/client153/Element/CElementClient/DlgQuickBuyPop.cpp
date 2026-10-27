@@ -9,9 +9,9 @@
 //	CDlgQuickBuyPop
 
 AUI_BEGIN_COMMAND_MAP(CDlgQuickBuyPop, CDlgQuickBuyBase)
-AUI_ON_COMMAND("Chk_Hide",		OnCommand_Chk_Hide)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_Cancel)
-AUI_ON_COMMAND("Btn_Close",		OnCommand_Cancel)
+AUI_ON_COMMAND("Chk_Hide",		CDlgQuickBuyPop::OnCommand_Chk_Hide)
+AUI_ON_COMMAND("IDCANCEL",		CDlgQuickBuyPop::OnCommand_Cancel)
+AUI_ON_COMMAND("Btn_Close",		CDlgQuickBuyPop::OnCommand_Cancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQuickBuyPop, CDlgQuickBuyBase)

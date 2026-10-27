@@ -22,19 +22,19 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgAuctionSellList, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",			OnCommandCancel)
-AUI_ON_COMMAND("auctionbuylist",	OnCommandAuctionBuyList)
-AUI_ON_COMMAND("auctionlist",		OnCommandAuctionList)
-AUI_ON_COMMAND("auctionselllist",	OnCommandAuctionSellList)
-AUI_ON_COMMAND("auctionmyfavor",	OnCommandAuctionMyFavor)
-AUI_ON_COMMAND("sell",				OnCommandSell)
-AUI_ON_COMMAND("closeauction",		OnCommandCloseAuction)
+AUI_ON_COMMAND("IDCANCEL",			CDlgAuctionSellList::OnCommandCancel)
+AUI_ON_COMMAND("auctionbuylist",	CDlgAuctionSellList::OnCommandAuctionBuyList)
+AUI_ON_COMMAND("auctionlist",		CDlgAuctionSellList::OnCommandAuctionList)
+AUI_ON_COMMAND("auctionselllist",	CDlgAuctionSellList::OnCommandAuctionSellList)
+AUI_ON_COMMAND("auctionmyfavor",	CDlgAuctionSellList::OnCommandAuctionMyFavor)
+AUI_ON_COMMAND("sell",				CDlgAuctionSellList::OnCommandSell)
+AUI_ON_COMMAND("closeauction",		CDlgAuctionSellList::OnCommandCloseAuction)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAuctionSellList, CDlgBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown_Img_Item)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	CDlgAuctionSellList::OnEventLButtonDown_Img_Item)
 
 AUI_END_EVENT_MAP()
 

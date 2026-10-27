@@ -9,8 +9,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgProclaim, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgProclaim::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgProclaim::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

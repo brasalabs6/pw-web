@@ -21,17 +21,17 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgGuildSearch, CDlgBase)
-AUI_ON_COMMAND("Btn_Create", OnCommand_Btn_Create)
-AUI_ON_COMMAND("Btn_Invite", OnCommand_Btn_Invite)
-AUI_ON_COMMAND("Btn_Search", OnCommand_Btn_Search)
-AUI_ON_COMMAND("Edt_GuildName", OnCommand_Btn_Search)
-AUI_ON_COMMAND("Btn_Num", OnCommand_Sort_By_NUM)
-AUI_ON_COMMAND("Btn_Level", OnCommand_Sort_By_LEVEL)
-AUI_ON_COMMAND("Btn_Name", OnCommand_Sort_By_NAME)
+AUI_ON_COMMAND("Btn_Create", CDlgGuildSearch::OnCommand_Btn_Create)
+AUI_ON_COMMAND("Btn_Invite", CDlgGuildSearch::OnCommand_Btn_Invite)
+AUI_ON_COMMAND("Btn_Search", CDlgGuildSearch::OnCommand_Btn_Search)
+AUI_ON_COMMAND("Edt_GuildName", CDlgGuildSearch::OnCommand_Btn_Search)
+AUI_ON_COMMAND("Btn_Num", CDlgGuildSearch::OnCommand_Sort_By_NUM)
+AUI_ON_COMMAND("Btn_Level", CDlgGuildSearch::OnCommand_Sort_By_LEVEL)
+AUI_ON_COMMAND("Btn_Name", CDlgGuildSearch::OnCommand_Sort_By_NAME)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGuildSearch, CDlgBase)
-AUI_ON_EVENT("List_Guild",	WM_LBUTTONUP,	OnEventLButtonUp)
+AUI_ON_EVENT("List_Guild",	WM_LBUTTONUP,	CDlgGuildSearch::OnEventLButtonUp)
 AUI_END_EVENT_MAP()
 
 CDlgGuildSearch::CDlgGuildSearch()

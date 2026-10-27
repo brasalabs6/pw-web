@@ -25,7 +25,7 @@ AUI_BEGIN_COMMAND_MAP(CDlgWikiRecipeDetail, CDlgNameLink)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiRecipeDetail, CDlgNameLink)
-AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK_Icon)
+AUI_ON_EVENT("Img_*",	WM_LBUTTONDBLCLK,	CDlgWikiRecipeDetail::OnEventLButtonDBLCLK_Icon)
 AUI_END_EVENT_MAP()
 
 // =======================================================================

@@ -10,9 +10,9 @@
 
 
 AUI_BEGIN_COMMAND_MAP(CDlgOptimizeFunc, CDlgOptimizeBase)
-AUI_ON_COMMAND("Btn_Decide", OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_FunSelectAll", OnCommand_SelectAll)
-AUI_ON_COMMAND("Btn_FunClear", OnCommand_Clear)
+AUI_ON_COMMAND("Btn_Decide", CDlgOptimizeFunc::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_FunSelectAll", CDlgOptimizeFunc::OnCommand_SelectAll)
+AUI_ON_COMMAND("Btn_FunClear", CDlgOptimizeFunc::OnCommand_Clear)
 AUI_END_COMMAND_MAP()
 
 CDlgOptimizeFunc::CDlgOptimizeFunc() {

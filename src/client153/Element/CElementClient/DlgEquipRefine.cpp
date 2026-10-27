@@ -25,16 +25,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgEquipRefine, CDlgQuickBuyBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Shop",		OnCommandShop)
+AUI_ON_COMMAND("confirm",		CDlgEquipRefine::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgEquipRefine::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Shop",		CDlgEquipRefine::OnCommandShop)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEquipRefine, CDlgQuickBuyBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_Ticket",	WM_LBUTTONDOWN,	OnEventLButtonDown_Ticket)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	CDlgEquipRefine::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_Ticket",	WM_LBUTTONDOWN,	CDlgEquipRefine::OnEventLButtonDown_Ticket)
 
 AUI_END_EVENT_MAP()
 

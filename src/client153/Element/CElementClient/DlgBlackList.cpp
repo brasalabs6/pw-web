@@ -27,10 +27,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgBlackList, CDlgBase)
 
-AUI_ON_COMMAND("add", OnCommandAdd)
-AUI_ON_COMMAND("remove", OnCommandRemove)
-AUI_ON_COMMAND("choosename", OnCommandChooseName)
-AUI_ON_COMMAND("Btn_Apply", OnCommandApply)
+AUI_ON_COMMAND("add", CDlgBlackList::OnCommandAdd)
+AUI_ON_COMMAND("remove", CDlgBlackList::OnCommandRemove)
+AUI_ON_COMMAND("choosename", CDlgBlackList::OnCommandChooseName)
+AUI_ON_COMMAND("Btn_Apply", CDlgBlackList::OnCommandApply)
 
 AUI_END_COMMAND_MAP()
 

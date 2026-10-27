@@ -21,8 +21,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFaceLift, CDlgBase)
 
-AUI_ON_COMMAND("start",			OnCommand_start)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("start",			CDlgFaceLift::OnCommand_start)
+AUI_ON_COMMAND("IDCANCEL",		CDlgFaceLift::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

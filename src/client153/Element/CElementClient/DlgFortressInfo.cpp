@@ -15,14 +15,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressInfo, CDlgBase)
-AUI_ON_COMMAND("Btn_Levelup", OnCommand_Levelup)
-AUI_ON_COMMAND("Btn_0*",	OnCommand_Upgrade)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Levelup", CDlgFortressInfo::OnCommand_Levelup)
+AUI_ON_COMMAND("Btn_0*",	CDlgFortressInfo::OnCommand_Upgrade)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressInfo::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressInfo, CDlgBase)
-AUI_ON_EVENT("Btn_0*", WM_RBUTTONDOWN, OnEvent_RButtonDown)
-AUI_ON_EVENT("*", WM_RBUTTONUP, OnEvent_RButtonUp)
+AUI_ON_EVENT("Btn_0*", WM_RBUTTONDOWN, CDlgFortressInfo::OnEvent_RButtonDown)
+AUI_ON_EVENT("*", WM_RBUTTONUP, CDlgFortressInfo::OnEvent_RButtonUp)
 AUI_END_EVENT_MAP()
 
 CDlgFortressInfo::CDlgFortressInfo()

@@ -27,14 +27,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgInfo, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgInfo::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgInfo, CDlgBase)
 
-AUI_ON_EVENT("F_*",		WM_LBUTTONUP,		OnEventLButtonUp_Icon)
-AUI_ON_EVENT("List",	WM_LBUTTONUP,		OnEventLButtonUp_List)
+AUI_ON_EVENT("F_*",		WM_LBUTTONUP,		CDlgInfo::OnEventLButtonUp_Icon)
+AUI_ON_EVENT("List",	WM_LBUTTONUP,		CDlgInfo::OnEventLButtonUp_List)
 
 AUI_END_EVENT_MAP()
 

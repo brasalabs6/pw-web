@@ -33,15 +33,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFRefineTrans, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFRefineTrans::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFRefineTrans::OnCommand_Confirm)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFRefineTrans, CDlgBase)
 
-AUI_ON_EVENT("Img_Target",		WM_LBUTTONDOWN,		OnEventLButtonDown_Target)
-AUI_ON_EVENT("Img_Source",		WM_LBUTTONDOWN,		OnEventLButtonDown_Source)
+AUI_ON_EVENT("Img_Target",		WM_LBUTTONDOWN,		CDlgELFRefineTrans::OnEventLButtonDown_Target)
+AUI_ON_EVENT("Img_Source",		WM_LBUTTONDOWN,		CDlgELFRefineTrans::OnEventLButtonDown_Source)
 
 AUI_END_EVENT_MAP()
 

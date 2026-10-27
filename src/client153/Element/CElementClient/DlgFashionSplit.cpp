@@ -19,14 +19,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFashionSplit, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgFashionSplit::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgFashionSplit::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFashionSplit, CDlgBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	OnEventLButtonDown)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,	CDlgFashionSplit::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

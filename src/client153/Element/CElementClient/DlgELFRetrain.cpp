@@ -23,16 +23,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFRetrain, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgELFRetrain::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFRetrain::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFRetrain, CDlgBase)
 
-AUI_ON_EVENT("Img_Skill*",	WM_LBUTTONDOWN,	OnEventLButtonDownSkill)
-AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN, OnEventLButtonDown_ELF)
-AUI_ON_EVENT("Txt_Number",	WM_CHAR,		OnEventInput)
+AUI_ON_EVENT("Img_Skill*",	WM_LBUTTONDOWN,	CDlgELFRetrain::OnEventLButtonDownSkill)
+AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN, CDlgELFRetrain::OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Txt_Number",	WM_CHAR,		CDlgELFRetrain::OnEventInput)
 
 AUI_END_EVENT_MAP()
 

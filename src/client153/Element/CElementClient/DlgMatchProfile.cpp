@@ -24,13 +24,13 @@
 #include <AFI.h>
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchProfileHabit, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Save",	OnCommandSave)
-AUI_ON_COMMAND("Btn_Close",	OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMatchProfileHabit::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Save",	CDlgMatchProfileHabit::OnCommandSave)
+AUI_ON_COMMAND("Btn_Close",	CDlgMatchProfileHabit::OnCommand_CANCEL)
 
-AUI_ON_COMMAND("Rdo_Info2",	OnCommandHobby)
-AUI_ON_COMMAND("Rdo_Info3",	OnCommandAge)
-AUI_ON_COMMAND("Rdo_Info4",	OnCommandSetting)
+AUI_ON_COMMAND("Rdo_Info2",	CDlgMatchProfileHabit::OnCommandHobby)
+AUI_ON_COMMAND("Rdo_Info3",	CDlgMatchProfileHabit::OnCommandAge)
+AUI_ON_COMMAND("Rdo_Info4",	CDlgMatchProfileHabit::OnCommandSetting)
 
 AUI_END_COMMAND_MAP()
 
@@ -83,13 +83,13 @@ void CDlgMatchProfileHabit::OnCommandSetting(const char *szCommand)
 //////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchProfileHobby, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Save",	OnCommandSave)
-AUI_ON_COMMAND("Btn_Close",	OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMatchProfileHobby::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Save",	CDlgMatchProfileHobby::OnCommandSave)
+AUI_ON_COMMAND("Btn_Close",	CDlgMatchProfileHobby::OnCommand_CANCEL)
 
-AUI_ON_COMMAND("Rdo_Info1",	OnCommandHabit)
-AUI_ON_COMMAND("Rdo_Info3",	OnCommandAge)
-AUI_ON_COMMAND("Rdo_Info4",	OnCommandSetting)
+AUI_ON_COMMAND("Rdo_Info1",	CDlgMatchProfileHobby::OnCommandHabit)
+AUI_ON_COMMAND("Rdo_Info3",	CDlgMatchProfileHobby::OnCommandAge)
+AUI_ON_COMMAND("Rdo_Info4",	CDlgMatchProfileHobby::OnCommandSetting)
 AUI_END_COMMAND_MAP()
 
 
@@ -133,13 +133,13 @@ void CDlgMatchProfileHobby::OnCommandSetting(const char *szCommand)
 
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchProfileAge, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Save",	OnCommandSave)
-AUI_ON_COMMAND("Btn_Close",	OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMatchProfileAge::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Save",	CDlgMatchProfileAge::OnCommandSave)
+AUI_ON_COMMAND("Btn_Close",	CDlgMatchProfileAge::OnCommand_CANCEL)
 
-AUI_ON_COMMAND("Rdo_Info1",	OnCommandHabit)
-AUI_ON_COMMAND("Rdo_Info2",	OnCommandHobby)
-AUI_ON_COMMAND("Rdo_Info4",	OnCommandSetting)
+AUI_ON_COMMAND("Rdo_Info1",	CDlgMatchProfileAge::OnCommandHabit)
+AUI_ON_COMMAND("Rdo_Info2",	CDlgMatchProfileAge::OnCommandHobby)
+AUI_ON_COMMAND("Rdo_Info4",	CDlgMatchProfileAge::OnCommandSetting)
 
 AUI_END_COMMAND_MAP()
 
@@ -191,13 +191,13 @@ void CDlgMatchProfileAge::OnCommandSetting(const char *szCommand)
 //////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgMatchProfileSetting, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Save",	OnCommandSave)
-AUI_ON_COMMAND("Btn_Close",	OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMatchProfileSetting::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Save",	CDlgMatchProfileSetting::OnCommandSave)
+AUI_ON_COMMAND("Btn_Close",	CDlgMatchProfileSetting::OnCommand_CANCEL)
 
-AUI_ON_COMMAND("Rdo_Info1",	OnCommandHabit)
-AUI_ON_COMMAND("Rdo_Info2",	OnCommandHobby)
-AUI_ON_COMMAND("Rdo_Info3",	OnCommandAge)
+AUI_ON_COMMAND("Rdo_Info1",	CDlgMatchProfileSetting::OnCommandHabit)
+AUI_ON_COMMAND("Rdo_Info2",	CDlgMatchProfileSetting::OnCommandHobby)
+AUI_ON_COMMAND("Rdo_Info3",	CDlgMatchProfileSetting::OnCommandAge)
 
 AUI_END_COMMAND_MAP()
 

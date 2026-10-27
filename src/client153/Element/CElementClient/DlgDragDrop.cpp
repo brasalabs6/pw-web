@@ -57,7 +57,7 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgDragDrop, CDlgBase)
 
-AUI_ON_EVENT("Goods",	WM_LBUTTONUP,	OnEventLButtonUp)
+AUI_ON_EVENT("Goods",	WM_LBUTTONUP,	CDlgDragDrop::OnEventLButtonUp)
 
 AUI_END_EVENT_MAP()
 

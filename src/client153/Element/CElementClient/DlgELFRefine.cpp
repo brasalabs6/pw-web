@@ -33,18 +33,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFRefine, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
-AUI_ON_COMMAND("fillmax",		OnCommand_FillMax)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFRefine::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFRefine::OnCommand_Confirm)
+AUI_ON_COMMAND("fillmax",		CDlgELFRefine::OnCommand_FillMax)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFRefine, CDlgBase)
 
-AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		OnEventLButtonDown_ELF)
-AUI_ON_EVENT("Btn_Up",		WM_LBUTTONDOWN,		OnEventLButtonDown_Add)
-AUI_ON_EVENT("Btn_Down",	WM_LBUTTONDOWN,		OnEventLButtonDown_Minus)
+AUI_ON_EVENT("Img_Item",	WM_LBUTTONDOWN,		CDlgELFRefine::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		CDlgELFRefine::OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Btn_Up",		WM_LBUTTONDOWN,		CDlgELFRefine::OnEventLButtonDown_Add)
+AUI_ON_EVENT("Btn_Down",	WM_LBUTTONDOWN,		CDlgELFRefine::OnEventLButtonDown_Minus)
 
 AUI_END_EVENT_MAP()
 

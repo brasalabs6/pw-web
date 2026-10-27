@@ -11,10 +11,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressWarList, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Refresh",	OnCommand_Refresh)
-AUI_ON_COMMAND("Btn_Enter",		OnCommand_Enter)
-AUI_ON_COMMAND("Lst_GvG",	OnCommand_Lst_GvG)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFortressWarList::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Refresh",	CDlgFortressWarList::OnCommand_Refresh)
+AUI_ON_COMMAND("Btn_Enter",		CDlgFortressWarList::OnCommand_Enter)
+AUI_ON_COMMAND("Lst_GvG",	CDlgFortressWarList::OnCommand_Lst_GvG)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressWarList, CDlgBase)

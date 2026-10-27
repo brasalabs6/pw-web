@@ -21,15 +21,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTitleChallenge, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Select*",		OnCommandChallenge)
-AUI_ON_COMMAND("Btn_Up",	OnCommandPagePrevious)
-AUI_ON_COMMAND("Btn_Down",	OnCommandPageNext)
+AUI_ON_COMMAND("Btn_Select*",		CDlgTitleChallenge::OnCommandChallenge)
+AUI_ON_COMMAND("Btn_Up",	CDlgTitleChallenge::OnCommandPagePrevious)
+AUI_ON_COMMAND("Btn_Down",	CDlgTitleChallenge::OnCommandPageNext)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTitleChallenge, CDlgBase)
-AUI_ON_EVENT("*", WM_MOUSEWHEEL, OnMouseWheel)
-AUI_ON_EVENT(NULL,WM_MOUSEWHEEL, OnMouseWheel)
+AUI_ON_EVENT("*", WM_MOUSEWHEEL, CDlgTitleChallenge::OnMouseWheel)
+AUI_ON_EVENT(NULL,WM_MOUSEWHEEL, CDlgTitleChallenge::OnMouseWheel)
 AUI_END_EVENT_MAP()
 
 

@@ -19,9 +19,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGodEvilConvert, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandNormalConfirm)
-AUI_ON_COMMAND("Btn_Confirm2",	OnCommandAdvancedConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgGodEvilConvert::OnCommandNormalConfirm)
+AUI_ON_COMMAND("Btn_Confirm2",	CDlgGodEvilConvert::OnCommandAdvancedConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGodEvilConvert::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

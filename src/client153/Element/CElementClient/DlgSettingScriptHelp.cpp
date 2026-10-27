@@ -10,8 +10,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSettingScriptHelp, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommandIDCANCEL)
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgSettingScriptHelp::OnCommandIDCANCEL)
+AUI_ON_COMMAND("confirm", CDlgSettingScriptHelp::OnCommandConfirm)
 
 AUI_END_COMMAND_MAP()
 

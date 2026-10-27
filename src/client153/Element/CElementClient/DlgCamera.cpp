@@ -18,9 +18,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCamera, CDlgBase)
 
-AUI_ON_COMMAND("Combo_Scale",	OnCommand_Combo_Scale)
-AUI_ON_COMMAND("printscr",				OnCommand_PrintScr)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("Combo_Scale",	CDlgCamera::OnCommand_Combo_Scale)
+AUI_ON_COMMAND("printscr",				CDlgCamera::OnCommand_PrintScr)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCamera::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

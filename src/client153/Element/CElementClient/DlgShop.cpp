@@ -34,28 +34,28 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgShop, CDlgBase)
 
-AUI_ON_COMMAND("set*",			OnCommand_set)
-AUI_ON_COMMAND("buy",			OnCommand_buy)
-AUI_ON_COMMAND("sell",			OnCommand_sell)
-AUI_ON_COMMAND("repair",		OnCommand_repair)
-AUI_ON_COMMAND("repairall",		OnCommand_repairall)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("set*",			CDlgShop::OnCommand_set)
+AUI_ON_COMMAND("buy",			CDlgShop::OnCommand_buy)
+AUI_ON_COMMAND("sell",			CDlgShop::OnCommand_sell)
+AUI_ON_COMMAND("repair",		CDlgShop::OnCommand_repair)
+AUI_ON_COMMAND("repairall",		CDlgShop::OnCommand_repairall)
+AUI_ON_COMMAND("IDCANCEL",		CDlgShop::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgShop, CDlgBase)
 
-AUI_ON_EVENT("U_*",		WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("Buy_*",	WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("Sell_*",	WM_LBUTTONDOWN,		OnEventLButtonDown)
+AUI_ON_EVENT("U_*",		WM_LBUTTONDOWN,		CDlgShop::OnEventLButtonDown)
+AUI_ON_EVENT("Buy_*",	WM_LBUTTONDOWN,		CDlgShop::OnEventLButtonDown)
+AUI_ON_EVENT("Sell_*",	WM_LBUTTONDOWN,		CDlgShop::OnEventLButtonDown)
 
-AUI_ON_EVENT("U_*",		WM_LBUTTONDBLCLK,	OnEventLButtonDblclk)
-AUI_ON_EVENT("Buy_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDblclk)
-AUI_ON_EVENT("Sell_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDblclk)
+AUI_ON_EVENT("U_*",		WM_LBUTTONDBLCLK,	CDlgShop::OnEventLButtonDblclk)
+AUI_ON_EVENT("Buy_*",	WM_LBUTTONDBLCLK,	CDlgShop::OnEventLButtonDblclk)
+AUI_ON_EVENT("Sell_*",	WM_LBUTTONDBLCLK,	CDlgShop::OnEventLButtonDblclk)
 
-AUI_ON_EVENT("U_*",		WM_RBUTTONUP,	    OnEventLButtonDblclk)
-AUI_ON_EVENT("Buy_*",	WM_RBUTTONUP,	    OnEventLButtonDblclk)
-AUI_ON_EVENT("Sell_*",	WM_RBUTTONUP,	    OnEventLButtonDblclk)
+AUI_ON_EVENT("U_*",		WM_RBUTTONUP,	    CDlgShop::OnEventLButtonDblclk)
+AUI_ON_EVENT("Buy_*",	WM_RBUTTONUP,	    CDlgShop::OnEventLButtonDblclk)
+AUI_ON_EVENT("Sell_*",	WM_RBUTTONUP,	    CDlgShop::OnEventLButtonDblclk)
 
 AUI_END_EVENT_MAP()
 

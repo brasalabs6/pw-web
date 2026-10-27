@@ -10,8 +10,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendGroup, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("confirm",	OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFriendGroup::OnCommandCANCAL)
+AUI_ON_COMMAND("confirm",	CDlgFriendGroup::OnCommandConfirm)
 
 AUI_END_COMMAND_MAP()
 

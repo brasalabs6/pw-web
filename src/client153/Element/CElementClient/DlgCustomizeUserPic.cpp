@@ -31,23 +31,23 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeUserPic, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("MoveSlider", OnCommandMoveSlider)
-AUI_ON_COMMAND("ZoomOutUserPic", OnCommandZoomOutUserPic)
-AUI_ON_COMMAND("ZoomInUserPic", OnCommandZoomInUserPic)
+AUI_ON_COMMAND("MoveSlider", CDlgCustomizeUserPic::OnCommandMoveSlider)
+AUI_ON_COMMAND("ZoomOutUserPic", CDlgCustomizeUserPic::OnCommandZoomOutUserPic)
+AUI_ON_COMMAND("ZoomInUserPic", CDlgCustomizeUserPic::OnCommandZoomInUserPic)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeUserPic, CDlgCustomizeBase)
 
-AUI_ON_EVENT("Pic_UserPic", WM_MOUSEWHEEL, OnMouseWheelZoom)
-AUI_ON_EVENT("Pic_UserPic", WM_LBUTTONDOWN, OnLButtonDownPicUserPic)
-AUI_ON_EVENT("Pic_UserPic", WM_LBUTTONUP, OnLButtonUpPicUserPic)
-AUI_ON_EVENT("Pic_UserPic", WM_MOUSEMOVE, OnMouseMovePicUserPic)
+AUI_ON_EVENT("Pic_UserPic", WM_MOUSEWHEEL, CDlgCustomizeUserPic::OnMouseWheelZoom)
+AUI_ON_EVENT("Pic_UserPic", WM_LBUTTONDOWN, CDlgCustomizeUserPic::OnLButtonDownPicUserPic)
+AUI_ON_EVENT("Pic_UserPic", WM_LBUTTONUP, CDlgCustomizeUserPic::OnLButtonUpPicUserPic)
+AUI_ON_EVENT("Pic_UserPic", WM_MOUSEMOVE, CDlgCustomizeUserPic::OnMouseMovePicUserPic)
 
-AUI_ON_EVENT("Btn_UserPicDrag", WM_LBUTTONDOWN, OnLButtonDownBtnDrag)
-AUI_ON_EVENT("Btn_UserPicDrag", WM_LBUTTONUP, OnLButtonUpBtnDrag)
-AUI_ON_EVENT("Btn_UserPicDrag", WM_MOUSEMOVE, OnMouseMoveBtnDrag)
+AUI_ON_EVENT("Btn_UserPicDrag", WM_LBUTTONDOWN, CDlgCustomizeUserPic::OnLButtonDownBtnDrag)
+AUI_ON_EVENT("Btn_UserPicDrag", WM_LBUTTONUP, CDlgCustomizeUserPic::OnLButtonUpBtnDrag)
+AUI_ON_EVENT("Btn_UserPicDrag", WM_MOUSEMOVE, CDlgCustomizeUserPic::OnMouseMoveBtnDrag)
 AUI_END_EVENT_MAP()
 
 //-------------------------------------------------------------------

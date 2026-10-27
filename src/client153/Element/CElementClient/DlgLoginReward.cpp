@@ -11,7 +11,7 @@
 AUI_BEGIN_COMMAND_MAP(CDlgLoginReward, CDlgBase)
 
 
-AUI_ON_COMMAND("btn_getreward", OnCommandReward)
+AUI_ON_COMMAND("btn_getreward", CDlgLoginReward::OnCommandReward)
 
 AUI_END_COMMAND_MAP()
 

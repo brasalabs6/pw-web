@@ -15,12 +15,12 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressMaterial, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Material", OnCommand_Material)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressMaterial::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Material", CDlgFortressMaterial::OnCommand_Material)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressMaterial, CDlgBase)
-AUI_ON_EVENT("Img_Ma", WM_LBUTTONDOWN, OnEventLButtonDown_Img_Material)
+AUI_ON_EVENT("Img_Ma", WM_LBUTTONDOWN, CDlgFortressMaterial::OnEventLButtonDown_Img_Material)
 AUI_END_EVENT_MAP()
 
 //------------------------------------------------------------------------

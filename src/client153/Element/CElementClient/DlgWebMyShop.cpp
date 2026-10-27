@@ -24,20 +24,20 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgWebMyShop, CDlgWebTradeBase)
 
-AUI_ON_COMMAND("goto_viewproduct",	OnCommandGotoViewProduct)
-AUI_ON_COMMAND("prepost_item",		OnCommandPrepostItem)
-AUI_ON_COMMAND("prepost_money",		OnCommandPrepostMoney)
-AUI_ON_COMMAND("prepost_role",		OnCommandPrepostRole)
-AUI_ON_COMMAND("confirm_deal",		OnCommandConfirmDeal)
-AUI_ON_COMMAND("cancel_deal",		OnCommandCancelDeal)
-AUI_ON_COMMAND("cancel_prepost",	OnCommandCancelPrepost)
-AUI_ON_COMMAND("check_sell",		OnCommandCheckSell)
-AUI_ON_COMMAND("IDCANCEL",			OnCommandCancel)
+AUI_ON_COMMAND("goto_viewproduct",	CDlgWebMyShop::OnCommandGotoViewProduct)
+AUI_ON_COMMAND("prepost_item",		CDlgWebMyShop::OnCommandPrepostItem)
+AUI_ON_COMMAND("prepost_money",		CDlgWebMyShop::OnCommandPrepostMoney)
+AUI_ON_COMMAND("prepost_role",		CDlgWebMyShop::OnCommandPrepostRole)
+AUI_ON_COMMAND("confirm_deal",		CDlgWebMyShop::OnCommandConfirmDeal)
+AUI_ON_COMMAND("cancel_deal",		CDlgWebMyShop::OnCommandCancelDeal)
+AUI_ON_COMMAND("cancel_prepost",	CDlgWebMyShop::OnCommandCancelPrepost)
+AUI_ON_COMMAND("check_sell",		CDlgWebMyShop::OnCommandCheckSell)
+AUI_ON_COMMAND("IDCANCEL",			CDlgWebMyShop::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWebMyShop, CDlgWebTradeBase)
 
-AUI_ON_EVENT("Item_Prepost",	WM_LBUTTONDOWN,	OnEventLButtonDown_Item_Prepost)
+AUI_ON_EVENT("Item_Prepost",	WM_LBUTTONDOWN,	CDlgWebMyShop::OnEventLButtonDown_Item_Prepost)
 
 AUI_END_EVENT_MAP()
 

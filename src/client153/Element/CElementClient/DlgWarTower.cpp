@@ -15,8 +15,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgWarTower, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("confirm",		CDlgWarTower::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgWarTower::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

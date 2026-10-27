@@ -12,9 +12,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendColor, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("start",		OnCommandStart)
-AUI_ON_COMMAND("Color*",	OnCommandColor)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFriendColor::OnCommandCANCAL)
+AUI_ON_COMMAND("start",		CDlgFriendColor::OnCommandStart)
+AUI_ON_COMMAND("Color*",	CDlgFriendColor::OnCommandColor)
 
 AUI_END_COMMAND_MAP()
 

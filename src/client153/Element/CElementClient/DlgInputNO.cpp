@@ -28,11 +28,11 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgInputNO, CDlgBase)
 
-AUI_ON_COMMAND("max",				OnCommand_max)
-AUI_ON_COMMAND("add",				OnCommand_add)
-AUI_ON_COMMAND("minus",				OnCommand_minus)
-AUI_ON_COMMAND("confirm",			OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
+AUI_ON_COMMAND("max",				CDlgInputNO::OnCommand_max)
+AUI_ON_COMMAND("add",				CDlgInputNO::OnCommand_add)
+AUI_ON_COMMAND("minus",				CDlgInputNO::OnCommand_minus)
+AUI_ON_COMMAND("confirm",			CDlgInputNO::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",			CDlgInputNO::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
@@ -585,16 +585,16 @@ void CDlgInputNO::GetInfo(int &nCur, int &nMax)
 
 AUI_BEGIN_COMMAND_MAP(CDlgInputNO3, CDlgBase)
 
-AUI_ON_COMMAND("max",				OnCommand_max)
-AUI_ON_COMMAND("confirm",			OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
+AUI_ON_COMMAND("max",				CDlgInputNO3::OnCommand_max)
+AUI_ON_COMMAND("confirm",			CDlgInputNO3::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",			CDlgInputNO3::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgInputNO3, CDlgBase)
 
-AUI_ON_EVENT("DEFAULT_Txt_No.",	WM_CHAR, OnEventChar_Txt_M)
-AUI_ON_EVENT("DEFAULT_Txt_No2",	WM_CHAR, OnEventChar_Txt_Y)
+AUI_ON_EVENT("DEFAULT_Txt_No.",	WM_CHAR, CDlgInputNO3::OnEventChar_Txt_M)
+AUI_ON_EVENT("DEFAULT_Txt_No2",	WM_CHAR, CDlgInputNO3::OnEventChar_Txt_Y)
 AUI_END_EVENT_MAP()
 
 CDlgInputNO3::CDlgInputNO3()

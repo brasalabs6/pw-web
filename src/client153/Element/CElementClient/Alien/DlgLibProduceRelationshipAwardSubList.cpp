@@ -7,8 +7,8 @@
 #include "AUI.h"
 
 AUI_BEGIN_EVENT_MAP(CDlgLibProduceRelationshipAwardSubList, CDlgBase)
-AUI_ON_EVENT("*",				WM_MOUSEWHEEL,	OnMouseWheel)
-AUI_ON_EVENT(NULL,				WM_MOUSEWHEEL,	OnMouseWheel)
+AUI_ON_EVENT("*",				WM_MOUSEWHEEL,	CDlgLibProduceRelationshipAwardSubList::OnMouseWheel)
+AUI_ON_EVENT(NULL,				WM_MOUSEWHEEL,	CDlgLibProduceRelationshipAwardSubList::OnMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgLibProduceRelationshipAwardSubList::CDlgLibProduceRelationshipAwardSubList(void)

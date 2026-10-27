@@ -18,10 +18,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgOnlineRemind, CDlgBase)
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",OnCommandCANCAL)
-AUI_ON_COMMAND("Btn_PageDown",OnCommandPageNext)
-AUI_ON_COMMAND("Btn_PageUp", OnCommandPagePrevious)
+AUI_ON_COMMAND("confirm", CDlgOnlineRemind::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",CDlgOnlineRemind::OnCommandCANCAL)
+AUI_ON_COMMAND("Btn_PageDown",CDlgOnlineRemind::OnCommandPageNext)
+AUI_ON_COMMAND("Btn_PageUp", CDlgOnlineRemind::OnCommandPagePrevious)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgOnlineRemind, CDlgBase)

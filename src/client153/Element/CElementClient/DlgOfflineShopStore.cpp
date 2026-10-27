@@ -22,13 +22,13 @@
 #include "DlgInputNO.h"
 
 AUI_BEGIN_EVENT_MAP(CDlgOfflineShopStore, CDlgBase)
-AUI_ON_EVENT("SellItem_*",		WM_LBUTTONUP,		OnEventLButtonUp_SellItem)
+AUI_ON_EVENT("SellItem_*",		WM_LBUTTONUP,		CDlgOfflineShopStore::OnEventLButtonUp_SellItem)
 AUI_END_EVENT_MAP()
 
 AUI_BEGIN_COMMAND_MAP(CDlgOfflineShopStore, CDlgBase)
-AUI_ON_COMMAND("Btn_Get", OnCommand_GetMoney)
-AUI_ON_COMMAND("Btn_Save", OnCommand_SaveMoney)
-AUI_ON_COMMAND("Btn_GetAll",OnCommand_TakeAllItems)
+AUI_ON_COMMAND("Btn_Get", CDlgOfflineShopStore::OnCommand_GetMoney)
+AUI_ON_COMMAND("Btn_Save", CDlgOfflineShopStore::OnCommand_SaveMoney)
+AUI_ON_COMMAND("Btn_GetAll",CDlgOfflineShopStore::OnCommand_TakeAllItems)
 AUI_END_COMMAND_MAP()
 
 CDlgOfflineShopStore::CDlgOfflineShopStore()

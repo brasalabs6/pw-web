@@ -13,10 +13,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGoldInquire, CDlgBase)
 
-AUI_ON_COMMAND("giveup",		OnCommandGiveUp)
-AUI_ON_COMMAND("trade",			OnCommandTrade)
-AUI_ON_COMMAND("unlock",		OnCommandUnlock)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("giveup",		CDlgGoldInquire::OnCommandGiveUp)
+AUI_ON_COMMAND("trade",			CDlgGoldInquire::OnCommandTrade)
+AUI_ON_COMMAND("unlock",		CDlgGoldInquire::OnCommandUnlock)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGoldInquire::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

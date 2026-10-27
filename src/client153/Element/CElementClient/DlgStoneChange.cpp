@@ -31,17 +31,17 @@ static const char* STONE_CHANGEEND_GFX = "界面\\宝箱发光.gfx";
 
 AUI_BEGIN_COMMAND_MAP(CDlgStoneChange, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Transfer*",	OnCommandTransfer)
-AUI_ON_COMMAND("Btn_Replace*",	OnCommandReplace)
+AUI_ON_COMMAND("IDCANCEL",		CDlgStoneChange::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Transfer*",	CDlgStoneChange::OnCommandTransfer)
+AUI_ON_COMMAND("Btn_Replace*",	CDlgStoneChange::OnCommandReplace)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgStoneChange, CDlgBase)
 
-AUI_ON_EVENT("Img_Item", WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_Item", WM_LBUTTONDBLCLK,  OnEventLButtonDown)
+AUI_ON_EVENT("Img_Item", WM_LBUTTONDOWN,	CDlgStoneChange::OnEventLButtonDown)
+AUI_ON_EVENT("Img_Item", WM_LBUTTONDBLCLK,  CDlgStoneChange::OnEventLButtonDown)
 
 
 AUI_END_EVENT_MAP()

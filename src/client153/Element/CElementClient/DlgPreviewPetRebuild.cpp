@@ -23,11 +23,11 @@
 #include "EC_TimeSafeChecker.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgPreviewPetRebuild, CDlgBase)
-AUI_ON_COMMAND("SelectOld",OnCommandSelectOldOne)
-AUI_ON_COMMAND("SelectNew",OnCommandSelectNewOne)
-AUI_ON_COMMAND("Reproduce",OnCommandReproduce)
-AUI_ON_COMMAND("Close", OnCommandCANCEL)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCANCEL)
+AUI_ON_COMMAND("SelectOld",CDlgPreviewPetRebuild::OnCommandSelectOldOne)
+AUI_ON_COMMAND("SelectNew",CDlgPreviewPetRebuild::OnCommandSelectNewOne)
+AUI_ON_COMMAND("Reproduce",CDlgPreviewPetRebuild::OnCommandReproduce)
+AUI_ON_COMMAND("Close", CDlgPreviewPetRebuild::OnCommandCANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgPreviewPetRebuild::OnCommandCANCEL)
 AUI_END_COMMAND_MAP()
 
 static const char* ENERGY_BALL_SMALL = "界面\\生产能量球小.gfx";

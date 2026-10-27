@@ -13,17 +13,17 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressBuildSub, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Build",	OnCommand_Build)
-AUI_ON_COMMAND("Btn_+",		OnCommand_SpeedUp)
-AUI_ON_COMMAND("Btn_-",		OnCommand_SlowDown)
-AUI_ON_COMMAND("Combo_Candidates", OnCommand_ComboCandidates)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressBuildSub::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Build",	CDlgFortressBuildSub::OnCommand_Build)
+AUI_ON_COMMAND("Btn_+",		CDlgFortressBuildSub::OnCommand_SpeedUp)
+AUI_ON_COMMAND("Btn_-",		CDlgFortressBuildSub::OnCommand_SlowDown)
+AUI_ON_COMMAND("Combo_Candidates", CDlgFortressBuildSub::OnCommand_ComboCandidates)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressBuildSub, CDlgBase)
-AUI_ON_EVENT("Btn_+",	WM_LBUTTONDOWN,	OnEventLButtonDown_Add)
-AUI_ON_EVENT("Btn_-",	WM_LBUTTONDOWN,	OnEventLButtonDown_Sub)
-AUI_ON_EVENT("*",		WM_LBUTTONDOWN,	OnEventLButtonDown_)
+AUI_ON_EVENT("Btn_+",	WM_LBUTTONDOWN,	CDlgFortressBuildSub::OnEventLButtonDown_Add)
+AUI_ON_EVENT("Btn_-",	WM_LBUTTONDOWN,	CDlgFortressBuildSub::OnEventLButtonDown_Sub)
+AUI_ON_EVENT("*",		WM_LBUTTONDOWN,	CDlgFortressBuildSub::OnEventLButtonDown_)
 AUI_END_EVENT_MAP()
 
 CDlgFortressBuildSub::CDlgFortressBuildSub()

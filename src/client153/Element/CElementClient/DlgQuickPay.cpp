@@ -11,13 +11,13 @@
 #include "qpaddcash_re.hpp"
 
 AUI_BEGIN_COMMAND_MAP(CDlgQuickPay, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("BtnAddCash", OnCommandAddCash)
+AUI_ON_COMMAND("IDCANCEL",		CDlgQuickPay::OnCommandCancel)
+AUI_ON_COMMAND("BtnAddCash", CDlgQuickPay::OnCommandAddCash)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQuickPay, CDlgBase)
-AUI_ON_EVENT("ListMerchants",	WM_LBUTTONUP,	OnEventSelectList)
-AUI_ON_EVENT("EdtGold", WM_KEYUP, OnEventInputGold)
+AUI_ON_EVENT("ListMerchants",	WM_LBUTTONUP,	CDlgQuickPay::OnEventSelectList)
+AUI_ON_EVENT("EdtGold", WM_KEYUP, CDlgQuickPay::OnEventInputGold)
 AUI_END_EVENT_MAP()
 
 /* 

@@ -12,14 +12,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGMParam, CDlgBase)
 
-AUI_ON_COMMAND("btnOK", OnCommandBtnOK)
-AUI_ON_COMMAND("btnCancel", OnCommandBtnCancel)
+AUI_ON_COMMAND("btnOK", CDlgGMParam::OnCommandBtnOK)
+AUI_ON_COMMAND("btnCancel", CDlgGMParam::OnCommandBtnCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGMParam, CDlgBase)
 
-AUI_ON_EVENT("lbxParam", WM_LBUTTONDOWN, OnLButtonDownListBoxParam)
+AUI_ON_EVENT("lbxParam", WM_LBUTTONDOWN, CDlgGMParam::OnLButtonDownListBoxParam)
 
 AUI_END_EVENT_MAP()
 

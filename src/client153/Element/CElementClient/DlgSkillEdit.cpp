@@ -17,19 +17,19 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSkillEdit, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("moveleft",		OnCommandMoveLeft)
-AUI_ON_COMMAND("moveright",		OnCommandMoveRight)
+AUI_ON_COMMAND("confirm",		CDlgSkillEdit::OnCommandConfirm)
+AUI_ON_COMMAND("moveleft",		CDlgSkillEdit::OnCommandMoveLeft)
+AUI_ON_COMMAND("moveright",		CDlgSkillEdit::OnCommandMoveRight)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillEdit, CDlgBase)
 
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDBLCLK,	OnEventLButtonDown_Item)
-AUI_ON_EVENT("Special_*",	WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("Special_*",	WM_LBUTTONDBLCLK,	OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_Icon*",	WM_LBUTTONDOWN,		OnEventLButtonDown_Icon)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		CDlgSkillEdit::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDBLCLK,	CDlgSkillEdit::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Special_*",	WM_LBUTTONDOWN,		CDlgSkillEdit::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Special_*",	WM_LBUTTONDBLCLK,	CDlgSkillEdit::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_Icon*",	WM_LBUTTONDOWN,		CDlgSkillEdit::OnEventLButtonDown_Icon)
 
 AUI_END_EVENT_MAP()
 

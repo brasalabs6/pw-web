@@ -21,9 +21,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgKingElection, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Vote*", OnCommand_Vote)
-AUI_ON_COMMAND("Btn_Refresh", OnCommand_Refresh)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Vote*", CDlgKingElection::OnCommand_Vote)
+AUI_ON_COMMAND("Btn_Refresh", CDlgKingElection::OnCommand_Refresh)
+AUI_ON_COMMAND("IDCANCEL", CDlgKingElection::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
@@ -277,8 +277,8 @@ void CDlgKingElection::SelectVoteItem(int& iItemSlot, int& tid)
 
 AUI_BEGIN_COMMAND_MAP(CDlgKingResult, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Confirm", OnCommand_CANCEL)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Confirm", CDlgKingResult::OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgKingResult::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

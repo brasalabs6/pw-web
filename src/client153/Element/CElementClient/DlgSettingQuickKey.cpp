@@ -17,12 +17,12 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_EVENT_MAP(CDlgSettingQuickKey, CDlgSetting)
-AUI_ON_EVENT("Lst_KeyList", WM_RBUTTONUP, OnEventRButtonUp_KeyList)
+AUI_ON_EVENT("Lst_KeyList", WM_RBUTTONUP, CDlgSettingQuickKey::OnEventRButtonUp_KeyList)
 AUI_END_EVENT_MAP()
 
 AUI_BEGIN_COMMAND_MAP(CDlgSettingQuickKey, CDlgSetting)
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
-AUI_ON_COMMAND("Btn_Keyboard", OnCommandKeyboard)
+AUI_ON_COMMAND("confirm", CDlgSettingQuickKey::OnCommandConfirm)
+AUI_ON_COMMAND("Btn_Keyboard", CDlgSettingQuickKey::OnCommandKeyboard)
 AUI_END_COMMAND_MAP()
 
 CDlgSettingQuickKey::CDlgSettingQuickKey()

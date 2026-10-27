@@ -19,14 +19,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgMailWrite, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCancel)
-AUI_ON_COMMAND("send",		OnCommandSend)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMailWrite::OnCommandCancel)
+AUI_ON_COMMAND("send",		CDlgMailWrite::OnCommandSend)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgMailWrite, CDlgBase)
 
-AUI_ON_EVENT("Img_AttachItem",	WM_LBUTTONDOWN,	OnEvent_LButtonDown_AttachItem)
+AUI_ON_EVENT("Img_AttachItem",	WM_LBUTTONDOWN,	CDlgMailWrite::OnEvent_LButtonDown_AttachItem)
 
 AUI_END_EVENT_MAP()
 

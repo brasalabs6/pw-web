@@ -23,21 +23,21 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgQuickBarPet, CDlgBase)
 
-AUI_ON_COMMAND("switch",		OnCommandSwitch)
-AUI_ON_COMMAND("attack",		OnCommandAttack)
-AUI_ON_COMMAND("follow",		OnCommandFollow)
-AUI_ON_COMMAND("stop",			OnCommandStop)
-AUI_ON_COMMAND("offensive",		OnCommandOffensive)
-AUI_ON_COMMAND("defensive",		OnCommandDefensive)
-AUI_ON_COMMAND("combat",		OnCommandCombat)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("switch",		CDlgQuickBarPet::OnCommandSwitch)
+AUI_ON_COMMAND("attack",		CDlgQuickBarPet::OnCommandAttack)
+AUI_ON_COMMAND("follow",		CDlgQuickBarPet::OnCommandFollow)
+AUI_ON_COMMAND("stop",			CDlgQuickBarPet::OnCommandStop)
+AUI_ON_COMMAND("offensive",		CDlgQuickBarPet::OnCommandOffensive)
+AUI_ON_COMMAND("defensive",		CDlgQuickBarPet::OnCommandDefensive)
+AUI_ON_COMMAND("combat",		CDlgQuickBarPet::OnCommandCombat)
+AUI_ON_COMMAND("IDCANCEL",		CDlgQuickBarPet::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQuickBarPet, CDlgBase)
 
-AUI_ON_EVENT("Skill_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Skill)
-AUI_ON_EVENT("Skill_*",		WM_RBUTTONDOWN,		OnEventRButtonDown_Skill)
+AUI_ON_EVENT("Skill_*",		WM_LBUTTONDOWN,		CDlgQuickBarPet::OnEventLButtonDown_Skill)
+AUI_ON_EVENT("Skill_*",		WM_RBUTTONDOWN,		CDlgQuickBarPet::OnEventRButtonDown_Skill)
 
 AUI_END_EVENT_MAP()
 

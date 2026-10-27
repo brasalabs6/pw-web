@@ -27,21 +27,21 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgMailList, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",			OnCommandCancel)
-AUI_ON_COMMAND("new",				OnCommandNew)
-AUI_ON_COMMAND("read",				OnCommandRead)
-AUI_ON_COMMAND("readclick",			OnCommandReadClick)
-AUI_ON_COMMAND("delete",			OnCommandDelete)
-AUI_ON_COMMAND("sortsubject",		OnCommandSortSubject)
-AUI_ON_COMMAND("sortsender",		OnCommandSortSender)
-AUI_ON_COMMAND("sortattach",		OnCommandSortAttach)
-AUI_ON_COMMAND("sortresttime",		OnCommandSortRestTime)
+AUI_ON_COMMAND("IDCANCEL",			CDlgMailList::OnCommandCancel)
+AUI_ON_COMMAND("new",				CDlgMailList::OnCommandNew)
+AUI_ON_COMMAND("read",				CDlgMailList::OnCommandRead)
+AUI_ON_COMMAND("readclick",			CDlgMailList::OnCommandReadClick)
+AUI_ON_COMMAND("delete",			CDlgMailList::OnCommandDelete)
+AUI_ON_COMMAND("sortsubject",		CDlgMailList::OnCommandSortSubject)
+AUI_ON_COMMAND("sortsender",		CDlgMailList::OnCommandSortSender)
+AUI_ON_COMMAND("sortattach",		CDlgMailList::OnCommandSortAttach)
+AUI_ON_COMMAND("sortresttime",		CDlgMailList::OnCommandSortRestTime)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgMailList, CDlgBase)
 
-AUI_ON_EVENT("Lst_Mail",		WM_RBUTTONUP,		OnEventRButtonUp_ListMail)
+AUI_ON_EVENT("Lst_Mail",		WM_RBUTTONUP,		CDlgMailList::OnEventRButtonUp_ListMail)
 
 AUI_END_EVENT_MAP()
 

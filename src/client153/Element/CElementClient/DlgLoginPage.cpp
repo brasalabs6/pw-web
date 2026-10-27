@@ -13,15 +13,15 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgLoginPage, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_Cancel)
+AUI_ON_COMMAND("IDCANCEL", CDlgLoginPage::OnCommand_Cancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgLoginPage, CDlgBase)
-AUI_ON_EVENT(NULL,	WM_MOUSEWHEEL,	OnEvent_mousewheel)
-AUI_ON_EVENT("*",	WM_MOUSEWHEEL,	OnEvent_mousewheel)
-AUI_ON_EVENT(NULL,	WM_MOUSEMOVE,	OnEvent_mousemove)
-AUI_ON_EVENT("*",	WM_MOUSEMOVE,	OnEvent_mousemove)
-AUI_ON_EVENT("*",	WM_LBUTTONUP,	OnEvent_lbuttonup)
+AUI_ON_EVENT(NULL,	WM_MOUSEWHEEL,	CDlgLoginPage::OnEvent_mousewheel)
+AUI_ON_EVENT("*",	WM_MOUSEWHEEL,	CDlgLoginPage::OnEvent_mousewheel)
+AUI_ON_EVENT(NULL,	WM_MOUSEMOVE,	CDlgLoginPage::OnEvent_mousemove)
+AUI_ON_EVENT("*",	WM_MOUSEMOVE,	CDlgLoginPage::OnEvent_mousemove)
+AUI_ON_EVENT("*",	WM_LBUTTONUP,	CDlgLoginPage::OnEvent_lbuttonup)
 AUI_END_EVENT_MAP()
 
 CDlgLoginPage::CDlgLoginPage()

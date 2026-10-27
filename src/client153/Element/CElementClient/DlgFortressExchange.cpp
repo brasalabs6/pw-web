@@ -8,14 +8,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressExchange, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Exchange", OnCommand_Exchange)
-AUI_ON_COMMAND("Combo_M01", OnCommand_Combo_M01)
-AUI_ON_COMMAND("Combo_M02", OnCommand_Combo_M02)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressExchange::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Exchange", CDlgFortressExchange::OnCommand_Exchange)
+AUI_ON_COMMAND("Combo_M01", CDlgFortressExchange::OnCommand_Combo_M01)
+AUI_ON_COMMAND("Combo_M02", CDlgFortressExchange::OnCommand_Combo_M02)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressExchange, CDlgBase)
-AUI_ON_EVENT("Edit_01",	WM_KEYDOWN,	OnEventKeyDown_Edit_01)
+AUI_ON_EVENT("Edit_01",	WM_KEYDOWN,	CDlgFortressExchange::OnEventKeyDown_Edit_01)
 AUI_END_EVENT_MAP()
 
 CDlgFortressExchange::CDlgFortressExchange()

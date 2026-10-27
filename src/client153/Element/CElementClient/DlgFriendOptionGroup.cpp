@@ -16,12 +16,12 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendOptionGroup, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCAL)
-AUI_ON_COMMAND("AddFriend",		OnCommandAddFriend)
-AUI_ON_COMMAND("AddGroup",		OnCommandAddGroup)
-AUI_ON_COMMAND("RenameGroup",	OnCommandRenameGroup)
-AUI_ON_COMMAND("GroupColor",	OnCommandGroupColor)
-AUI_ON_COMMAND("DeleteGroup",	OnCommandDeleteGroup)
+AUI_ON_COMMAND("IDCANCEL",		CDlgFriendOptionGroup::OnCommandCANCAL)
+AUI_ON_COMMAND("AddFriend",		CDlgFriendOptionGroup::OnCommandAddFriend)
+AUI_ON_COMMAND("AddGroup",		CDlgFriendOptionGroup::OnCommandAddGroup)
+AUI_ON_COMMAND("RenameGroup",	CDlgFriendOptionGroup::OnCommandRenameGroup)
+AUI_ON_COMMAND("GroupColor",	CDlgFriendOptionGroup::OnCommandGroupColor)
+AUI_ON_COMMAND("DeleteGroup",	CDlgFriendOptionGroup::OnCommandDeleteGroup)
 
 AUI_END_COMMAND_MAP()
 

@@ -10,10 +10,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgOptimizeBase, CDlgBase)
-AUI_ON_COMMAND("Btn_SwitchMem", OnCommand_Switch)
-AUI_ON_COMMAND("Btn_SwitchGfx", OnCommand_Switch)
-AUI_ON_COMMAND("Btn_SwitchFunction", OnCommand_Switch)
-AUI_ON_COMMAND("Btn_OptimizeOS", OnCommand_OptimizeOS)
+AUI_ON_COMMAND("Btn_SwitchMem", CDlgOptimizeBase::OnCommand_Switch)
+AUI_ON_COMMAND("Btn_SwitchGfx", CDlgOptimizeBase::OnCommand_Switch)
+AUI_ON_COMMAND("Btn_SwitchFunction", CDlgOptimizeBase::OnCommand_Switch)
+AUI_ON_COMMAND("Btn_OptimizeOS", CDlgOptimizeBase::OnCommand_OptimizeOS)
 AUI_END_COMMAND_MAP()
 
 CDlgOptimizeBase::CDlgOptimizeBase()

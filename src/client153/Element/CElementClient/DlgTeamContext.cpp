@@ -17,16 +17,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTeamContext, CDlgBase)
 
-AUI_ON_COMMAND("OpenT",				OnCommand_OpenT)
-AUI_ON_COMMAND("GroupLeave",		OnCommand_GroupLeave)
-AUI_ON_COMMAND("GroupDisband",		OnCommand_GroupLeave)
-AUI_ON_COMMAND("Whisper",			OnCommand_Whisper)
-AUI_ON_COMMAND("MakeLeader",		OnCommand_MakeLeader)
-AUI_ON_COMMAND("Kick",				OnCommand_Kick)
-AUI_ON_COMMAND("Trade",				OnCommand_Trade)
-AUI_ON_COMMAND("Follow",			OnCommand_Follow)
-AUI_ON_COMMAND("Assist",			OnCommand_Assist)
-AUI_ON_COMMAND("Summon",			OnCommand_Summon)
+AUI_ON_COMMAND("OpenT",				CDlgTeamContext::OnCommand_OpenT)
+AUI_ON_COMMAND("GroupLeave",		CDlgTeamContext::OnCommand_GroupLeave)
+AUI_ON_COMMAND("GroupDisband",		CDlgTeamContext::OnCommand_GroupLeave)
+AUI_ON_COMMAND("Whisper",			CDlgTeamContext::OnCommand_Whisper)
+AUI_ON_COMMAND("MakeLeader",		CDlgTeamContext::OnCommand_MakeLeader)
+AUI_ON_COMMAND("Kick",				CDlgTeamContext::OnCommand_Kick)
+AUI_ON_COMMAND("Trade",				CDlgTeamContext::OnCommand_Trade)
+AUI_ON_COMMAND("Follow",			CDlgTeamContext::OnCommand_Follow)
+AUI_ON_COMMAND("Assist",			CDlgTeamContext::OnCommand_Assist)
+AUI_ON_COMMAND("Summon",			CDlgTeamContext::OnCommand_Summon)
 
 AUI_END_COMMAND_MAP()
 

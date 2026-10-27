@@ -17,18 +17,18 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgEarthBagRank, CDlgBase)
-AUI_ON_COMMAND("Btn_DPS", OnCommand_Btn_DPS)
-AUI_ON_COMMAND("Btn_DPH", OnCommand_Btn_DPH)
-AUI_ON_COMMAND("Btn_Number", OnCommand_SortBy_Rank)
-AUI_ON_COMMAND("Btn_Value", OnCommand_SortBy_Rank)
-AUI_ON_COMMAND("Btn_LV", OnCommand_SortBy_Level)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Close", OnCommand_CANCEL)
-AUI_ON_COMMAND("Rdo_*", OnCommand_RankList)
+AUI_ON_COMMAND("Btn_DPS", CDlgEarthBagRank::OnCommand_Btn_DPS)
+AUI_ON_COMMAND("Btn_DPH", CDlgEarthBagRank::OnCommand_Btn_DPH)
+AUI_ON_COMMAND("Btn_Number", CDlgEarthBagRank::OnCommand_SortBy_Rank)
+AUI_ON_COMMAND("Btn_Value", CDlgEarthBagRank::OnCommand_SortBy_Rank)
+AUI_ON_COMMAND("Btn_LV", CDlgEarthBagRank::OnCommand_SortBy_Level)
+AUI_ON_COMMAND("IDCANCEL", CDlgEarthBagRank::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close", CDlgEarthBagRank::OnCommand_CANCEL)
+AUI_ON_COMMAND("Rdo_*", CDlgEarthBagRank::OnCommand_RankList)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEarthBagRank, CDlgBase)
-AUI_ON_EVENT("List_Rank", WM_RBUTTONUP, OnEventRButtonUp_Lst_Rank)
+AUI_ON_EVENT("List_Rank", WM_RBUTTONUP, CDlgEarthBagRank::OnEventRButtonUp_Lst_Rank)
 AUI_END_EVENT_MAP()
 
 CDlgEarthBagRank::CDlgEarthBagRank()

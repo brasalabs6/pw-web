@@ -52,12 +52,12 @@ bool CDlgModifyNamePolicy::GetCostItemID(int &id, int &iSlot)const{
 
 //	class CDlgModifyName
 AUI_BEGIN_COMMAND_MAP(CDlgModifyName, CDlgBase)
-AUI_ON_COMMAND("Btn_Confirm", OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("Btn_Confirm", CDlgModifyName::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgModifyName::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgModifyName, CDlgBase)
-AUI_ON_EVENT("DEFAULT_Edt_Name",	WM_KEYUP,	OnEventKeyUp_Edt_Name)
+AUI_ON_EVENT("DEFAULT_Edt_Name",	WM_KEYUP,	CDlgModifyName::OnEventKeyUp_Edt_Name)
 AUI_END_EVENT_MAP()
 
 CDlgModifyName::CDlgModifyName()

@@ -22,8 +22,8 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgOpenChest, CDlgBase)
 
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("U_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		CDlgOpenChest::OnEventLButtonDown_Item)
+AUI_ON_EVENT("U_*",		WM_LBUTTONDOWN,		CDlgOpenChest::OnEventLButtonDown_Item)
 
 AUI_END_EVENT_MAP()
 

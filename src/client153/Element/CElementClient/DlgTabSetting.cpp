@@ -17,9 +17,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTabSetting, CDlgBase)
 
-AUI_ON_COMMAND("selnormal",			OnCommandSelType)
-AUI_ON_COMMAND("noselmonster",		OnCommandSelType)
-AUI_ON_COMMAND("noselplayer",		OnCommandSelType)
+AUI_ON_COMMAND("selnormal",			CDlgTabSetting::OnCommandSelType)
+AUI_ON_COMMAND("noselmonster",		CDlgTabSetting::OnCommandSelType)
+AUI_ON_COMMAND("noselplayer",		CDlgTabSetting::OnCommandSelType)
 
 AUI_END_COMMAND_MAP()
 

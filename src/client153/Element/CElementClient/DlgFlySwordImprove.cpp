@@ -24,15 +24,15 @@ const int IMPROVE_FLYSWORD_TICKET_ID2 = 42840;
 const int IMPROVE_FLYSWORD_TICKET_ID3 = 42838;
 
 AUI_BEGIN_COMMAND_MAP(CDlgFlySwordImprove, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Improve",	OnCommandImprove)
+AUI_ON_COMMAND("IDCANCEL",		CDlgFlySwordImprove::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgFlySwordImprove::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Improve",	CDlgFlySwordImprove::OnCommandImprove)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgFlySwordImprove, CDlgBase)
-AUI_ON_EVENT("Img_AircraftIcon", WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_AircraftIcon", WM_LBUTTONDBLCLK,  OnEventLButtonDown)
+AUI_ON_EVENT("Img_AircraftIcon", WM_LBUTTONDOWN,	CDlgFlySwordImprove::OnEventLButtonDown)
+AUI_ON_EVENT("Img_AircraftIcon", WM_LBUTTONDBLCLK,  CDlgFlySwordImprove::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 //------------------------------------------------------------------------

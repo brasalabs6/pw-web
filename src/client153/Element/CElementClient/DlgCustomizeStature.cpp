@@ -14,8 +14,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeStature, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("MoveSlider", OnCommandMoveSlider)
-AUI_ON_COMMAND("Reset", OnCommandReset)
+AUI_ON_COMMAND("MoveSlider", CDlgCustomizeStature::OnCommandMoveSlider)
+AUI_ON_COMMAND("Reset", CDlgCustomizeStature::OnCommandReset)
 
 AUI_END_COMMAND_MAP()
 

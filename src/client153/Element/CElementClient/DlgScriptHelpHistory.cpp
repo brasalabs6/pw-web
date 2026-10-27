@@ -11,14 +11,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgScriptHelpHistory, CDlgBase)
 
-AUI_ON_COMMAND("reactive", OnCommandReactive)
+AUI_ON_COMMAND("reactive", CDlgScriptHelpHistory::OnCommandReactive)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgScriptHelpHistory, CDlgBase)
 
-AUI_ON_EVENT("Trv_History", WM_LBUTTONUP, OnLButtonUpHistoryTree)
+AUI_ON_EVENT("Trv_History", WM_LBUTTONUP, CDlgScriptHelpHistory::OnLButtonUpHistoryTree)
 
 AUI_END_EVENT_MAP()
 

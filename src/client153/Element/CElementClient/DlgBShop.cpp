@@ -29,11 +29,11 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgBShop, CDlgBase)
-AUI_ON_COMMAND("payment", OnCommand_Payment)
-AUI_ON_COMMAND("biditem", OnCommand_BidItem)
-AUI_ON_COMMAND("returncash", OnCommand_ReturnCash)
-AUI_ON_COMMAND("startauto", OnCommand_StartAuto)
-AUI_ON_COMMAND("cancelauto", OnCommand_CancelAuto)
+AUI_ON_COMMAND("payment", CDlgBShop::OnCommand_Payment)
+AUI_ON_COMMAND("biditem", CDlgBShop::OnCommand_BidItem)
+AUI_ON_COMMAND("returncash", CDlgBShop::OnCommand_ReturnCash)
+AUI_ON_COMMAND("startauto", CDlgBShop::OnCommand_StartAuto)
+AUI_ON_COMMAND("cancelauto", CDlgBShop::OnCommand_CancelAuto)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgBShop, CDlgBase)

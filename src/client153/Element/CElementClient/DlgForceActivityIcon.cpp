@@ -15,11 +15,11 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgForceActivityIcon, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL", CDlgForceActivityIcon::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgForceActivityIcon, CDlgBase)
-AUI_ON_EVENT("Img_FortressStatus", WM_RBUTTONUP,		OnEvent_Icon)
+AUI_ON_EVENT("Img_FortressStatus", WM_RBUTTONUP,		CDlgForceActivityIcon::OnEvent_Icon)
 AUI_END_EVENT_MAP()
 
 CDlgForceActivityIcon::CDlgForceActivityIcon()

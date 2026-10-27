@@ -14,9 +14,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGoldAccount, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("goldmax",		OnCommandGoldMax)
-AUI_ON_COMMAND("moneymax",		OnCommandMoneyMax)
+AUI_ON_COMMAND("confirm",		CDlgGoldAccount::OnCommandConfirm)
+AUI_ON_COMMAND("goldmax",		CDlgGoldAccount::OnCommandGoldMax)
+AUI_ON_COMMAND("moneymax",		CDlgGoldAccount::OnCommandMoneyMax)
 
 AUI_END_COMMAND_MAP()
 

@@ -15,11 +15,11 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendRequest, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("accept",	OnCommandAccept)
-AUI_ON_COMMAND("refuse",	OnCommandRefuse)
-AUI_ON_COMMAND("add",		OnCommandAdd)
-AUI_ON_COMMAND("blacklist",	OnCommandBlackList)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFriendRequest::OnCommandCANCAL)
+AUI_ON_COMMAND("accept",	CDlgFriendRequest::OnCommandAccept)
+AUI_ON_COMMAND("refuse",	CDlgFriendRequest::OnCommandRefuse)
+AUI_ON_COMMAND("add",		CDlgFriendRequest::OnCommandAdd)
+AUI_ON_COMMAND("blacklist",	CDlgFriendRequest::OnCommandBlackList)
 
 AUI_END_COMMAND_MAP()
 

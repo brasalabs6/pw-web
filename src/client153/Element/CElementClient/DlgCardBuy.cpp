@@ -15,11 +15,11 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgCardBuy, CDlgBase)
 
-AUI_ON_COMMAND("refresh",		OnCommandRefresh)
-AUI_ON_COMMAND("last",			OnCommandLast)
-AUI_ON_COMMAND("next",			OnCommandNext)
-AUI_ON_COMMAND("buy",			OnCommandBuy)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("refresh",		CDlgCardBuy::OnCommandRefresh)
+AUI_ON_COMMAND("last",			CDlgCardBuy::OnCommandLast)
+AUI_ON_COMMAND("next",			CDlgCardBuy::OnCommandNext)
+AUI_ON_COMMAND("buy",			CDlgCardBuy::OnCommandBuy)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCardBuy::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

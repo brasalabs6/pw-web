@@ -20,10 +20,10 @@
 #include "EC_TimeSafeChecker.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgPreviewProduce, CDlgBase)
-AUI_ON_COMMAND("SelectOld",OnCommandSelectOldOne)
-AUI_ON_COMMAND("SelectNew",OnCommandSelectNewOne)
-AUI_ON_COMMAND("Reproduce",OnCommandReproduce)
-AUI_ON_COMMAND("Close", OnCommandCANCEL)
+AUI_ON_COMMAND("SelectOld",CDlgPreviewProduce::OnCommandSelectOldOne)
+AUI_ON_COMMAND("SelectNew",CDlgPreviewProduce::OnCommandSelectNewOne)
+AUI_ON_COMMAND("Reproduce",CDlgPreviewProduce::OnCommandReproduce)
+AUI_ON_COMMAND("Close", CDlgPreviewProduce::OnCommandCANCEL)
 AUI_END_COMMAND_MAP()
 
 static const char* ENERGY_BALL_SMALL = "界面\\生产能量球小.gfx";

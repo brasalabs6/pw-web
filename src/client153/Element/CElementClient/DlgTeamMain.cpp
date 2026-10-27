@@ -28,11 +28,11 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTeamMain, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("minimize",	OnCommandMinimize)
-AUI_ON_COMMAND("minimizebuff",	OnCommandMinimizeBuff)
-AUI_ON_COMMAND("arrow",		OnCommandArrow)
-AUI_ON_COMMAND("Btn_GTalk",	OnCommandGTTalk)
+AUI_ON_COMMAND("IDCANCEL",	CDlgTeamMain::OnCommandCANCAL)
+AUI_ON_COMMAND("minimize",	CDlgTeamMain::OnCommandMinimize)
+AUI_ON_COMMAND("minimizebuff",	CDlgTeamMain::OnCommandMinimizeBuff)
+AUI_ON_COMMAND("arrow",		CDlgTeamMain::OnCommandArrow)
+AUI_ON_COMMAND("Btn_GTalk",	CDlgTeamMain::OnCommandGTTalk)
 
 AUI_END_COMMAND_MAP()
 

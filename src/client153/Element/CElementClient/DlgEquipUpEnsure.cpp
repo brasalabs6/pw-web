@@ -11,8 +11,8 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgEquipUpEnsure, CDlgBase)
-AUI_ON_COMMAND("confirm",  OnCommand_Confirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",  CDlgEquipUpEnsure::OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgEquipUpEnsure::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 CDlgEquipUpEnsure::CDlgEquipUpEnsure()

@@ -14,9 +14,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgReincarnationBook, CDlgBase)
-AUI_ON_COMMAND("Btn_Wake",		OnCommandConfirm)
-AUI_ON_COMMAND("Btn_Rewrite*",	OnCommandRewrite)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("Btn_Wake",		CDlgReincarnationBook::OnCommandConfirm)
+AUI_ON_COMMAND("Btn_Rewrite*",	CDlgReincarnationBook::OnCommandRewrite)
+AUI_ON_COMMAND("IDCANCEL",		CDlgReincarnationBook::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgReincarnationBook::CDlgReincarnationBook()

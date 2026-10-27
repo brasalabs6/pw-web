@@ -39,25 +39,25 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTask, CDlgBase)
 
-AUI_ON_COMMAND("searchquest",	OnCommand_searchquest)
-AUI_ON_COMMAND("havequest",		OnCommand_havequest)
-AUI_ON_COMMAND("Btn_ShowTrace",	OnCommand_showtrace)
-AUI_ON_COMMAND("focus",			OnCommand_focus)
-AUI_ON_COMMAND("abandon",		OnCommand_abandon)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_FinishTask", OnCommand_FinishTask)
-AUI_ON_COMMAND("Btn_GotoNPC",	OnCommand_GotoNPC)
+AUI_ON_COMMAND("searchquest",	CDlgTask::OnCommand_searchquest)
+AUI_ON_COMMAND("havequest",		CDlgTask::OnCommand_havequest)
+AUI_ON_COMMAND("Btn_ShowTrace",	CDlgTask::OnCommand_showtrace)
+AUI_ON_COMMAND("focus",			CDlgTask::OnCommand_focus)
+AUI_ON_COMMAND("abandon",		CDlgTask::OnCommand_abandon)
+AUI_ON_COMMAND("IDCANCEL",		CDlgTask::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_FinishTask", CDlgTask::OnCommand_FinishTask)
+AUI_ON_COMMAND("Btn_GotoNPC",	CDlgTask::OnCommand_GotoNPC)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTask, CDlgBase)
 
-AUI_ON_EVENT("Tv_Quest",		WM_LBUTTONDOWN,		OnEventLButtonDown_Tv_Quest)
-AUI_ON_EVENT("Txt_Content",	WM_LBUTTONDOWN,		OnEventLButtonDown_Txt_QuestItem)
-AUI_ON_EVENT("Txt_Content",	WM_MOUSEMOVE,		OnEventMouseMove_Txt_QuestItem)
-AUI_ON_EVENT("Txt_QuestItem",	WM_LBUTTONDOWN,		OnEventLButtonDown_Txt_QuestItem)
-AUI_ON_EVENT("Txt_QuestItem",	WM_MOUSEMOVE,		OnEventMouseMove_Txt_QuestItem)
-AUI_ON_EVENT("Img_Item*",	WM_LBUTTONDOWN,		OnEventLButtonDown_Award_Item)
+AUI_ON_EVENT("Tv_Quest",		WM_LBUTTONDOWN,		CDlgTask::OnEventLButtonDown_Tv_Quest)
+AUI_ON_EVENT("Txt_Content",	WM_LBUTTONDOWN,		CDlgTask::OnEventLButtonDown_Txt_QuestItem)
+AUI_ON_EVENT("Txt_Content",	WM_MOUSEMOVE,		CDlgTask::OnEventMouseMove_Txt_QuestItem)
+AUI_ON_EVENT("Txt_QuestItem",	WM_LBUTTONDOWN,		CDlgTask::OnEventLButtonDown_Txt_QuestItem)
+AUI_ON_EVENT("Txt_QuestItem",	WM_MOUSEMOVE,		CDlgTask::OnEventMouseMove_Txt_QuestItem)
+AUI_ON_EVENT("Img_Item*",	WM_LBUTTONDOWN,		CDlgTask::OnEventLButtonDown_Award_Item)
 AUI_END_EVENT_MAP()
 
 abase::vector<int> CDlgTask::m_vecTasksUnFinish;

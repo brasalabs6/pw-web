@@ -26,19 +26,19 @@
 const int MAX_AWARD_ITEM = 8;
 
 AUI_BEGIN_COMMAND_MAP(CDlgOnlineAward, CDlgBase)
-AUI_ON_COMMAND("add*",			OnCommand_Add)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_Addexp2",	OnCommand_AddExp2)
+AUI_ON_COMMAND("add*",			CDlgOnlineAward::OnCommand_Add)
+AUI_ON_COMMAND("confirm",		CDlgOnlineAward::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_Addexp2",	CDlgOnlineAward::OnCommand_AddExp2)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgOnlineAward, CDlgBase)
 
-AUI_ON_EVENT("Btn_Up*",			WM_LBUTTONDOWN,		OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Up*",			WM_LBUTTONDBLCLK,	OnEventLButtonDown_add)
-AUI_ON_EVENT("Btn_Down*",		WM_LBUTTONDOWN,		OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Down*",		WM_LBUTTONDBLCLK,	OnEventLButtonDown_minus)
-AUI_ON_EVENT("Btn_Up*",			WM_LBUTTONUP,		OnEventLBUttonUp_stop)
-AUI_ON_EVENT("Btn_Down*",		WM_LBUTTONUP,		OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Up*",			WM_LBUTTONDOWN,		CDlgOnlineAward::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Up*",			WM_LBUTTONDBLCLK,	CDlgOnlineAward::OnEventLButtonDown_add)
+AUI_ON_EVENT("Btn_Down*",		WM_LBUTTONDOWN,		CDlgOnlineAward::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Down*",		WM_LBUTTONDBLCLK,	CDlgOnlineAward::OnEventLButtonDown_minus)
+AUI_ON_EVENT("Btn_Up*",			WM_LBUTTONUP,		CDlgOnlineAward::OnEventLBUttonUp_stop)
+AUI_ON_EVENT("Btn_Down*",		WM_LBUTTONUP,		CDlgOnlineAward::OnEventLBUttonUp_stop)
 
 AUI_END_EVENT_MAP()
 

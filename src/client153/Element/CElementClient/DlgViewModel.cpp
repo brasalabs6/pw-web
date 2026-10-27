@@ -22,7 +22,7 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgViewModel, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",			OnCommand_CANCEL)
+AUI_ON_COMMAND("IDCANCEL",			CDlgViewModel::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 CDlgViewModel::CDlgViewModel()

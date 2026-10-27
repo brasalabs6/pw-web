@@ -6,16 +6,16 @@
 #include "elementdataman.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizeThirdEye, CDlgCustomizeBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Close",		OnCommand_Close)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCustomizeThirdEye::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close",		CDlgCustomizeThirdEye::OnCommand_Close)
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizeThirdEye, CDlgCustomizeBase)
-AUI_ON_EVENT("Img_*", WM_LBUTTONUP, OnLButtonUpListBoxThirdEye)
-AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, OnMouseWheelListboxThirdEye)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListboxThirdEye)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListboxThirdEye)
+AUI_ON_EVENT("Img_*", WM_LBUTTONUP, CDlgCustomizeThirdEye::OnLButtonUpListBoxThirdEye)
+AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, CDlgCustomizeThirdEye::OnMouseWheelListboxThirdEye)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizeThirdEye::OnMouseWheelListboxThirdEye)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizeThirdEye::OnMouseWheelListboxThirdEye)
 AUI_END_EVENT_MAP()
 
 

@@ -17,21 +17,21 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgScriptHelp, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommandIDCANCEL)
-AUI_ON_COMMAND("next", OnCommandNext)
-AUI_ON_COMMAND("close", OnCommandClose)
-AUI_ON_COMMAND("disable_help", OnCommandDisableHelp)
-AUI_ON_COMMAND("setting", OnCommandSetting)
-AUI_ON_COMMAND("history", OnCommandHistory)
+AUI_ON_COMMAND("IDCANCEL", CDlgScriptHelp::OnCommandIDCANCEL)
+AUI_ON_COMMAND("next", CDlgScriptHelp::OnCommandNext)
+AUI_ON_COMMAND("close", CDlgScriptHelp::OnCommandClose)
+AUI_ON_COMMAND("disable_help", CDlgScriptHelp::OnCommandDisableHelp)
+AUI_ON_COMMAND("setting", CDlgScriptHelp::OnCommandSetting)
+AUI_ON_COMMAND("history", CDlgScriptHelp::OnCommandHistory)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgScriptHelp, CDlgBase)
 
-AUI_ON_EVENT(NULL, WM_MOUSEMOVE, OnMouseMove)
-AUI_ON_EVENT("Lbl_Title", WM_MOUSEMOVE, OnMouseMove)
-AUI_ON_EVENT("Img_Title", WM_MOUSEMOVE, OnMouseMove)
+AUI_ON_EVENT(NULL, WM_MOUSEMOVE, CDlgScriptHelp::OnMouseMove)
+AUI_ON_EVENT("Lbl_Title", WM_MOUSEMOVE, CDlgScriptHelp::OnMouseMove)
+AUI_ON_EVENT("Img_Title", WM_MOUSEMOVE, CDlgScriptHelp::OnMouseMove)
 
 AUI_END_EVENT_MAP()
 

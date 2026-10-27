@@ -19,17 +19,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTitleList, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Search",	OnCommandSearch)
-AUI_ON_COMMAND("Btn_up",		OnCommandPagePrevious)
-AUI_ON_COMMAND("Btn_down",		OnCommandPageNext)
-AUI_ON_COMMAND("Chk_Open*",		OnCommandCheckTitle)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Event",		OnCommand_ComplexTitle)
+AUI_ON_COMMAND("Btn_Search",	CDlgTitleList::OnCommandSearch)
+AUI_ON_COMMAND("Btn_up",		CDlgTitleList::OnCommandPagePrevious)
+AUI_ON_COMMAND("Btn_down",		CDlgTitleList::OnCommandPageNext)
+AUI_ON_COMMAND("Chk_Open*",		CDlgTitleList::OnCommandCheckTitle)
+AUI_ON_COMMAND("IDCANCEL",		CDlgTitleList::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Event",		CDlgTitleList::OnCommand_ComplexTitle)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTitleList, CDlgBase)
-AUI_ON_EVENT("*", WM_MOUSEWHEEL, OnMouseWheel)
+AUI_ON_EVENT("*", WM_MOUSEWHEEL, CDlgTitleList::OnMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgTitleList::CDlgTitleList():

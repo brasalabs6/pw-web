@@ -35,21 +35,21 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFInExp, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_OK)
-AUI_ON_COMMAND("reset",			OnCommand_Reset)
-AUI_ON_COMMAND("QuickSet",		OnCommand_QuickSet)
-AUI_ON_COMMAND("HostInject",	OnCommand_HostInject)
-AUI_ON_COMMAND("PillInject",	OnCommand_PillInject)
-AUI_ON_COMMAND("SPInject",		OnCommand_SPInject)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFInExp::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFInExp::OnCommand_OK)
+AUI_ON_COMMAND("reset",			CDlgELFInExp::OnCommand_Reset)
+AUI_ON_COMMAND("QuickSet",		CDlgELFInExp::OnCommand_QuickSet)
+AUI_ON_COMMAND("HostInject",	CDlgELFInExp::OnCommand_HostInject)
+AUI_ON_COMMAND("PillInject",	CDlgELFInExp::OnCommand_PillInject)
+AUI_ON_COMMAND("SPInject",		CDlgELFInExp::OnCommand_SPInject)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFInExp, CDlgBase)
 
-AUI_ON_EVENT("Btn_POWER",	WM_LBUTTONDOWN,		OnEventLButtonDown)
-AUI_ON_EVENT("Btn_POWER",	WM_LBUTTONDBLCLK,	OnEventLButtonDown)
-AUI_ON_EVENT("Btn_POWER",	WM_LBUTTONUP,		OnEventLButtonUp)
-AUI_ON_EVENT("Img_Pill",	WM_LBUTTONDOWN,		OnEventRemovePill)
+AUI_ON_EVENT("Btn_POWER",	WM_LBUTTONDOWN,		CDlgELFInExp::OnEventLButtonDown)
+AUI_ON_EVENT("Btn_POWER",	WM_LBUTTONDBLCLK,	CDlgELFInExp::OnEventLButtonDown)
+AUI_ON_EVENT("Btn_POWER",	WM_LBUTTONUP,		CDlgELFInExp::OnEventLButtonUp)
+AUI_ON_EVENT("Img_Pill",	WM_LBUTTONDOWN,		CDlgELFInExp::OnEventRemovePill)
 
 AUI_END_EVENT_MAP()
 

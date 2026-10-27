@@ -24,17 +24,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFLearn, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("pageup",		OnCommandMovel)
-AUI_ON_COMMAND("pagedown",		OnCommandMover)
+AUI_ON_COMMAND("IDCANCEL",	CDlgELFLearn::OnCommandCANCAL)
+AUI_ON_COMMAND("pageup",		CDlgELFLearn::OnCommandMovel)
+AUI_ON_COMMAND("pagedown",		CDlgELFLearn::OnCommandMover)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgELFLearn, CDlgBase)
 
-AUI_ON_EVENT("Skill_*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_ELF", WM_LBUTTONDOWN, OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Skill_*",	WM_LBUTTONDOWN,	CDlgELFLearn::OnEventLButtonDown)
+AUI_ON_EVENT("Img_ELF", WM_LBUTTONDOWN, CDlgELFLearn::OnEventLButtonDown_ELF)
 
 AUI_END_EVENT_MAP()
 

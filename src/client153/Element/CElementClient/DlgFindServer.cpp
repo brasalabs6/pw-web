@@ -14,8 +14,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFindServer, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
-AUI_ON_COMMAND("confirm", OnCommandQuery)
+AUI_ON_COMMAND("IDCANCEL", CDlgFindServer::OnCommandCancel)
+AUI_ON_COMMAND("confirm", CDlgFindServer::OnCommandQuery)
 
 AUI_END_COMMAND_MAP()
 

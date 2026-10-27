@@ -105,7 +105,7 @@ void CDlgAction::OnTick()
 
 AUI_BEGIN_EVENT_MAP(CDlgTaskAction, CDlgBase)
 
-AUI_ON_EVENT("FaceCmd",		WM_LBUTTONDOWN,		OnEventLButtonDown)
+AUI_ON_EVENT("FaceCmd",		WM_LBUTTONDOWN,		CDlgTaskAction::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

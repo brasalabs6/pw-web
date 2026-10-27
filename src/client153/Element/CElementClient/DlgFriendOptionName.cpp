@@ -24,17 +24,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendOptionName, CDlgBase)
 
-AUI_ON_COMMAND("Whisper",		OnCommandWhisper)
-AUI_ON_COMMAND("Invite",		OnCommandInvite)
-AUI_ON_COMMAND("Chat",			OnCommandChat)
-AUI_ON_COMMAND("History",		OnCommandHistory)
-AUI_ON_COMMAND("Update",		OnCommandUpdate)
-AUI_ON_COMMAND("MoveGroup",		OnCommandMoveGroup)
-AUI_ON_COMMAND("DeleteFriend",	OnCommandDeleteFriend)
-AUI_ON_COMMAND("InviteChannel",	OnCommandInviteChannel)
-AUI_ON_COMMAND("JoinChannel",	OnCommandJoinChannel)
-AUI_ON_COMMAND("CopyName",		OnCommandCopyName)
-AUI_ON_COMMAND("ChangeRemarks",	OnCommandChangeRemarks)
+AUI_ON_COMMAND("Whisper",		CDlgFriendOptionName::OnCommandWhisper)
+AUI_ON_COMMAND("Invite",		CDlgFriendOptionName::OnCommandInvite)
+AUI_ON_COMMAND("Chat",			CDlgFriendOptionName::OnCommandChat)
+AUI_ON_COMMAND("History",		CDlgFriendOptionName::OnCommandHistory)
+AUI_ON_COMMAND("Update",		CDlgFriendOptionName::OnCommandUpdate)
+AUI_ON_COMMAND("MoveGroup",		CDlgFriendOptionName::OnCommandMoveGroup)
+AUI_ON_COMMAND("DeleteFriend",	CDlgFriendOptionName::OnCommandDeleteFriend)
+AUI_ON_COMMAND("InviteChannel",	CDlgFriendOptionName::OnCommandInviteChannel)
+AUI_ON_COMMAND("JoinChannel",	CDlgFriendOptionName::OnCommandJoinChannel)
+AUI_ON_COMMAND("CopyName",		CDlgFriendOptionName::OnCommandCopyName)
+AUI_ON_COMMAND("ChangeRemarks",	CDlgFriendOptionName::OnCommandChangeRemarks)
 
 AUI_END_COMMAND_MAP()
 

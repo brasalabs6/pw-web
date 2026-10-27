@@ -16,12 +16,12 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgBackSelf, CDlgBase)
 
-AUI_ON_COMMAND("change",  OnCommand_Change)
-AUI_ON_COMMAND("first",   OnCommand_First)
-AUI_ON_COMMAND("prev",    OnCommand_Prev)
-AUI_ON_COMMAND("next",    OnCommand_Next)
-AUI_ON_COMMAND("end",     OnCommand_End)
-AUI_ON_COMMAND("refresh", OnCommand_Refresh)
+AUI_ON_COMMAND("change",  CDlgBackSelf::OnCommand_Change)
+AUI_ON_COMMAND("first",   CDlgBackSelf::OnCommand_First)
+AUI_ON_COMMAND("prev",    CDlgBackSelf::OnCommand_Prev)
+AUI_ON_COMMAND("next",    CDlgBackSelf::OnCommand_Next)
+AUI_ON_COMMAND("end",     CDlgBackSelf::OnCommand_End)
+AUI_ON_COMMAND("refresh", CDlgBackSelf::OnCommand_Refresh)
 
 AUI_END_COMMAND_MAP()
 

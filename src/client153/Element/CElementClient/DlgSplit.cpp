@@ -19,14 +19,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSplit, CDlgBase)
 
-AUI_ON_COMMAND("begin",			OnCommand_begin)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("begin",			CDlgSplit::OnCommand_begin)
+AUI_ON_COMMAND("IDCANCEL",		CDlgSplit::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgSplit, CDlgBase)
 
-AUI_ON_EVENT("Item_a",		WM_LBUTTONDOWN,		OnEventLButtonDown)
+AUI_ON_EVENT("Item_a",		WM_LBUTTONDOWN,		CDlgSplit::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

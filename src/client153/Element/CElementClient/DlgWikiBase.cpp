@@ -13,9 +13,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiBase, CDlgNameLink)
-AUI_ON_COMMAND("prev", OnCommand_Prev)
-AUI_ON_COMMAND("next", OnCommand_Next)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
+AUI_ON_COMMAND("prev", CDlgWikiBase::OnCommand_Prev)
+AUI_ON_COMMAND("next", CDlgWikiBase::OnCommand_Next)
+AUI_ON_COMMAND("IDCANCEL", CDlgWikiBase::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiBase, CDlgNameLink)

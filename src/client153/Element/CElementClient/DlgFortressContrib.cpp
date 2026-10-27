@@ -7,12 +7,12 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgFortressContrib, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Contrib", OnCommand_Contrib)
+AUI_ON_COMMAND("IDCANCEL", CDlgFortressContrib::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Contrib", CDlgFortressContrib::OnCommand_Contrib)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFortressContrib, CDlgBase)
-AUI_ON_EVENT("Edit_01",	WM_KEYDOWN,	OnEventKeyDown_Edit_01)
+AUI_ON_EVENT("Edit_01",	WM_KEYDOWN,	CDlgFortressContrib::OnEventKeyDown_Edit_01)
 AUI_END_EVENT_MAP()
 
 CDlgFortressContrib::CDlgFortressContrib()

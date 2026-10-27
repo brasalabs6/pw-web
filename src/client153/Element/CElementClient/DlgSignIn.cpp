@@ -24,16 +24,16 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSignIn, CDlgBase)
 
-AUI_ON_COMMAND("Btn_SignIn",		OnCommandSignIn)
-AUI_ON_COMMAND("Btn_Award",			OnCommandGetYearReward)
-AUI_ON_COMMAND("Btn_DaysBefore",	OnCommandMoveLeft)
-AUI_ON_COMMAND("Btn_DaysLater",		OnCommandMoveRight)
-AUI_ON_COMMAND("Btn_Award0*",		OnCommandGetDailyReward)
+AUI_ON_COMMAND("Btn_SignIn",		CDlgSignIn::OnCommandSignIn)
+AUI_ON_COMMAND("Btn_Award",			CDlgSignIn::OnCommandGetYearReward)
+AUI_ON_COMMAND("Btn_DaysBefore",	CDlgSignIn::OnCommandMoveLeft)
+AUI_ON_COMMAND("Btn_DaysLater",		CDlgSignIn::OnCommandMoveRight)
+AUI_ON_COMMAND("Btn_Award0*",		CDlgSignIn::OnCommandGetDailyReward)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgSignIn, CDlgBase)
-AUI_ON_EVENT("Img_Date*", WM_LBUTTONDOWN, OnEventMouseDownDateImg)
+AUI_ON_EVENT("Img_Date*", WM_LBUTTONDOWN, CDlgSignIn::OnEventMouseDownDateImg)
 AUI_END_EVENT_MAP()
 
 extern CECGame* g_pGame;

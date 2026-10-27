@@ -25,17 +25,17 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgEquipDye, CDlgBase)
 
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("shownormal",	OnCommandShowNormal)
-AUI_ON_COMMAND("showall",		OnCommandShowAll)
+AUI_ON_COMMAND("confirm",		CDlgEquipDye::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgEquipDye::OnCommandCancel)
+AUI_ON_COMMAND("shownormal",	CDlgEquipDye::OnCommandShowNormal)
+AUI_ON_COMMAND("showall",		CDlgEquipDye::OnCommandShowAll)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgEquipDye, CDlgBase)
 
-AUI_ON_EVENT("Img_Item*",	WM_LBUTTONDOWN,	OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,	OnEventLButtonDown_Dye)
+AUI_ON_EVENT("Img_Item*",	WM_LBUTTONDOWN,	CDlgEquipDye::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,	CDlgEquipDye::OnEventLButtonDown_Dye)
 
 AUI_END_EVENT_MAP()
 

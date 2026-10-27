@@ -25,16 +25,16 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgExclusiveAward, CDlgBase)
-AUI_ON_COMMAND("Btn_Award*",	OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommandCancel)
-AUI_ON_COMMAND("Btn_Up",		OnCommandUp)
-AUI_ON_COMMAND("Btn_Down",		OnCommandDown)
-AUI_ON_COMMAND("Chk_Temp",		OnCommandCheckMode)
+AUI_ON_COMMAND("Btn_Award*",	CDlgExclusiveAward::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgExclusiveAward::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgExclusiveAward::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Up",		CDlgExclusiveAward::OnCommandUp)
+AUI_ON_COMMAND("Btn_Down",		CDlgExclusiveAward::OnCommandDown)
+AUI_ON_COMMAND("Chk_Temp",		CDlgExclusiveAward::OnCommandCheckMode)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgExclusiveAward, CDlgBase)
-AUI_ON_EVENT("*", WM_MOUSEWHEEL, OnMouseWheel)
+AUI_ON_EVENT("*", WM_MOUSEWHEEL, CDlgExclusiveAward::OnMouseWheel)
 AUI_END_EVENT_MAP()
 
 CDlgExclusiveAward::CDlgExclusiveAward():

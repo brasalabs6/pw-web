@@ -16,10 +16,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgPwdProtect, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_Cancel)
-AUI_ON_COMMAND("link", OnCommand_Link)
-AUI_ON_COMMAND("confirm", OnCommand_Confirm)
-AUI_ON_COMMAND("clear", OnCommand_Clear)
+AUI_ON_COMMAND("IDCANCEL", CDlgPwdProtect::OnCommand_Cancel)
+AUI_ON_COMMAND("link", CDlgPwdProtect::OnCommand_Link)
+AUI_ON_COMMAND("confirm", CDlgPwdProtect::OnCommand_Confirm)
+AUI_ON_COMMAND("clear", CDlgPwdProtect::OnCommand_Clear)
 AUI_END_COMMAND_MAP()
 
 

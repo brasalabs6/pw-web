@@ -11,13 +11,13 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgChannelJoin, CDlgBase)
 
-AUI_ON_COMMAND("joinascreator",	OnCommandJoinAsCreator)
-AUI_ON_COMMAND("joinasnumber",	OnCommandJoinAsNumber)
-AUI_ON_COMMAND("jump",			OnCommandJump)
-AUI_ON_COMMAND("last",			OnCommandLast)
-AUI_ON_COMMAND("refresh",		OnCommandRefresh)
-AUI_ON_COMMAND("next",			OnCommandNext)
-AUI_ON_COMMAND("join",			OnCommandJoin)
+AUI_ON_COMMAND("joinascreator",	CDlgChannelJoin::OnCommandJoinAsCreator)
+AUI_ON_COMMAND("joinasnumber",	CDlgChannelJoin::OnCommandJoinAsNumber)
+AUI_ON_COMMAND("jump",			CDlgChannelJoin::OnCommandJump)
+AUI_ON_COMMAND("last",			CDlgChannelJoin::OnCommandLast)
+AUI_ON_COMMAND("refresh",		CDlgChannelJoin::OnCommandRefresh)
+AUI_ON_COMMAND("next",			CDlgChannelJoin::OnCommandNext)
+AUI_ON_COMMAND("join",			CDlgChannelJoin::OnCommandJoin)
 
 AUI_END_COMMAND_MAP()
 

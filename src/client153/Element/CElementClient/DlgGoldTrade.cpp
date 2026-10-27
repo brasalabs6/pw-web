@@ -24,15 +24,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGoldTrade, CDlgBase)
 
-AUI_ON_COMMAND("sell",			OnCommandSell)
-AUI_ON_COMMAND("buy",			OnCommandBuy)
-AUI_ON_COMMAND("account*",		OnCommandAccount)
-AUI_ON_COMMAND("inquire",		OnCommandInquire)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("refresh",		OnCommandRefresh)
-AUI_ON_COMMAND("pwd",			OnCommandPwd)
-AUI_ON_COMMAND("unlock",		OnCommandUnlock)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("sell",			CDlgGoldTrade::OnCommandSell)
+AUI_ON_COMMAND("buy",			CDlgGoldTrade::OnCommandBuy)
+AUI_ON_COMMAND("account*",		CDlgGoldTrade::OnCommandAccount)
+AUI_ON_COMMAND("inquire",		CDlgGoldTrade::OnCommandInquire)
+AUI_ON_COMMAND("confirm",		CDlgGoldTrade::OnCommandConfirm)
+AUI_ON_COMMAND("refresh",		CDlgGoldTrade::OnCommandRefresh)
+AUI_ON_COMMAND("pwd",			CDlgGoldTrade::OnCommandPwd)
+AUI_ON_COMMAND("unlock",		CDlgGoldTrade::OnCommandUnlock)
+AUI_ON_COMMAND("IDCANCEL",		CDlgGoldTrade::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

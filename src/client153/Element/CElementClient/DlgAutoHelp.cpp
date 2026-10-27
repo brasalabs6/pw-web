@@ -120,9 +120,9 @@ void CImgAnimation::SetPlayRate(float r)
 
 //////////////////////////////////////////////////////////////////////////
 AUI_BEGIN_EVENT_MAP(CDlgAutoHelp, CDlgBase)
-AUI_ON_EVENT(NULL,	WM_MOUSEMOVE,	OnEvent_mousemove)
-AUI_ON_EVENT("*",	WM_MOUSEMOVE,	OnEvent_mousemove)
-AUI_ON_EVENT("Img_Pop", WM_LBUTTONUP, OnActiveAutoHelp)
+AUI_ON_EVENT(NULL,	WM_MOUSEMOVE,	CDlgAutoHelp::OnEvent_mousemove)
+AUI_ON_EVENT("*",	WM_MOUSEMOVE,	CDlgAutoHelp::OnEvent_mousemove)
+AUI_ON_EVENT("Img_Pop", WM_LBUTTONUP, CDlgAutoHelp::OnActiveAutoHelp)
 AUI_END_EVENT_MAP()
 
 CDlgAutoHelp::CDlgAutoHelp()

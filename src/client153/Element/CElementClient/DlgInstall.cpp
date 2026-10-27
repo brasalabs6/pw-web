@@ -23,18 +23,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgInstall, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("start",			OnCommandStart)
+AUI_ON_COMMAND("IDCANCEL",		CDlgInstall::OnCommandCANCEL)
+AUI_ON_COMMAND("start",			CDlgInstall::OnCommandStart)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgInstall, CDlgBase)
 
-AUI_ON_EVENT("Item_a", WM_LBUTTONDOWN,	OnEventLButtonDown_Equipment)
-AUI_ON_EVENT("Item_a", WM_LBUTTONDBLCLK,OnEventLButtonDown_Equipment)
-AUI_ON_EVENT("Item_b", WM_LBUTTONDOWN,	OnEventLButtonDown_Stone)
-AUI_ON_EVENT("Item_b", WM_LBUTTONDBLCLK,OnEventLButtonDown_Stone)
+AUI_ON_EVENT("Item_a", WM_LBUTTONDOWN,	CDlgInstall::OnEventLButtonDown_Equipment)
+AUI_ON_EVENT("Item_a", WM_LBUTTONDBLCLK,CDlgInstall::OnEventLButtonDown_Equipment)
+AUI_ON_EVENT("Item_b", WM_LBUTTONDOWN,	CDlgInstall::OnEventLButtonDown_Stone)
+AUI_ON_EVENT("Item_b", WM_LBUTTONDBLCLK,CDlgInstall::OnEventLButtonDown_Stone)
 
 AUI_END_EVENT_MAP()
 

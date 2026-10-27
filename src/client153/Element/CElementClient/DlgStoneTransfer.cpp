@@ -28,18 +28,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgStoneTransfer, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Transfer",	OnCommandTransfer)
+AUI_ON_COMMAND("IDCANCEL",		CDlgStoneTransfer::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Transfer",	CDlgStoneTransfer::OnCommandTransfer)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgStoneTransfer, CDlgBase)
 
-AUI_ON_EVENT("Img_Gem*", WM_LBUTTONDOWN,	OnEventLButtonDown_Stone)
-AUI_ON_EVENT("Img_Gem*", WM_LBUTTONDBLCLK,  OnEventLButtonDown_Stone)
-AUI_ON_EVENT("Img_Item*", WM_LBUTTONDOWN,	OnEventLButtonDown_Material)
-AUI_ON_EVENT("Img_Item*", WM_LBUTTONDBLCLK,  OnEventLButtonDown_Material)
+AUI_ON_EVENT("Img_Gem*", WM_LBUTTONDOWN,	CDlgStoneTransfer::OnEventLButtonDown_Stone)
+AUI_ON_EVENT("Img_Gem*", WM_LBUTTONDBLCLK,  CDlgStoneTransfer::OnEventLButtonDown_Stone)
+AUI_ON_EVENT("Img_Item*", WM_LBUTTONDOWN,	CDlgStoneTransfer::OnEventLButtonDown_Material)
+AUI_ON_EVENT("Img_Item*", WM_LBUTTONDBLCLK,  CDlgStoneTransfer::OnEventLButtonDown_Material)
 
 AUI_END_EVENT_MAP()
 

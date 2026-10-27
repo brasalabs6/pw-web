@@ -33,15 +33,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFEquipRemove, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("confirm",		OnCommand_Confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFEquipRemove::OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgELFEquipRemove::OnCommand_Confirm)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgELFEquipRemove, CDlgBase)
 
-AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		OnEventLButtonDown_ELF)
-AUI_ON_EVENT("Newitem_*",	WM_LBUTTONDOWN,		OnEventLButtonDown_NewItem)
+AUI_ON_EVENT("Img_ELF",		WM_LBUTTONDOWN,		CDlgELFEquipRemove::OnEventLButtonDown_ELF)
+AUI_ON_EVENT("Newitem_*",	WM_LBUTTONDOWN,		CDlgELFEquipRemove::OnEventLButtonDown_NewItem)
 
 AUI_END_EVENT_MAP()
 

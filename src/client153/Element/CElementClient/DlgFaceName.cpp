@@ -7,8 +7,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFaceName, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("confirm",		OnCommand_confirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("confirm",		CDlgFaceName::OnCommand_confirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgFaceName::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 

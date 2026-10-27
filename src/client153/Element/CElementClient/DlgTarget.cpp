@@ -40,34 +40,34 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgTarget, CDlgBase)
 
-AUI_ON_COMMAND("change", OnCommand_change)
-AUI_ON_COMMAND("Size", OnCommand_size)
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("traceplayer", OnCommand_traceplayer)
-AUI_ON_COMMAND("tracepet", OnCommand_tracepet)
-AUI_ON_COMMAND("showhp", OnCommand_showhp)
+AUI_ON_COMMAND("change", CDlgTarget::OnCommand_change)
+AUI_ON_COMMAND("Size", CDlgTarget::OnCommand_size)
+AUI_ON_COMMAND("IDCANCEL", CDlgTarget::OnCommand_CANCEL)
+AUI_ON_COMMAND("traceplayer", CDlgTarget::OnCommand_traceplayer)
+AUI_ON_COMMAND("tracepet", CDlgTarget::OnCommand_tracepet)
+AUI_ON_COMMAND("showhp", CDlgTarget::OnCommand_showhp)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTarget, CDlgBase)
 
-AUI_ON_EVENT("Size", WM_MOUSEMOVE, OnEventMouseMove)
-AUI_ON_EVENT("Size", WM_LBUTTONDOWN, OnEventLButtonDown_Size)
-AUI_ON_EVENT("Size", WM_LBUTTONUP, OnEventLButtonUp_Size)
+AUI_ON_EVENT("Size", WM_MOUSEMOVE, CDlgTarget::OnEventMouseMove)
+AUI_ON_EVENT("Size", WM_LBUTTONDOWN, CDlgTarget::OnEventLButtonDown_Size)
+AUI_ON_EVENT("Size", WM_LBUTTONUP, CDlgTarget::OnEventLButtonUp_Size)
 
-AUI_ON_EVENT("Size", WM_LBUTTONDBLCLK, OnEventLButtonDBlclk_Size)
+AUI_ON_EVENT("Size", WM_LBUTTONDBLCLK, CDlgTarget::OnEventLButtonDBlclk_Size)
 
-AUI_ON_EVENT("Size", WM_RBUTTONDOWN, OnEventRButtonDown_size)
-AUI_ON_EVENT("Size", WM_RBUTTONUP, OnEventRButtonUp_size)
+AUI_ON_EVENT("Size", WM_RBUTTONDOWN, CDlgTarget::OnEventRButtonDown_size)
+AUI_ON_EVENT("Size", WM_RBUTTONUP, CDlgTarget::OnEventRButtonUp_size)
 
-AUI_ON_EVENT("Size", WM_RBUTTONDBLCLK, OnEventRButtonDBlclk_Size)
+AUI_ON_EVENT("Size", WM_RBUTTONDBLCLK, CDlgTarget::OnEventRButtonDBlclk_Size)
 
-AUI_ON_EVENT("Size", WM_MBUTTONDOWN, OnEventLButtonDown_Size)
-AUI_ON_EVENT("Size", WM_MBUTTONUP, OnEventLButtonUp_Size)
+AUI_ON_EVENT("Size", WM_MBUTTONDOWN, CDlgTarget::OnEventLButtonDown_Size)
+AUI_ON_EVENT("Size", WM_MBUTTONUP, CDlgTarget::OnEventLButtonUp_Size)
 
-AUI_ON_EVENT("Size", WM_MBUTTONDBLCLK, OnEventLButtonDBlclk_Size)
+AUI_ON_EVENT("Size", WM_MBUTTONDBLCLK, CDlgTarget::OnEventLButtonDBlclk_Size)
 
-AUI_ON_EVENT("Btn_droprate", WM_MOUSEMOVE, OnEventMouseHover) // Alien - adicionado
+AUI_ON_EVENT("Btn_droprate", WM_MOUSEMOVE, CDlgTarget::OnEventMouseHover) // Alien - adicionado
 
 AUI_END_EVENT_MAP()
 
@@ -954,13 +954,13 @@ void CDlgTarget::SetAggressive(bool bAggressive)
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgTargetOfTarget, CDlgBase)
-AUI_ON_COMMAND("Btn_Player", OnCommand_SelectMaster)
+AUI_ON_COMMAND("Btn_Player", CDlgTargetOfTarget::OnCommand_SelectMaster)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTargetOfTarget, CDlgBase)
-AUI_ON_EVENT("*", WM_LBUTTONDOWN, OnEventLButtonDown)
-AUI_ON_EVENT("*", WM_MOUSEMOVE, OnEventMouseMove)
-AUI_ON_EVENT("*", WM_LBUTTONUP, OnEventLButtonUp)
+AUI_ON_EVENT("*", WM_LBUTTONDOWN, CDlgTargetOfTarget::OnEventLButtonDown)
+AUI_ON_EVENT("*", WM_MOUSEMOVE, CDlgTargetOfTarget::OnEventMouseMove)
+AUI_ON_EVENT("*", WM_LBUTTONUP, CDlgTargetOfTarget::OnEventLButtonUp)
 AUI_END_EVENT_MAP()
 
 CDlgTargetOfTarget::CDlgTargetOfTarget()

@@ -22,14 +22,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgBackOthers, CDlgBase)
 
-AUI_ON_COMMAND("link",      OnCommand_Link)
-AUI_ON_COMMAND("get",       OnCommand_Get)
-AUI_ON_COMMAND("first",     OnCommand_First)
-AUI_ON_COMMAND("prev",      OnCommand_Prev)
-AUI_ON_COMMAND("next",      OnCommand_Next)
-AUI_ON_COMMAND("end",       OnCommand_End)
-AUI_ON_COMMAND("refresh",   OnCommand_Refresh)
-AUI_ON_COMMAND("copy",      OnCommand_Copy)
+AUI_ON_COMMAND("link",      CDlgBackOthers::OnCommand_Link)
+AUI_ON_COMMAND("get",       CDlgBackOthers::OnCommand_Get)
+AUI_ON_COMMAND("first",     CDlgBackOthers::OnCommand_First)
+AUI_ON_COMMAND("prev",      CDlgBackOthers::OnCommand_Prev)
+AUI_ON_COMMAND("next",      CDlgBackOthers::OnCommand_Next)
+AUI_ON_COMMAND("end",       CDlgBackOthers::OnCommand_End)
+AUI_ON_COMMAND("refresh",   CDlgBackOthers::OnCommand_Refresh)
+AUI_ON_COMMAND("copy",      CDlgBackOthers::OnCommand_Copy)
 
 AUI_END_COMMAND_MAP()
 

@@ -23,14 +23,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgBase, CDlgTheme)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Close",		OnCommand_Close)
-AUI_ON_COMMAND("Btn_Help",		OnCommand_Help)
-AUI_ON_COMMAND(HELP_PREFIX"*",	OnCommand_Help)
+AUI_ON_COMMAND("IDCANCEL",		CDlgBase::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close",		CDlgBase::OnCommand_Close)
+AUI_ON_COMMAND("Btn_Help",		CDlgBase::OnCommand_Help)
+AUI_ON_COMMAND(HELP_PREFIX"*",	CDlgBase::OnCommand_Help)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgBase, CDlgTheme)
-AUI_ON_EVENT(NULL,		WM_KILLFOCUS,		OnEventKillFocus)
+AUI_ON_EVENT(NULL,		WM_KILLFOCUS,		CDlgBase::OnEventKillFocus)
 AUI_END_EVENT_MAP()
 
 CRenderBuffer::CRenderBuffer(int width, int height) : m_iWidth(0), m_iHeight(0), m_Buffer(0), m_iRowSpan(0)

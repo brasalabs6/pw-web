@@ -16,23 +16,23 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgGMQueryItem, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Delete",	OnCommand_DeleteItems)
-AUI_ON_COMMAND("Btn_Type*",		OnCommand_ShowType)
-AUI_ON_COMMAND("Btn_All",		OnCommand_ShowType)
+AUI_ON_COMMAND("Btn_Delete",	CDlgGMQueryItem::OnCommand_DeleteItems)
+AUI_ON_COMMAND("Btn_Type*",		CDlgGMQueryItem::OnCommand_ShowType)
+AUI_ON_COMMAND("Btn_All",		CDlgGMQueryItem::OnCommand_ShowType)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGMQueryItem, CDlgBase)
 
-AUI_ON_EVENT("Lst_Result",	WM_LBUTTONDBLCLK,	OnEventLButtonDBCLK_Result)
-AUI_ON_EVENT("Item_*",	WM_LBUTTONDBLCLK,		OnEventLButtonDBCLK_Items)
+AUI_ON_EVENT("Lst_Result",	WM_LBUTTONDBLCLK,	CDlgGMQueryItem::OnEventLButtonDBCLK_Result)
+AUI_ON_EVENT("Item_*",	WM_LBUTTONDBLCLK,		CDlgGMQueryItem::OnEventLButtonDBCLK_Items)
 
 AUI_END_EVENT_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgGMQueryItemSub, CDlgBase)
 
-AUI_ON_EVENT("Item_*",	WM_LBUTTONDBLCLK,		OnEventLButtonDBCLK_Items)
-AUI_ON_EVENT("Item_*",	WM_LBUTTONDOWN,			OnEventLButtonDown_Items)
+AUI_ON_EVENT("Item_*",	WM_LBUTTONDBLCLK,		CDlgGMQueryItemSub::OnEventLButtonDBCLK_Items)
+AUI_ON_EVENT("Item_*",	WM_LBUTTONDOWN,			CDlgGMQueryItemSub::OnEventLButtonDown_Items)
 
 AUI_END_EVENT_MAP()
 

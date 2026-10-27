@@ -18,10 +18,10 @@
 const int QUESTION_TASK_TYPE = enumTTQuestion;
 
 AUI_BEGIN_COMMAND_MAP(CDlgQuestionTask, CDlgBase)
-AUI_ON_COMMAND("Btn_Next",	OnCommand_Next)
-AUI_ON_COMMAND("Btn_Prev",	OnCommand_Prev)
-AUI_ON_COMMAND("Btn_Close",	OnCommand_Minmize)
-AUI_ON_COMMAND("IDCANCEL",	OnCommand_Minmize)
+AUI_ON_COMMAND("Btn_Next",	CDlgQuestionTask::OnCommand_Next)
+AUI_ON_COMMAND("Btn_Prev",	CDlgQuestionTask::OnCommand_Prev)
+AUI_ON_COMMAND("Btn_Close",	CDlgQuestionTask::OnCommand_Minmize)
+AUI_ON_COMMAND("IDCANCEL",	CDlgQuestionTask::OnCommand_Minmize)
 AUI_END_COMMAND_MAP()
 
 CDlgQuestionTask::CDlgQuestionTask() {

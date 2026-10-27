@@ -46,24 +46,24 @@ static CDlgCountryMap::TimeType s_GetScorePeriod = CDlgCountryMap::ConvertFromSe
 
 AUI_BEGIN_COMMAND_MAP(CDlgCountryMap, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Chat",		OnCommandChat)
-AUI_ON_COMMAND("Btn_Refresh",	OnCommandRefresh)
-AUI_ON_COMMAND("Btn_Back",		OnCommandBack)
+AUI_ON_COMMAND("IDCANCEL",		CDlgCountryMap::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Chat",		CDlgCountryMap::OnCommandChat)
+AUI_ON_COMMAND("Btn_Refresh",	CDlgCountryMap::OnCommandRefresh)
+AUI_ON_COMMAND("Btn_Back",		CDlgCountryMap::OnCommandBack)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgCountryMap, CDlgBase)
 
-AUI_ON_EVENT("CountryMap",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("CountryMap",	WM_LBUTTONUP,	OnEventLButtonUp)
-AUI_ON_EVENT("CountryMap",	WM_LBUTTONDBLCLK,	OnEventLButtonDBClick)
-AUI_ON_EVENT("CountryMap",	WM_RBUTTONDOWN,	OnEventRButtonDown)
-AUI_ON_EVENT("CountryMap",	WM_RBUTTONUP,	OnEventRButtonUp)
-AUI_ON_EVENT("CountryMap",	WM_RBUTTONDBLCLK,	OnEventRButtonDBClick)
-AUI_ON_EVENT("CountryMap",	WM_MBUTTONDOWN,	OnEventMButtonDown)
-AUI_ON_EVENT("CountryMap",	WM_MBUTTONUP,	OnEventMButtonUp)
-AUI_ON_EVENT("CountryMap",	WM_MBUTTONDBLCLK,	OnEventMButtonDBClick)
+AUI_ON_EVENT("CountryMap",	WM_LBUTTONDOWN,	CDlgCountryMap::OnEventLButtonDown)
+AUI_ON_EVENT("CountryMap",	WM_LBUTTONUP,	CDlgCountryMap::OnEventLButtonUp)
+AUI_ON_EVENT("CountryMap",	WM_LBUTTONDBLCLK,	CDlgCountryMap::OnEventLButtonDBClick)
+AUI_ON_EVENT("CountryMap",	WM_RBUTTONDOWN,	CDlgCountryMap::OnEventRButtonDown)
+AUI_ON_EVENT("CountryMap",	WM_RBUTTONUP,	CDlgCountryMap::OnEventRButtonUp)
+AUI_ON_EVENT("CountryMap",	WM_RBUTTONDBLCLK,	CDlgCountryMap::OnEventRButtonDBClick)
+AUI_ON_EVENT("CountryMap",	WM_MBUTTONDOWN,	CDlgCountryMap::OnEventMButtonDown)
+AUI_ON_EVENT("CountryMap",	WM_MBUTTONUP,	CDlgCountryMap::OnEventMButtonUp)
+AUI_ON_EVENT("CountryMap",	WM_MBUTTONDBLCLK,	CDlgCountryMap::OnEventMButtonDBClick)
 
 AUI_END_EVENT_MAP()
 
@@ -1386,8 +1386,8 @@ void CDlgCountryMap::PopupKingOrderMenu(int x, int y, int iDomainID)
 //	CDlgCountryMove
 
 AUI_BEGIN_COMMAND_MAP(CDlgCountryMove, CDlgBase)
-AUI_ON_COMMAND("Btn_Stop", OnCommandStop)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("Btn_Stop", CDlgCountryMove::OnCommandStop)
+AUI_ON_COMMAND("IDCANCEL", CDlgCountryMove::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgCountryMove::CDlgCountryMove()

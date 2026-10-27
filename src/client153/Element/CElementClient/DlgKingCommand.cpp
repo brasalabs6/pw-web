@@ -20,7 +20,7 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgKingCommand, CDlgBase)
 
-AUI_ON_COMMAND("Btn_Order*", OnCommand_Order)
+AUI_ON_COMMAND("Btn_Order*", CDlgKingCommand::OnCommand_Order)
 
 AUI_END_COMMAND_MAP()
 

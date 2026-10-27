@@ -26,14 +26,14 @@
 #include "DlgOfflineShopList.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgOfflineShopCreate, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCANCEL)
-AUI_ON_COMMAND("Btn_Confirm",	OnCommandConfirm)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommandBtn2)
-AUI_ON_COMMAND("Btn_Close",		OnCommandCANCEL)
+AUI_ON_COMMAND("IDCANCEL",		CDlgOfflineShopCreate::OnCommandCANCEL)
+AUI_ON_COMMAND("Btn_Confirm",	CDlgOfflineShopCreate::OnCommandConfirm)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgOfflineShopCreate::OnCommandBtn2)
+AUI_ON_COMMAND("Btn_Close",		CDlgOfflineShopCreate::OnCommandCANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgOfflineShopCreate, CDlgBase)
-AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,		OnEventLButtonDown)
+AUI_ON_EVENT("Img_Dye",		WM_LBUTTONDOWN,		CDlgOfflineShopCreate::OnEventLButtonDown)
 AUI_END_EVENT_MAP()
 
 typedef CECShortcutMgr::SimpleClickShortcut<CDlgOfflineShopCreate> InstallClickShortcut;
@@ -209,8 +209,8 @@ void CDlgOfflineShopCreate::OnItemDragDrop(CECIvtrItem* pIvtrSrc, int iSrc, PAUI
 //////////////////////////////////////////////////////////////////////////
 
 AUI_BEGIN_COMMAND_MAP(CDlgOfflineShopType, CDlgBase)
-AUI_ON_COMMAND("Btn_Confirm",	OnCommandConfirm)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Confirm",	CDlgOfflineShopType::OnCommandConfirm)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgOfflineShopType::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 

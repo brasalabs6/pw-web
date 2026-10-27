@@ -13,10 +13,10 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgReincarnationRewrite, CDlgBase)
-AUI_ON_COMMAND("Btn_Start",	OnCommandRewrite)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommandCancel)
-AUI_ON_COMMAND("Btn_Wake",		OnCommandSleepWake)
+AUI_ON_COMMAND("Btn_Start",	CDlgReincarnationRewrite::OnCommandRewrite)
+AUI_ON_COMMAND("IDCANCEL",		CDlgReincarnationRewrite::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgReincarnationRewrite::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Wake",		CDlgReincarnationRewrite::OnCommandSleepWake)
 AUI_END_COMMAND_MAP()
 
 CDlgReincarnationRewrite::CDlgReincarnationRewrite()

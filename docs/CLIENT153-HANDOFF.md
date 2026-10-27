@@ -215,6 +215,14 @@ teste foi compilado para objeto WASM, sem execução de transporte no browser.
 O probe usa o zlib do Emscripten em vez do cabeçalho do SDK Windows. Passaram
 23 testes nativos e 18 WASM; outra compilação de objetos está em andamento.
 
+Essa compilação gerou 141/787 objetos; 119 unidades paravam primeiro nos
+mapas de comandos e eventos AUI. `scripts/qualify-client153-aui-maps.py`
+qualifica os métodos com a classe de cada mapa, preserva comentários e pode
+ser reaplicado sem alterações. A adaptação abrangeu 2.023 entradas em 336
+arquivos; a unidade usada para reprodução avançou para `a_sprintf`. Uma nova
+compilação de objetos está em andamento para medir o efeito global. A
+adaptação dos mapas ainda não foi validada em gameplay.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

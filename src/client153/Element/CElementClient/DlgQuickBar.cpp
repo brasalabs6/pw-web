@@ -27,20 +27,20 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgQuickBar, CDlgBase)
 
-AUI_ON_COMMAND("add",			OnCommand_add)
-AUI_ON_COMMAND("minus",			OnCommand_minus)
-AUI_ON_COMMAND("openextra",		OnCommand_openextra)
-AUI_ON_COMMAND("new",			OnCommand_new)
-AUI_ON_COMMAND("switch",		OnCommand_switch)
-AUI_ON_COMMAND("enableext",		OnCommand_enableext)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Chk_Lock",		OnCommand_lock)
+AUI_ON_COMMAND("add",			CDlgQuickBar::OnCommand_add)
+AUI_ON_COMMAND("minus",			CDlgQuickBar::OnCommand_minus)
+AUI_ON_COMMAND("openextra",		CDlgQuickBar::OnCommand_openextra)
+AUI_ON_COMMAND("new",			CDlgQuickBar::OnCommand_new)
+AUI_ON_COMMAND("switch",		CDlgQuickBar::OnCommand_switch)
+AUI_ON_COMMAND("enableext",		CDlgQuickBar::OnCommand_enableext)
+AUI_ON_COMMAND("IDCANCEL",		CDlgQuickBar::OnCommand_CANCEL)
+AUI_ON_COMMAND("Chk_Lock",		CDlgQuickBar::OnCommand_lock)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgQuickBar, CDlgBase)
 
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		CDlgQuickBar::OnEventLButtonDown_Item)
 
 AUI_END_EVENT_MAP()
 

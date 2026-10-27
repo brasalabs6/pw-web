@@ -15,20 +15,20 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgChangeSkirt, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommand_CANCEL)
-AUI_ON_COMMAND("beginchange", OnCommand_BeginChange)
-AUI_ON_COMMAND("stopchange", OnCommand_StopChange)
+AUI_ON_COMMAND("IDCANCEL", CDlgChangeSkirt::OnCommand_CANCEL)
+AUI_ON_COMMAND("beginchange", CDlgChangeSkirt::OnCommand_BeginChange)
+AUI_ON_COMMAND("stopchange", CDlgChangeSkirt::OnCommand_StopChange)
 
 AUI_END_COMMAND_MAP()
 
 
 AUI_BEGIN_EVENT_MAP(CDlgChangeSkirt, CDlgBase)
 
-AUI_ON_EVENT("*",  WM_MOUSEWHEEL, OnEventMouseWheel)
-AUI_ON_EVENT(NULL, WM_MOUSEWHEEL, OnEventMouseWheel)
-AUI_ON_EVENT("Item_*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Img_No*",	WM_LBUTTONDOWN,	OnEventLButtonDown)
-AUI_ON_EVENT("Item_*",	WM_RBUTTONDOWN,	OnEventRButtonDown)
+AUI_ON_EVENT("*",  WM_MOUSEWHEEL, CDlgChangeSkirt::OnEventMouseWheel)
+AUI_ON_EVENT(NULL, WM_MOUSEWHEEL, CDlgChangeSkirt::OnEventMouseWheel)
+AUI_ON_EVENT("Item_*",	WM_LBUTTONDOWN,	CDlgChangeSkirt::OnEventLButtonDown)
+AUI_ON_EVENT("Img_No*",	WM_LBUTTONDOWN,	CDlgChangeSkirt::OnEventLButtonDown)
+AUI_ON_EVENT("Item_*",	WM_RBUTTONDOWN,	CDlgChangeSkirt::OnEventRButtonDown)
 
 AUI_END_EVENT_MAP()
 

@@ -30,14 +30,14 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSystem3, CDlgBase)
 
-AUI_ON_COMMAND("wservertype", OnCommandServerType)
-AUI_ON_COMMAND("wgm", OnCommandGM)
-AUI_ON_COMMAND("whelp", OnCommandHelp)
-AUI_ON_COMMAND("wsetting", OnCommandSetting)
-AUI_ON_COMMAND("repick", OnCommandRepick)
-AUI_ON_COMMAND("quitgame", OnCommandQuit)
-AUI_ON_COMMAND("chat", OnCommandChat)
-AUI_ON_COMMAND("wquickkey", OnCommandQuickKey)
+AUI_ON_COMMAND("wservertype", CDlgSystem3::OnCommandServerType)
+AUI_ON_COMMAND("wgm", CDlgSystem3::OnCommandGM)
+AUI_ON_COMMAND("whelp", CDlgSystem3::OnCommandHelp)
+AUI_ON_COMMAND("wsetting", CDlgSystem3::OnCommandSetting)
+AUI_ON_COMMAND("repick", CDlgSystem3::OnCommandRepick)
+AUI_ON_COMMAND("quitgame", CDlgSystem3::OnCommandQuit)
+AUI_ON_COMMAND("chat", CDlgSystem3::OnCommandChat)
+AUI_ON_COMMAND("wquickkey", CDlgSystem3::OnCommandQuickKey)
 
 AUI_END_COMMAND_MAP()
 

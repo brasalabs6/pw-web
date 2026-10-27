@@ -215,23 +215,23 @@ void CPaletteControl::UpdateDisplay()
 
 AUI_BEGIN_EVENT_MAP(CDlgCustomizePaint, CDlgCustomizeBase)
 
-AUI_ON_EVENT("ImagePicture_ColorPic", WM_MOUSEMOVE, OnMouseMovePicPallete)
-AUI_ON_EVENT("ImagePicture_ColorPic", WM_LBUTTONDOWN, OnLButtonDownPicPallete)
+AUI_ON_EVENT("ImagePicture_ColorPic", WM_MOUSEMOVE, CDlgCustomizePaint::OnMouseMovePicPallete)
+AUI_ON_EVENT("ImagePicture_ColorPic", WM_LBUTTONDOWN, CDlgCustomizePaint::OnLButtonDownPicPallete)
 
-AUI_ON_EVENT("Img_*", WM_LBUTTONUP, OnLButtonUpListboxEyeKohl)
-AUI_ON_EVENT("ListBox_FaceParts", WM_LBUTTONUP, OnLButtonUpListboxFacepart)
+AUI_ON_EVENT("Img_*", WM_LBUTTONUP, CDlgCustomizePaint::OnLButtonUpListboxEyeKohl)
+AUI_ON_EVENT("ListBox_FaceParts", WM_LBUTTONUP, CDlgCustomizePaint::OnLButtonUpListboxFacepart)
 
-AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, OnMouseWheelListboxEyeKohl)
-AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, OnMouseWheelListboxEyeKohl)
-AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, OnMouseWheelListboxEyeKohl)
-AUI_ON_EVENT("ListBox_FaceParts", WM_KEYDOWN, OnKeyDownListboxFacepart)
+AUI_ON_EVENT("Scroll_*", WM_MOUSEWHEEL, CDlgCustomizePaint::OnMouseWheelListboxEyeKohl)
+AUI_ON_EVENT("Edit_*", WM_MOUSEWHEEL, CDlgCustomizePaint::OnMouseWheelListboxEyeKohl)
+AUI_ON_EVENT("Img_*", WM_MOUSEWHEEL, CDlgCustomizePaint::OnMouseWheelListboxEyeKohl)
+AUI_ON_EVENT("ListBox_FaceParts", WM_KEYDOWN, CDlgCustomizePaint::OnKeyDownListboxFacepart)
 
 
 AUI_END_EVENT_MAP()
 
 AUI_BEGIN_COMMAND_MAP(CDlgCustomizePaint, CDlgCustomizeBase)
 
-AUI_ON_COMMAND("Reset", OnCommandReset)
+AUI_ON_COMMAND("Reset", CDlgCustomizePaint::OnCommandReset)
 
 AUI_END_COMMAND_MAP()
 

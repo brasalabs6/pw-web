@@ -12,13 +12,13 @@
 #include "EC_GameSession.h"
 
 AUI_BEGIN_COMMAND_MAP(CDlgAstrolabe, CDlgBase)
-AUI_ON_COMMAND("Btn_Swallow",	OnCommandSwallow)
+AUI_ON_COMMAND("Btn_Swallow",	CDlgAstrolabe::OnCommandSwallow)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAstrolabe, CDlgBase)
 
-AUI_ON_EVENT("Btn_Point*",	WM_LBUTTONDOWN,	OnEventLButtonDown_PointClick)
-AUI_ON_EVENT("Txt_AttName*", WM_MOUSEMOVE, OnEventMouseHover_Addons)
+AUI_ON_EVENT("Btn_Point*",	WM_LBUTTONDOWN,	CDlgAstrolabe::OnEventLButtonDown_PointClick)
+AUI_ON_EVENT("Txt_AttName*", WM_MOUSEMOVE, CDlgAstrolabe::OnEventMouseHover_Addons)
 
 AUI_END_EVENT_MAP()
 

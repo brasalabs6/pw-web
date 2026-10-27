@@ -12,10 +12,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgMailOption, CDlgBase)
 
-AUI_ON_COMMAND("Reply",			OnCommandReply)
-AUI_ON_COMMAND("Delete",		OnCommandDelete)
-AUI_ON_COMMAND("Preserve",		OnCommandPreserve)
-AUI_ON_COMMAND("NoPreserve",	OnCommandNoPreserve)
+AUI_ON_COMMAND("Reply",			CDlgMailOption::OnCommandReply)
+AUI_ON_COMMAND("Delete",		CDlgMailOption::OnCommandDelete)
+AUI_ON_COMMAND("Preserve",		CDlgMailOption::OnCommandPreserve)
+AUI_ON_COMMAND("NoPreserve",	CDlgMailOption::OnCommandNoPreserve)
 
 AUI_END_COMMAND_MAP()
 

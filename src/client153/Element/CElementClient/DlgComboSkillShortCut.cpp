@@ -18,7 +18,7 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgComboShortCutBar, CDlgBase)
 
-AUI_ON_EVENT("Img_ItemSkill*", WM_LBUTTONDOWN, OnEventLButtonDown)
+AUI_ON_EVENT("Img_ItemSkill*", WM_LBUTTONDOWN, CDlgComboShortCutBar::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

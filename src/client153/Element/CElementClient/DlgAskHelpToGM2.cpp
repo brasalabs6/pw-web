@@ -36,15 +36,15 @@ struct ReportItemsFilter : public CECGameUIMan::AUI_EditboxItemFilter
 
 AUI_BEGIN_COMMAND_MAP(CDlgAskHelpToGM2, CDlgBase)
 
-AUI_ON_COMMAND("confirm", OnCommandConfirm)
+AUI_ON_COMMAND("confirm", CDlgAskHelpToGM2::OnCommandConfirm)
 
-AUI_ON_COMMAND("Btn_GACD", OnCommandGACD)
+AUI_ON_COMMAND("Btn_GACD", CDlgAskHelpToGM2::OnCommandGACD)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgAskHelpToGM2, CDlgBase)
 
-AUI_ON_EVENT("ListBox_Content",		WM_LBUTTONDOWN,		OnEventLButtonDown_ListBox_Content)
+AUI_ON_EVENT("ListBox_Content",		WM_LBUTTONDOWN,		CDlgAskHelpToGM2::OnEventLButtonDown_ListBox_Content)
 
 AUI_END_EVENT_MAP()
 

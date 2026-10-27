@@ -23,9 +23,9 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgMailRead, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCancel)
-AUI_ON_COMMAND("getattach",	OnCommandGetAttach)
-AUI_ON_COMMAND("reply",		OnCommandReply)
+AUI_ON_COMMAND("IDCANCEL",	CDlgMailRead::OnCommandCancel)
+AUI_ON_COMMAND("getattach",	CDlgMailRead::OnCommandGetAttach)
+AUI_ON_COMMAND("reply",		CDlgMailRead::OnCommandReply)
 
 AUI_END_COMMAND_MAP()
 

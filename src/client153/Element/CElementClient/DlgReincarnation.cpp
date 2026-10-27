@@ -16,9 +16,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgReincarnation, CDlgBase)
-AUI_ON_COMMAND("Btn_Start",		OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommandCancel)
+AUI_ON_COMMAND("Btn_Start",		CDlgReincarnation::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgReincarnation::OnCommandCancel)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgReincarnation::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 static const A3DCOLOR COLOR_WHITE = A3DCOLORRGB(255, 255, 255);

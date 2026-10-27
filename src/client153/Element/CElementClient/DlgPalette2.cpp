@@ -21,8 +21,8 @@
 #include <A3DSurfaceMan.h>
 
 AUI_BEGIN_COMMAND_MAP(CDlgPalette2, CDlgPaletteFashion)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_BestColor",	OnCommand_BestColor)
+AUI_ON_COMMAND("IDCANCEL",		CDlgPalette2::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_BestColor",	CDlgPalette2::OnCommand_BestColor)
 AUI_END_COMMAND_MAP()
 
 

@@ -12,9 +12,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWiki, CDlgBase)
-AUI_ON_COMMAND("Win_*",	OnCommand_ShowDialog)
-AUI_ON_COMMAND("Btn_OpenWikiPop",	OnCommand_OpenAutoHelp)
-AUI_ON_COMMAND("Chk_Close",	OnCommand_CloseAutoHelp)
+AUI_ON_COMMAND("Win_*",	CDlgWiki::OnCommand_ShowDialog)
+AUI_ON_COMMAND("Btn_OpenWikiPop",	CDlgWiki::OnCommand_OpenAutoHelp)
+AUI_ON_COMMAND("Chk_Close",	CDlgWiki::OnCommand_CloseAutoHelp)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWiki, CDlgBase)

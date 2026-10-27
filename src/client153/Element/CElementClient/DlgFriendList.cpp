@@ -26,18 +26,18 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendList, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("blacklist",	OnCommandBlackList)
-AUI_ON_COMMAND("add",		OnCommandAdd)
-AUI_ON_COMMAND("remove",	OnCommandRemove)
-AUI_ON_COMMAND("action",	OnCommandAction)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFriendList::OnCommandCANCAL)
+AUI_ON_COMMAND("blacklist",	CDlgFriendList::OnCommandBlackList)
+AUI_ON_COMMAND("add",		CDlgFriendList::OnCommandAdd)
+AUI_ON_COMMAND("remove",	CDlgFriendList::OnCommandRemove)
+AUI_ON_COMMAND("action",	CDlgFriendList::OnCommandAction)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgFriendList, CDlgBase)
 
-AUI_ON_EVENT("Tv_FriendList",	WM_LBUTTONDBLCLK,	OnEventButtonDBCLK)
-AUI_ON_EVENT("Tv_FriendList",	WM_RBUTTONUP,		OnEventRButtonUp)
+AUI_ON_EVENT("Tv_FriendList",	WM_LBUTTONDBLCLK,	CDlgFriendList::OnEventButtonDBCLK)
+AUI_ON_EVENT("Tv_FriendList",	WM_RBUTTONUP,		CDlgFriendList::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

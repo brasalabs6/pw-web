@@ -26,20 +26,20 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgProduce, CDlgBase)
 
-AUI_ON_COMMAND("set*",			OnCommand_set)
-AUI_ON_COMMAND("add",			OnCommand_add)
-AUI_ON_COMMAND("minus",			OnCommand_minus)
-AUI_ON_COMMAND("max",			OnCommand_max)
-AUI_ON_COMMAND("begin",			OnCommand_begin)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("set*",			CDlgProduce::OnCommand_set)
+AUI_ON_COMMAND("add",			CDlgProduce::OnCommand_add)
+AUI_ON_COMMAND("minus",			CDlgProduce::OnCommand_minus)
+AUI_ON_COMMAND("max",			CDlgProduce::OnCommand_max)
+AUI_ON_COMMAND("begin",			CDlgProduce::OnCommand_begin)
+AUI_ON_COMMAND("IDCANCEL",		CDlgProduce::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgProduce, CDlgBase)
 
-AUI_ON_EVENT("U_*",			WM_LBUTTONDOWN,		OnEventLButtonDown_U)
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("Txt_Number",  WM_KEYUP,			OnEventKeyUp)
+AUI_ON_EVENT("U_*",			WM_LBUTTONDOWN,		CDlgProduce::OnEventLButtonDown_U)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		CDlgProduce::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Txt_Number",  WM_KEYUP,			CDlgProduce::OnEventKeyUp)
 
 AUI_END_EVENT_MAP()
 

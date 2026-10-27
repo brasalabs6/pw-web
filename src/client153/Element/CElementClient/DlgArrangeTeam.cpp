@@ -18,27 +18,27 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgArrangeTeam, CDlgBase)
 
-AUI_ON_COMMAND("kick",			OnCommandKick)
-AUI_ON_COMMAND("invite",		OnCommandInvite)
-AUI_ON_COMMAND("leave",			OnCommandLeave)
-AUI_ON_COMMAND("disband",		OnCommandLeave)
-AUI_ON_COMMAND("random",		OnCommandRandom)
-AUI_ON_COMMAND("free",			OnCommandRandom)
-AUI_ON_COMMAND("slogan",		OnCommandSlogan)
-AUI_ON_COMMAND("showself",		OnCommandShowSelf)
-AUI_ON_COMMAND("lfg",			OnCommandLfg)
-AUI_ON_COMMAND("lfm",			OnCommandLfg)
-AUI_ON_COMMAND("makeleader",	OnCommandMakeLeader)
-AUI_ON_COMMAND("confirm",		OnCommandConfirm)
-AUI_ON_COMMAND("refresh",		OnCommandRefresh)
-AUI_ON_COMMAND("Chk_AutoAccept",OnCommandAcceptAutoTeam)
+AUI_ON_COMMAND("kick",			CDlgArrangeTeam::OnCommandKick)
+AUI_ON_COMMAND("invite",		CDlgArrangeTeam::OnCommandInvite)
+AUI_ON_COMMAND("leave",			CDlgArrangeTeam::OnCommandLeave)
+AUI_ON_COMMAND("disband",		CDlgArrangeTeam::OnCommandLeave)
+AUI_ON_COMMAND("random",		CDlgArrangeTeam::OnCommandRandom)
+AUI_ON_COMMAND("free",			CDlgArrangeTeam::OnCommandRandom)
+AUI_ON_COMMAND("slogan",		CDlgArrangeTeam::OnCommandSlogan)
+AUI_ON_COMMAND("showself",		CDlgArrangeTeam::OnCommandShowSelf)
+AUI_ON_COMMAND("lfg",			CDlgArrangeTeam::OnCommandLfg)
+AUI_ON_COMMAND("lfm",			CDlgArrangeTeam::OnCommandLfg)
+AUI_ON_COMMAND("makeleader",	CDlgArrangeTeam::OnCommandMakeLeader)
+AUI_ON_COMMAND("confirm",		CDlgArrangeTeam::OnCommandConfirm)
+AUI_ON_COMMAND("refresh",		CDlgArrangeTeam::OnCommandRefresh)
+AUI_ON_COMMAND("Chk_AutoAccept",CDlgArrangeTeam::OnCommandAcceptAutoTeam)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgArrangeTeam, CDlgBase)
 
-AUI_ON_EVENT("Lst_Nearbypp",	WM_LBUTTONUP,	OnEventLButtonUp)
-AUI_ON_EVENT("Lst_Nearbypp",	WM_RBUTTONUP,	OnEventRButtonUp)
+AUI_ON_EVENT("Lst_Nearbypp",	WM_LBUTTONUP,	CDlgArrangeTeam::OnEventLButtonUp)
+AUI_ON_EVENT("Lst_Nearbypp",	WM_RBUTTONUP,	CDlgArrangeTeam::OnEventRButtonUp)
 
 AUI_END_EVENT_MAP()
 

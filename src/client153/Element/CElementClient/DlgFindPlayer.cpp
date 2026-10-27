@@ -6,8 +6,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFindPlayer, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
-AUI_ON_COMMAND("confirm", OnCommandQuery)
+AUI_ON_COMMAND("IDCANCEL", CDlgFindPlayer::OnCommandCancel)
+AUI_ON_COMMAND("confirm", CDlgFindPlayer::OnCommandQuery)
 
 AUI_END_COMMAND_MAP()
 

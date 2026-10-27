@@ -12,13 +12,13 @@
 #include <AUICTranslate.h>
 
 AUI_BEGIN_EVENT_MAP(CDlgAutoHPMP, CDlgBase)
-AUI_ON_EVENT("Img*",	WM_RBUTTONDOWN,		OnEventRButtonDown)
+AUI_ON_EVENT("Img*",	WM_RBUTTONDOWN,		CDlgAutoHPMP::OnEventRButtonDown)
 AUI_END_EVENT_MAP()
 
 AUI_BEGIN_COMMAND_MAP(CDlgAutoHPMP, CDlgBase)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Confirm",	OnCommand_Confirm)
-AUI_ON_COMMAND("Chk*",			OnCommand_Enable)
+AUI_ON_COMMAND("IDCANCEL",		CDlgAutoHPMP::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Confirm",	CDlgAutoHPMP::OnCommand_Confirm)
+AUI_ON_COMMAND("Chk*",			CDlgAutoHPMP::OnCommand_Enable)
 AUI_END_COMMAND_MAP()
 
 CDlgAutoHPMP::CDlgAutoHPMP()

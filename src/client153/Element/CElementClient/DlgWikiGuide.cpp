@@ -19,13 +19,13 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiGuide, CDlgWikiBase)
-AUI_ON_COMMAND("Btn_Skill", OnCommand_DetailButton)
-AUI_ON_COMMAND("Btn_Task", OnCommand_DetailButton)
-AUI_ON_COMMAND("Btn_Feature", OnCommand_DetailButton)
-AUI_ON_COMMAND("Btn_Equipment", OnCommand_DetailButton)
-AUI_ON_COMMAND("Btn_Area", OnCommand_DetailButton)
-AUI_ON_COMMAND("selectlevel", OnCommand_SelectLevel)
-AUI_ON_COMMAND("autohide", OnCommand_AutoHide)
+AUI_ON_COMMAND("Btn_Skill", CDlgWikiGuide::OnCommand_DetailButton)
+AUI_ON_COMMAND("Btn_Task", CDlgWikiGuide::OnCommand_DetailButton)
+AUI_ON_COMMAND("Btn_Feature", CDlgWikiGuide::OnCommand_DetailButton)
+AUI_ON_COMMAND("Btn_Equipment", CDlgWikiGuide::OnCommand_DetailButton)
+AUI_ON_COMMAND("Btn_Area", CDlgWikiGuide::OnCommand_DetailButton)
+AUI_ON_COMMAND("selectlevel", CDlgWikiGuide::OnCommand_SelectLevel)
+AUI_ON_COMMAND("autohide", CDlgWikiGuide::OnCommand_AutoHide)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiGuide, CDlgWikiBase)

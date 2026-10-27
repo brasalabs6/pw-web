@@ -15,11 +15,11 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgFriendOptionNormal, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",	OnCommandCANCAL)
-AUI_ON_COMMAND("AddFriend",	OnCommandAddFriend)
-AUI_ON_COMMAND("AddGroup",	OnCommandAddGroup)
-AUI_ON_COMMAND("SetAfk",	OnCommandSetAfk)
-AUI_ON_COMMAND("OnOffline",	OnCommandOnOffline)
+AUI_ON_COMMAND("IDCANCEL",	CDlgFriendOptionNormal::OnCommandCANCAL)
+AUI_ON_COMMAND("AddFriend",	CDlgFriendOptionNormal::OnCommandAddFriend)
+AUI_ON_COMMAND("AddGroup",	CDlgFriendOptionNormal::OnCommandAddGroup)
+AUI_ON_COMMAND("SetAfk",	CDlgFriendOptionNormal::OnCommandSetAfk)
+AUI_ON_COMMAND("OnOffline",	CDlgFriendOptionNormal::OnCommandOnOffline)
 
 AUI_END_COMMAND_MAP()
 

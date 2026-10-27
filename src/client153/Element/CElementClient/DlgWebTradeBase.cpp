@@ -28,19 +28,19 @@ CDlgWebTradeBase::CategoryMap CDlgWebTradeBase::s_Category;
 
 AUI_BEGIN_COMMAND_MAP(CDlgWebTradeBase, CDlgBase)
 
-AUI_ON_COMMAND("pageup",			OnCommandPageUp)
-AUI_ON_COMMAND("pagedown",			OnCommandPageDown)
-AUI_ON_COMMAND("pagehome",			OnCommandPageHome)
-AUI_ON_COMMAND("pageend",			OnCommandPageEnd)
-AUI_ON_COMMAND("sort_*",			OnCommandSortByCommand)
-AUI_ON_COMMAND("sortdata_*",		OnCommandSortDataByCommand)
-AUI_ON_COMMAND("goto_onlineshop",	OnCommandGotoOnlineShop)
+AUI_ON_COMMAND("pageup",			CDlgWebTradeBase::OnCommandPageUp)
+AUI_ON_COMMAND("pagedown",			CDlgWebTradeBase::OnCommandPageDown)
+AUI_ON_COMMAND("pagehome",			CDlgWebTradeBase::OnCommandPageHome)
+AUI_ON_COMMAND("pageend",			CDlgWebTradeBase::OnCommandPageEnd)
+AUI_ON_COMMAND("sort_*",			CDlgWebTradeBase::OnCommandSortByCommand)
+AUI_ON_COMMAND("sortdata_*",		CDlgWebTradeBase::OnCommandSortDataByCommand)
+AUI_ON_COMMAND("goto_onlineshop",	CDlgWebTradeBase::OnCommandGotoOnlineShop)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWebTradeBase, CDlgBase)
 
-AUI_ON_EVENT("Lst_Item",	WM_RBUTTONUP,	OnEventRButtonUp_Item)
+AUI_ON_EVENT("Lst_Item",	WM_RBUTTONUP,	CDlgWebTradeBase::OnEventRButtonUp_Item)
 
 AUI_END_EVENT_MAP()
 

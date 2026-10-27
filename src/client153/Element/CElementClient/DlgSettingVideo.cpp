@@ -24,8 +24,8 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgSettingVideo, CDlgSetting)
 
-AUI_ON_COMMAND("modellimit", OnCommandModeLimit)
-AUI_ON_COMMAND("speffect", OnCommandSpEffect)
+AUI_ON_COMMAND("modellimit", CDlgSettingVideo::OnCommandModeLimit)
+AUI_ON_COMMAND("speffect", CDlgSettingVideo::OnCommandSpEffect)
 
 AUI_END_COMMAND_MAP()
 

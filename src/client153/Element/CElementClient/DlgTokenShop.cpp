@@ -27,12 +27,12 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgTokenShop, CDlgBase)
-AUI_ON_COMMAND("Btn_Receive*",	OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("Btn_Receive*",	CDlgTokenShop::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL",		CDlgTokenShop::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgTokenShop, CDlgBase)
-AUI_ON_EVENT("*", WM_MOUSEWHEEL, OnMouseWheel)
+AUI_ON_EVENT("*", WM_MOUSEWHEEL, CDlgTokenShop::OnMouseWheel)
 AUI_END_EVENT_MAP()
 
 TokenShopItemBase* TokenShopItemBase::CreateOneShopItem(int item_id, ShopItemType type)

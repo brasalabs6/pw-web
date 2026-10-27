@@ -13,9 +13,9 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgFortunePallete, CDlgBase)
 
-AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		OnEventLButtonDown_Item)
-AUI_ON_EVENT("Img_Card*",	WM_LBUTTONUP,		OnEventLButtonUp_Img_Card)
-AUI_ON_EVENT("Btn_Opne",	WM_LBUTTONUP, OnEventLButtonUp_Opne)
+AUI_ON_EVENT("Item_*",		WM_LBUTTONDOWN,		CDlgFortunePallete::OnEventLButtonDown_Item)
+AUI_ON_EVENT("Img_Card*",	WM_LBUTTONUP,		CDlgFortunePallete::OnEventLButtonUp_Img_Card)
+AUI_ON_EVENT("Btn_Opne",	WM_LBUTTONUP, CDlgFortunePallete::OnEventLButtonUp_Opne)
 
 AUI_END_EVENT_MAP()
 

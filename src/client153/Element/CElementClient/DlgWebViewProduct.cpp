@@ -36,19 +36,19 @@ static GNET::Octets GetWebTradeTicketContext()
 
 AUI_BEGIN_COMMAND_MAP(CDlgWebViewProduct, CDlgWebTradeBase)
 
-AUI_ON_COMMAND("goto_myshop",		OnCommandGotoMyShop)
-AUI_ON_COMMAND("search_byid",		OnCommandSearchByID)
-AUI_ON_COMMAND("search_itemforme",	OnCommandSearchItemforme)
-AUI_ON_COMMAND("sort_*",			OnCommandSortByCommand)
-AUI_ON_COMMAND("sortdata_*",		OnCommandSortDataByCommand)
-AUI_ON_COMMAND("IDCANCEL",			OnCommandCancel)
+AUI_ON_COMMAND("goto_myshop",		CDlgWebViewProduct::OnCommandGotoMyShop)
+AUI_ON_COMMAND("search_byid",		CDlgWebViewProduct::OnCommandSearchByID)
+AUI_ON_COMMAND("search_itemforme",	CDlgWebViewProduct::OnCommandSearchItemforme)
+AUI_ON_COMMAND("sort_*",			CDlgWebViewProduct::OnCommandSortByCommand)
+AUI_ON_COMMAND("sortdata_*",		CDlgWebViewProduct::OnCommandSortDataByCommand)
+AUI_ON_COMMAND("IDCANCEL",			CDlgWebViewProduct::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWebViewProduct, CDlgWebTradeBase)
 
-AUI_ON_EVENT("Tree_Item",	WM_LBUTTONDOWN,		OnEventLButtonDown_Tree_Item)
-AUI_ON_EVENT("Tree_Item",	WM_LBUTTONDBLCLK,	OnEventLButtonDBLCLK_Tree_Item)
+AUI_ON_EVENT("Tree_Item",	WM_LBUTTONDOWN,		CDlgWebViewProduct::OnEventLButtonDown_Tree_Item)
+AUI_ON_EVENT("Tree_Item",	WM_LBUTTONDBLCLK,	CDlgWebViewProduct::OnEventLButtonDBLCLK_Tree_Item)
 
 AUI_END_EVENT_MAP()
 

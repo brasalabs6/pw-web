@@ -12,7 +12,7 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillSubListRankItem, CDlgBase)
 
-AUI_ON_EVENT("*",	WM_MOUSEWHEEL,	OnMouseWheel)
+AUI_ON_EVENT("*",	WM_MOUSEWHEEL,	CDlgSkillSubListRankItem::OnMouseWheel)
 
 AUI_END_EVENT_MAP()
 

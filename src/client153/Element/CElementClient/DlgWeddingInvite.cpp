@@ -18,14 +18,14 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWeddingInvite, CDlgBase)
-AUI_ON_COMMAND("Btn_Confirm",	OnCommand_Confirm)
-AUI_ON_COMMAND("Btn_Cancel",	OnCommand_Cancel)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_Cancel)
+AUI_ON_COMMAND("Btn_Confirm",	CDlgWeddingInvite::OnCommand_Confirm)
+AUI_ON_COMMAND("Btn_Cancel",	CDlgWeddingInvite::OnCommand_Cancel)
+AUI_ON_COMMAND("IDCANCEL",		CDlgWeddingInvite::OnCommand_Cancel)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWeddingInvite, CDlgBase)
-AUI_ON_EVENT("Img_*",	WM_LBUTTONDOWN,	OnEventLButtonDown_Img)
-AUI_ON_EVENT("Txt_Name",WM_KEYDOWN,	OnEventKeyDown_Name)
+AUI_ON_EVENT("Img_*",	WM_LBUTTONDOWN,	CDlgWeddingInvite::OnEventLButtonDown_Img)
+AUI_ON_EVENT("Txt_Name",WM_KEYDOWN,	CDlgWeddingInvite::OnEventKeyDown_Name)
 AUI_END_EVENT_MAP()
 
 //------------------------------------------------------------------------

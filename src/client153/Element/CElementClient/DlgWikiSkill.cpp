@@ -23,12 +23,12 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgWikiSkill, CDlgWikiByNameBase)
-AUI_ON_COMMAND("selectclass", OnCommand_SelectClass)
+AUI_ON_COMMAND("selectclass", CDlgWikiSkill::OnCommand_SelectClass)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgWikiSkill, CDlgWikiByNameBase)
-AUI_ON_EVENT("List_Skill",	WM_LBUTTONDOWN,	OnEventLButtonDown_List)
-AUI_ON_EVENT("List_Skill",	WM_KEYDOWN,		OnEventKeyDown_List)
+AUI_ON_EVENT("List_Skill",	WM_LBUTTONDOWN,	CDlgWikiSkill::OnEventLButtonDown_List)
+AUI_ON_EVENT("List_Skill",	WM_KEYDOWN,		CDlgWikiSkill::OnEventKeyDown_List)
 AUI_END_EVENT_MAP()
 
 

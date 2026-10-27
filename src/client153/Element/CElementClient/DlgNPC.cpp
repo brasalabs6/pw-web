@@ -97,15 +97,15 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgNPC, CDlgBase)
 
-AUI_ON_COMMAND("back",			OnCommand_back)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("back",			CDlgNPC::OnCommand_back)
+AUI_ON_COMMAND("IDCANCEL",		CDlgNPC::OnCommand_CANCEL)
 
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgNPC, CDlgBase)
 
-AUI_ON_EVENT("Lst_Main",		WM_LBUTTONDOWN,		OnEventLButtonDown_Lst_Main)
-AUI_ON_EVENT("Lst_Main",		WM_LBUTTONUP,		OnEventLButtonUp_Lst_Main)
+AUI_ON_EVENT("Lst_Main",		WM_LBUTTONDOWN,		CDlgNPC::OnEventLButtonDown_Lst_Main)
+AUI_ON_EVENT("Lst_Main",		WM_LBUTTONUP,		CDlgNPC::OnEventLButtonUp_Lst_Main)
 
 AUI_END_EVENT_MAP()
 

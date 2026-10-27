@@ -28,10 +28,10 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgELFGenius, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_Close",		OnCommand_CANCEL)
-AUI_ON_COMMAND("Btn_*",			OnCommand_add)
-AUI_ON_COMMAND("skillview",		OnCommand_skillview)
+AUI_ON_COMMAND("IDCANCEL",		CDlgELFGenius::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Close",		CDlgELFGenius::OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_*",			CDlgELFGenius::OnCommand_add)
+AUI_ON_COMMAND("skillview",		CDlgELFGenius::OnCommand_skillview)
 
 AUI_END_COMMAND_MAP()
 

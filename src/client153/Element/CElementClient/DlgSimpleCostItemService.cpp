@@ -90,8 +90,8 @@ void CDlgSimpleCostItemServicePolicy::PrepareProtocolParameter(ProtocolParameter
 
 //	class CDlgSimpleCostItemService
 AUI_BEGIN_COMMAND_MAP(CDlgSimpleCostItemService, CDlgBase)
-AUI_ON_COMMAND("Btn_Confirm", OnCommandConfirm)
-AUI_ON_COMMAND("IDCANCEL", OnCommandCancel)
+AUI_ON_COMMAND("Btn_Confirm", CDlgSimpleCostItemService::OnCommandConfirm)
+AUI_ON_COMMAND("IDCANCEL", CDlgSimpleCostItemService::OnCommandCancel)
 AUI_END_COMMAND_MAP()
 
 CDlgSimpleCostItemService::CDlgSimpleCostItemService()

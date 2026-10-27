@@ -12,7 +12,7 @@
 
 AUI_BEGIN_COMMAND_MAP(CDlgDoubleExpS, CDlgBase)
 
-AUI_ON_COMMAND("IDCANCEL",		OnCommandCancel)
+AUI_ON_COMMAND("IDCANCEL",		CDlgDoubleExpS::OnCommandCancel)
 
 AUI_END_COMMAND_MAP()
 

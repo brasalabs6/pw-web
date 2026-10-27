@@ -16,7 +16,7 @@
 
 AUI_BEGIN_EVENT_MAP(CDlgSkillSubPool, CDlgBase)
 
-AUI_ON_EVENT("Img_*", WM_LBUTTONDOWN, OnEventLButtonDown)
+AUI_ON_EVENT("Img_*", WM_LBUTTONDOWN, CDlgSkillSubPool::OnEventLButtonDown)
 
 AUI_END_EVENT_MAP()
 

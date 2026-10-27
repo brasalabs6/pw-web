@@ -25,9 +25,9 @@
 #define new A_DEBUG_NEW
 
 AUI_BEGIN_COMMAND_MAP(CDlgForceNPC, CDlgBase)
-AUI_ON_COMMAND("Btn_Join",		OnCommand_Join)
-AUI_ON_COMMAND("Btn_Quit",		OnCommand_Quit)
-AUI_ON_COMMAND("IDCANCEL",		OnCommand_CANCEL)
+AUI_ON_COMMAND("Btn_Join",		CDlgForceNPC::OnCommand_Join)
+AUI_ON_COMMAND("Btn_Quit",		CDlgForceNPC::OnCommand_Quit)
+AUI_ON_COMMAND("IDCANCEL",		CDlgForceNPC::OnCommand_CANCEL)
 AUI_END_COMMAND_MAP()
 
 AUI_BEGIN_EVENT_MAP(CDlgForceNPC, CDlgBase)
