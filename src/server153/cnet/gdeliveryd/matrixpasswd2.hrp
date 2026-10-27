@@ -65,10 +65,12 @@ public:
 		}
 		if( GAuthClient::GetInstance()->SendProtocol( *this ) )
 		{
+			fprintf(stderr, "[delivery] matrixpasswd2: forwarded to gauthd, waiting answer\n");
 			return true;
 		}
 		else    
 		{       
+			fprintf(stderr, "[delivery] matrixpasswd2: GAUTHD SEND FAILED -> TryResponse\n");
 			TryResponse(arg);
 			return false;
 		}

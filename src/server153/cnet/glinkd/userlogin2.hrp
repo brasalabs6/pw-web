@@ -37,9 +37,13 @@ class UserLogin2 : public Rpc
 
 		if(res->retcode)
 		{
+			fprintf(stderr, "[glinkd] userlogin2 result: retcode=%d userid=%d -> SessionError\n",
+				(int)res->retcode, (int)arg->userid);
 			lsm->SessionError(localsid, res->retcode, "Server error.");
 			return;
 		}
+		fprintf(stderr, "[glinkd] userlogin2 result: retcode=0 userid=%d -> halfloginset.erase\n",
+			(int)arg->userid);
 
 		lsm->halfloginset.erase(localsid);
 		lsm->TriggerListen();

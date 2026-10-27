@@ -38,6 +38,9 @@ class MatrixPasswd2 : public ProxyRpc
 		MatrixPasswd2Res res;
 		proxy_data >> arg;
 
+		fprintf(stderr, "[auth] MatrixPasswd2 Process: account='%.*s'\n",
+			(int)arg.account.size(), (char*)arg.account.begin());
+
 		// dev-auth (same scheme as GQueryPasswd/matrixpasswd): accounts are
 		// numeric multiples of 16 and the stored hash is MD5(account||account).
 		res.userid = std::atoi(std::string((char*)arg.account.begin(), arg.account.size()).c_str());

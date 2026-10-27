@@ -141,6 +141,8 @@ public:
 		osArg >> arg;
 		UserLogin2Res res;
 		osRes >> res;
+		fprintf(stderr, "[delivery] userlogin2 PostProcess: userid=%d retcode=%d blIsGM=%d\n",
+			(int)arg.userid, (int)res.retcode, (int)res.blIsGM);
 		DEBUG_PRINT("gdelivery::userlogin2.received.userid=%d,proxy_sid=%d,localsid=%d,retcode=%d,blIsGM=%d,func=%d,funcparam=%d,creatime=%d\n",
 			arg.userid,proxy_sid,arg.localsid,res.retcode,res.blIsGM,res.func,res.funcparm,res.creatime);
 		if (res.retcode!=ERR_SUCCESS)

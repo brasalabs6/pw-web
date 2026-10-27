@@ -42,6 +42,8 @@ class OnlineAnnounce : public GNET::Protocol
 			}
 			
 			lsm->ChangeState(localsid, &state_GRoleList);
+			fprintf(stderr, "[glinkd] OnlineAnnounce: userid=%d -> ChangeState(GRoleList) + send\n",
+				(int)userid);
 			lsm->Send(localsid,this);
 		}
 	}

@@ -63,8 +63,12 @@ class Response : public GNET::Protocol
 				lsm->halfloginset.size());
 		   	lsm->StopListen();
 		}
+		fprintf(stderr, "[glinkd] Response: sending MatrixPasswd%s RPC (au=%d algo=%d) for sid=%d\n",
+			use_token ? "Token" : (lsm->GetAUVersion() == 0 ? "" : "2"),
+			(int)lsm->GetAUVersion(), (int)algo, (int)sid);
 		if (!GDeliveryClient::GetInstance()->SendProtocol(rpc))
 		{
+			fprintf(stderr, "[glinkd] Response: RPC SEND FAILED for sid=%d\n", (int)sid);
 			lsm->SessionError(sid,ERR_COMMUNICATION,"Server Network Error.");
 		}
 		else
