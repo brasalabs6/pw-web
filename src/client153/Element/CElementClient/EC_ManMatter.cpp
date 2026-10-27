@@ -42,7 +42,7 @@
 #include "EC_UIManager.h"
 #include "EC_GameRun.h"
 #include "EC_World.h"
-#include "auidef.h"
+#include "AUIDef.h"
 
 #define new A_DEBUG_NEW
 

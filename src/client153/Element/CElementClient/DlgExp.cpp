@@ -3,7 +3,7 @@
 // Date		: 2009/12/23
 
 #include "DlgExp.h"
-#include "AUIRADIOBUTTON.h"
+#include "AUIRadioButton.h"
 #include "EC_GameUIMan.h"
 #include "EC_HostPlayer.h"
 #include "EC_Inventory.h"

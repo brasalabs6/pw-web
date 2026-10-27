@@ -7,7 +7,7 @@
 #include "DlgBase.h"
 #include "AUIImagePicture.h"
 #include "AUIProgress.h"
-#include "AUICombobox.h"
+#include "AUIComboBox.h"
 
 class CDlgFortressBuildSub : public CDlgBase
 {

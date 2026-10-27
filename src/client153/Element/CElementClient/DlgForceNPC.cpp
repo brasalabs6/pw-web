@@ -13,7 +13,7 @@
 #include "A3DDevice.h"
 #include "AUIImagePicture.h"
 #include "AUILabel.h"
-#include "AUITextarea.h"
+#include "AUITextArea.h"
 #include "EC_IvtrItem.h"
 #include "EC_HostPlayer.h"
 #include "EC_GameSession.h"

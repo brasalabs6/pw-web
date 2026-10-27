@@ -6,7 +6,7 @@
 #include "DlgStoneChange.h"
 #include "AUIEditBox.h"
 #include "AUIImagePicture.h"
-#include "auilabel.h"
+#include "AUILabel.h"
 #include "EC_ShortcutMgr.h"
 #include "EC_GameSession.h"
 #include "EC_GameUIMan.h"

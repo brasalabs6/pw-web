@@ -4,7 +4,7 @@
 
 #include "AFI.h"
 #include "AUIDef.h"
-#include "AUICheckbox.h"
+#include "AUICheckBox.h"
 #include "DlgInventory.h"
 #include "DlgInputNO.h"
 #include "DlgTrade.h"

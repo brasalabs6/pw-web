@@ -10,7 +10,7 @@
 #include "AUIImagePicture.h"
 #include "AUIStillImageButton.h"
 #include "AUIRadioButton.h"
-#include "auidialog.h"
+#include "AUIDialog.h"
 
 #include "EC_GameSession.h"
 #include "EC_Game.h"

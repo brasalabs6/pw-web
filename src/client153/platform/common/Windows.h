@@ -119,6 +119,21 @@ struct RECT {
   LONG bottom;
 };
 
+typedef RECT *LPRECT;
+typedef DWORD COLORREF;
+typedef BOOL (*WNDENUMPROC)(HWND, LPARAM);
+struct GUITHREADINFO {
+  DWORD cbSize;
+  DWORD flags;
+  HWND hwndActive;
+  HWND hwndFocus;
+  HWND hwndCapture;
+  HWND hwndMenuOwner;
+  HWND hwndMoveSize;
+  HWND hwndCaret;
+  RECT rcCaret;
+};
+
 struct SIZE {
   LONG cx;
   LONG cy;

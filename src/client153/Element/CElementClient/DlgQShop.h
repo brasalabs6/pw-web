@@ -11,7 +11,7 @@
 #include "AUIImagePicture.h"
 #include "AUIStillImageButton.h"
 #include "AUIRadioButton.h"
-#include "AUIListbox.h"
+#include "AUIListBox.h"
 #include "globaldataman.h"
 #include <vector>
 

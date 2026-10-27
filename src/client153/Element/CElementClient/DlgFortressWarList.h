@@ -5,7 +5,7 @@
 #pragma once
 
 #include "DlgBase.h"
-#include "AUIListbox.h"
+#include "AUIListBox.h"
 
 namespace GNET
 {

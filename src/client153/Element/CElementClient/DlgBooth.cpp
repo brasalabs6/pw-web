@@ -6,7 +6,7 @@
 #include "AUICTranslate.h"
 #include "AUIImagePicture.h"
 #include "AUIEditBox.h"
-#include "AUICombobox.h"
+#include "AUIComboBox.h"
 #include "DlgBooth.h"
 #include "DlgInputNO.h"
 #include "DlgChat.h"

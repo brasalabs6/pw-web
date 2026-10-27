@@ -13,7 +13,7 @@
 #include "EC_UIManager.h"
 #include "EC_HostPlayer.h"
 #include "EC_Gamesession.h"
-#include "AUIDEF.h"
+#include "AUIDef.h"
 #include "EC_UIHelper.h"
 #include <A3DFlatCollector.h>
 #include <A2DSprite.h>

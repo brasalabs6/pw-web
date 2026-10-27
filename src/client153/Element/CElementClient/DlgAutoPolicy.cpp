@@ -23,7 +23,7 @@
 #include <AUICTranslate.h>
 
 /*Alien - foi adicionado - Auto Cultivo Aprimorado*/
-#include "auidialog.h"
+#include "AUIDialog.h"
 #include "CSplit.h"
 #include "itemdataman.h"
 #include "DlgBase.h"

@@ -6,7 +6,7 @@
 
 #include "DlgBase.h"
 #include "AUIProgress.h"
-#include "AUIListbox.h"
+#include "AUIListBox.h"
 #include "AUIImagePicture.h"
 
 class CDlgFortressInfo : public CDlgBase

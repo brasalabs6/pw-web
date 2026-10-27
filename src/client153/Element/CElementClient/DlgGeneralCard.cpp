@@ -11,7 +11,7 @@
 #include "AFI.h"
 #include "AUIDef.h"
 #include "A2DSprite.h"
-#include "AUIImagepicture.h"
+#include "AUIImagePicture.h"
 #include "AUIStillImageButton.h"
 #include "AUICTranslate.h"
 #include "EC_Global.h"

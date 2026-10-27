@@ -1,7 +1,7 @@
 #ifndef _ELEMENTCLIENT_DLGLIBPRODUCERELATIONSHIPAWARDSUBLIST_H_
 #define _ELEMENTCLIENT_DLGLIBPRODUCERELATIONSHIPAWARDSUBLIST_H_
 #include "dlgbase.h"
-#include "auisubdialog.h"
+#include "AUISubDialog.h"
 
 class CDlgLibProduceRelationshipAwardSub;
 

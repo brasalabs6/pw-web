@@ -1,5 +1,5 @@
 #include "DlgAutoPolicyMatter.h"
-#include "auidialog.h"
+#include "AUIDialog.h"
 #include "CSplit.h"
 #include "itemdataman.h"
 #include "DlgBase.h"

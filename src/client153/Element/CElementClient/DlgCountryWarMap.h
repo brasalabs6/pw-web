@@ -7,7 +7,7 @@
 
 #include "DlgBase.h"
 #include "AUIImagePicture.h"
-#include "AUIlabel.h"
+#include "AUILabel.h"
 #include "AUICheckBox.h"
 #include "EC_DomainCountry.h"
 #include <vector>

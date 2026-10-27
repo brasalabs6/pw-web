@@ -3,7 +3,7 @@
 // Date		: 2005/8/18
 
 #include "AUIEditBox.h"
-#include "AUIStillImagebutton.h"
+#include "AUIStillImageButton.h"
 #include "DlgFriendOptionNormal.h"
 #include "EC_GameUIMan.h"
 #include "DlgFriendList.h"

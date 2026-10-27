@@ -7,7 +7,7 @@
 #include "DlgTask.h"
 #include "ExpTypes.h"
 #include "AFI.h"
-#include "AUIImagepicture.h"
+#include "AUIImagePicture.h"
 #include "AUICTranslate.h"
 #include "AUIDef.h"
 #include "EC_GameUIMan.h"

@@ -26,7 +26,7 @@
 #include <LuaState.h>
 #include <A3DDevice.h>
 #include <A3DFont.h>
-#include "auidialog.h"
+#include "AUIDialog.h"
 #include "CSplit.h"
 #include "itemdataman.h"
 #include "DlgBase.h"

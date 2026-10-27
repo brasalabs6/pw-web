@@ -1,8 +1,8 @@
 #pragma once
 #include "DlgBase.h"
-#include "auilabel.h"
-#include "auiprogress.h"
-#include "auistillimagebutton.h"
+#include "AUILabel.h"
+#include "AUIProgress.h"
+#include "AUIStillImageButton.h"
 
 #include "EC_IvtrEquip.h"
 #include "EC_IvtrEquipMatter.h"

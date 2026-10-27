@@ -6,7 +6,7 @@
 
 #include "DlgBase.h"
 #include "AUIStillImageButton.h"
-#include "AUIListbox.h"
+#include "AUIListBox.h"
 #include "AUISubDialog.h"
 #include "AUIImagePicture.h"
 

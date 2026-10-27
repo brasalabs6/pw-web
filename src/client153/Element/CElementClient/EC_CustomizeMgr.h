@@ -43,6 +43,23 @@ class CECCustomizePolicy;
 #define FACE_SCENE_STATURE 0
 #define FACE_SCENE_HEAD 1
 
+// Forward declarations for the dialog classes used by this manager.
+class CDlgCustomizeBase;
+class CDlgCustomizeEye;
+class CDlgCustomizeEye2;
+class CDlgCustomizeFace;
+class CDlgCustomizeFace2;
+class CDlgCustomizeNoseMouth;
+class CDlgCustomizeNoseMouth2;
+class CDlgCustomizeHair;
+class CDlgCustomizePaint;
+class CDlgCustomizePre;
+class CDlgCustomizeStature;
+class CDlgCustomizeMoveCamera;
+class CDlgCustomize;
+class CDlgFaceName;
+class CDlgCustomizeEar;
+
 class CECCustomizeMgr
 {
 	friend class CDlgCustomizeBase;
