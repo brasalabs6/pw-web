@@ -2,6 +2,9 @@
 import importlib.util
 from pathlib import Path
 import tempfile
+import json
+import subprocess
+import sys
 import unittest
 
 spec = importlib.util.spec_from_file_location('project_probe', Path(__file__).resolve().parents[2] / 'scripts/probe-client153-project.py')
@@ -52,6 +55,38 @@ class ProjectPaths(unittest.TestCase):
         self.assertIn('-c', first)
         self.assertNotEqual(first[-1], second[-1])
         self.assertEqual(command[1], '-fsyntax-only')
+
+
+    def test_extra_project_generates_objects_and_reports_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            main = root / 'main'
+            extra = root / 'extra'
+            main.mkdir()
+            extra.mkdir()
+            project = """<VisualStudioProject><Configurations><Configuration Name="Release|Win32"><Tool Name="VCCLCompilerTool" AdditionalIncludeDirectories="." PreprocessorDefinitions=""/></Configuration></Configurations><Files><File RelativePath="{source}"/></Files></VisualStudioProject>"""
+            (main / 'main.vcproj').write_text(project.format(source='ElementClient.cpp'))
+            (extra / 'extra.vcproj').write_text(project.format(source='library.cpp'))
+            (main / 'ElementClient.cpp').write_text('int main_source() { return 0; }')
+            library = extra / 'library.cpp'
+            library.write_text('int library_source() { return 1; }')
+            wrapper = root / 'compiler'
+            wrapper.write_text('#!/usr/bin/env python3\nimport os, sys\na=[x for x in sys.argv[1:] if x not in ("-sUSE_ZLIB=1", "-fms-extensions", "-ferror-limit=5")]\nos.execvp("c++", ["c++"]+a)\n')
+            wrapper.chmod(0o755)
+            output = root / 'report.json'
+            objects = root / 'objects'
+            command = [sys.executable, str(Path(probe.__file__)), '--source', str(root),
+                       '--project', 'main/main.vcproj', '--extra-project', str(extra / 'extra.vcproj'),
+                       '--emxx', str(wrapper), '--output', str(output), '--all', '--object-dir', str(objects)]
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(len(list(objects.glob('*.o'))), 2)
+            library.write_text('#error extra compilation failed\n')
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(len(list(objects.glob('*.o'))), 1)
+            report = json.loads(output.read_text())
+            self.assertNotEqual(report['extraProjects'][0]['sources'][0]['exitCode'], 0)
 
     def test_case_and_parent_resolution(self):
         with tempfile.TemporaryDirectory() as directory:

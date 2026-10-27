@@ -171,6 +171,7 @@ def main():
             cmd[source_index] = str(source_path(root, adapted_root, source['path']))
             if args.object_dir:
                 cmd = object_command(cmd, args.object_dir.resolve(), source['path'])
+                Path(cmd[-1]).unlink(missing_ok=True)
             try:
                 outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
                 return dict(path=source['path'], exitCode=outcome.returncode,
@@ -187,12 +188,14 @@ def main():
         print(f"Checked {len(outcomes)} sources; {sum(x['exitCode'] == 0 for x in outcomes)} passed")
         for message, count in groups.most_common(10):
             print(f'{count:4d} {message}')
+    extra_failed = False
     for extra in args.extra_project or []:
         extra_project = extra.resolve()
         extra_tree = ET.fromstring(extra_project.read_bytes().decode('gb18030'))
         extra_config = next((c for c in extra_tree.findall('./Configurations/Configuration') if c.attrib['Name'] == args.configuration), None)
         if extra_config is None:
             print(f'Extra project {extra_project.name}: configuration not present, skipped')
+            extra_failed = True
             continue
         extra_tools = {t.attrib['Name']: t.attrib for t in extra_config.findall('Tool')}
         extra_cc = extra_tools['VCCLCompilerTool']
@@ -228,6 +231,9 @@ def main():
         def compile_extra(source, _cmd=extra_command, _index=extra_index):
             cmd = list(_cmd)
             cmd[_index] = str(source_path(root, adapted_root, source['path']))
+            if args.object_dir:
+                cmd = object_command(cmd, args.object_dir.resolve(), source['path'])
+                Path(cmd[-1]).unlink(missing_ok=True)
             try:
                 outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
                 return dict(path=source['path'], exitCode=outcome.returncode,
@@ -237,6 +243,7 @@ def main():
         active_extra = [s2 for s2 in extra_sources if s2['exists'] and not s2['excluded']]
         with ThreadPoolExecutor(max_workers=args.jobs) as executor:
             extra_outcomes = list(executor.map(compile_extra, active_extra))
+        extra_failed |= any(outcome['exitCode'] for outcome in extra_outcomes)
         report.setdefault('extraProjects', []).append(dict(project=str(extra_project), sources=extra_outcomes))
         print(f"Extra project {extra_project.name}: {sum(x['exitCode'] == 0 for x in extra_outcomes)}/{len(extra_outcomes)} passed")
 
@@ -244,7 +251,7 @@ def main():
     args.output.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{len(sources)} translation units; {sum(not s["exists"] for s in sources)} missing after Windows case resolution')
     print(result.stderr)
-    return 1 if args.all and any(x['exitCode'] for x in outcomes) else result.returncode
+    return 1 if extra_failed or (args.all and any(x['exitCode'] for x in outcomes)) else result.returncode
 
 
 if __name__ == '__main__':
