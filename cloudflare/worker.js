@@ -1,39 +1,96 @@
 // Cloudflare Worker + Durable Object fronting the PW 1.5.3 server container.
 //
 // Platform model (docs/DECISIONS/ADR-0006 and the Cloudflare Containers
-// docs): containers receive traffic ONLY through the Worker/DO mediation
-// layer — raw TCP from external game clients is not the supported inbound
-// path. This Worker exposes:
-//   GET /health — HTTP health of the daemons inside the container.
-//   GET /probe  — proves the container's glinkd:29000 accepts TCP from the
-//                 mediation layer (getTcpPort().connect()).
+// docs): containers receive traffic ONLY through the Durable Object Container
+// API (ctx.container.getTcpPort(port)) — raw TCP from external game clients
+// is not the supported inbound path. Endpoints:
+//   GET /health   — HTTP health of the daemons inside the container
+//                    (proxied over getTcpPort(8080).fetch()).
+//   GET /probe    — the container's internal glinkd:29000 TCP accept check.
+//   GET /tcpprobe — proves the MEDIATION TCP path the game-client gateway
+//                    will use: getTcpPort(29000).connect() from this DO.
+//
+// The container boots the 8 daemons on start (~30-60s); requests poll
+// readiness instead of failing on the first attempt.
 
 import { DurableObject } from "cloudflare:workers";
+
+const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+const HEALTH_PORT = 8080;
+const GLINKD_PORT = 29000;
 
 export class Server153 extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
+    const container = ctx.container;
+    if (container?.running) {
+      void ctx.blockConcurrencyWhile(() =>
+        container.setInactivityTimeout(INACTIVITY_TIMEOUT_MS),
+      );
+    }
+  }
+
+  async ensureRunning() {
+    const container = this.ctx.container;
+    if (!container) {
+      throw new Error("no container configured for this Durable Object");
+    }
+    if (!container.running) {
+      // durable_object scheduling policy: pass the image from the wrangler
+      // `images` map (key "default" in wrangler.jsonc).
+      container.start({
+        image: container.images.default,
+        enableInternet: false,
+      });
+      await container.setInactivityTimeout(INACTIVITY_TIMEOUT_MS);
+    }
+    return container;
   }
 
   async fetch(request) {
     const url = new URL(request.url);
     try {
-      if (url.pathname === "/health") {
-        const port = this.getTcpPort(8080);
-        return await port.fetch("http://container/health");
+      const container = await this.ensureRunning();
+
+      if (url.pathname === "/tcpprobe") {
+        // Mediation-layer TCP to glinkd: the path a Workers-based game
+        // gateway (ADR-0006 phase 1) will relay client sessions through.
+        const conn = container.getTcpPort(GLINKD_PORT).connect("127.0.0.1:29000");
+        await conn.opened;
+        conn.close();
+        return new Response(
+          JSON.stringify({ glinkd_29000_mediation_tcp: true }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
       }
-      if (url.pathname === "/probe") {
-        const port = this.getTcpPort(8080);
-        return await port.fetch("http://container/probe");
+
+      // /health and /probe: HTTP via the mediation layer to the container's
+      // health server. Poll until the daemons finish booting.
+      const port = container.getTcpPort(HEALTH_PORT);
+      let lastError;
+      for (let attempt = 0; attempt < 150; attempt++) {
+        try {
+          const response = await port.fetch("http://container" + url.pathname);
+          if (!response.ok) {
+            throw new Error(`container returned ${response.status}`);
+          }
+          return response;
+        } catch (e) {
+          lastError = e;
+          await scheduler.wait(2000);
+        }
       }
-      return new Response("not found", { status: 404 });
+      throw new Error(
+        "container not ready after 300s: " + (lastError?.message || lastError),
+      );
     } catch (e) {
       return new Response(
         JSON.stringify({
           error: e.message || String(e),
-          hasGetTcpPort: typeof this.getTcpPort,
+          hasCtxContainer: typeof this.ctx.container,
+          hasGetTcpPort: typeof this.ctx.container?.getTcpPort,
         }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
   }
