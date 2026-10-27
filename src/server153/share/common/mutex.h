@@ -307,22 +307,29 @@ namespace Thread
 		}
 		explicit RWLock() { pthread_rwlock_init(&locker, NULL); }
 		explicit RWLock(const char* id) { pthread_rwlock_init(&locker, NULL); }
-		void WRLock() { pthread_rwlock_wrlock(&locker); }
-		void RDLock() { pthread_rwlock_rdlock(&locker); }
+		// pw-web fix: return the acquisition result. A nested acquisition on
+		// a lock the thread already holds returns EDEADLK; the Scoped wrappers
+		// below must know so they do not unlock a lock they never acquired
+		// (the spurious unlock corrupts the rwlock count — observed live:
+		// __readers = -6, every later writer starved forever).
+		int WRLock() { return pthread_rwlock_wrlock(&locker); }
+		int RDLock() { return pthread_rwlock_rdlock(&locker); }
 		void UNLock() { pthread_rwlock_unlock(&locker); }
 		class WRScoped
 		{
 			RWLock *rw;
+			bool locked;
 		public:
-			~WRScoped () { rw->UNLock(); }
-			explicit WRScoped(RWLock &l) : rw(&l) { rw->WRLock(); }
+			~WRScoped () { if (locked) rw->UNLock(); }
+			explicit WRScoped(RWLock &l) : rw(&l) { locked = (0 == rw->WRLock()); }
 		};
 		class RDScoped
 		{
 			RWLock *rw;
+			bool locked;
 		public:
-			~RDScoped () { rw->UNLock(); }
-			explicit RDScoped(RWLock &l) : rw(&l) { rw->RDLock(); }
+			~RDScoped () { if (locked) rw->UNLock(); }
+			explicit RDScoped(RWLock &l) : rw(&l) { locked = (0 == rw->RDLock()); }
 		};
 	};
 
