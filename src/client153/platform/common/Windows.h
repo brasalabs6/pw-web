@@ -35,6 +35,7 @@
 #include <thread>
 
 inline int stricmp(const char *lhs, const char *rhs) { return ::strcasecmp(lhs, rhs); }
+inline int strcmpi(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
 
 #ifndef MAX_PATH
 #define MAX_PATH 260

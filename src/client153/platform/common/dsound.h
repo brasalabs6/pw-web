@@ -50,6 +50,20 @@
 #define DSSCL_EXCLUSIVE 0x00000003
 #define DSSCL_WRITEPRIMARY 0x00000004
 
+#pragma pack(push, 1)
+struct WAVEFORMAT {
+  WORD wFormatTag;
+  WORD nChannels;
+  DWORD nSamplesPerSec;
+  DWORD nAvgBytesPerSec;
+  WORD nBlockAlign;
+};
+
+struct PCMWAVEFORMAT {
+  WAVEFORMAT wf;
+  WORD wBitsPerSample;
+};
+
 struct WAVEFORMATEX {
   WORD wFormatTag;
   WORD nChannels;
@@ -59,6 +73,7 @@ struct WAVEFORMATEX {
   WORD wBitsPerSample;
   WORD cbSize;
 };
+#pragma pack(pop)
 
 #define WAVE_FORMAT_PCM 0x0001
 
