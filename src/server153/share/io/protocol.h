@@ -530,8 +530,19 @@ private:
 
 				if (!is.proto_ignore)
 				{
-					if ((protocol = Protocol::Create(type))) 
+					if ((protocol = Protocol::Create(type)))
 					{
+						// pw-web debug: dump raw protocol payloads for wire-format
+						// analysis (type 84 = CreateRole from the v145 client fails)
+						if (type == 84 || getenv("PW153_DUMP_ALL"))
+						{
+							const unsigned char *p = (const unsigned char*)data.begin();
+							size_t n = data.size();
+							fprintf(stderr, "[decode] type=%d size=%d first bytes:", (int)type, (int)n);
+							for (size_t i = 0; i < n && i < 128; i++)
+								fprintf(stderr, " %02x", p[i]);
+							fprintf(stderr, "\n");
+						}
 						data >> *protocol;
 						loop = false;
 					}
