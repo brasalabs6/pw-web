@@ -14,6 +14,30 @@ endif()
 
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
+  if(EMSCRIPTEN)
+    add_executable(client153_aui_xml_test tests/client153/aui_xml.cpp src/client153/Common/AUInterface2/AXMLFile.cpp)
+    target_include_directories(client153_aui_xml_test PRIVATE
+      src/client153/Angelica2/AngelicaCommon/Header src/client153/Angelica2/AngelicaFile/Header
+      src/client153/Angelica2/Angelica3D/Header src/client153/platform/common
+      src/client153/Common/AUInterface2 src/client153/Common/Output/include/PropDlg
+      src/client153/Common/Output/include/Gfx src/client153/Common/Output/include/LuaWrapper
+      src/client153/Common/Output/include/aaudio src/client153/Angelica2/Output/3rdsdk/include/lua
+      src/client153/Angelica2/Output/3rdsdk/include src/client153/Angelica2/Output/a3dsdk/include
+      src/client153/Angelica2/Output/acsdk/include src/client153/Angelica2/Output/afsdk/include
+      src/client153/Angelica2/Output/amsdk/include)
+    target_link_libraries(client153_aui_xml_test PRIVATE client153_file)
+    target_compile_definitions(client153_aui_xml_test PRIVATE WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
+    target_compile_options(client153_aui_xml_test PRIVATE -fms-extensions -fexceptions
+      "SHELL:-include ${PROJECT_SOURCE_DIR}/src/client153/platform/common/Windows.h"
+      "SHELL:-include ${PROJECT_SOURCE_DIR}/src/client153/platform/common/sdk_forward.h"
+      "SHELL:-include ${PROJECT_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/AChar.h"
+      "SHELL:-include ${PROJECT_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/ATime.h")
+    foreach(widget AUIListBox AUIComboBox AUIEditBox AUILabel AUIStillImageButton AUICheckBox AUIImagePicture AUIDialog)
+      target_compile_options(client153_aui_xml_test PRIVATE "SHELL:-include ${PROJECT_SOURCE_DIR}/src/client153/Common/AUInterface2/${widget}.h")
+    endforeach()
+    target_link_options(client153_aui_xml_test PRIVATE -fexceptions "-sENVIRONMENT=node")
+    add_test(NAME client153_aui_xml COMMAND client153_aui_xml_test)
+  endif()
   add_executable(client153_winui_types_test tests/client153/winui_types.cpp)
   target_link_libraries(client153_winui_types_test PRIVATE client153_common)
   add_test(NAME client153_winui_types COMMAND client153_winui_types_test)

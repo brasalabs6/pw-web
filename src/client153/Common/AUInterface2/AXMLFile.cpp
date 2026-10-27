@@ -1,7 +1,7 @@
 #include "AUI.h"
 
 #include "AXMLFile.h"
-#include "ACHAR.h"
+#include "AChar.h"
 #include "AFileImage.h"
 #include "AMemory.h"
 
@@ -93,7 +93,8 @@ const ACHAR* AXMLItem::GetItemText(bool bEnd)
 	ACString strTemp;
 	for(int i = 0; i < m_vecProperty.size(); i++ )
 	{
-		strTemp.Format(_AL(" %s=\"%s\""), m_vecProperty[i].key, m_vecProperty[i].value);
+		strTemp.Format(_AL(" %s=\"%s\""), (const ACHAR*)m_vecProperty[i].key,
+			(const ACHAR*)m_vecProperty[i].value);
 		m_strItemText += strTemp;
 	}
 	if( bEnd )
