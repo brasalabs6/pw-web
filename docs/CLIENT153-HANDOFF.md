@@ -312,3 +312,92 @@ const, extensão MSVC), `WTYPES.h` (10 — tipos OLE), `eh.h` (9 — SEH).
   milestone de rede.
 - **Quota de disco**: workspace em 96% (liberado com `git gc`); builds
   grandes vão para o volume de clients.
+
+---
+
+# Atualização do handoff — Grok → Codex (2026-10-27, terceira rodada)
+
+Estado até `98eb2a0c` (tudo pushed, árvore limpa). Campanha compile-first:
+**572/787 TUs do jogo compilando para objetos WASM (72,7%)** — desde a
+segunda rodada do handoff (281), passando por 492/504/562.
+
+## Commits desta rodada
+
+- `483a1cb9` — SEH→try/catch (12 arquivos; subconjunto de exceções C++
+  preservado, hardware faults trapam — limitação documentada), seam `eh.h`
+  (layouts Win32 de exception record), fixes de grupos pequenos
+- `2681ce95` — ctor/operator exato de cor no GFX_PROPERTY (o `unsigned long`
+  do original era 32-bit; A3DCOLOR=unsigned int ganha match exato — 32 TUs
+  de ambiguidade resolvidos)
+- `a9722728` — **sources da lib AUI** copiadas+transcodificadas (94
+  arquivos; o inventário de LIGAÇÃO provou que o jogo precisa delas — 12
+  símbolos AUI indefinidos), seams tlhelp32/vdmdbg/unknwn/CreateFileA,
+  probe com `--extra-project`, fixes de dependent-names na família SDB
+  (subagente glm-5.3 com verificação por objeto real)
+- `98eb2a0c` — for-scoping leaks (7 TUs), temporários dos providers wiki
+  (9 TUs — **achado verificado: os setters clonam sincronamente**, então
+  locals nomeados são o padrão correto, membros não), constantes de
+  disposition de arquivo, prelude preferindo as cópias adaptadas da AUI
+
+## ACHADO CRÍTICO: o inventário de ligação
+
+Liguei os ~526 objetos (na época) com as libs WASM do port:
+**apenas 12 símbolos indefinidos, todos do jogo/AUI** (nenhum de
+plataforma — os seams são header-inline). Os 12: métodos de
+AUIDialog/AUIImagePicture/AUIManager/AUIObject/AUIStillImageButton (a lib
+AUI, agora sob o probe) e CECHostPlayer::SummonPet/RecallPet/IsOperatingPet
+(TUs que ainda não compilam). **Conclusão: a ligação do cliente é viável
+com os seams existentes** — o próximo marco é ligar o entry + fecho.
+
+## Estado do probe (cycle 39, 572/787)
+
+Grupos restantes, em ordem: `atlbase.h` (10 TUs — **DOIS agentes morreram
+por max_tokens nesta tarefa**; o inventário da superfície ATL está no
+PWAtl.h — CComPtr/CComBSTR/CAxWindow etc.; fazer INCREMENTAL, um símbolo
+por vez, ou inline), varargs AWString (6), `Psapi.h` (6 — o próximo header
+da cadeia de defesa; mesmo padrão honesto do tlhelp32), `EL_GrassLand.h`/
+`A3DGfxEx.h` (case variants), `AString` em format (3 — cast), temporários
+restantes de search commands (o padrão de locals nomeados se aplica —
+verificar se o setter clona), `PCMWAVEFORMAT` (struct do dsound.h),
+`AList2` template (include order).
+
+**Projeto AUI (extra-project): 0/46** — o prelude foi corrigido para as
+cópias adaptadas (commit 98eb2a0c) mas o probe do AUI ainda não re-rodou
+com essa correção; o próximo cycle vai reclassificar. Os TUs AUI podem ter
+os mesmos padrões do jogo (case/for-scoping/etc.).
+
+## Próximos passos (na ordem)
+
+1. **Probe cycle 41** (com o prelude corrigido) para reclassificar o AUI e
+   confirmar os grupos restantes do jogo.
+2. **atlbase.h** (10 TUs): fazer incremental/inline — ler o PWAtl.h, um
+   símbolo por vez.
+3. **Psapi.h** (6): mesmo padrão do tlhelp32 (enumeração de processos →
+   falha explícita ERROR_CALL_NOT_IMPLEMENTED).
+4. **Ligação** (o próximo MARCO): com 572+ objetos, ligar o
+   ElementClient.cpp entry + libs do port + objetos AUI num módulo
+   carregável; o inventário de símbolos faltantes guia os próximos
+   adaptadores. Os 12 conhecidos somem quando os TUs deles compilarem.
+5. Depois: as libs Angelica (engine/mídia) — o probe só cobre ElementClient
+   + AUI; o resto do cliente (Angelica2/*) compila via CMake targets
+   existentes + os novos projetos vcproj.
+
+## Armadilhas desta rodada (novas)
+
+- **Subagentes de seam**: DOIS morreram por max_tokens (DeepSeek e glm) na
+  tarefa do atlbase — tarefas com muita leitura precisam de escopo
+  estrito ("leia SÓ este arquivo") ou inline.
+- **Meu bug de regex**: um comentário `//` inline engoliu um `);` de
+  default-argument (A3DPlants.h) — ao editar inline, prefira linhas
+  separadas para comentários de adaptação.
+- **Padrão de temporários VERIFICADO**: WikiSearcher::SetContentProvider/
+  SetSearchCommand CLONAM sincronamente (WikiSearcher.cpp) — os
+  "temporários pendurados" do original eram consumidos na hora; locals
+  nomeados são o fix correto, membros quebram (copy assignment deletado).
+- **Scan de case variants**: cuidado com a direção — um scan case-
+  insensitivo pode criar forwarders apontando para outros forwarders (loop
+  circular). Verificar a direção contra o arquivo REAL antes de criar.
+- **O volume de clients foi reconstruído** pelo agente do servidor
+  (root-owned, sem permissão de escrita, assets autorizados não estão
+  mais lá) — builds voltaram para o workspace (8,6G livres); testes que
+  dependem de assets pulam por design.
