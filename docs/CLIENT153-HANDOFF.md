@@ -175,6 +175,14 @@ também receberam correções de sintaxe, cobertas por `client153_typelist`.
 Após essas mudanças, passaram 19 testes nativos e 18 WASM. A nova varredura
 completa ainda precisa ser consultada para medir o impacto total.
 
+Na varredura seguinte passaram 110 de 787 unidades sintáticas. A remoção do
+erro de `CompactUINT` revelou outros bloqueios: codificação (182), referências
+de tamanho incompatíveis (123) e `CreateEvent` (83). O primeiro erro de
+codificação inspecionado vem de um cabeçalho AUI da referência, em GB18030.
+Os testes de serialização foram ampliados para números de ponto flutuante,
+strings, UTF-16 e octetos; correções de acesso e largura passaram com ASan e
+UBSan, além dos testes nativos e WASM. Ainda não há conexão validada.
+
 Para reproduzir os testes, configure os builds nativo e WASM conforme o
 onboarding e execute `cmake --build <build>`, seguido de
 `ctest --test-dir <build> --output-on-failure`. O teste Winsock é nativo;

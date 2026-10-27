@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <climits>
+#include <cstring>
 #include <string>
 #include <vector>
 #include "gnbyteorder.h"
@@ -36,7 +37,7 @@ public:
 		template<typename T> void pop_byte(T &t) const
 		{
 			if (pos + sizeof(t) > size()) throw Marshal::Exception();
-			t = *(T *)( (char*)begin() + pos );
+			std::memcpy(&t, (const char*)begin() + pos, sizeof(t));
 			pos += sizeof(t);
 		}
 		unsigned char pop_byte_8() const
@@ -181,8 +182,8 @@ public:
 #endif
 		OctetsStream& operator << (std::int64_t x)          { return push_byte(byteorder_64(x)); }
 		OctetsStream& operator << (std::uint64_t x) { return push_byte(byteorder_64(x)); }
-		OctetsStream& operator << (float x)              { return push_byte(byteorder_32(*(unsigned long*)&x)); }
-		OctetsStream& operator << (double x)             { return push_byte(byteorder_64(*(std::uint64_t*)&x)); }
+		OctetsStream& operator << (float x) { std::uint32_t bits; std::memcpy(&bits, &x, sizeof(bits)); return push_byte(byteorder_32(bits)); }
+		OctetsStream& operator << (double x) { std::uint64_t bits; std::memcpy(&bits, &x, sizeof(bits)); return push_byte(byteorder_64(bits)); }
 		OctetsStream& operator << (const Marshal &x)     { return x.marshal(*this); }
 		OctetsStream& operator << (const Octets &x)  
 		{
@@ -282,14 +283,14 @@ public:
 		}
 		const OctetsStream& operator >> (const float &x) const
 		{
-			unsigned long l = pop_byte_32();
-			remove_const(x) = *(float*)&l;
+			std::uint32_t l = pop_byte_32();
+			std::memcpy(&remove_const(x), &l, sizeof(l));
 			return *this;
 		}
 		const OctetsStream& operator >> (const double &x) const
 		{
 			std::uint64_t ll = pop_byte_64();
-			remove_const(x) = *(double *)&ll;
+			std::memcpy(&remove_const(x), &ll, sizeof(ll));
 			return *this;
 		}
 		const OctetsStream& operator >> (const Marshal &x) const
@@ -298,7 +299,7 @@ public:
 		}
 		const OctetsStream& operator >> (const Octets &x) const
 		{
-			size_t len;
+			unsigned int len;
 			size_t sizez = size();
 			uncompact_uint32(len);
 			if (pos + len > size()) throw Marshal::Exception();
@@ -310,7 +311,7 @@ public:
 		template<typename T>
 		const OctetsStream& operator >> (const std::basic_string<T> &x) const
 		{
-			size_t len;
+			unsigned int len;
 			uncompact_uint32(len);
 			if (pos + len*sizeof(T) > size()) throw Marshal::Exception();
 			remove_const(x).assign((T*)((char*)begin()+pos), len);
