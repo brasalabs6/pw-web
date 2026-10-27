@@ -8897,6 +8897,22 @@
     {
       "path": "Angelica2/AngelicaMedia/Header/AMPI.h",
       "sha256": "0545aaf4b9c5467b9cacad92671755fd6bb4ea4b1b813238cc58f1b37b5ccf04"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMConfig.cpp",
+      "sha256": "2dcbfd2cd0d9cd16a16c6f3c92f9ea6f0c0bc782a42178dce02c0adc2876514c"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMPI.cpp",
+      "sha256": "481f0813643a2fd8707ab51ba5195a799056daa90838932aeb6cf82b0a59e89b"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMEngine.cpp",
+      "sha256": "fc64f982d3bfd5c4d10f33d77e7fd28bdfe3822552313313e5c37bc92c189530"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMSoundEngine.cpp",
+      "sha256": "fff7243e13788f48beb5d46dd1017dff7c6d47b43ec107a22cbcc04f7ab66b2a"
     }
   ],
   "adaptations": [

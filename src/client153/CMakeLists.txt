@@ -52,7 +52,11 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DSkinModel.cpp
     Angelica2/Angelica3D/Source/A3DSkin.cpp
     Angelica2/Angelica3D/Source/A3DLight.cpp
-    Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp)
+    Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
+    Angelica2/AngelicaMedia/Source/AMConfig.cpp
+    Angelica2/AngelicaMedia/Source/AMPI.cpp
+    Angelica2/AngelicaMedia/Source/AMEngine.cpp
+    Angelica2/AngelicaMedia/Source/AMSoundEngine.cpp)
   target_include_directories(client153_engine_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
