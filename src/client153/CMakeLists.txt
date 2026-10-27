@@ -46,7 +46,8 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DCamera.cpp
     Angelica2/Angelica3D/Source/A3DCameraBase.cpp
     Angelica2/Angelica3D/Source/A3DLightMan.cpp
-    Angelica2/Angelica3D/Source/A3DFrustum.cpp)
+    Angelica2/Angelica3D/Source/A3DFrustum.cpp
+    Angelica2/Angelica3D/Source/A3DViewport.cpp)
   target_include_directories(client153_engine_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include

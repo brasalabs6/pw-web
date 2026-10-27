@@ -16,6 +16,8 @@
 
 #define D3D_OK 0
 #define D3DLOCK_READONLY 0x0010
+#define D3DCLEAR_TARGET 0x00000001
+#define D3DCLEAR_ZBUFFER 0x00000002
 
 #include "Windows.h"
 

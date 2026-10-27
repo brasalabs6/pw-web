@@ -15,10 +15,6 @@
 
 #include "Windows.h"
 
-//	The COM result macros the client checks with.
-#define FAILED(hr) (((HRESULT)(hr)) < 0)
-#define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
-
 //	Result codes: the documented DirectSound values the client checks.
 #define DS_OK 0
 #define DSERR_GENERIC 0x88780000

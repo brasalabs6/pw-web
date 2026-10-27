@@ -5,6 +5,9 @@
 static_assert(sizeof(D3DCAPS8) == 212, "D3DCAPS8 size");
 static_assert(D3D_OK == 0, "D3D success code");
 static_assert(D3DLOCK_READONLY == 0x0010, "D3D read-only lock flag");
+static_assert(D3DCLEAR_TARGET == 1 && D3DCLEAR_ZBUFFER == 2, "D3D clear flags");
+static_assert(FAILED(static_cast<HRESULT>(0x80004005u)), "failure HRESULT");
+static_assert(SUCCEEDED(static_cast<HRESULT>(1)), "success HRESULT");
 static_assert(offsetof(D3DCAPS8, ExtentsAdjust) == 132, "D3DCAPS8 extents");
 static_assert(offsetof(D3DCAPS8, MaxVertexIndex) == 184, "D3DCAPS8 vertex index");
 static_assert(offsetof(D3DCAPS8, MaxVertexShaderConst) == 200, "D3DCAPS8 shader constants");

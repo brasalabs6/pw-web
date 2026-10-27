@@ -89,6 +89,8 @@ typedef void *HDC;
 typedef void *HINSTANCE;
 typedef void *HMODULE;
 typedef std::int32_t HRESULT;
+#define FAILED(hr) (((HRESULT)(hr)) < 0)
+#define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
 typedef std::size_t SIZE_T;
 typedef std::uintptr_t UINT_PTR;
 typedef std::intptr_t INT_PTR;

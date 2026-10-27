@@ -8877,6 +8877,10 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DFrustum.cpp",
       "sha256": "3a1ac82a5526bfba6a0a746b2a8bebf2a635c49fb6f12dd0d5f1508d50a1619b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DViewport.cpp",
+      "sha256": "710682aee7f8a3233fabbb4de2dea75b589aae26089d585f156e5f447b4f52ab"
     }
   ],
   "adaptations": [
