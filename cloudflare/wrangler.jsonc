@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pw-server153",
+  "main": "worker.js",
+  "compatibility_date": "2024-09-23",
+  "durable_objects": {
+    "bindings": [
+      { "name": "SERVER153", "class_name": "Server153" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Server153"] }
+  ],
+  "containers": [
+    {
+      "name": "pw-server153",
+      "class_name": "Server153",
+      "scheduling_policy": "durable_object",
+      "images": {
+        "default": {
+          "dockerfile": "./Dockerfile"
+        }
+      }
+    }
+  ]
+}
