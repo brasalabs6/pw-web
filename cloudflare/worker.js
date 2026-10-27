@@ -37,7 +37,10 @@ export class Server153 extends DurableObject {
     }
     if (!container.running) {
       // durable_object scheduling policy: pass the image from the wrangler
-      // `images` map (key "default" in wrangler.jsonc).
+      // `images` map (key "default" in wrangler.jsonc). The instance size is
+      // omitted -> defaults to "lite" (the valid named sizes for start() are
+      // lite and standard-1..4; "basic" is a wrangler-config-only name and
+      // makes start() throw a TypeError).
       container.start({
         image: container.images.default,
         enableInternet: false,
@@ -65,10 +68,13 @@ export class Server153 extends DurableObject {
       }
 
       // /health and /probe: HTTP via the mediation layer to the container's
-      // health server. Poll until the daemons finish booting.
+      // health server. Cold start (image pull + VM boot + 8 daemons) exceeds
+      // the edge's ~180s hold limit, so a request that holds until readiness
+      // is always cut off. Try a few short fetches; if the container is not
+      // ready yet, answer 503 + Retry-After and let the client poll.
       const port = container.getTcpPort(HEALTH_PORT);
       let lastError;
-      for (let attempt = 0; attempt < 150; attempt++) {
+      for (let attempt = 0; attempt < 3; attempt++) {
         try {
           const response = await port.fetch("http://container" + url.pathname);
           if (!response.ok) {
@@ -80,8 +86,18 @@ export class Server153 extends DurableObject {
           await scheduler.wait(2000);
         }
       }
-      throw new Error(
-        "container not ready after 300s: " + (lastError?.message || lastError),
+      return new Response(
+        JSON.stringify({
+          starting: true,
+          detail: lastError?.message || String(lastError),
+        }),
+        {
+          status: 503,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": "15",
+          },
+        },
       );
     } catch (e) {
       return new Response(
