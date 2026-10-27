@@ -95,7 +95,7 @@ void CDlgFriendHistory::BuildChatHistory(int idPlayer)
 
 		long stime = dwTime;
 		stime -= GetGame()->GetTimeZoneBias() * 60; // localtime = UTC - bias, in which bias is in minutes
-		const tm* ptm = gmtime(&stime);
+		const tm* ptm = gmtime((const time_t*)&stime);
 		strItem.Format(_AL("%s\t%04d.%02d.%02d\t%s"), szName,
 			ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, szText);
 		pList->AddString(strItem);

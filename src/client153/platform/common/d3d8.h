@@ -21,7 +21,9 @@
 #include "A3DVector.h"
 #include "A3DMatrix.h"
 #include "A3DQuaternion.h"
+#include "A3DGeometry.h"	//	A3DPLANE backs D3DXPLANE.
 typedef A3DVECTOR3 D3DXVECTOR3;
+typedef A3DPLANE D3DXPLANE;
 typedef A3DMATRIX4 D3DXMATRIX;
 typedef A3DQUATERNION D3DXQUATERNION;
 
@@ -157,6 +159,12 @@ struct D3DCAPS8 {
   DWORD PixelShaderVersion;
   float MaxPixelShaderValue;
 };
+
+struct ID3DXBuffer : IUnknownD3D {
+  virtual void *GetBufferPointer() = 0;
+  virtual DWORD GetBufferSize() = 0;
+};
+typedef ID3DXBuffer *LPD3DXBUFFER;
 
 struct IDirect3D8 : IUnknownD3D {
   virtual HRESULT CheckDeviceType(UINT adapter, DWORD checkType,

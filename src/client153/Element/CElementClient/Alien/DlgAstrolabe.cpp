@@ -150,7 +150,7 @@ void CDlgAstrolabe::Refresh()
 		for (int i = 0; i < pItem->GetPropertyNum(); i++)
 		{			
 			m_pTxtAttName[i]->Show(true);
-			str.Format(GetStringFromTable(i < 5 ? 11516 : 11517), GetAddonName(pItem->GetProperty(i)));
+			str.Format(GetStringFromTable(i < 5 ? 11516 : 11517), (const wchar_t*)GetAddonName(pItem->GetProperty(i)));
 			m_pTxtAttName[i]->SetText(str);
 			m_pTxtAttValue[i]->Show(true);
 			str.Format(L" %+d", pItem->GetProperty(i).aParams[0]);

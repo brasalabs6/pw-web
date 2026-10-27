@@ -296,7 +296,7 @@ bool CECLoginSwitch::Validate()const
 			AString strError;
 			if (strPassword.IsEmpty()) strError += "password";
 			if (strAgent.IsEmpty()) strError += "agent";
-			a_LogOutput(1, "CECLoginSwitch::Login, %s empty", strError);
+			a_LogOutput(1, "CECLoginSwitch::Login, %s empty", (const char*)strError);
 			return false;	//	使用 SOO 登录时 pwd 及 agent 都不可为空
 		}
 		break;

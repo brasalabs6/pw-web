@@ -55,7 +55,7 @@ void CDlgForceNPC::OnCommand_Join(const char * szCommand)
 
 	ACString strMsg;
 	
-	strMsg.Format(GetStringFromTable(9402), A3DCOLOR_TO_STRING(m_pConfig->color), m_pConfig->name);
+	strMsg.Format(GetStringFromTable(9402), (const wchar_t*)A3DCOLOR_TO_STRING(m_pConfig->color), m_pConfig->name);
 
 	PAUIDIALOG pMsgBox;
 	GetGameUIMan()->MessageBox("Game_ForceJoin", strMsg, MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
@@ -68,7 +68,7 @@ void CDlgForceNPC::OnCommand_Quit(const char * szCommand)
 		return;
 
 	ACString strMsg;
-	strMsg.Format(GetStringFromTable(9403), A3DCOLOR_TO_STRING(m_pConfig->color), m_pConfig->name);
+	strMsg.Format(GetStringFromTable(9403), (const wchar_t*)A3DCOLOR_TO_STRING(m_pConfig->color), m_pConfig->name);
 
 	PAUIDIALOG pMsgBox;
 	GetGameUIMan()->MessageBox("Game_ForceQuit", strMsg, MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
@@ -128,7 +128,7 @@ void CDlgForceNPC::OnTick()
 	ACString strHint;
 	if(ct > 0)
 	{
-		strHint.Format(GetStringFromTable(9404), GetGameUIMan()->GetFormatTime(max(1, ct/1000)));
+		strHint.Format(GetStringFromTable(9404), (const wchar_t*)GetGameUIMan()->GetFormatTime(max(1, ct/1000)));
 	}
 	pBtn->Enable(ct <= 0);
 	pBtn->SetHint(strHint);

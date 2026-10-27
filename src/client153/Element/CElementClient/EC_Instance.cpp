@@ -100,7 +100,7 @@ bool CECInstance::Load(AWScriptFile* psf)
 			if (strTemp.Right(4) == _AL(".cfg")){
 				m_routeFiles.push_back(WC2AS(strTemp));
 			}else{
-				a_LogOutput(1, "CECInstance::Load, Invalid file %s IGNORED!", AC2AS(psf->m_szToken));
+				a_LogOutput(1, "CECInstance::Load, Invalid file %s IGNORED!", (const char*)AC2AS(psf->m_szToken));
 			}
 		}
 	} while (psf->GetNextToken(false));

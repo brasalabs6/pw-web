@@ -32,7 +32,7 @@ void CDlgMailOption::OnCommandReply(const char* szCommand)
 	CSplit s(GetText());
 	CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 	ACString strSubject;
-	strSubject.Format(_AL("Re: %s"), vec[1] );
+	strSubject.Format(_AL("Re: %s"), (const wchar_t*)vec[1] );
 	if( strSubject.GetLength() > 20 )
 		strSubject = strSubject.Left(20);
 	GetGameUIMan()->m_pDlgMailWrite->CreateNewMail(vec[2].Mid(2), strSubject );

@@ -2028,7 +2028,7 @@ const wchar_t* CECIvtrWeddingInviteCard::GetNormalDesc(bool bRepair)
 			t.tm_hour,
 			t.tm_min,
 			pWeddingConfig->wedding_scene[m_Essence.scene].name,
-			strGroomName, strBrideName, strInviteeName);
+			(const wchar_t*)strGroomName, (const wchar_t*)strBrideName, (const wchar_t*)strInviteeName);
 
 		break;
 	}

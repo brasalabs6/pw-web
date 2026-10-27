@@ -411,7 +411,7 @@ void CDlgQuickPay::OnPrtcGetActivatedServices_Re(GNET::Protocol* pProtocol)
 	else if (m_bAddingCash)
 	{
 		ACString str;
-		str.Format(GetStringFromTable(10012), GetMerchantName(m_iSelMerchant));
+		str.Format(GetStringFromTable(10012), (const wchar_t*)GetMerchantName(m_iSelMerchant));
 		GetGameUIMan()->MessageBox("QuickPayActivateMerchant", str, 
 			MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160));
 	}
@@ -423,7 +423,7 @@ void CDlgQuickPay::OnPrtcAddCash_Re(GNET::Protocol* pProtocol)
 	QPAddCash_Re* p = (QPAddCash_Re*)pProtocol;
 	ACString strHint;
 	strHint.Format(_AL("%s: %s"), 
-		GetMerchantName(p->merchant_id), 
+		(const wchar_t*)GetMerchantName(p->merchant_id), 
 		GetGameUIMan()->GetStringFromTable(10000 + p->retcode));
 	GetGameUIMan()->AddChatMessage(strHint, GP_CHAT_SYSTEM);
 	// 返回错误吗为尚未开通或折扣错误时，更新信息

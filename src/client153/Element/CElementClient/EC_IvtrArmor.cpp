@@ -286,73 +286,73 @@ bool CECIvtrArmor::GetRefineEffectFor(ACString & strEffect, const RefineEffect &
 		{
 		case REFINE_PHYDEF:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_PHYDEFENCE)
 				, m_Essence.defense - rhs.m_aPEEVals[PEEI_PHYDEF] + rhs.m_aRefines[REFINE_PHYDEF] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());		
 			break;
 			
 		case REFINE_DODGE:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_DODGE)
 				, m_Essence.armor - rhs.m_aPEEVals[PEEI_DODGE] + rhs.m_aRefines[REFINE_DODGE] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_HP:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_ADDHP)
 				, m_Essence.hp_enhance - rhs.m_aPEEVals[PEEI_HP] + rhs.m_aRefines[REFINE_HP] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_GOLDDEF:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_GOLDDEFENCE)
 				, m_Essence.resistance[MAGICCLASS_GOLD] - rhs.m_aPEEVals[PEEI_GOLDDEF] + rhs.m_aRefines[REFINE_GOLDDEF] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_WOODDEF:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_WOODDEFENCE)
 				, m_Essence.resistance[MAGICCLASS_WOOD] - rhs.m_aPEEVals[PEEI_WOODDEF] + rhs.m_aRefines[REFINE_WOODDEF] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_WATERDEF:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_WATERDEFENCE)
 				, m_Essence.resistance[MAGICCLASS_WATER] - rhs.m_aPEEVals[PEEI_WATERDEF] + rhs.m_aRefines[REFINE_WATERDEF] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_FIREDEF:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_FIREDEFENCE)
 				, m_Essence.resistance[MAGICCLASS_FIRE] - rhs.m_aPEEVals[PEEI_FIREDEF] + rhs.m_aRefines[REFINE_FIREDEF] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_EARTHDEF:
 			strEffect.Format(_AL("%s%s %d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_EARTHDEFENCE)
 				, m_Essence.resistance[MAGICCLASS_EARTH] - rhs.m_aPEEVals[PEEI_EARTHDEF] + rhs.m_aRefines[REFINE_EARTHDEF] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 				break;
 		}

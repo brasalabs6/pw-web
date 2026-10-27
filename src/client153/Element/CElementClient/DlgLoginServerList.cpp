@@ -252,7 +252,7 @@ void CDlgLoginServerList::OnTick()
 				
 				if( strHint.GetLength() > 0 )
 					strHint.CutRight(1);
-				strText.Format(_AL("%s\t%s\t%s\t%s"), vec[0], vec[1], vec[2], vec[3]);
+				strText.Format(_AL("%s\t%s\t%s\t%s"), (const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], (const wchar_t*)vec[3]);
 				m_pLst_Server->SetText(i, strText);
 				m_pLst_Server->SetItemData(i, dwTime, COL_PINGTIME);
 				m_pLst_Server->SetItemHint(i, strHint);
@@ -287,7 +287,7 @@ void CDlgLoginServerList::SelectGroup(int nGroup)
 		int iServer = group.server_vec[i];
 		const CECServerList::ServerInfo& serverInfo = CECServerList::Instance().GetServer(iServer);
 		ACString strText;		
-		strText.Format(_AL("%s\t---\t---\t "), serverInfo.server_name);
+		strText.Format(_AL("%s\t---\t---\t "), (const wchar_t*)serverInfo.server_name);
 		m_pLst_Server->AddString(strText);
 		int itemIndex = m_pLst_Server->GetCount() - 1;
 		m_pLst_Server->SetItemData(itemIndex, iServer,			COL_SERVERINDEX);
@@ -423,7 +423,7 @@ void CDlgLoginServerList::SelectServerByName(ACString strServer)
 			m_pLst_Server->SetItemTextColor(i, 0xFFFFFFFF, 0);
 		m_pLst_Server->SetItemData(i, 99999999, COL_PINGTIME);
 		ACString strText;
-		strText.Format(_AL("%s\t---\t---\t "), vec[0]);
+		strText.Format(_AL("%s\t---\t---\t "), (const wchar_t*)vec[0]);
 		m_pLst_Server->SetItemTextColor(i, 0xFFFFFFFF, 1);
 		m_pLst_Server->SetText(i, strText);
 	}

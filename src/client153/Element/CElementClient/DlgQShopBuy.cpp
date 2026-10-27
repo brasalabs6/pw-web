@@ -115,8 +115,8 @@ void CDlgQShopBuy::SetBuyingItem(int itemindex, int buyindex, CECShopBase *pShop
 		if (status>=4 && status<=12) {
 			// 打折
 			strTemp.Format(GetStringFromTable(8590),
-				pGameUIMan->GetCashText(nPrice),
-				pGameUIMan->GetCashText(CECShopBase::GetOriginalPrice(nPrice, status)));
+				(const wchar_t*)pGameUIMan->GetCashText(nPrice),
+				(const wchar_t*)pGameUIMan->GetCashText(CECShopBase::GetOriginalPrice(nPrice, status)));
 		} else {
 			// 不打折
 			strTemp = pGameUIMan->GetCashText(nPrice);
@@ -146,7 +146,7 @@ void CDlgQShopBuy::SetBuyingItem(int itemindex, int buyindex, CECShopBase *pShop
 			nPrice = gshop_saleitem.buy[m_SaleBuyIndex].price;
 			if (nPrice > 0) {
 				strTemp.Format(GetStringFromTable(8591), 
-					pItem->GetName(), gshop_saleitem.num, pGameUIMan->GetCashText(nPrice));
+					pItem->GetName(), gshop_saleitem.num, (const wchar_t*)pGameUIMan->GetCashText(nPrice));
 				pObj->SetText(strTemp);
 			}
 		} else pObj->SetText(_AL(""));

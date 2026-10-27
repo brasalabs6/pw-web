@@ -208,7 +208,7 @@ void CDlgGuildMap::OnEventLButtonDown(WPARAM wParam, LPARAM lParam, AUIObject * 
 							if(j != 0)
 								strLv += _AL(",");
 						}
-						strText.Format(GetStringFromTable(763), nDomain, strLv);
+						strText.Format(GetStringFromTable(763), nDomain, (const wchar_t*)strLv);
 						pGameUIMan->MessageBox("ChallengeErr", strText,
 							MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 					}

@@ -110,7 +110,7 @@ ACString CECInstanceReenter::GetNotifyMessage()const{
 	}
 
 	CECGameUIMan *pGameUIMan = CECUIHelper::GetGameUIMan();
-	result.Format(pGameUIMan->GetStringFromTable(11351), strInstance, pGameUIMan->GetFormatTime(GetTimeLeft()));
+	result.Format(pGameUIMan->GetStringFromTable(11351), (const wchar_t*)strInstance, (const wchar_t*)pGameUIMan->GetFormatTime(GetTimeLeft()));
 
 	return result;
 }

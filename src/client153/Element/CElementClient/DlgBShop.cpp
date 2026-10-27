@@ -650,7 +650,7 @@ void CDlgBShop::ShowAuctionItem(const GNET::GSysAuctionItem* pItem)
 		ACString strText;
 		long stime = pItem->auction_starttime;
 		stime -= GetGame()->GetTimeZoneBias() * 60; // localtime = UTC - bias, in which bias is in minutes
-		const tm* pt = gmtime(&stime);
+		const tm* pt = gmtime((const time_t*)&stime);
 		if(!pt || pItem->auction_starttime == 0)
 		{
 			strText = GetStringFromTable(5600);

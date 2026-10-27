@@ -131,7 +131,7 @@ void CDlgChannelChat::OnCommandSend(const char* szCommand)
 			if( m_idSpeakTo != 0 && m_pChk_Whisper->IsChecked() )
 			{
 				szText.Format(GetStringFromTable(629), 
-					GetGameRun()->GetPlayerName(m_idSpeakTo, true), strText);
+					GetGameRun()->GetPlayerName(m_idSpeakTo, true), (const wchar_t*)strText);
 				AddChannelChatMessage(szText, CDLGCHANNELCHAT_COLOR_PRIVATE);
 				GetGameSession()->chatroom_Speak(m_nRoomId, m_idSpeakTo, strText);
 			}
@@ -341,7 +341,7 @@ void CDlgChannelChat::ChannelAction(int idAction, void *pData)
 				GetGameRun()->AddPlayerName(p->roleid, strName);
 				m_pList_ChatMember->AddString(strName);
 				m_pList_ChatMember->SetItemData(m_pList_ChatMember->GetCount() - 1 , p->roleid);
-				szText.Format(GetStringFromTable(624), strName);
+				szText.Format(GetStringFromTable(624), (const wchar_t*)strName);
 				AddChannelChatMessage(szText);
 				m_nNumber++;
 				szText.Format(_AL("%d/%d"), m_nNumber, m_nCapacity);
@@ -382,9 +382,9 @@ void CDlgChannelChat::ChannelAction(int idAction, void *pData)
 		ACString strSubject((const ACHAR*)p->subject.begin(), p->subject.size() / sizeof (ACHAR));
 		ACString strPW((const ACHAR*)p->password.begin(), p->password.size() / sizeof (ACHAR));
 		ACString strText;
-		strText.Format(GetStringFromTable(632), strName, strSubject);
+		strText.Format(GetStringFromTable(632), (const wchar_t*)strName, (const wchar_t*)strSubject);
 		ACString strText1;
-		strText1.Format(_AL("%s%s %d"), strText, strPW, strPW.GetLength());
+		strText1.Format(_AL("%s%s %d"), (const wchar_t*)strText, (const wchar_t*)strPW, strPW.GetLength());
 
 		GetGameUIMan()->AddInformation(CDlgInfo::INFO_SYSTEM, "Game_InviteChannel", 
 			strText1, 0xFFFFFFF, p->roomid, p->inviter, 0);
@@ -469,19 +469,19 @@ void CDlgChannelChat::ChannelAction(int idAction, void *pData)
 			if( idSpeakTo == 0)
 			{
 				szText.Format(GetStringFromTable(628), 
-					GetGameRun()->GetPlayerName(p->src, true), strMessage );
+					GetGameRun()->GetPlayerName(p->src, true), (const wchar_t*)strMessage );
 				AddChannelChatMessage(szText, CDLGCHANNELCHAT_COLOR_PUBLIC);
 			}
 			else if( p->src == GetHostPlayer()->GetCharacterID() )
 			{
 				szText.Format(GetStringFromTable(645), 
-					GetGameRun()->GetPlayerName(idSpeakTo, true), strMessage );
+					GetGameRun()->GetPlayerName(idSpeakTo, true), (const wchar_t*)strMessage );
 				AddChannelChatMessage(szText, CDLGCHANNELCHAT_COLOR_SPEAKTO);
 			}
 			else if( idSpeakTo == GetHostPlayer()->GetCharacterID() )
 			{
 				szText.Format(GetStringFromTable(646), 
-					GetGameRun()->GetPlayerName(p->src, true), strMessage );
+					GetGameRun()->GetPlayerName(p->src, true), (const wchar_t*)strMessage );
 				AddChannelChatMessage(szText, CDLGCHANNELCHAT_COLOR_SPEAKTO);
 			}
 			else
@@ -489,14 +489,14 @@ void CDlgChannelChat::ChannelAction(int idAction, void *pData)
 				szText.Format(GetStringFromTable(647), 
 					GetGameRun()->GetPlayerName(p->src, true), 
 					GetGameRun()->GetPlayerName(idSpeakTo, true),
-					strMessage );
+					(const wchar_t*)strMessage );
 				AddChannelChatMessage(szText, CDLGCHANNELCHAT_COLOR_PUBLIC);
 			}
 		}
 		else
 		{
 			szText.Format(GetStringFromTable(630), 
-				GetGameRun()->GetPlayerName(p->src, true), strMessage);
+				GetGameRun()->GetPlayerName(p->src, true), (const wchar_t*)strMessage);
 			AddChannelChatMessage(szText, CDLGCHANNELCHAT_COLOR_PRIVATE);
 		}
 		if( !IsShow() )

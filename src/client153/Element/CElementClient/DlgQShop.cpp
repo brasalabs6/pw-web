@@ -1300,7 +1300,7 @@ void CDlgQShop::OnUserCashAction(void *pProtocol)
 					GetGameSession()->GetServerError(p1->retcode, errMsg);
 
 				ACString strTemp;
-				strTemp.Format(GetStringFromTable(9371), errMsg);
+				strTemp.Format(GetStringFromTable(9371), (const wchar_t*)errMsg);
 				GetGameUIMan()->ShowErrorMsg(strTemp);
 			}
 			else

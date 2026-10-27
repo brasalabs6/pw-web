@@ -430,7 +430,7 @@ void CDlgEngrave::SetEngraveService(int id_engrave_service)
 		if (nMin == nMax) strTemp2.Format(_AL("%d"), nMin);
 		else strTemp2.Format(_AL("%d-%d"), nMin, nMax);
 		
-		strTemp.Format(GetStringFromTable(9336), strTemp2);
+		strTemp.Format(GetStringFromTable(9336), (const wchar_t*)strTemp2);
 
 		if (!strTemp.IsEmpty())
 		{

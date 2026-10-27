@@ -763,7 +763,7 @@ void CECGameSession::ProcessGameData(const GNET::Octets& Data)
 	//	Size == -1 means we haven't handled this command
 	if (dwCmdSize == (DWORD)(-1))
 	{
-		g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("SERVER - Unknown %s"), AS2AC(g_pGame->GetRTDebug()->GetGamedataSendName(pCmdHeader->cmd, true)));
+		g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("SERVER - Unknown %s"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetGamedataSendName(pCmdHeader->cmd, true)));
 		return;
 	}
 	else if (dwCmdSize != (DWORD)(-2))
@@ -771,7 +771,7 @@ void CECGameSession::ProcessGameData(const GNET::Octets& Data)
 		ASSERT(dwCmdSize == dwDataSize);
 		if (dwCmdSize != dwDataSize)
 		{
-			g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - Invalid %s size(Network:%d, Client:%d)"), AS2AC(g_pGame->GetRTDebug()->GetGamedataSendName(pCmdHeader->cmd, true)), dwDataSize, dwCmdSize);
+			g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - Invalid %s size(Network:%d, Client:%d)"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetGamedataSendName(pCmdHeader->cmd, true)), dwDataSize, dwCmdSize);
 			return;
 		}
 	}

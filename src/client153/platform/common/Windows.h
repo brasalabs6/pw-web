@@ -20,6 +20,7 @@
 #include "ABaseDef.h"
 #include "criticalsection.h"
 #include "clock.h"
+#include "widestr.h"	//	the 16-bit wide CRT (the system wchar_t CRT is wrong for the port width).
 #include "utf16.h"
 
 #include <algorithm>
@@ -69,6 +70,7 @@ typedef const wchar_t *LPCWSTR;
 struct _EXCEPTION_POINTERS;
 typedef _EXCEPTION_POINTERS *LPEXCEPTION_POINTERS;
 typedef void *HANDLE;
+typedef BYTE *LPBYTE;
 typedef void *HFONT;
 typedef void *HBITMAP;
 typedef void *HBRUSH;
@@ -216,6 +218,10 @@ struct ULARGE_INTEGER {
 #define INVALID_FILE_ATTRIBUTES 0xFFFFFFFFu
 #define FORMAT_MESSAGE_FROM_SYSTEM 0x1000u
 #define MB_OK 0
+#define MB_OKCANCEL 1
+#define MB_ABORTRETRYIGNORE 2
+#define MB_YESNOCANCEL 3
+#define MB_RETRYCANCEL 5
 #define MB_ICONERROR 0x10
 #define MB_ICONWARNING 0x30
 #define MB_ICONINFORMATION 0x40
@@ -259,6 +265,12 @@ inline LONG InterlockedCompareExchange(volatile LONG *value, LONG exchange,
 }
 
 //	Time: the platform clock backs the tick counters (same source as ATime).
+//	mmsystem's tick: the same platform clock as GetTickCount.
+#define PW153_TIMEGETTIME_IN_WINDOWS
+inline DWORD timeGetTime() {
+  return static_cast<DWORD>(pw153::platform::monotonic_microseconds() / 1000);
+}
+
 inline DWORD GetTickCount() {
   return static_cast<DWORD>(
       pw153::platform::monotonic_microseconds() / 1000);
@@ -492,6 +504,71 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define VK_RSHIFT 0xA1
 #define VK_RCONTROL 0xA3
 #define VK_RMENU 0xA5
+
+//	The game uses bare min/max (the original windows.h macros); real
+//	functions keep std::min/std::max usable in the same translation units.
+inline int min(int a, int b) { return a < b ? a : b; }
+inline int max(int a, int b) { return a > b ? a : b; }
+inline long min(long a, long b) { return a < b ? a : b; }
+inline long max(long a, long b) { return a > b ? a : b; }
+inline float min(float a, float b) { return a < b ? a : b; }
+inline float max(float a, float b) { return a > b ? a : b; }
+inline double min(double a, double b) { return a < b ? a : b; }
+inline double max(double a, double b) { return a > b ? a : b; }
+
+//	The wide CRT conversions are the port's domain under -fshort-wchar.
+inline int _wtoi(const wchar_t *text) { return pw153::platform::wide_toi(text); }
+inline std::int64_t _wtoi64(const wchar_t *text) { return pw153::platform::wide_toi64(text); }
+inline wchar_t *_itow(int value, wchar_t *buffer, int radix) {
+  return pw153::platform::wide_itow(value, buffer, radix);
+}
+inline wchar_t *_i64tow(long long value, wchar_t *buffer, int radix) {
+  return pw153::platform::wide_i64tow(value, buffer, radix);
+}
+
+//	Virtual-key state: the browser input adapter populates this table with
+//	real events; before any input arrives the honest state is "no key down".
+inline short GetKeyState(int key) {
+  extern unsigned char pw153_key_state[256];
+  return static_cast<short>(pw153_key_state[key & 0xFF]);
+}
+inline short GetAsyncKeyState(int key) { return GetKeyState(key); }
+
+#define ERROR_SUCCESS 0
+#define ERROR_FILE_NOT_FOUND 2
+#define ERROR_PATH_NOT_FOUND 3
+#define ERROR_ACCESS_DENIED 5
+#define ERROR_INVALID_HANDLE 6
+
+//	Directory creation: the real POSIX mkdir with the Win32 return contract.
+#include <sys/stat.h>	//	mkdir.
+inline BOOL CreateDirectoryA(const char *path, void *attributes) {
+  (void)attributes;
+  if (!path || !path[0])
+    return FALSE;
+  if (::mkdir(path, 0777) == 0)
+    return TRUE;
+  return FALSE;
+}
+
+//	OutputDebugString: the diagnostic sink (console + stderr), the same
+//	mapping the original debug-window logging received.
+inline void OutputDebugStringA(const char *text) {
+  if (text)
+    std::fputs(text, stderr);
+}
+inline void OutputDebugStringW(const wchar_t *text) {
+  if (!text)
+    return;
+  std::string narrow;
+  if (pw153::platform::utf16_to_utf8(text, narrow))
+    std::fputs(narrow.c_str(), stderr);
+}
+
+#define ZeroMemory(destination, length) memset((destination), 0, (length))
+#define CopyMemory(destination, source, length) memcpy((destination), (source), (length))
+#define FillMemory(destination, length, fill) memset((destination), (fill), (length))
+#define MoveMemory(destination, source, length) memmove((destination), (source), (length))
 
 #define CP_ACP 0
 #define CP_OEMCP 1

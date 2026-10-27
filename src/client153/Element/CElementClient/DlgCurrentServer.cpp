@@ -37,7 +37,7 @@ void CDlgCurrentServer::OnTick()
 				int iGroup = CECServerList::Instance().FindGroup(iServer, false);
 				const CECServerList::GroupInfo &group = CECServerList::Instance().GetGroup(iGroup);
 				ACString strText;
-				strText.Format(m_pParent->GetStringFromTable(280), group.group_name, info.server_name);
+				strText.Format(m_pParent->GetStringFromTable(280), (const wchar_t*)group.group_name, (const wchar_t*)info.server_name);
 				m_pTxt_ServerName->SetText(strText);
 				
 				CECServerList::Instance().SetNeedPing(iServer, true);

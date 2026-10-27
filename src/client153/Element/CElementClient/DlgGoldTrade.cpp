@@ -94,12 +94,12 @@ void CDlgGoldTrade::OnCommandConfirm(const char * szCommand)
 		ACString strText;
 		if( m_nBuy == 1 )
 		{
-			strText.Format(GetStringFromTable(841), GetGameUIMan()->GetFormatNumber(nPrice), nNum);
+			strText.Format(GetStringFromTable(841), (const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice), nNum);
 			GetGameUIMan()->MessageBox("Game_GoldBuy", strText, MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 		}
 		else
 		{
-			strText.Format(GetStringFromTable(842), GetGameUIMan()->GetFormatNumber(nPrice), nNum);
+			strText.Format(GetStringFromTable(842), (const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice), nNum);
 			GetGameUIMan()->MessageBox("Game_GoldSell", strText, MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 		}
 		pMsgBox->SetData(a_atoi(m_pTxt_Money1->GetText()));
@@ -245,7 +245,7 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 			strGold.Format(GetStringFromTable(854), p->prices[i].volume);
 			if( p->prices[i].price > 0 )
 			{
-				strText.Format(_AL("%s\t%s\t%s"), GetGameUIMan()->GetFormatNumber(p->prices[i].price), GetStringFromTable(853), strGold);
+				strText.Format(_AL("%s\t%s\t%s"), (const wchar_t*)GetGameUIMan()->GetFormatNumber(p->prices[i].price), GetStringFromTable(853), (const wchar_t*)strGold);
 				m_pLst_Sell->AddString(strText);
 				pListSell2->AddString(strText);
 				m_pLst_Sell->SetItemTextColor(m_pLst_Sell->GetCount() - 1, A3DCOLORRGB(255, 255, 0));
@@ -253,7 +253,7 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 			}
 			else
 			{
-				strText.Format(_AL("%s\t%s\t%s"), GetGameUIMan()->GetFormatNumber(-p->prices[i].price), GetStringFromTable(852), strGold);
+				strText.Format(_AL("%s\t%s\t%s"), (const wchar_t*)GetGameUIMan()->GetFormatNumber(-p->prices[i].price), GetStringFromTable(852), (const wchar_t*)strGold);
 				m_pLst_Buy->AddString(strText);
 				pListBuy2->AddString(strText);
 				m_pLst_Buy->SetItemTextColor(m_pLst_Buy->GetCount() - 1, A3DCOLORRGB(0, 255, 0));
@@ -309,7 +309,7 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 		{
 			long stime = p->logs[i].time;
 			stime -= GetGame()->GetTimeZoneBias() * 60; // localtime = UTC - bias, in which bias is in minutes
-			tm *gtime = gmtime(&stime);
+			tm *gtime = gmtime((const time_t*)&stime);
 			strTime.Format(GetStringFromTable(789), 
 				gtime->tm_mon + 1, gtime->tm_mday, gtime->tm_hour, gtime->tm_min);
 			ACString strPrice, strTotalPrice;
@@ -333,15 +333,15 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 			{
 				strText.Format(_AL("%d\t%s\t%d\t%s\t%s\t%s"), p->logs[i].tid, 
 					GetStringFromTable(846), 
-					p->logs[i].volume, strPrice, strTotalPrice,
-					strTime);
+					p->logs[i].volume, (const wchar_t*)strPrice, (const wchar_t*)strTotalPrice,
+					(const wchar_t*)strTime);
 			}
 			else
 			{
 				strText.Format(_AL("%d\t%s\t%d\t%s\t%s\t%s"), p->logs[i].tid, 
 					GetStringFromTable(847), 
-					p->logs[i].volume, strPrice, strTotalPrice,
-					strTime);
+					p->logs[i].volume, (const wchar_t*)strPrice, (const wchar_t*)strTotalPrice,
+					(const wchar_t*)strTime);
 			}
 			pList->InsertString(n, strText);
 			if( p->logs[i].cost < 0 )
@@ -371,7 +371,7 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 			strGold.Format(GetStringFromTable(854), p->prices[i].volume);
 			if( p->prices[i].price > 0 )
 			{
-				strText.Format(_AL("%s\t%s\t%s"), GetGameUIMan()->GetFormatNumber(p->prices[i].price), GetStringFromTable(853), strGold);
+				strText.Format(_AL("%s\t%s\t%s"), (const wchar_t*)GetGameUIMan()->GetFormatNumber(p->prices[i].price), GetStringFromTable(853), (const wchar_t*)strGold);
 				m_pLst_Sell->AddString(strText);
 				pListSell2->AddString(strText);
 				m_pLst_Sell->SetItemTextColor(m_pLst_Sell->GetCount() - 1, A3DCOLORRGB(255, 255, 0));
@@ -379,7 +379,7 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 			}
 			else
 			{
-				strText.Format(_AL("%s\t%s\t%s"), GetGameUIMan()->GetFormatNumber(-p->prices[i].price), GetStringFromTable(852), strGold);
+				strText.Format(_AL("%s\t%s\t%s"), (const wchar_t*)GetGameUIMan()->GetFormatNumber(-p->prices[i].price), GetStringFromTable(852), (const wchar_t*)strGold);
 				m_pLst_Buy->AddString(strText);
 				pListBuy2->AddString(strText);
 				m_pLst_Buy->SetItemTextColor(m_pLst_Buy->GetCount() - 1, A3DCOLORRGB(0, 255, 0));
@@ -410,7 +410,7 @@ void CDlgGoldTrade::GoldAction(int idAction, void *pData)
 				CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 				vec[4] = GetStringFromTable(864);
 				ACString strText;
-				strText.Format(_AL("%s\t%s\t%s\t%s\t%s\t%s"), vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
+				strText.Format(_AL("%s\t%s\t%s\t%s\t%s\t%s"), (const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], (const wchar_t*)vec[3], (const wchar_t*)vec[4], (const wchar_t*)vec[5]);
 				pList->SetText(i, strText);
 				pList->SetItemData(i, 0);
 				break;

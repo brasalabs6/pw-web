@@ -220,7 +220,7 @@ bool CDlgProduce::CheckProfRestrict()
 			}
 		}
 		
-		strMsg.Format(GetStringFromTable(985), strProf);
+		strMsg.Format(GetStringFromTable(985), (const wchar_t*)strProf);
 		GetGameUIMan()->MessageBox("", strMsg, MB_OK, A3DCOLORRGB(255, 255, 255));
 		return false;
 	}

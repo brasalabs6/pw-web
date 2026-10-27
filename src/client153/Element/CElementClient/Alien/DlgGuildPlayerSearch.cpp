@@ -131,7 +131,7 @@ void CDlgGuildPlayerSearch::OnEventLButtonDown_Item(WPARAM wParam, LPARAM lParam
 	level_type.Format(_AL("%d"), GetCheckedRadioButton(0));
 	ACString pvp_type;
 	pvp_type.Format(_AL("%d"), GetCheckedRadioButton(1));
-	strText.Format(_AL("1%s\\g2%s\\g3%s\\g4%s\\g5%s"),pvp_type, level_type, level, proclaim, m_pEdi_Words->GetText());
+	strText.Format(_AL("1%s\\g2%s\\g3%s\\g4%s\\g5%s"),(const wchar_t*)pvp_type, (const wchar_t*)level_type, (const wchar_t*)level, (const wchar_t*)proclaim, m_pEdi_Words->GetText());
 	GetGameSession()->faction_change_proclaim(strText);
 	m_pEdi_Words->SetText(_AL(""));
 	Show(false);

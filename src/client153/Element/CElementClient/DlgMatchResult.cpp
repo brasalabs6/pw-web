@@ -243,7 +243,7 @@ void CDlgMatchResult::OnTick()
 				name = genderCol + name;
 				name += whiteCol;
 				
-				a_sprintf(szText,_AL("%s\t%d%%\t%d\t%s"), name, m_pLst->GetItemData(i,2), m_pLst->GetItemData(i,3), GetGameRun()->GetProfName(m_pLst->GetItemData(i,4)));
+				a_sprintf(szText,_AL("%s\t%d%%\t%d\t%s"), (const wchar_t*)name, m_pLst->GetItemData(i,2), m_pLst->GetItemData(i,3), GetGameRun()->GetProfName(m_pLst->GetItemData(i,4)));
 				m_pLst->SetText(i,szText);
 			}				
 		}		
@@ -292,7 +292,7 @@ void CDlgMatchResult::OnMatchResultRe(GNET::Protocol* pProtocl)
 		name = genderCol + name;
 		name += whiteCol;
 
-		a_sprintf(szText,_AL("%s\t%d%%\t%d\t%s"), name, sim, p->result[i].level, GetGameRun()->GetProfName(p->result[i].occupation));
+		a_sprintf(szText,_AL("%s\t%d%%\t%d\t%s"), (const wchar_t*)name, sim, p->result[i].level, GetGameRun()->GetProfName(p->result[i].occupation));
 		m_pLst->SetText(i,szText);
 
 		m_pLst->SetItemData(i,sim,2);

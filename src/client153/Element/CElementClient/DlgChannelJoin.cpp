@@ -174,7 +174,7 @@ void CDlgChannelJoin::BuildChannelList(void* pChannelList)
 			strPW = GetStringFromTable(783);
 		else
 			strPW = GetStringFromTable(784);
-		szText.Format(_AL("%d\t%s\t%s\t%s\t%d/%d"),room.roomid, strPW, strSubject, strOwner, room.number, room.capacity);
+		szText.Format(_AL("%d\t%s\t%s\t%s\t%d/%d"),room.roomid, (const wchar_t*)strPW, (const wchar_t*)strSubject, (const wchar_t*)strOwner, room.number, room.capacity);
 		m_pLst_AllChannel->AddString(szText);
 		m_pLst_AllChannel->SetItemData(i, room.roomid, 0);
 		m_pLst_AllChannel->SetItemData(i, room.status & 1, 1);

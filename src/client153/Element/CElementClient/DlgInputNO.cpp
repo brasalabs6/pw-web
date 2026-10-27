@@ -183,7 +183,7 @@ void CDlgInputNO::OnCommand_confirm(const char * szCommand)
 				ACString strDesc, strPrice;
 				__int64 iiMoney = (__int64)pIvtrSrc->GetUnitPrice()*GetHostPlayer()->GetCashMoneyRate()*nNum;
 				strPrice = A3DCOLOR_TO_STRING(GetGameUIMan()->GetPriceColor(iiMoney)) + g_pGame->GetFormattedPrice(iiMoney);
-				strDesc.Format(GetGameUIMan()->GetStringFromTable(10015), strPrice);
+				strDesc.Format(GetGameUIMan()->GetStringFromTable(10015), (const wchar_t*)strPrice);
 				GetGameUIMan()->MessageBox("", strDesc, MB_OK, A3DCOLORRGB(255, 255, 255));
 			}
 
@@ -347,7 +347,7 @@ void CDlgInputNO::OnCommand_confirm(const char * szCommand)
 				if (pCtrl->CanBuyItemByPrice(needM,yinpiao,money))
 				{
 					ACString strMsg;
-					strMsg.Format(GetGameUIMan()->GetStringFromTable(10527),(int)yinpiao,GetGameUIMan()->GetFormatNumber(money),nNum,pItem->GetName());
+					strMsg.Format(GetGameUIMan()->GetStringFromTable(10527),(int)yinpiao,(const wchar_t*)GetGameUIMan()->GetFormatNumber(money),nNum,pItem->GetName());
 
 					PAUIDIALOG pMsgDlg=NULL;
 					int* pData = (int*)a_malloctemp(sizeof(int)*6);
@@ -394,7 +394,7 @@ void CDlgInputNO::OnCommand_confirm(const char * szCommand)
 					if (pCtrl->CanSellItemByPrice(nPrice))
 					{
 						ACString strMsg; 								
-						strMsg.Format(GetGameUIMan()->GetStringFromTable(10528),GetGameUIMan()->GetFormatNumber(nPrice),nNum,pItem->GetName());
+						strMsg.Format(GetGameUIMan()->GetStringFromTable(10528),(const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice),nNum,pItem->GetName());
 						
 						PAUIDIALOG pMsgDlg=NULL;
 						int* pData = (int*)a_malloctemp(sizeof(int) * 6);
@@ -445,7 +445,7 @@ void CDlgInputNO::OnCommand_confirm(const char * szCommand)
 				if (pCtrl->CanBuyItemByPrice(needM,yinpiao,money))
 				{
 					ACString strMsg;
-					strMsg.Format(GetGameUIMan()->GetStringFromTable(10527),(int)yinpiao,GetGameUIMan()->GetFormatNumber(money),nNum,pItem->GetName());
+					strMsg.Format(GetGameUIMan()->GetStringFromTable(10527),(int)yinpiao,(const wchar_t*)GetGameUIMan()->GetFormatNumber(money),nNum,pItem->GetName());
 
 					PAUIDIALOG pMsgDlg=NULL;
 					int* pData = (int*)a_malloctemp(sizeof(int)*6);
@@ -492,7 +492,7 @@ void CDlgInputNO::OnCommand_confirm(const char * szCommand)
 					if (pCtrl->CanSellItemByPrice(nPrice))
 					{
 						ACString strMsg;
-						strMsg.Format(GetGameUIMan()->GetStringFromTable(10528),GetGameUIMan()->GetFormatNumber(nPrice),nNum,pItem->GetName());
+						strMsg.Format(GetGameUIMan()->GetStringFromTable(10528),(const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice),nNum,pItem->GetName());
 						
 						PAUIDIALOG pMsgDlg=NULL;
 						int* pData = (int*)a_malloctemp(sizeof(int)*6);

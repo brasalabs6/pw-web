@@ -105,7 +105,7 @@ void CDlgRefineTrans::OnCommandConfirm(const char *szCommand)
 				strText.Format(GetStringFromTable(905), GetStringFromTable(896), GetStringFromTable(882));
 
 				ACString strMsg;
-				strMsg.Format(GetStringFromTable(880), GetStringFromTable(896), strText);
+				strMsg.Format(GetStringFromTable(880), GetStringFromTable(896), (const wchar_t*)strText);
 				GetGameUIMan()->MessageBox("", strMsg, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 				return;
 			}

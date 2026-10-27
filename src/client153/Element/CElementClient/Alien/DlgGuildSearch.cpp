@@ -276,7 +276,7 @@ bool CDlgGuildSearch::GetLineString(int idFaction, ACString &strText, ACString s
 			strMaster = _AL("-");
 		if (strProclaim.IsEmpty())
 			strProclaim = _AL("-");
-		strText.Format(_AL("%s\t%s\t%d\t%d\t%s"), strName, strMaster, pFInfo->GetMemNum(), pFInfo->GetLevel(), GetProclaimDesc(strProclaim));
+		strText.Format(_AL("%s\t%s\t%d\t%d\t%s"), (const wchar_t*)strName, (const wchar_t*)strMaster, pFInfo->GetMemNum(), pFInfo->GetLevel(), (const wchar_t*)GetProclaimDesc(strProclaim));
 		bRet = true;
 	}
 	else

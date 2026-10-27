@@ -167,7 +167,7 @@ void CECIvtrEquip::SetNewMark(const ACString &strMark, A3DCOLOR clr)
 		m_strMaker = strColor + m_strMaker;
 
 		//	添加额外提示字符
-		m_strMaker = ACString().Format(g_pGame->GetItemDesc()->GetWideString(ITEMDESC_EQUIPMARK), m_strMaker);
+		m_strMaker = ACString().Format(g_pGame->GetItemDesc()->GetWideString(ITEMDESC_EQUIPMARK), (const wchar_t*)m_strMaker);
 	}
 	m_byMadeFrom = strMark.IsEmpty() ? IMT_NULL : IMT_SIGN;
 }
@@ -3170,7 +3170,7 @@ void CECIvtrEquip::AddMakerDesc()
 		if (GetMadeFromFlag() != IMT_SIGN)
 		{
 			CECStringTab* pDescTab = g_pGame->GetItemDesc();
-			AddDescText(ITEMDESC_COL_GREEN, false, pDescTab->GetWideString(ITEMDESC_MADEFROM), m_strMaker);
+			AddDescText(ITEMDESC_COL_GREEN, false, pDescTab->GetWideString(ITEMDESC_MADEFROM), (const wchar_t*)m_strMaker);
 		}
 		else
 		{

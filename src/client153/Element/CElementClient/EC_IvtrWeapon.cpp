@@ -243,21 +243,21 @@ bool CECIvtrWeapon::GetRefineEffectFor(ACString & strEffect, const RefineEffect 
 		{
 		case REFINE_PHYDAMAGE:
 			strEffect.Format(_AL("%s%s %d-%d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_PHYDAMAGE)
 				, m_Essence.damage_low - rhs.m_aPEEVals[PEEI_PHYDAMAGE] + rhs.m_aRefines[REFINE_PHYDAMAGE] + rhs.GetIncEffect()
 				, m_Essence.damage_high - rhs.m_aPEEVals[PEEI_PHYDAMAGE] - rhs.m_aPEEVals[PEEI_MAX_PHYDAMAGE] + rhs.m_aRefines[REFINE_PHYDAMAGE] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 			
 		case REFINE_MAGICDAMAGE:
 			strEffect.Format(_AL("%s%s %d-%d %s(+%d)")
-				, rhs.GetClrAttribute()
+				, (const wchar_t*)rhs.GetClrAttribute()
 				, pDescTab->GetWideString(ITEMDESC_MAGICDAMAGE)
 				, m_Essence.magic_damage_low - rhs.m_aPEEVals[PEEI_MAGICDAMAGE] + rhs.m_aRefines[REFINE_MAGICDAMAGE] + rhs.GetIncEffect()
 				, m_Essence.magic_damage_high - rhs.m_aPEEVals[PEEI_MAGICDAMAGE] - rhs.m_aPEEVals[PEEI_MAX_MAGICDAMAGE] + rhs.m_aRefines[REFINE_MAGICDAMAGE] + rhs.GetIncEffect()
-				, rhs.GetClrEffect()
+				, (const wchar_t*)rhs.GetClrEffect()
 				, rhs.GetIncEffect());
 			break;
 		}

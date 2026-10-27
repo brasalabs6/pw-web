@@ -5,7 +5,7 @@
 #pragma once
 
 #include "DlgBase.h"
-#include "AUIImagePicture.h "
+#include "AUIImagePicture.h"
 #include "AUILabel.h"
 #include "AUIStillImageButton.h"
 #include "EC_Counter.h"

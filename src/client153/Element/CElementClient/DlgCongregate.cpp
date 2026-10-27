@@ -89,7 +89,7 @@ void CDlgCongregate::OnTick()
 	{
 		// show the timeout msg
 		ACString msg;
-		GetGameUIMan()->AddChatMessage(msg.Format(GetStringFromTable(5713), GetTypeName()), GP_CHAT_MISC);
+		GetGameUIMan()->AddChatMessage(msg.Format(GetStringFromTable(5713), (const wchar_t*)GetTypeName()), GP_CHAT_MISC);
 
 		// hide UI
 		Reset();
@@ -102,9 +102,9 @@ void CDlgCongregate::OnTick()
 		ACString strMsg;
 		strMsg.Format(  GetStringFromTable(5710), 
 						GetGameRun()->GetPlayerName(m_Sponsor, true),
-						GetTypeName(),
+						(const wchar_t*)GetTypeName(),
 						m_pBtn_Later ? m_pBtn_Later->GetText() : _AL("--"),
-						GetGameUIMan()->GetFormatTime(m_Timeout - leftTime) );
+						(const wchar_t*)GetGameUIMan()->GetFormatTime(m_Timeout - leftTime) );
 		m_pTxt_Msg->SetText(strMsg);
 	}
 
@@ -186,7 +186,7 @@ void CDlgCongregate::OnCongregateAction(int idAction, void* pData)
 	else if(CANCEL_CONGREGATE == idAction)
 	{
 		ACString msg;
-		GetGameUIMan()->AddChatMessage(msg.Format(GetStringFromTable(5714), GetTypeName()), GP_CHAT_MISC);
+		GetGameUIMan()->AddChatMessage(msg.Format(GetStringFromTable(5714), (const wchar_t*)GetTypeName()), GP_CHAT_MISC);
 		Reset();
 	}
 }
@@ -224,7 +224,7 @@ void CDlgCongregate::RefreshPendingMsg()
 		else
 		{
 			ACString msg;
-			GetGameUIMan()->AddChatMessage(msg.Format(GetStringFromTable(5712), playerName, GetTypeName()), GP_CHAT_MISC);
+			GetGameUIMan()->AddChatMessage(msg.Format(GetStringFromTable(5712), (const wchar_t*)playerName, (const wchar_t*)GetTypeName()), GP_CHAT_MISC);
 		}
 	}
 	m_RejectID.swap(pending);

@@ -92,7 +92,7 @@ void CDlgCoupon::OnCommand_Confirm(const char * szCommand)
 	PAUIDIALOG pMsgBox;
 	ACString strNum, strMsg;
 	strNum.Format(GetStringFromTable(5660), coupon);
-	strMsg.Format(GetStringFromTable(5650), strNum);
+	strMsg.Format(GetStringFromTable(5650), (const wchar_t*)strNum);
 
 	m_pAUIManager->MessageBox( "Game_Coupon_Confirm", strMsg, 
 							   MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);

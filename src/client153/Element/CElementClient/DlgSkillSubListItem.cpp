@@ -167,7 +167,7 @@ void CDlgSkillSubListItem::UpdateSkill(int skillID) {
 		m_levelLbl->SetText(levelStr);
 		if (CECHostSkillModel::SKILL_FULL != learnedState) {
 			ACString nextDsc;
-			nextDsc.Format(GetStringFromTable(11324), model.GetSkillDescription(m_skillID, m_curLevel + 1));
+			nextDsc.Format(GetStringFromTable(11324), (const wchar_t*)model.GetSkillDescription(m_skillID, m_curLevel + 1));
 			int reqLevel = GNET::ElementSkill::GetRequiredLevel(m_skillID, m_curLevel + 1);
 			int reqRealmLevel = GNET::ElementSkill::GetRequiredRealmLevel(m_skillID, m_curLevel + 1);
 			nextDsc += ACString().Format(GetStringFromTable(11328), reqLevel);

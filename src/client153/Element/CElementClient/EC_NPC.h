@@ -26,6 +26,9 @@
 #include "aabbcd.h"
 #include "hashmap.h"
 
+//	Forward declaration: the original relied on include order for this type.
+class CECNPCMan;
+
 ///////////////////////////////////////////////////////////////////////////
 //	
 //	Define and Macro

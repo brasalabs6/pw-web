@@ -104,8 +104,8 @@ void CDlgWarTower::OnShowDialog()
 			m_pTxt_Item[i]->SetText(szItemName);
 			if( szItemName == _AL("") )
 				szItemName = GetStringFromTable(786);
-			strText.Format(GetStringFromTable(721), szName, pData->build_info[i].time_use,
-				pData->build_info[i].fee, szItemName);
+			strText.Format(GetStringFromTable(721), (const wchar_t*)szName, pData->build_info[i].time_use,
+				pData->build_info[i].fee, (const wchar_t*)szItemName);
 			m_pImg_Tower[i]->SetHint(strText);
 		}
 		else

@@ -239,7 +239,7 @@ void CDlgSelect::RenderAccountTime()
 	else if( g_pGame->GetGameSession()->GetFreeGameTime() > 0 )
 	{
 		stime -= g_pGame->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
-		tm *gtime = gmtime(&stime);
+		tm *gtime = gmtime((const time_t*)&stime);
 		szText.Format(GetStringFromTable(218), gtime->tm_year + 1900, gtime->tm_mon + 1, 
 			gtime->tm_mday, gtime->tm_hour, gtime->tm_min);
 		if( g_pGame->GetGameSession()->GetFreeGameTime() > 10 * 3600 * 1000 )

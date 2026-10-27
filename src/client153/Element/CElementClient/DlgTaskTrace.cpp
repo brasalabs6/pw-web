@@ -1655,8 +1655,8 @@ void CDlgTaskTrace::AddTaskString(unsigned int id, bool hasContributionAward, co
 			unsigned long ulCurTime = pTask->GetCurTime();
 			unsigned long ulTaskTime = pEntry->m_ulTaskTime;
 			tm tmCur, tmTask;
-			ulCurTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
-			ulTaskTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
+			ulCurTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
+			ulTaskTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
 
 			if ((long)(ulCurTime) < 0)
 				ulCurTime = 0;

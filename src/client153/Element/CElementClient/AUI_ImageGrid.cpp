@@ -290,7 +290,7 @@ AString AUI_ImageGrid::MakeName(int nRealRow, int nRealCol)const
 	if (IsReady())
 	{
 		int nIndex = GetFirstIndex() + nRealRow*GetMaxCol() + nRealCol;
-		strName.Format("%s%02d", m_strPrefix, nIndex);
+		strName.Format("%s%02d", (const char*)m_strPrefix, nIndex);
 	}
 	return strName;
 }

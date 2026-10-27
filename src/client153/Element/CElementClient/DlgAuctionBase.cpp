@@ -187,9 +187,9 @@ void CDlgAuctionBase::OnCommandBuy(const char* szCommand)
 			CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 			ACString szText;
 			if( (int)m_pLst_Item->GetItemData(nSel, 4) == GetHostPlayer()->GetCharacterID() )
-				szText.Format(GetStringFromTable(663), GetGameUIMan()->GetFormatNumber(nPrice), vec[1], m_pLst_Item->GetItemData(nSel), GetStringFromTable(728));
+				szText.Format(GetStringFromTable(663), (const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice), (const wchar_t*)vec[1], m_pLst_Item->GetItemData(nSel), GetStringFromTable(728));
 			else
-				szText.Format(GetStringFromTable(663), GetGameUIMan()->GetFormatNumber(nPrice), vec[1], m_pLst_Item->GetItemData(nSel), _AL(""));
+				szText.Format(GetStringFromTable(663), (const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice), (const wchar_t*)vec[1], m_pLst_Item->GetItemData(nSel), _AL(""));
 			GetGameUIMan()->MessageBox("Game_AuctionBid", szText, MB_YESNO, 
 				A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 			pMsgBox->SetData(m_pLst_Item->GetItemData(nSel));
@@ -220,11 +220,11 @@ void CDlgAuctionBase::OnCommandBinBuy(const char* szCommand)
 			CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 			ACString szText;
 			if( (int)m_pLst_Item->GetItemData(nSel, 4) == GetHostPlayer()->GetCharacterID() )
-				szText.Format(GetStringFromTable(664), GetGameUIMan()->GetFormatNumber(nPrice),
-				vec[1], m_pLst_Item->GetItemData(nSel), GetStringFromTable(728));
+				szText.Format(GetStringFromTable(664), (const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice),
+				(const wchar_t*)vec[1], m_pLst_Item->GetItemData(nSel), GetStringFromTable(728));
 			else
-				szText.Format(GetStringFromTable(664), GetGameUIMan()->GetFormatNumber(nPrice),
-				vec[1], m_pLst_Item->GetItemData(nSel), _AL(""));
+				szText.Format(GetStringFromTable(664), (const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice),
+				(const wchar_t*)vec[1], m_pLst_Item->GetItemData(nSel), _AL(""));
 			GetGameUIMan()->MessageBox("Game_AuctionBin", szText, MB_YESNO, 
 				A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 			pMsgBox->SetData(m_pLst_Item->GetItemData(nSel));
@@ -370,12 +370,12 @@ void CDlgAuctionBase::UpdateList(void *pData)
 			szName = pItem->GetName();
 
 		if( pAuctionItem.binprice > 0 )
-			szText.Format(_AL("%d\t%s\t%s\t%s\t%s"), pAuctionItem.auctionid, szName, 
-				szTime, GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice), 
-				GetGameUIMan()->GetFormatNumber(pAuctionItem.binprice));
+			szText.Format(_AL("%d\t%s\t%s\t%s\t%s"), pAuctionItem.auctionid, (const wchar_t*)szName, 
+				(const wchar_t*)szTime, (const wchar_t*)GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice), 
+				(const wchar_t*)GetGameUIMan()->GetFormatNumber(pAuctionItem.binprice));
 		else
-			szText.Format(_AL("%d\t%s\t%s\t%s\t "), pAuctionItem.auctionid, szName, 
-				szTime, GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice));
+			szText.Format(_AL("%d\t%s\t%s\t%s\t "), pAuctionItem.auctionid, (const wchar_t*)szName, 
+				(const wchar_t*)szTime, (const wchar_t*)GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice));
 		m_pLst_Item->AddString(szText);
 
 		m_pLst_Item->SetItemData(m_pLst_Item->GetCount() - 1, pAuctionItem.auctionid);
@@ -446,8 +446,8 @@ void CDlgAuctionBase::BidRe(void *pData)
 				CSplit s(pList->GetText(i));
 				CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 				ACString szText;
-				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), vec[0], vec[1], vec[2], 
-					GetGameUIMan()->GetFormatNumber(p->bidprice), vec[4]);
+				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), (const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], 
+					(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->bidprice), (const wchar_t*)vec[4]);
 				pList->SetText(i, szText);
 				break;
 			}
@@ -460,8 +460,8 @@ void CDlgAuctionBase::BidRe(void *pData)
 				CSplit s(pList->GetText(i));
 				CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 				ACString szText;
-				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), vec[0], vec[1], vec[2], 
-					GetGameUIMan()->GetFormatNumber(p->bidprice), vec[4]);
+				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), (const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], 
+					(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->bidprice), (const wchar_t*)vec[4]);
 				pList->SetText(i, szText);
 				break;
 			}
@@ -501,8 +501,8 @@ void CDlgAuctionBase::BidRe(void *pData)
 				CSplit s(pList->GetText(i));
 				CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 				ACString szText;
-				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), vec[0], vec[1], vec[2], 
-					GetGameUIMan()->GetFormatNumber(p->bidprice), vec[4]);
+				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), (const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], 
+					(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->bidprice), (const wchar_t*)vec[4]);
 				pList->SetText(i, szText);
 				break;
 			}
@@ -515,8 +515,8 @@ void CDlgAuctionBase::BidRe(void *pData)
 				CSplit s(pList->GetText(i));
 				CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 				ACString szText;
-				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), vec[0], vec[1], vec[2], 
-					GetGameUIMan()->GetFormatNumber(p->bidprice), vec[4]);
+				szText.Format(_AL("%s\t%s\t%s\t%s\t%s"), (const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], 
+					(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->bidprice), (const wchar_t*)vec[4]);
 				pList->SetText(i, szText);
 				break;
 			}

@@ -610,7 +610,7 @@ void CDlgRandProp::SetTarget(int iSlot)
 			ACString strCount;
 			if(m_RegenCount > 0) strCount.Format(GetStringFromTable(9359), m_RegenCount);
 			ACString strHint;
-			strHint.Format(GetStringFromTable(9358), m_PropsDesc, m_OriginDesc, strCount, m_RegenDesc);
+			strHint.Format(GetStringFromTable(9358), (const wchar_t*)m_PropsDesc, (const wchar_t*)m_OriginDesc, (const wchar_t*)strCount, (const wchar_t*)m_RegenDesc);
 
 			AUICTranslate trans;
 			pObj->SetHint(trans.Translate(strHint));

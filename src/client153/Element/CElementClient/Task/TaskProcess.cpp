@@ -2160,7 +2160,7 @@ void TaskInterface::InitActiveTaskList()
 		{
 			ATaskTempl* pTempl = GetTaskTemplMan()->GetTaskTemplByID(pFnshTime->m_aList[m].m_uTaskId);
 			unsigned long his_time = pFnshTime->m_aList[m].m_ulTimeMark;
-			his_time -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
+			his_time -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
 
 			if ((long)(his_time) < 0)
 				his_time = 0;
@@ -2514,8 +2514,8 @@ bool ATaskTempl::CanDeliverWorldContribution(TaskInterface* pTask) const
 	unsigned long ulCurTime = pTask->GetCurTime();
 	unsigned long ulTaskTime = pEntry->m_ulTaskTime;
 #ifdef _TASK_CLIENT
-	ulCurTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
-	ulTaskTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
+	ulCurTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
+	ulTaskTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
 	
 	if ((long)(ulCurTime) < 0)
 		ulCurTime = 0;

@@ -120,7 +120,7 @@ bool CECPetWords::ReadType(AWScriptFile &ScriptFile)
 		if (!ScriptFile.MatchToken(szTypeHead, true))
 		{
 			AString strTemp = AC2AS(szTypeHead);
-			a_LogOutput(1, "CECPetWords::LoadWords(), File Format error, type head mark \"%s\" missed", strTemp);
+			a_LogOutput(1, "CECPetWords::LoadWords(), File Format error, type head mark \"%s\" missed", (const char*)strTemp);
 			break;
 		}
 
@@ -234,7 +234,7 @@ bool CECPetWords::ReadContent(AWScriptFile &ScriptFile)
 			{
 				//	喊话类型不认识，无效行
 				AString strToken = AC2AS(ScriptFile.m_szToken);
-				a_LogOutput(1, "CECPetWords::LoadWords(), File Format error, Unknown words type string \"%s\" at line %d", strToken, ScriptFile.GetCurLine());
+				a_LogOutput(1, "CECPetWords::LoadWords(), File Format error, Unknown words type string \"%s\" at line %d", (const char*)strToken, ScriptFile.GetCurLine());
 
 				//	忽视本行，继续其它行的分析
 				ScriptFile.SkipLine();

@@ -523,7 +523,7 @@ void CDlgGuildMan::BuildFactionList()
 		const ACHAR *szGender = GetStringFromTable(8650+pMem->GetGender());
 
 		time_t loginTime = pMem->GetLoginTime();
-		struct tm t = *gmtime(&loginTime);
+		struct tm t = *gmtime((const time_t*)&loginTime);
 		ACString strTime;
 		strTime.Format(GetStringFromTable(10629), t.tm_year+1900, t.tm_mon+1, t.tm_mday);
 

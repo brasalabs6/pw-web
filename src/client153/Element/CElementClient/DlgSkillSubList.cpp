@@ -67,11 +67,11 @@ bool CDlgSkillSubList::OnInitDialog() {
 		m_skillDlgName = m_pSubSkill->GetSubDialog()->GetName();
 
 		AString newRankDlgName;
-		newRankDlgName.Format("%s%s", m_rankDlgName, "template");
+		newRankDlgName.Format("%s%s", (const char*)m_rankDlgName, "template");
 		m_pSubRank->GetSubDialog()->SetName(newRankDlgName);
 
 		AString newSkillDlgName;
-		newSkillDlgName.Format("%s%s", m_skillDlgName, "template");
+		newSkillDlgName.Format("%s%s", (const char*)m_skillDlgName, "template");
 		m_pSubSkill->GetSubDialog()->SetName(newSkillDlgName);
 		
 		m_pSubRank->SetDialog(NULL);
@@ -193,14 +193,14 @@ void CDlgSkillSubList::AddSkillSubDlg(int skillID) {
 		// 复制AUISubDialog
 		PAUISUBDIALOG pSubSkill = (PAUISUBDIALOG)CloneControl(m_pSubSkill);
 		AString objName;
-		objName.Format("%s%d", m_skillObjName, m_skillSubDialogs.size());
+		objName.Format("%s%d", (const char*)m_skillObjName, m_skillSubDialogs.size());
 		
 		// 创建对话框
 		PAUIDIALOG pDlg = NULL;
 		pDlg = m_pAUIManager->GetDialog(m_pAUIManager->CreateDlg(m_pA3DEngine, m_pA3DDevice, m_skillDlgFile));
 		// 设置名称
 		AString dlgName;
-		dlgName.Format("%s%d", m_skillDlgName, m_skillSubDialogs.size());
+		dlgName.Format("%s%d", (const char*)m_skillDlgName, m_skillSubDialogs.size());
 		pDlg->SetName(dlgName);
 		
 		pSubSkill->SetDialog(pDlg);
@@ -396,7 +396,7 @@ void CDlgSkillSubList::CreateOneRankDlg(const CECTaoistRank* taoistRank) {
 	// 复制AUISubDialog
 	PAUISUBDIALOG pSubRank = (PAUISUBDIALOG)CloneControl(m_pSubRank);
 	AString objName;
-	objName.Format("%s%d", m_rankObjName, taoistRank->GetID());
+	objName.Format("%s%d", (const char*)m_rankObjName, taoistRank->GetID());
 	pSubRank->SetName(objName);
 	
 	// 创建对话框
@@ -405,7 +405,7 @@ void CDlgSkillSubList::CreateOneRankDlg(const CECTaoistRank* taoistRank) {
 	
 	// 设置名称
 	AString dlgName;
-	dlgName.Format("%s%d", m_rankDlgName, taoistRank->GetID());
+	dlgName.Format("%s%d", (const char*)m_rankDlgName, taoistRank->GetID());
 	pDlg->SetName(dlgName);
 	
 	pSubRank->SetDialog(pDlg);

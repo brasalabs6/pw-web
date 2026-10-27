@@ -90,7 +90,7 @@ void CECQuickBuyPopTriggerPolicy::OnHide()
 	if (!GetHideReason()){
 		SetHideReason("HR_Unregistered");
 	}
-	CECUIHelper::GetGame()->RuntimeDebugInfo(RTDCOL_WARNING, _AL("Policy Hide Reason:%s"), AS2AC(GetHideReason()));
+	CECUIHelper::GetGame()->RuntimeDebugInfo(RTDCOL_WARNING, _AL("Policy Hide Reason:%s"), (const wchar_t*)AS2AC(GetHideReason()));
 	m_bTriggered = false;
 	m_bItemGained = false;
 	OnHideMore();

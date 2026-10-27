@@ -15,7 +15,7 @@
 #include "EC_Skill.h"
 #include "elementdataman.h"
 #include "EC_Global.h"
-#include "EC_NPC.h "
+#include "EC_NPC.h"
 #include "DlgPreviewPetRebuild.h"
 #include "DlgPetEvolutionAnim.h"
 #include "DlgPetDetail.h"

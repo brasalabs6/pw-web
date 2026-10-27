@@ -88,8 +88,8 @@ ACString CECShopBuyCommand::GetMessage()const
 			CECGameUIMan *pGameUIMan = CECUIHelper::GetGameUIMan();
 			CDlgQShop *pDlgQShop = dynamic_cast<CDlgQShop *>(pGameUIMan->GetDialog("Win_QShop"));		
 			strText.Format(pGameUIMan->GetStringFromTable(822),
-				pDlgQShop->GetCashText(pItem->buy[m_buyIndex].price), pItem->szName,
-				CDlgQShopItem::GetFormatTime(pItem->buy[m_buyIndex].time));
+				(const wchar_t*)pDlgQShop->GetCashText(pItem->buy[m_buyIndex].price), pItem->szName,
+				(const wchar_t*)CDlgQShopItem::GetFormatTime(pItem->buy[m_buyIndex].time));
 		}
 	}
 	return strText;
@@ -167,9 +167,9 @@ ACString CECRandShopBuyCommand::GetMessage()const
 		CDlgQShop *pDlgQShop = dynamic_cast<CDlgQShop *>(pGameUIMan->GetDialog("Win_QShop"));
 		if (m_pShopping->IsFirstTime()){
 			const RAND_SHOP_CONFIG *pConfig = m_pShopping->GetConfig();
-			strText.Format(pGameUIMan->GetStringFromTable(11260), pItem->GetName(), pDlgQShop->GetCashText(pConfig->price), pDlgQShop->GetCashText(pConfig->first_buy_price));
+			strText.Format(pGameUIMan->GetStringFromTable(11260), pItem->GetName(), (const wchar_t*)pDlgQShop->GetCashText(pConfig->price), (const wchar_t*)pDlgQShop->GetCashText(pConfig->first_buy_price));
 		}else{
-			strText.Format(pGameUIMan->GetStringFromTable(11261), pDlgQShop->GetCashText(m_pShopping->GetItemPrice()), pItem->GetName());
+			strText.Format(pGameUIMan->GetStringFromTable(11261), (const wchar_t*)pDlgQShop->GetCashText(m_pShopping->GetItemPrice()), pItem->GetName());
 		}
 		delete pItem;
 	}

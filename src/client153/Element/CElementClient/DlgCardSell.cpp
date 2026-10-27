@@ -51,7 +51,7 @@ void CDlgCardSell::OnCommandConfirm(const char * szCommand)
 		{
 			ACString strText;
 			strText.Format(GetStringFromTable(753), 
-				GetGameUIMan()->GetFormatNumber(nPrice), nTime / 60);
+				(const wchar_t*)GetGameUIMan()->GetFormatNumber(nPrice), nTime / 60);
 			PAUIDIALOG pMsgBox;
 			GetGameUIMan()->MessageBox("Game_SellPoint", strText, MB_OKCANCEL,
 				A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
@@ -134,7 +134,7 @@ void CDlgCardSell::CardAction(int idAction, void *pData)
 			ACHAR szText[256];
 			a_sprintf(szText, GetStringFromTable(780), 
 				p->list[i].sellid, p->list[i].point / 60, 
-				GetGameUIMan()->GetFormatNumber(p->list[i].price));
+				(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->list[i].price));
 			m_pLst_Item->AddString(szText);
 			m_pLst_Item->SetItemData(i, p->list[i].sellid);
 			m_pLst_Item->SetItemData(i, p->list[i].point, 1);
@@ -149,7 +149,7 @@ void CDlgCardSell::CardAction(int idAction, void *pData)
 			ACHAR szText[256];
 			a_sprintf(szText, GetStringFromTable(780), 
 				p->info.sellid, p->info.point / 60, 
-				GetGameUIMan()->GetFormatNumber(p->info.price));
+				(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->info.price));
 			m_pLst_Item->AddString(szText);
 			m_pLst_Item->SetItemData(m_pLst_Item->GetCount() - 1, p->info.sellid);
 			m_pLst_Item->SetItemData(m_pLst_Item->GetCount() - 1, p->info.point, 1);

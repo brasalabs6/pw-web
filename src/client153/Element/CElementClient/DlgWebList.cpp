@@ -72,7 +72,7 @@ AString CDlgWebListSSOURLNavigator::GetNavigateURL(const GNET::Octets &ticket)co
 			break;
 		}
 		AString strAccount = g_pGame->GetGameSession()->GetTicketAccount();
-		result.Format(strFormat, strTicket, strAccount);
+		result.Format(strFormat, (const char*)strTicket, (const char*)strAccount);
 		break;
 	}
 	return result;

@@ -87,7 +87,7 @@ void OnTaskCheckStatus(TaskInterface* pTask)
 		if (pTempl->m_bAbsFail)
 		{
 			long ulCurTime1 = ulCurTime;
-			ulCurTime1 -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
+			ulCurTime1 -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
 
 			if((long)ulCurTime1 < 0)
 				ulCurTime1 = 0;

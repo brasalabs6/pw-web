@@ -140,7 +140,7 @@ void CECUIConfig::Load(const char *filePath)
 					if (bonus < 0 || i>0 && bonus < GetGameUI().nCountryWarBonus.back())
 					{
 						ASSERT(false);
-						a_LogOutput(1, "Invalid CountryWarBonus as %s within %s", AC2AS(strValue), filePath);
+						a_LogOutput(1, "Invalid CountryWarBonus as %s within %s", (const char*)AC2AS(strValue), filePath);
 						GetGameUI().nCountryWarBonus.clear();
 						break;
 					}
@@ -177,7 +177,7 @@ void CECUIConfig::Load(const char *filePath)
 				if (!bOK)
 				{
 					ASSERT(false);
-					a_LogOutput(1, "Invalid CountryWarEnterCondition as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid CountryWarEnterCondition as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	CountryWarEnterCondition
 
@@ -206,7 +206,7 @@ void CECUIConfig::Load(const char *filePath)
 				if (!bOK)
 				{
 					ASSERT(false);
-					a_LogOutput(1, "Invalid CrossServerEnterCondition as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid CrossServerEnterCondition as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	CrossServerEnterCondition
 
@@ -225,7 +225,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nCountryWarPlayerLimit.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nCountryWarPlayerLimit.size()){
-					a_LogOutput(1, "Invalid CountryWarPlayerLimit as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid CountryWarPlayerLimit as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	CountryWarPlayerLimit
 
@@ -253,7 +253,7 @@ void CECUIConfig::Load(const char *filePath)
 				else
 				{
 					ASSERT(0);
-					a_LogOutput(1, "Invalid MemoryBufferStage as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid MemoryBufferStage as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}
 			
@@ -272,7 +272,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nTouchEnabledMap.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nTouchEnabledMap.size()){
-					a_LogOutput(1, "Invalid TouchEnabledMap as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid TouchEnabledMap as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	TouchEnabledMap
 
@@ -291,7 +291,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nAutoTeamTransmitEnabledMap.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nAutoTeamTransmitEnabledMap.size()){
-					a_LogOutput(1, "Invalid AutoTeamTransmitEnabledMap as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid AutoTeamTransmitEnabledMap as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}// AutoTeamTransmitEnabledMap
 
@@ -310,7 +310,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nTaskDisabledInMiniClient.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nTaskDisabledInMiniClient.size()){
-					a_LogOutput(1, "Invalid TaskDisabledInMiniClient as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid TaskDisabledInMiniClient as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}// TaskDisabledInMiniClient
 
@@ -329,7 +329,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nItemDisabledInMiniClient.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nItemDisabledInMiniClient.size()){
-					a_LogOutput(1, "Invalid ItemDisabledInMiniClient as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid ItemDisabledInMiniClient as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}// ItemDisabledInMiniClient
 
@@ -348,7 +348,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nMeridianFreeItem.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nMeridianFreeItem.size()){
-					a_LogOutput(1, "Invalid MeridianFreeItem as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid MeridianFreeItem as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}// MeridianFreeItem
 
@@ -367,7 +367,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nMeridianNotFreeItem.push_back(limit);
 				}
 				if (splitter.Count() != (int)GetGameUI().nMeridianNotFreeItem.size()){
-					a_LogOutput(1, "Invalid MeridianFreeItem as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid MeridianFreeItem as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}// MeridianFreeItem
 			
@@ -389,7 +389,7 @@ void CECUIConfig::Load(const char *filePath)
 				if (!bOK)
 				{
 					ASSERT(false);
-					a_LogOutput(1, "Invalid TWRechargeParameter as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid TWRechargeParameter as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	TWRechargeParameter
 
@@ -409,7 +409,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nDefaultSystemModuleIndex.push_back(index);
 				}
 				if (splitter.Count() != (int)GetGameUI().nDefaultSystemModuleIndex.size()){
-					a_LogOutput(1, "Invalid DefaultSystemModuleIndex as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid DefaultSystemModuleIndex as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	DefaultSystemModuleIndex
 			
@@ -428,7 +428,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nRecommendShopItems.push_back(id);
 				}
 				if (splitter.Count() != (int)GetGameUI().nRecommendShopItems.size()){
-					a_LogOutput(1, "Invalid RecommendShopItems as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid RecommendShopItems as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	RecommendShopItems
 			
@@ -449,7 +449,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().strFashionShopAdImage.push_back(strFileName);
 				}
 				if (splitter.Count() != (int)GetGameUI().strFashionShopAdImage.size()){
-					a_LogOutput(1, "Invalid FashionShopAdImage as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid FashionShopAdImage as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	FashionShopAdImage
 
@@ -470,7 +470,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().strFullScreenGfxForeground.push_back(strFileName);
 				}
 				if (splitter.Count() != (int)GetGameUI().strFullScreenGfxForeground.size()){
-					a_LogOutput(1, "Invalid FullScreenGfxForeground as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid FullScreenGfxForeground as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	FullScreenGfxForeground
 
@@ -491,7 +491,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().strFullScreenGfxBackground.push_back(strFileName);
 				}
 				if (splitter.Count() != (int)GetGameUI().strFullScreenGfxBackground.size()){
-					a_LogOutput(1, "Invalid FullScreenGfxBackground as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid FullScreenGfxBackground as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	FullScreenGfxBackground
 			
@@ -511,7 +511,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nTaskIDForDisableWayPointUITips.push_back(taskid);
 				}
 				if (splitter.Count() != (int)GetGameUI().nTaskIDForDisableWayPointUITips.size()){
-					a_LogOutput(1, "Invalid TaskIDForDisableWayPointsUITips as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid TaskIDForDisableWayPointsUITips as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	关闭传送点的UITips
 		}
@@ -534,11 +534,11 @@ void CECUIConfig::Load(const char *filePath)
 
 			ACString strValue = ItemFile.GetValueAsString(szSec, _AL("ActivityReminderStartTime"));
 			if (!ParseTimeFromString(strValue, GetGameUI().tActivityReminderStartTime)){
-				a_LogOutput(1, "Invalid ActivityReminderStartTime as %s", AC2AS(strValue));
+				a_LogOutput(1, "Invalid ActivityReminderStartTime as %s", (const char*)AC2AS(strValue));
 			}
 			strValue = ItemFile.GetValueAsString(szSec, _AL("ActivityReminderEndTime"));
 			if (!ParseTimeFromString(strValue, GetGameUI().tActivityReminderEndTime)){
-				a_LogOutput(1, "Invalid ActivityReminderEndTime as %s", AC2AS(strValue));
+				a_LogOutput(1, "Invalid ActivityReminderEndTime as %s", (const char*)AC2AS(strValue));
 			}
 		}
 		
@@ -561,7 +561,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().nRandomMaps.push_back(mapid);
 				}
 				if (splitter.Count() != (int)GetGameUI().nRandomMaps.size()){
-					a_LogOutput(1, "Invalid RandomMap as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid RandomMap as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}//	RandomMaps
 
@@ -573,7 +573,7 @@ void CECUIConfig::Load(const char *filePath)
 					GetGameUI().DefaultRandomMapItem.count = splitter.ToInt(1);
 				}
 				else{
-					a_LogOutput(1, "Invalid DefaultItemID as %s within %s", AC2AS(strValue), filePath);
+					a_LogOutput(1, "Invalid DefaultItemID as %s within %s", (const char*)AC2AS(strValue), filePath);
 				}
 			}
 			int count = ItemFile.GetValueAsInt(szSec,_AL("RandommapItemCnt"),0);
@@ -592,7 +592,7 @@ void CECUIConfig::Load(const char *filePath)
 						GetGameUI().SpecialRandomMapItems[mapid] = itemInfo;
 					}
 					else{
-						a_LogOutput(1, "Invalid Special RandomMapInfo Error, %s within %s", AC2AS(strValue), filePath);
+						a_LogOutput(1, "Invalid Special RandomMapInfo Error, %s within %s", (const char*)AC2AS(strValue), filePath);
 					}
 				}
 			}
@@ -826,7 +826,7 @@ bool CECQShopConfig::Load(const char *filePath)
 				}
 				if (!bSuccess)
 				{
-					a_LogOutput(1, "CECQShopConfig::Init, Invalid Filter %s", AC2AS(strValue));
+					a_LogOutput(1, "CECQShopConfig::Init, Invalid Filter %s", (const char*)AC2AS(strValue));
 					m_levelFilters.clear();
 					return false;
 				}
@@ -864,7 +864,7 @@ bool CECQShopConfig::Load(const char *filePath)
 				}
 				CECSplitHelperW splitter(strValue);
 				if (splitter.Count() != 2){
-					a_LogOutput(1, "CECQShopConfig::Init, Invalid Category as %s", AC2AS(strValue));
+					a_LogOutput(1, "CECQShopConfig::Init, Invalid Category as %s", (const char*)AC2AS(strValue));
 					break;
 				}
 				m_catMap[i] = CategoryPosition(splitter.ToInt(0), splitter.ToInt(1));

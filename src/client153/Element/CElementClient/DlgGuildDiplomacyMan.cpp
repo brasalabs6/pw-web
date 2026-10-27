@@ -237,7 +237,7 @@ bool CDlgGuildDiplomacyMan::GetAllianceLineString(int fid, int leftTime, ACStrin
 		if (strTime.IsEmpty())
 			strTime = _AL("-");
 
-		strText.Format(_AL("%s\t%s"), strName, strTime);
+		strText.Format(_AL("%s\t%s"), (const wchar_t*)strName, (const wchar_t*)strTime);
 		bRet = true;
 	}
 	else
@@ -280,7 +280,7 @@ bool CDlgGuildDiplomacyMan::GetApplyLineString(int fid, int type, int leftTime, 
 		if (strTime.IsEmpty())
 			strTime = _AL("-");
 
-		strText.Format(_AL("%s\t%s\t%s"), strName, strType, strTime);
+		strText.Format(_AL("%s\t%s\t%s"), (const wchar_t*)strName, (const wchar_t*)strType, (const wchar_t*)strTime);
 		bRet = true;
 	}
 	else

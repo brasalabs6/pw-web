@@ -58,11 +58,11 @@ ACString CECReconnectUserTokenPolicy::GetUser()const{
 }
 bool CECReconnectUserTokenPolicy::SetUserToken(const ACString &user, const ACString &token){
 	if (user != GetUser()){
-		a_LogOutput(1, "CECReconnectUserTokenPolicy::SetUserToken, refused cause user not match(given user=%s, user should be %s)", AC2AS(user), AC2AS(GetUser()));
+		a_LogOutput(1, "CECReconnectUserTokenPolicy::SetUserToken, refused cause user not match(given user=%s, user should be %s)", (const char*)AC2AS(user), (const char*)AC2AS(GetUser()));
 		return false;
 	}
 	m_token = token;
-	a_LogOutput(1, "CECReconnectUserTokenPolicy::SetUserToken, token=%s", AC2AS(token));
+	a_LogOutput(1, "CECReconnectUserTokenPolicy::SetUserToken, token=%s", (const char*)AC2AS(token));
 	return true;
 }
 bool CECReconnectUserTokenPolicy::CanReconnectNow()const{
@@ -81,7 +81,7 @@ CECReconnectForeignArcUserTokenPolicy::CECReconnectForeignArcUserTokenPolicy(con
 bool CECReconnectForeignArcUserTokenPolicy::CanRequestReconnect()const{
 	bool result(false);
 	if (!MatchCurrentUser()){
-		a_LogOutput(1, "CECReconnectForeignArcUserTokenPolicy::CanRequestReconnect, local user(%s) not match current user(%s)", AC2AS(GetUser()), AC2AS(GetCurrentUser()));
+		a_LogOutput(1, "CECReconnectForeignArcUserTokenPolicy::CanRequestReconnect, local user(%s) not match current user(%s)", (const char*)AC2AS(GetUser()), (const char*)AC2AS(GetCurrentUser()));
 	}else{
 #ifdef ARC
 		ACString strArcUser;

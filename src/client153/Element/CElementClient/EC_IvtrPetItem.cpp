@@ -248,7 +248,7 @@ const wchar_t* CECIvtrPetEgg::GetRidingPetDesc(bool bRepair)
 			
 			AddDescText(white, false, pDescTab->GetWideString(ITEMDESC_COLOR));
 			m_strDesc += _AL(" ");
-			AddDescText(-1, true, pDescTab->GetWideString(ITEMDESC_COLORRECT), strColor);
+			AddDescText(-1, true, pDescTab->GetWideString(ITEMDESC_COLORRECT), (const wchar_t*)strColor);
 		}
 	}
 

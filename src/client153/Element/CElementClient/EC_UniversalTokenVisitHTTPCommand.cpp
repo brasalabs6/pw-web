@@ -74,7 +74,7 @@ public:
 				a_LogOutput(1, "CECUniversalTokenHTTPOSNavigator::HandleRequest, ticket is empty.");
 			}else{
 				AString strURL;
-				strURL.Format(m_strHTTPLinkFormat, strTicket, g_pGame->GetGameSession()->GetTicketAccount());
+				strURL.Format(m_strHTTPLinkFormat, (const char*)strTicket, (const char*)g_pGame->GetGameSession()->GetTicketAccount());
 				if (HasNavigateInOSSuffix(m_ticketContext)){
 					CECUIHelper::GetBaseUIMan()->NavigateURL(strURL, NULL);
 				}else{
@@ -176,7 +176,7 @@ bool CECUniversalTokenVisitHTTPCommand::FeedBack(int usageIndex, const void *p)
 			}else if (!m_strHTTPLinkFormat.IsEmpty()){
 				AString strAccount = g_pGame->GetGameSession()->GetTicketAccount();
 				AString strURL;
-				strURL.Format(m_strHTTPLinkFormat, strTicket, strAccount);
+				strURL.Format(m_strHTTPLinkFormat, (const char*)strTicket, (const char*)strAccount);
 				CECBaseUIMan *pBaseUIMan = g_pGame->GetGameRun()->GetUIManager()->GetBaseUIMan();
 				if (m_useIngameIE){
 					pBaseUIMan->NavigateURL(strURL, "Win_Explorer", false,

@@ -2434,7 +2434,7 @@ void CECGameSession::battle_Challenge(int idDomain, int idFaction, int iDeposit)
 	//	2.计算服务器当前时间戳
 	time_t serverGMTTime = g_pGame->GetServerGMTTime();
 	time_t serverLocalTime = serverGMTTime - g_pGame->GetTimeZoneBias()*60;
-	tm tmServerLocalTime = *gmtime(&serverLocalTime);
+	tm tmServerLocalTime = *gmtime((const time_t*)&serverLocalTime);
 	time_t t_base = serverGMTTime - tmServerLocalTime.tm_wday*24*3600 - tmServerLocalTime.tm_hour*3600 - tmServerLocalTime.tm_min*60 - tmServerLocalTime.tm_sec;	//	计算服务器本周开始时刻（周日00:00:00）
 
 	//	3.计算验证值

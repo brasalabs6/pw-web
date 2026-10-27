@@ -60,9 +60,9 @@ void CDlgAutoLock::OnCommand_Confirm(const char * szCommand)
 			strText.Format(GetStringFromTable(1611), nHour, nMin);
 		ACString strMsg;
 		if( nTime > m_nTotalTime )
-			strMsg.Format(GetStringFromTable(975), strText);
+			strMsg.Format(GetStringFromTable(975), (const wchar_t*)strText);
 		else if( nTime < m_nTotalTime )
-			strMsg.Format(GetStringFromTable(976), strText);
+			strMsg.Format(GetStringFromTable(976), (const wchar_t*)strText);
 		else
 		{
 			GetGameUIMan()->MessageBox("", GetStringFromTable(978), MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
@@ -178,7 +178,7 @@ void CDlgAutoLock::SetAutoLockTime(void* pData)
 		else
 			strText.Format(GetStringFromTable(1611), nHour, nMin);
 		ACString strMsg;
-		strMsg.Format(GetStringFromTable(977), strText);
+		strMsg.Format(GetStringFromTable(977), (const wchar_t*)strText);
 		GetGameUIMan()->MessageBox("", strMsg, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 	}
 	else

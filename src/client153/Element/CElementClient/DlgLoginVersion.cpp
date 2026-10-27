@@ -42,7 +42,7 @@ bool CDlgLoginVersion::OnInitDialog()
 		ACString strVer;
 		strVer.Format(_AL("%d.%d.%d"), dwVer1, dwVer2, dwVer3);
 		ACString str;
-		str.Format(GetStringFromTable(283), strVer, g_pGame->GetGameBuild());
+		str.Format(GetStringFromTable(283), (const wchar_t*)strVer, g_pGame->GetGameBuild());
 		pObj->SetText(str);
 	}
 	SetCanEscClose(false);

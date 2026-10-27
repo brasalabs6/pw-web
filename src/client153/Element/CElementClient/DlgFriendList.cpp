@@ -265,11 +265,11 @@ void CDlgFriendList::FriendAction(int idPlayer, int idGroup, int idAction, int n
 			ACString strUnknow = GetStringFromTable(574);
 			strHint.Format(GetStringFromTable(573),
 				GetGameRun()->GetProfName(pMan->GetFriendByID(idPlayer)->iProfession),
-				strUnknow, strUnknow, strUnknow, strUnknow, strUnknow);
+				(const wchar_t*)strUnknow, (const wchar_t*)strUnknow, (const wchar_t*)strUnknow, (const wchar_t*)strUnknow, (const wchar_t*)strUnknow);
 			pTree->SetItemHint(pItem, strHint);
 			
 			ACString strMsg;
-			strMsg.Format(GetStringFromTable(555), strFriendName);
+			strMsg.Format(GetStringFromTable(555), (const wchar_t*)strFriendName);
 			GetGameUIMan()->AddInformation(CDlgInfo::INFO_SYSTEM,
 				"Game_OK", strMsg, 0xFFFFFFF, idPlayer, 0, 0);
 		}
@@ -517,7 +517,7 @@ bool CDlgFriendList::GetFriendToShow(int idFriend, ACString &strFriendName, ACSt
 
 		ACString strRemarks;
 		if (pMan->GetFriendRemarks(idFriend, strRemarks) && !strRemarks.IsEmpty()){
-			strNameToShow += ACString().Format(GetStringFromTable(11420), strRemarks);
+			strNameToShow += ACString().Format(GetStringFromTable(11420), (const wchar_t*)strRemarks);
 		}
 
 		//	查找玩家颜色
@@ -675,7 +675,7 @@ bool CDlgFriendList::LoadImages()
 		//	图片加载失败
 		A3DRELEASE(pSprite);
 		ReleaseImages();
-		a_LogOutput(1, "CDlgFriendList::LoadImages, failed to load file: %s", strFullPath);
+		a_LogOutput(1, "CDlgFriendList::LoadImages, failed to load file: %s", (const char*)strFullPath);
 		bRet = false;
 		break;
 	}
@@ -741,7 +741,7 @@ ACString CDlgFriendList::GetFriendInfoStr(int idFriend)
 			}
 		}
 		pMan->GetFriendRemarks(idFriend, strRemarks);
-		strRet.Format(GetStringFromTable(573), strProf, strLevel, strArea, strReincarnation, strLastLoginTime, strRemarks);
+		strRet.Format(GetStringFromTable(573), (const wchar_t*)strProf, (const wchar_t*)strLevel, (const wchar_t*)strArea, (const wchar_t*)strReincarnation, (const wchar_t*)strLastLoginTime, (const wchar_t*)strRemarks);
 	}
 	return strRet;
 }

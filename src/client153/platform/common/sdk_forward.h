@@ -11,8 +11,11 @@
 #ifndef PW153_PLATFORM_SDK_FORWARD_H
 #define PW153_PLATFORM_SDK_FORWARD_H
 
+#include <algorithm>	//	std::min/std::max users rely on the PCH-supplied include.
+
 class A2DSpriteItem;
 class A3DAdditionalView;
 class A3DTerrain2Render;
+class A3DLitModel;
 
 #endif // PW153_PLATFORM_SDK_FORWARD_H

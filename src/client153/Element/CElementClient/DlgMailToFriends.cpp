@@ -298,7 +298,7 @@ void CDlgMailToFriends::BuildFriendListEx(PAUIDIALOG pDlg)
 			FormatDays(iDaysNoLogin,strDays);
 			FormatName(strName);
 
-			a_sprintf(szText, _AL("%s%s%s\t%d\t%s"), strColor,strName,colorBackup,pFriendEx->level,strDays);
+			a_sprintf(szText, _AL("%s%s%s\t%d\t%s"), (const wchar_t*)strColor,(const wchar_t*)strName,(const wchar_t*)colorBackup,pFriendEx->level,(const wchar_t*)strDays);
 
 			m_pFriendsToMailList->AddString(szText);
 			m_pFriendsToMailList->SetItemData(index, pFriendEx->rid);
@@ -373,7 +373,7 @@ void CDlgMailToFriends::IncSendMailCount(int iFriendID)
 	{
 		strGrayColor = GRAY_COLOR;
 	}
-	strNew.Format(_AL("%s%s"),strGrayColor,strText.GetBuffer(0) + (sizeof(GRAY_COLOR) - sizeof(ACHAR)) / sizeof(ACHAR));
+	strNew.Format(_AL("%s%s"),(const wchar_t*)strGrayColor,strText.GetBuffer(0) + (sizeof(GRAY_COLOR) - sizeof(ACHAR)) / sizeof(ACHAR));
 	m_pFriendsToMailList->SetText(iSel,strNew);
 
 	pObj = GetDlgItem("Btn_Send");

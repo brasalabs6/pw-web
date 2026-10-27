@@ -152,7 +152,7 @@ bool CDlgHostPet::Render()
 					hintAttack[nLoyalty], hintExp[nLoyalty]);
 			else
 				strText = _AL("");
-			strLoyaltyHint.Format(GetStringFromTable(3625), pPet->GetIntimacy(), 999, strText);
+			strLoyaltyHint.Format(GetStringFromTable(3625), pPet->GetIntimacy(), 999, (const wchar_t*)strText);
 			m_pPro_loyalty->SetHint(strLoyaltyHint);
 			
 			if( pPet->GetHunger() == CECPetData::HUNGER_LEVEL_0 )
@@ -168,7 +168,7 @@ bool CDlgHostPet::Render()
 			else
 				nHunger = 5;
 			strHunger = GetStringFromTable(3611 + nHunger);
-			strHungerHint.Format(GetStringFromTable(3624), strHunger,
+			strHungerHint.Format(GetStringFromTable(3624), (const wchar_t*)strHunger,
 				hintAddLoyalty[nHunger], hintDecLoyalty[nHunger]);
 		}
 
@@ -186,8 +186,8 @@ bool CDlgHostPet::Render()
 			float speed = pDB->speed_a + pDB->speed_b * (nLevel - 1);
 			if( pPet->GetClass() == GP_PET_CLASS_MOUNT )
 				strHint.Format(GetStringFromTable(3621),
-					pPet->GetName(), nLevel, speed, strLoyalty,
-					pPet->GetIntimacy(), strHunger, strHungerHint );
+					pPet->GetName(), nLevel, speed, (const wchar_t*)strLoyalty,
+					pPet->GetIntimacy(), (const wchar_t*)strHunger, (const wchar_t*)strHungerHint );
 			else if( pPet->GetClass() == GP_PET_CLASS_COMBAT )
 				strHint.Format(GetStringFromTable(3631),
 					pPet->GetName(), nLevel, 
@@ -199,12 +199,12 @@ bool CDlgHostPet::Render()
 					int(pDB->physic_defence_a * (pDB->physic_defence_b * (nLevel - pDB->physic_defence_c * pDB->level_require) + pDB->physic_defence_d)),
 					int(pDB->armor_a * (nLevel - pDB->armor_b * pDB->level_require + pDB->armor_c)),
 					int(pDB->magic_defence_a * (pDB->magic_defence_b * (nLevel - pDB->magic_defence_c * pDB->level_require) + pDB->magic_defence_d)),
-					speed, strLoyalty, 
-					pPet->GetIntimacy(), strHunger, strHungerHint );
+					speed, (const wchar_t*)strLoyalty, 
+					pPet->GetIntimacy(), (const wchar_t*)strHunger, (const wchar_t*)strHungerHint );
 			else if (pPet->GetClass() == GP_PET_CLASS_EVOLUTION)
 			{
 				strHint.Format(GetStringFromTable(3642),
-					pPet->GetName(),nLevel,strLoyalty,pPet->GetIntimacy(),strHunger,strHungerHint);
+					pPet->GetName(),nLevel,(const wchar_t*)strLoyalty,pPet->GetIntimacy(),(const wchar_t*)strHunger,(const wchar_t*)strHungerHint);
 			}
 			else
 				strHint.Format(GetStringFromTable(3641),

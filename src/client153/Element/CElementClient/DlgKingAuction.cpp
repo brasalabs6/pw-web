@@ -125,8 +125,8 @@ bool CDlgKingAuction::CheckPlayerCondition(bool bAuction, ACString& strMsg)
 	if (iLevel < REQUIRE_LEVEL) bOK = false;
 	
 	strTemp.Format(pGameUI->GetStringFromTable(9766)
-		, (iLevel < REQUIRE_LEVEL) ? strColorRed : strColorWhite
-		, REQUIRE_LEVEL);
+		, (const wchar_t*)((iLevel < REQUIRE_LEVEL) ? strColorRed : strColorWhite
+		), REQUIRE_LEVEL);
 	
 	strMsg += strNextLine;
 	strMsg += strTemp;
@@ -137,8 +137,8 @@ bool CDlgKingAuction::CheckPlayerCondition(bool bAuction, ACString& strMsg)
 	if (iLevel2 < REQUIRE_LEVEL2) bOK = false;
 	
 	strTemp.Format(pGameUI->GetStringFromTable(10135)
-		, (iLevel2 < REQUIRE_LEVEL2) ? strColorRed : strColorWhite
-		, g_pGame->GetGameRun()->GetLevel2NameForCondition(REQUIRE_LEVEL2));
+		, (const wchar_t*)((iLevel2 < REQUIRE_LEVEL2) ? strColorRed : strColorWhite
+		), (const wchar_t*)g_pGame->GetGameRun()->GetLevel2NameForCondition(REQUIRE_LEVEL2));
 	
 	strMsg += strNextLine;
 	strMsg += strTemp;

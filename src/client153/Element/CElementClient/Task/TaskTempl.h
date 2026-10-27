@@ -1701,7 +1701,7 @@ inline bool judge_time_date(const task_tm* tmStart, const task_tm* tmEnd, unsign
 	bool last_day;
 
 #ifdef _TASK_CLIENT
-	ulCurTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
+	ulCurTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
 
 	if ((long)(ulCurTime) < 0)
 		ulCurTime = 0;

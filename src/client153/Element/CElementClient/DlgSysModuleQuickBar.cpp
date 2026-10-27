@@ -15,7 +15,7 @@
 #include "DlgTrade.h"
 #include "DlgShop.h"
 #include "EC_Global.h"
-#include "EC_FixedMsg.h "
+#include "EC_FixedMsg.h"
 #include "EC_Game.h"
 #include <A3DEngine.h>
 #include <A3DViewport.h>

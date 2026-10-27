@@ -1254,7 +1254,7 @@ void CDlgChat::OnEventRButtonUp_Txt_Content(WPARAM wParam, LPARAM lParam, AUIObj
 	{
 		ACString strText;
 
-		strText.Format(_AL("ID of %s: %d"), Link.strName, idPlayer);
+		strText.Format(_AL("ID of %s: %d"), (const wchar_t*)Link.strName, idPlayer);
 		GetGameUIMan()->MessageBox("", strText, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 	}
 	else if( idPlayer > 0 )

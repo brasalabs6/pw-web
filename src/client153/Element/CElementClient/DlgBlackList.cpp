@@ -204,7 +204,7 @@ void CDlgBlackList::OnTick(void)
 		else if( CECTimeSafeChecker::ElapsedTime(dwTick, m_vecBlackCache[i].dwTime) >= 10 * 1000 )
 		{
 			ACString strMsg;
-			strMsg.Format(GetGameUIMan()->GetStringFromTable(261), m_vecBlackCache[i].strName);
+			strMsg.Format(GetGameUIMan()->GetStringFromTable(261), (const wchar_t*)m_vecBlackCache[i].strName);
 			GetGameUIMan()->AddChatMessage(strMsg, GP_CHAT_MISC);
 			m_vecBlackCache.erase(m_vecBlackCache.begin() + i);
 			i--;

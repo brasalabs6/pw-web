@@ -89,7 +89,7 @@ void CDlgGuildMapStatus::OnCommandAllBattleTime(const char * szCommand)
 				strDefender = GetStringFromTable(574);
 			long stime = (*info)[i].battle_time;
 			stime -= GetGame()->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
-			tm *gtime = gmtime(&stime);
+			tm *gtime = gmtime((const time_t*)&stime);
 			strText.Format(GetStringFromTable(785), (*info)[i].name,
 				strAttacker, strDefender,
 				gtime->tm_mon + 1, gtime->tm_mday, gtime->tm_hour, gtime->tm_min);
@@ -296,7 +296,7 @@ void CDlgGuildMapStatus::OnTick()
 		{
 			long stime = (*info)[m_nIndex].battle_time;
 			stime -= GetGame()->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
-			tm *gtime = gmtime(&stime);
+			tm *gtime = gmtime((const time_t*)&stime);
 			strText.Format(GetStringFromTable(789), 
 				gtime->tm_mon + 1, gtime->tm_mday, gtime->tm_hour, gtime->tm_min);
 			m_pTxt_Time->SetText(strText);
@@ -327,7 +327,7 @@ void CDlgGuildMapStatus::OnTick()
 		{
 			long stime = (*info)[m_nIndex].cutoff_time;
 			stime -= GetGame()->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
-			tm *gtime = gmtime(&stime);
+			tm *gtime = gmtime((const time_t*)&stime);
 			strText.Format(GetStringFromTable(789), 
 				gtime->tm_mon + 1, gtime->tm_mday, gtime->tm_hour, gtime->tm_min);
 			m_pTxt_Time->SetText(strText);

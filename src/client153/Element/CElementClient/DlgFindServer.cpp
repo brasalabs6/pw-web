@@ -74,7 +74,7 @@ void CDlgFindServer::OnCommandQuery(const char *szCommand)
 	
 	// Notify the player about the result
 	ACString strNotify;
-	strNotify.Format(GetStringFromTable(3001), serverNew);	
+	strNotify.Format(GetStringFromTable(3001), (const wchar_t*)serverNew);	
 	m_pAUIManager->MessageBox("", strNotify, MB_OK, A3DCOLORRGB(255, 255, 255));
 }
 

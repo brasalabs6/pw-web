@@ -198,7 +198,7 @@ void CDlgELFProp::OnCommand_confirm(const char * szCommand)
 		{
 			PAUIDIALOG pMsgBox;
 			ACString str;
-			str.Format(GetStringFromTable(7166), strProb);
+			str.Format(GetStringFromTable(7166), (const wchar_t*)strProb);
 			GetGameUIMan()->MessageBox("Game_Over40Point", str, MB_YESNO, A3DCOLORRGBA(255, 255, 255, 166), &pMsgBox);
 		}
 		else

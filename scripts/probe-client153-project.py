@@ -131,6 +131,10 @@ def main():
     sdk_forward = args.port_root.parent / 'platform' / 'common' / 'sdk_forward.h' if args.port_root else None
     if sdk_forward and sdk_forward.is_file():
         forced += ['-include', str(sdk_forward.resolve())]
+    #	The original precompiled header supplied the ACHAR macro surface.
+    achar = args.port_root / 'AngelicaCommon' / 'Header' / 'AChar.h' if args.port_root else None
+    if achar and achar.is_file():
+        forced += ['-include', str(achar.resolve())]
     entry = resolve_windows(project.parent, args.entry)
     entry_path = source_path(root, adapted_root, entry.relative_to(root))
     command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar', '-sUSE_ZLIB=1'] + forced + [str(entry_path)]

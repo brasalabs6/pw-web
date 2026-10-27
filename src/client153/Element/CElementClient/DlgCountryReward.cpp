@@ -49,8 +49,8 @@ void CDlgCountryReward::OnPrtcCountryResult(GNET::Protocol* pProtocol)
 		int i;
 		for (i = 0; i < DOMAIN2_INFO::COUNTRY_COUNT; ++i)
 		{
-			strTerritory.Format("%s%d", strTerritoryPrefix, i + 1);
-			strScore.Format("%s%d", strScorePrefix, i + 1);
+			strTerritory.Format("%s%d", (const char*)strTerritoryPrefix, i + 1);
+			strScore.Format("%s%d", (const char*)strScorePrefix, i + 1);
 			pLabel = GetDlgItem(strTerritory);
 			if (pLabel)
 			{

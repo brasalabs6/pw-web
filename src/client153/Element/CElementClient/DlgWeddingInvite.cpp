@@ -328,7 +328,7 @@ void CDlgWeddingInvite::SetItem(int iSlot /* = -1 */)
 		WEDDING_CONFIG *pWeddingConfig = (WEDDING_CONFIG*)pDB->get_data_ptr(CECIvtrWeddingInviteCard::WEDDING_CONFIG_ID, ID_SPACE_CONFIG, DataType);
 
 		ACString strText;
-		strText.Format(GetStringFromTable(8751), strTime, pWeddingConfig->wedding_scene[essence.scene].name);
+		strText.Format(GetStringFromTable(8751), (const wchar_t*)strTime, pWeddingConfig->wedding_scene[essence.scene].name);
 		m_pTxt_01->SetText(strText);
 
 		break;

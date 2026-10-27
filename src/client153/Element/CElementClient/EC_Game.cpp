@@ -1931,7 +1931,7 @@ struct tm CECGame::GetServerLocalTime()
 {
 	time_t serverTime = GetServerGMTTime();
 	serverTime -= m_iTimeZoneBias * 60; // UTC = localtime + bias => localtime = UTC - bias
-	return *gmtime(&serverTime);
+	return *gmtime((const time_t*)&serverTime);
 }
 
 tm   CECGame::GetServerLocalTime(int t)

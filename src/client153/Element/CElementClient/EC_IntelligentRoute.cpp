@@ -73,7 +73,7 @@ void CECIntelligentRoute::ChangeWorldInstance(int idInstance)
 			colFrom < 0 || colFrom >= pInst->GetColNum() ||
 			colTo   < 0 || colTo   >= pInst->GetColNum() ||
 			rowFrom > rowTo || colFrom > colTo){
-			a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), Invalid file name %s", idInstance, strFileName);
+			a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), Invalid file name %s", idInstance, (const char*)strFileName);
 			continue;
 		}
 		validFiles.push_back(strFileName);
@@ -103,7 +103,7 @@ void CECIntelligentRoute::ChangeWorldInstance(int idInstance)
 			if (j != i){
 				const ARectI &rj = moveAgents[j].rect;
 				if ((ri & rj) == ri){
-					a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), %s is duplicated with or contained by %s", idInstance, validFiles[i], validFiles[j]);
+					a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), %s is duplicated with or contained by %s", idInstance, (const char*)validFiles[i], (const char*)validFiles[j]);
 					moveAgents.erase(moveAgents.begin() + i);
 					validFiles.erase(validFiles.begin() + i);
 					break;
@@ -119,21 +119,21 @@ void CECIntelligentRoute::ChangeWorldInstance(int idInstance)
 		A3DVECTOR3 vOrigin(0.0f);
 		for (i = 0; i < (int)moveAgents.size(); ++ i)
 		{
-			strFilePath.Format("maps\\%s\\movemap\\%s", pInst->GetPath(), validFiles[i]);
+			strFilePath.Format("maps\\%s\\movemap\\%s", pInst->GetPath(), (const char*)validFiles[i]);
 			if (!af_IsFileExist(strFilePath)){
-				a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), File %s NOT EXIST", idInstance, strFilePath);
+				a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), File %s NOT EXIST", idInstance, (const char*)strFilePath);
 				continue;
 			}
 			RangedMoveAgent &rma = moveAgents[i];
 			rma.agent = new CMoveAgent;
 			// cannot find load method with origin????
 			if (!rma.agent->Load(strFilePath/*, &rma.origin*/)){
-				a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), Load file %s FAILED", idInstance, strFilePath);
+				a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), Load file %s FAILED", idInstance, (const char*)strFilePath);
 				delete rma.agent;
 				continue;
 			}
 			if (!rma.agent->IsReady()){
-				a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), agent for file %s NOT READY for Routing", idInstance, strFilePath);
+				a_LogOutput(1, "CECIntelligentRoute::ChangeWorldInstance(%d), agent for file %s NOT READY for Routing", idInstance, (const char*)strFilePath);
 				delete rma.agent;
 				continue;
 			}

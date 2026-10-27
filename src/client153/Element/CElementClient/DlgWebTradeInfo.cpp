@@ -70,8 +70,8 @@ void CDlgWebTradeInfo::OnTick()
 		ACString szText;
 		szText.Format( GetStringFromTable(5560),
 			//info.GetSellerName(),
-			m_pItemInfo->GetTime(),
-			m_pItemInfo->GetFormatedPrice(),
+			(const wchar_t*)m_pItemInfo->GetTime(),
+			(const wchar_t*)m_pItemInfo->GetFormatedPrice(),
 			m_pItemInfo->GetBuyerName() );
 		
 		PAUILABEL pDesc = (PAUILABEL)GetDlgItem("Txt_Desc");

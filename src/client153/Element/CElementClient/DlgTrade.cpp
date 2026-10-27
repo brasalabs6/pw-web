@@ -208,12 +208,12 @@ bool CDlgTrade::UpdateTradeInfo()
 		{
 			strProfLevel2.Format(GetStringFromTable(10066)
 				, GetGameRun()->GetProfName(pElsePlayer->GetProfession())
-				, GetGameRun()->GetLevel2Name(pElsePlayer->GetBasicProps().iLevel2));
+				, (const wchar_t*)GetGameRun()->GetLevel2Name(pElsePlayer->GetBasicProps().iLevel2));
 
 			m_bNameComplete = true;
 		}
 
-		strTitle.Format(GetStringFromTable(583), szText, strProfLevel2);
+		strTitle.Format(GetStringFromTable(583), szText, (const wchar_t*)strProfLevel2);
 		m_pTxtName->SetText(strTitle);
 	}
 

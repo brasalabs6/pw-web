@@ -62,7 +62,7 @@ void CDlgTextHelp::RefreshHelpContent()
 				suffix = suffix.Mid(strlen("help_"));
 				
 				AString filename;
-				LoadText(filename.Format("%s_%s.txt", prefix, suffix), pText);
+				LoadText(filename.Format("%s_%s.txt", (const char*)prefix, (const char*)suffix), pText);
 			}
 		}
 		

@@ -222,7 +222,7 @@ bool CDlgGuildDiplomacyApply::GetLineString(int idFaction, ACString &strText)
 		ACString strName = pFInfo->GetName();
 		if (strName.IsEmpty())
 			strName = _AL("-");
-		strText.Format(_AL("%s\t%d"), strName, pFInfo->GetMemNum());
+		strText.Format(_AL("%s\t%d"), (const wchar_t*)strName, pFInfo->GetMemNum());
 		bRet = true;
 	}
 	else

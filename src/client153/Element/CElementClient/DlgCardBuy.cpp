@@ -66,7 +66,7 @@ void CDlgCardBuy::OnCommandBuy(const char * szCommand)
 		{
 			ACString strText;
 			strText.Format(GetStringFromTable(752), 
-				GetGameUIMan()->GetFormatNumber(m_pLst_Item->GetItemData(nSel, 2)), 
+				(const wchar_t*)GetGameUIMan()->GetFormatNumber(m_pLst_Item->GetItemData(nSel, 2)), 
 				m_pLst_Item->GetItemData(nSel),
 				m_pLst_Item->GetItemData(nSel, 3) / 60);
 			PAUIDIALOG pMsgBox;
@@ -125,7 +125,7 @@ void CDlgCardBuy::CardAction(int idAction, void *pData)
 			ACHAR szText[256];
 			a_sprintf(szText, GetStringFromTable(780), 
 				p->list[i].sellid, p->list[i].point / 60, 
-				GetGameUIMan()->GetFormatNumber(p->list[i].price));
+				(const wchar_t*)GetGameUIMan()->GetFormatNumber(p->list[i].price));
 			m_pLst_Item->AddString(szText);
 			m_pLst_Item->SetItemData(i, p->list[i].sellid);
 			m_pLst_Item->SetItemData(i, p->list[i].roleid, 1);

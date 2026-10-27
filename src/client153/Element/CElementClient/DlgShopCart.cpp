@@ -56,10 +56,10 @@ ACString CECShopCartBuyCommand::GetMessage()const{
 				const GSHOP_ITEM *pGShopItem = m_pShoppingCart->Shop()->GetItem(item->GShopItemIndex());
 				int unitPrice = pShop->GetPrice(item->GShopItemIndex(), item->BuyIndex());
 				strText.Format(strFormat,
-					m_pGameUIMan->GetCashText(unitPrice * item->Count()),	//	此商品购买总价
+					(const wchar_t*)m_pGameUIMan->GetCashText(unitPrice * item->Count()),	//	此商品购买总价
 					item->Count(),											//	商品件数
 					pGShopItem->szName,										//	商品名称
-					m_pGameUIMan->GetShopItemFormatTime(pGShopItem->buy[item->BuyIndex()].time));	//	时间期限
+					(const wchar_t*)m_pGameUIMan->GetShopItemFormatTime(pGShopItem->buy[item->BuyIndex()].time));	//	时间期限
 				if (!strMessage.IsEmpty()){
 					strMessage += _AL("\r");
 				}
@@ -68,7 +68,7 @@ ACString CECShopCartBuyCommand::GetMessage()const{
 		}
 		if (!strMessage.IsEmpty()){
 			strText.Format(m_pGameUIMan->GetStringFromTable(11303)
-				, m_pGameUIMan->GetCashText(m_pShoppingCart->CashCost())
+				, (const wchar_t*)m_pGameUIMan->GetCashText(m_pShoppingCart->CashCost())
 				, m_pShoppingCart->Count());
 			strText += _AL("\r");
 			strMessage = strText + strMessage;

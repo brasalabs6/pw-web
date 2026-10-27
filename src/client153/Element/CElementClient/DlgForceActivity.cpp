@@ -258,7 +258,7 @@ void CECDiagramRender::RefreshSummary(int type, PAUIIMAGEPICTURE pCanvas)
 
 			ACString strTmp = g_pGame->GetGameRun()->GetUIManager()->GetInGameUIMan()->GetStringFromTable(9412 + type);
 
-			strMsg.Format(strTmp,  A3DCOLOR_TO_STRING(pConfig->color), pConfig->name, m_pSummary->pRatio[i]);
+			strMsg.Format(strTmp,  (const wchar_t*)A3DCOLOR_TO_STRING(pConfig->color), pConfig->name, m_pSummary->pRatio[i]);
 
 			if(!strSummary.IsEmpty()) strSummary += _AL("\\r");
 			strSummary += strMsg;

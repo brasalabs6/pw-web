@@ -391,12 +391,12 @@ void CDlgAuctionBuyList::UpdateItem(void *pData)
 	else
 		szName = pItem->GetName();
 	if( pAuctionItem.binprice > 0 )
-		szText.Format(_AL("%d\t%s\t%s\t%s\t%s"), pAuctionItem.auctionid, szName, 
-			szTime, GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice), 
-			GetGameUIMan()->GetFormatNumber(pAuctionItem.binprice));
+		szText.Format(_AL("%d\t%s\t%s\t%s\t%s"), pAuctionItem.auctionid, (const wchar_t*)szName, 
+			(const wchar_t*)szTime, (const wchar_t*)GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice), 
+			(const wchar_t*)GetGameUIMan()->GetFormatNumber(pAuctionItem.binprice));
 	else
-		szText.Format(_AL("%d\t%s\t%s\t%s\t "), pAuctionItem.auctionid, szName, 
-			szTime, GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice));
+		szText.Format(_AL("%d\t%s\t%s\t%s\t "), pAuctionItem.auctionid, (const wchar_t*)szName, 
+			(const wchar_t*)szTime, (const wchar_t*)GetGameUIMan()->GetFormatNumber(pAuctionItem.bidprice));
 	m_pLst_Item->AddString(szText);
 	m_pLst_Item->SetItemTextColor(m_pLst_Item->GetCount()-1, GetGameUIMan()->GetPriceColor(pAuctionItem.bidprice), 3);
 	m_pLst_Item->SetItemTextColor(m_pLst_Item->GetCount()-1, GetGameUIMan()->GetPriceColor(pAuctionItem.binprice), 4);

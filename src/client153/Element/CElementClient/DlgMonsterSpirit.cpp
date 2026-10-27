@@ -108,7 +108,7 @@ void CDlgMonsterSpirit::AddOneMonsterDisplay(int id)
 			}
 			++mine_index;
 		}
-		strText.Format(_AL("%s\t%3.0f%%\t%s\t%s"), pData->name, pData->drop_mine_probability * 100.f, strName[0], strName[1]);
+		strText.Format(_AL("%s\t%3.0f%%\t%s\t%s"), pData->name, pData->drop_mine_probability * 100.f, (const wchar_t*)strName[0], (const wchar_t*)strName[1]);
 		
 		m_pList->AddString(strText);
 	}

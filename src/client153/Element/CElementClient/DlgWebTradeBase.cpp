@@ -65,7 +65,7 @@ CDlgWebTradeBase::ItemInfo::ItemInfo(const GWebTradeItem& tradeItem)
 	{
 		m_szItemName.Format(
 			pUIMan->GetStringFromTable(5524),
-			pUIMan->GetFormatNumber(tradeItem.money) );
+			(const wchar_t*)pUIMan->GetFormatNumber(tradeItem.money) );
 	}
 	else if(tradeItem.posttype == POSTTYPE_ITEM)
 	{
@@ -161,7 +161,7 @@ ACString CDlgWebTradeBase::ItemInfo::GetFormatedPrice(int price)
 		
 	ACString szRes;
 	szRes.Format( pUIMan->GetStringFromTable(5530), 
-				  pUIMan->GetFormatNumber(price / 100), price % 100 );
+				  (const wchar_t*)pUIMan->GetFormatNumber(price / 100), price % 100 );
 	
 	return szRes;
 }
@@ -217,7 +217,7 @@ ACString CDlgWebTradeBase::ItemInfo::GetTradeIDHint() const
 		strNum = pUIMan->GetStringFromTable(574);
 	}
 	
-	strID.Format(pUIMan->GetStringFromTable(5526), strNum);
+	strID.Format(pUIMan->GetStringFromTable(5526), (const wchar_t*)strNum);
 	return strID;
 }
 
@@ -525,7 +525,7 @@ void CDlgWebTradeBase::UpdateHints()
 		if(it != s_KnownHints.end())
 		{
 			ACString szHint;
-			szHint.Format(_AL("%s\r%s"), GetItemInfo(i)->GetTradeIDHint(),  it->second);
+			szHint.Format(_AL("%s\r%s"), (const wchar_t*)GetItemInfo(i)->GetTradeIDHint(),  (const wchar_t*)it->second);
 			m_pLst_Item->SetItemHint(i, szHint);
 		}
 	}
@@ -542,7 +542,7 @@ void CDlgWebTradeBase::UpdateHint(int i) {
 	if(it != s_KnownHints.end())
 	{
 		ACString szHint;
-		szHint.Format(_AL("%s\r%s"), GetItemInfo(i)->GetTradeIDHint(),  it->second);
+		szHint.Format(_AL("%s\r%s"), (const wchar_t*)GetItemInfo(i)->GetTradeIDHint(),  (const wchar_t*)it->second);
 
 		CECIvtrItem* pItem = GetItemInfo(i)->GetIvtrItem();
 		if (pItem) {
@@ -578,7 +578,7 @@ bool CDlgWebTradeBase::AddHint(__int64 sn, const GNET::Octets& info)
 
 		strHint.Format(GetStringFromTable(5528)
 			, GetGameRun()->GetProfName(brief.cls)
-			, gender
+			, (const wchar_t*)gender
 			, brief.level
 			, GetStringFromTable(1001 + brief.level2)
 		);
@@ -853,7 +853,7 @@ void CDlgWebTradeBase::InsertTradeInfo(int i, ItemInfo* pInfo)
 	if(pInfo->GetBasicInfo().posttype == ItemInfo::POSTTYPE_MONEY)
 	{
 		ACString szHint;
-		szHint.Format(_AL("%s\r%s"), pInfo->GetTradeIDHint(),  GetStringFromTable(5510));
+		szHint.Format(_AL("%s\r%s"), (const wchar_t*)pInfo->GetTradeIDHint(),  GetStringFromTable(5510));
 		m_pLst_Item->SetItemHint(i, szHint);
 	}
 }

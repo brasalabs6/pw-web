@@ -972,7 +972,7 @@ void CDlgNPC::PopupNPCDialog(const NPC_ESSENCE *pEssence)
 		{
 			long stime = GetGame()->GetServerGMTTime();
 			stime -= GetGame()->GetTimeZoneBias() * 60; // localtime = UTC - bias, in which bias is minute
-			tm *gtime = gmtime(&stime);
+			tm *gtime = gmtime((const time_t*)&stime);
 //			if( gtime->tm_wday == 1 && gtime->tm_hour >= 19 )
 			if( GetGameUIMan()->m_pDlgGuildMap->IsBattleChallengeOpen() )
 //				&& GetHostPlayer()->GetFRoleID() == GNET::_R_MASTER )

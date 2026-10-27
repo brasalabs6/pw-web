@@ -1296,7 +1296,7 @@ const wchar_t* CECIvtrGeneralCard::GetNormalDesc(bool bRepair)
 	default: break;
 	}
 	AddDescText(white, false, pDescTab->GetWideString(ITEMDESC_GENERALCARD_RANK));
-	AddDescText(white, true, _AL(" %s"), strText);
+	AddDescText(white, true, _AL(" %s"), (const wchar_t*)strText);
 
 	AddBindDescText();
 

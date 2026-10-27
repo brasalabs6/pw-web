@@ -218,7 +218,7 @@ bool CDlgFashionShop::OnInitDialog(){
 AString CDlgFashionShop::GetAdImagePath(int index){
 	AString strAdPath;
 	if (index >= 0 && index < (int)CECUIConfig::Instance().GetGameUI().strFashionShopAdImage.size()){
-		strAdPath.Format("surfaces\\2014\\广告\\%s", CECUIConfig::Instance().GetGameUI().strFashionShopAdImage[index]);
+		strAdPath.Format("surfaces\\2014\\广告\\%s", (const char*)CECUIConfig::Instance().GetGameUI().strFashionShopAdImage[index]);
 	}
 	return strAdPath;
 }

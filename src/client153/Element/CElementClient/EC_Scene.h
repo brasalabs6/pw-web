@@ -21,6 +21,9 @@
 #include "EC_WorldFile.h"
 #include "EC_Counter.h"
 
+//	Forward declaration: the original relied on include order for this type.
+class CECWorld;
+
 ///////////////////////////////////////////////////////////////////////////
 //	
 //	Define and Macro

@@ -152,7 +152,7 @@ void CDlgMailWrite::CreateNewMail(const ACHAR *strMailto, ACString szSubject, in
 		m_pTxt_Subject->SetText(szSubject);
 	}
 
-	m_pTxt_Cost->SetText(ACString().Format(GetStringFromTable(11232), GetBaseUIMan()->GetFormatNumber(nCost)));
+	m_pTxt_Cost->SetText(ACString().Format(GetStringFromTable(11232), (const wchar_t*)GetBaseUIMan()->GetFormatNumber(nCost)));
 	
 	m_pTxt_MailTo->Enable(!IsSendToMass());
 	m_pTxt_AttachGold->Enable(!IsSendToMass());

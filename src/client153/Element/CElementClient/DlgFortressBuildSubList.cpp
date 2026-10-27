@@ -299,12 +299,12 @@ PAUISUBDIALOG CDlgFortressBuildSubList::AppendSubDialog()
 		//	首次创建，记录模板名称
 		pDlg = m_pAUIManager->GetDialog(m_pAUIManager->CreateDlg(m_pA3DEngine, m_pA3DDevice, m_strDialogFile));
 		m_strDialogName = pDlg->GetName();
-		strName.Format("%s_%d", m_strDialogName, m_nSubDialog);
+		strName.Format("%s_%d", (const char*)m_strDialogName, m_nSubDialog);
 		pDlg->SetName(strName);
 	}
 	else
 	{
-		strName.Format("%s_%d", m_strDialogName, m_nSubDialog);
+		strName.Format("%s_%d", (const char*)m_strDialogName, m_nSubDialog);
 		pDlg = GetGameUIMan()->GetDialog(strName);
 		if (!pDlg)
 		{

@@ -392,7 +392,7 @@ void CDlgGMQueryItem::ConfirmDelete(const ItemInfos& infos)
 		
 		ACString strMsg;
 		PAUIDIALOG pMsgBox = NULL;
-		GetGameUIMan()->MessageBox( "GMQueryItem_DeleteAll", strMsg.Format(GetStringFromTable(6354), strList),
+		GetGameUIMan()->MessageBox( "GMQueryItem_DeleteAll", strMsg.Format(GetStringFromTable(6354), (const wchar_t*)strList),
 								    MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 
 		m_State = STATE_DELETING;

@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cwctype>
 #include <cstring>
 
 namespace pw153::platform {
@@ -440,6 +441,245 @@ int wide_toi(const wchar_t *text) {
     ++i;
   }
   return static_cast<int>(negative ? -value : value);
+}
+
+
+void wide_strupr(wchar_t *text) {
+  for (wchar_t *p = text; *p; ++p)
+    if (*p >= L'a' && *p <= L'z')
+      *p = static_cast<wchar_t>(*p - 32);
+}
+
+void wide_strlwr(wchar_t *text) {
+  for (wchar_t *p = text; *p; ++p)
+    if (*p >= L'A' && *p <= L'Z')
+      *p = static_cast<wchar_t>(*p + 32);
+}
+
+void narrow_strupr(char *text) {
+  for (char *p = text; *p; ++p)
+    if (*p >= 'a' && *p <= 'z')
+      *p = static_cast<char>(*p - 32);
+}
+
+void narrow_strlwr(char *text) {
+  for (char *p = text; *p; ++p)
+    if (*p >= 'A' && *p <= 'Z')
+      *p = static_cast<char>(*p + 32);
+}
+
+int wide_sprintf(wchar_t *out, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int written = wide_vformat(out, format, args);
+  va_end(args);
+  return written;
+}
+
+int wide_vsprintf(wchar_t *out, const wchar_t *format, va_list args) {
+  return wide_vformat(out, format, args);
+}
+
+namespace {
+// wide_sscanf core: walks format and input, converting the supported specs.
+int wide_scan_core(const wchar_t *&text, const wchar_t *format, va_list args,
+                   bool &matching) {
+  int converted = 0;
+  while (*format && matching) {
+    if (iswspace(*format)) {
+      while (iswspace(*text))
+        ++text;
+      ++format;
+      continue;
+    }
+    if (*format != L'%') {
+      if (*text != *format) {
+        matching = false;
+        return converted;
+      }
+      ++text;
+      ++format;
+      continue;
+    }
+    ++format;
+    int width = 0;
+    while (*format >= L'0' && *format <= L'9')
+      width = width * 10 + (*format++ - L'0');
+    bool skip = false;
+    if (*format == L'*') {
+      skip = true;
+      ++format;
+    }
+    const wchar_t spec = *format++;
+    switch (spec) {
+    case L'd':
+    case L'i':
+    case L'u':
+    case L'x': {
+      while (iswspace(*text))
+        ++text;
+      bool negative = false;
+      if (spec != L'x' && (*text == L'-' || *text == L'+')) {
+        negative = *text == L'-';
+        ++text;
+      }
+      long long value = 0;
+      if (spec == L'x') {
+        while (true) {
+          wchar_t c = *text;
+          int digit = -1;
+          if (c >= L'0' && c <= L'9')
+            digit = static_cast<int>(c - L'0');
+          else if (c >= L'a' && c <= L'f')
+            digit = static_cast<int>(c - L'a' + 10);
+          else if (c >= L'A' && c <= L'F')
+            digit = static_cast<int>(c - L'A' + 10);
+          if (digit < 0)
+            break;
+          value = value * 16 + digit;
+          ++text;
+        }
+      } else {
+        while (*text >= L'0' && *text <= L'9') {
+          value = value * 10 + (*text - L'0');
+          ++text;
+        }
+      }
+      if (negative)
+        value = -value;
+      if (!skip) {
+        if (spec == L'u')
+          *va_arg(args, unsigned *) = static_cast<unsigned>(value);
+        else
+          *va_arg(args, int *) = static_cast<int>(value);
+        ++converted;
+      }
+      break;
+    }
+    case L'f': {
+      while (iswspace(*text))
+        ++text;
+      double value = 0.0;
+      bool any = false;
+      bool negative = false;
+      if (*text == L'-' || *text == L'+') {
+        negative = *text == L'-';
+        ++text;
+      }
+      while (*text >= L'0' && *text <= L'9') {
+        value = value * 10 + (*text - L'0');
+        ++text;
+        any = true;
+      }
+      if (*text == L'.') {
+        ++text;
+        double scale = 0.1;
+        while (*text >= L'0' && *text <= L'9') {
+          value += (*text - L'0') * scale;
+          scale *= 0.1;
+          ++text;
+          any = true;
+        }
+      }
+      if (!any) {
+        matching = false;
+        return converted;
+      }
+      if (negative)
+        value = -value;
+      if (!skip) {
+        *va_arg(args, float *) = static_cast<float>(value);
+        ++converted;
+      }
+      break;
+    }
+    case L's': {
+      while (iswspace(*text))
+        ++text;
+      if (!*text) {
+        matching = false;
+        return converted;
+      }
+      if (!skip) {
+        wchar_t *out = va_arg(args, wchar_t *);
+        int count = 0;
+        const int limit = width > 0 ? width : 0x7FFFFFFF;
+        while (*text && !iswspace(*text) && count < limit) {
+          *out++ = *text++;
+          ++count;
+        }
+        *out = L'\0';
+        ++converted;
+      } else {
+        while (*text && !iswspace(*text))
+          ++text;
+      }
+      break;
+    }
+    case L'c': {
+      if (!*text) {
+        matching = false;
+        return converted;
+      }
+      if (!skip) {
+        *va_arg(args, wchar_t *) = *text++;
+        ++converted;
+      } else {
+        ++text;
+      }
+      break;
+    }
+    case L'%': {
+      if (*text != L'%') {
+        matching = false;
+        return converted;
+      }
+      ++text;
+      break;
+    }
+    default:
+      matching = false;
+      return converted;
+    }
+  }
+  return converted;
+}
+} // namespace
+
+wchar_t *wide_itow(int value, wchar_t *buffer, int radix) {
+  if (radix < 2 || radix > 36 || !buffer)
+    return buffer;
+  unsigned long long magnitude =
+      value < 0 ? 0ull - static_cast<unsigned long long>(value)
+                : static_cast<unsigned long long>(value);
+  wchar_t temp[65];
+  int length = 0;
+  do {
+    const int digit = static_cast<int>(magnitude % static_cast<unsigned long long>(radix));
+    temp[length++] = digit < 10 ? static_cast<wchar_t>(L'0' + digit)
+                                : static_cast<wchar_t>(L'a' + digit - 10);
+    magnitude /= static_cast<unsigned long long>(radix);
+  } while (magnitude);
+  int out = 0;
+  if (value < 0)
+    buffer[out++] = L'-';
+  while (length > 0)
+    buffer[out++] = temp[--length];
+  buffer[out] = L'\0';
+  return buffer;
+}
+
+wchar_t *wide_i64tow(long long value, wchar_t *buffer, int radix) {
+  return wide_itow(value, buffer, radix);
+}
+
+int wide_sscanf(const wchar_t *text, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  bool matching = true;
+  const int converted = wide_scan_core(text, format, args, matching);
+  va_end(args);
+  return converted;
 }
 
 } // namespace pw153::platform

@@ -47,7 +47,7 @@ bool CDlgPaletteBase::OnInitDialog() {
 	bool bSuccess(false);
 	while (true){
 		if (!af_IsFileExist(m_strImgFile)){
-			a_LogOutput(1, "CDlgPaletteBase::OnInitDialog, 打开调色板图片文件 %s 失败！需要此图片才能正常调色", m_strImgFile);
+			a_LogOutput(1, "CDlgPaletteBase::OnInitDialog, 打开调色板图片文件 %s 失败！需要此图片才能正常调色", (const char*)m_strImgFile);
 			break;
 		}			
 		// 创建查询颜色的 surface

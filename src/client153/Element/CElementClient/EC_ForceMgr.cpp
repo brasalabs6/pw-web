@@ -182,7 +182,7 @@ A2DSprite* CECForceMgr::GetForceIcon(A3DDevice * pDevice, const FORCE_CONFIG* pC
 	if( !bval )
 	{
 		A3DRELEASE(*ppSprite);
-		a_LogOutput(1, "CECForceMgr::GetForceIcon, Failed to Init %s.", strTarget);
+		a_LogOutput(1, "CECForceMgr::GetForceIcon, Failed to Init %s.", (const char*)strTarget);
 	}
 
 	if(*ppSprite)

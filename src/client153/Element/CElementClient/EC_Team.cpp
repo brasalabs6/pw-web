@@ -305,7 +305,7 @@ void CECTeam::UpdateMemberInfo(GNET::GetPlayerBriefInfo_Re& p)
 			if (m_aUnknownIDs[j] == Info.roleid)
 			{
 				m_aUnknownIDs.RemoveAtQuickly(j);
-				pGameRun->AddFixedMessage(FIXMSG_JOINTEAM, strName);
+				pGameRun->AddFixedMessage(FIXMSG_JOINTEAM, (const wchar_t*)strName);
 				break;
 			}
 		}

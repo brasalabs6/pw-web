@@ -211,7 +211,7 @@ void CDlgQShopItem::OnCommand_Buy(const char * szCommand)
 // 		{
 // 			long stime = (*items)[m_nItemIndex].buy[0].end_time;
 // 			stime -= GetGame()->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
-// 			tm *gtime = gmtime(&stime);
+// 			tm *gtime = gmtime((const time_t*)&stime);
 // 			strText1.Format(GetStringFromTable(1505), 
 // 				gtime->tm_year - 100, gtime->tm_mon + 1, gtime->tm_mday);
 // 			strText.Format(GetStringFromTable(822), GetGameUIMan()->m_pDlgQShop->GetCashText(m_nPrice), m_pTxt_ItemName->GetText(), strText1);
@@ -348,7 +348,7 @@ void CDlgQShopItem::SetItem(int dlgpostion, int itemindex)
 // 		{
 // 			long stime = (*items)[itemindex].buy[0].end_time;
 // 			stime -= GetGame()->GetTimeZoneBias() * 60;	// localtime = UTC - bias, which bias is in minute
-// 			tm *gtime = gmtime(&stime);
+// 			tm *gtime = gmtime((const time_t*)&stime);
 // 			strText1.Format(GetStringFromTable(1505), 
 // 				gtime->tm_year - 100, gtime->tm_mon + 1, gtime->tm_mday);
 // 			strText.Format(GetStringFromTable(1504), strText1);

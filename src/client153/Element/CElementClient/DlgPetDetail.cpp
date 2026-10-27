@@ -216,7 +216,7 @@ void CDlgPetDetail::UpdatePet(int nSlot)
 
 						ACString strTemp;
 						strTemp.Format(_AL("^%02x%02x%02x"), A3DCOLOR_GETRED(clr), A3DCOLOR_GETGREEN(clr), A3DCOLOR_GETBLUE(clr));
-						strColor.Format(g_pGame->GetItemDesc()->GetWideString(ITEMDESC_COLORRECT), strTemp);
+						strColor.Format(g_pGame->GetItemDesc()->GetWideString(ITEMDESC_COLORRECT), (const wchar_t*)strTemp);
 					}
 					m_pTxt_Color->SetText(strColor);
 				}

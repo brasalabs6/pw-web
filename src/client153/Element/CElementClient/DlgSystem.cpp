@@ -92,7 +92,7 @@ void CDlgSystem::OnTick()
 		ACString strTemp;
 
 		//	服务器时间
-		strTemp.Format(GetStringFromTable(8780), GetGameRun()->GetServerName(), GetGameRun()->GetServerGroup());
+		strTemp.Format(GetStringFromTable(8780), (const wchar_t*)GetGameRun()->GetServerName(), (const wchar_t*)GetGameRun()->GetServerGroup());
 		strHint += strTemp;
 
 		//	网络状况

@@ -504,8 +504,8 @@ inline unsigned long ATaskTempl::CheckDeliverTime(TaskInterface* pTask, unsigned
 	tm tmCur, tmTask;
 
 #ifdef _TASK_CLIENT
-	ulCurTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
-	ulTaskTime -= unsigned long(TaskInterface::GetTimeZoneBias() * 60);
+	ulCurTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
+	ulTaskTime -= (unsigned long)(TaskInterface::GetTimeZoneBias() * 60);
 
 	if ((long)(ulCurTime) < 0)
 		ulCurTime = 0;
