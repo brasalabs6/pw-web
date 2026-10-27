@@ -331,6 +331,15 @@ class DBCreateRole : public Rpc
 				base.lastlogin_time = Timer::GetTime();
 				
 				//edit status for new character
+				// pw-web: the upstream leaves the GRoleStatus defaults in place,
+				// so a new role is stored with worldtag=0 and position (0,0,0).
+				// gdeliveryd's dbcreaterole.hrp patches worldtag 0->1 only in the
+				// RPC response (in memory): the DB keeps 0, and on re-login
+				// FindGameServer(pt, 0) matches no provider (main world tag=1,
+				// instance tag=161) and the login hangs. Store the main-world tag
+				// here so the persisted role is placeable. The gs places new
+				// players at the map's default spawn.
+				if (status.worldtag == 0) status.worldtag = 1;
 				status.dbltime_expire = 0;
 				status.dbltime_mode = 0;
 				status.dbltime_begin = 0;
