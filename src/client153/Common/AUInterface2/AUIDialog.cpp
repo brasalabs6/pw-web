@@ -2709,14 +2709,14 @@ bool AUIDialog::ExportStringTable(const char *pszFilename)
 	fwrite(byteHeader, sizeof(BYTE), 2, file);
 
 	// Write file version
-	fwprintf(file, _AL("-1\t\"%d\"\n"), AUIDIALOG_FILE_VERSION);
+	pw153::platform::wide_fprintf_utf16le(file, _AL("-1\t\"%d\"\n"), AUIDIALOG_FILE_VERSION);
 	
 	AUIDIALOG_STRINGTABLE::iterator it = m_StringTable.begin();
 	for( ; it != m_StringTable.end(); ++it )
 	{
 		int idString = *(it.key());
 		ACString str = *(it.value());
-		fwprintf(file, _AL("%d\t\"%s\"\n"), idString, (const ACHAR*)str);
+		pw153::platform::wide_fprintf_utf16le(file, _AL("%d\t\"%s\"\n"), idString, (const ACHAR*)str);
 	}
 
 	fclose(file);

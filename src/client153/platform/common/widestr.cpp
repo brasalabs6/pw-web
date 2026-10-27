@@ -279,6 +279,20 @@ int wide_snprintf(wchar_t *out, std::size_t count, const wchar_t *format, ...) {
   return result.size() > count ? -1 : static_cast<int>(result.size());
 }
 
+int wide_fprintf_utf16le(std::FILE *out, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const auto result = wide_format_buffer(format, args);
+  va_end(args);
+  for (wchar_t unit : result) {
+    const auto value = static_cast<std::uint16_t>(unit);
+    const unsigned char bytes[] = {static_cast<unsigned char>(value),
+                                   static_cast<unsigned char>(value >> 8)};
+    if (std::fwrite(bytes, 1, sizeof(bytes), out) != sizeof(bytes)) return -1;
+  }
+  return static_cast<int>(result.size());
+}
+
 namespace {
 // Copies the numeric prefix (sign, digits, '.', exponent) into a narrow
 // buffer for the narrow CRT; returns the copied length.

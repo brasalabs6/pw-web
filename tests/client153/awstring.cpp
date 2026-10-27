@@ -1,5 +1,6 @@
 #include "AWString.h"
 #include "widestr.h"
+#include <cstdio>
 #include <stdexcept>
 #define CHECK(x) do { if (!(x)) throw std::runtime_error(#x); } while (false)
 int main() {
@@ -36,6 +37,15 @@ int main() {
   CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abcdef") == -1);
   CHECK(bounded[3] == L'd' && bounded[4] == L'!');
   CHECK(pw153::platform::wide_snprintf(nullptr, 0, L"%s", L"x") == -1);
+  FILE *table = std::tmpfile();
+  CHECK(table != nullptr);
+  CHECK(pw153::platform::wide_fprintf_utf16le(table, L"%d\t\"%s\"\n", 7, L"Olá") == 8);
+  CHECK(std::fseek(table, 0, SEEK_SET) == 0);
+  const unsigned char expected[] = {'7', 0, '\t', 0, '"', 0, 'O', 0, 'l', 0, 0xe1, 0, '"', 0, '\n', 0};
+  unsigned char actual[sizeof(expected)];
+  CHECK(std::fread(actual, 1, sizeof(actual), table) == sizeof(actual));
+  for (std::size_t i = 0; i < sizeof(actual); ++i) CHECK(actual[i] == expected[i]);
+  CHECK(std::fclose(table) == 0);
   char long_narrow[301];
   for (int i = 0; i < 300; ++i) long_narrow[i] = 'x';
   long_narrow[300] = 0;

@@ -11,6 +11,7 @@
 #include <cstdarg>
 #include <cstdint>
 #include <cstddef>
+#include <cstdio>
 
 namespace pw153::platform {
 
@@ -19,6 +20,7 @@ namespace pw153::platform {
 // number of characters written, excluding the terminator.
 int wide_vformat(wchar_t *out, const wchar_t *format, va_list args);
 int wide_snprintf(wchar_t *out, std::size_t count, const wchar_t *format, ...);
+int wide_fprintf_utf16le(std::FILE *out, const wchar_t *format, ...);
 
 // _wtoi: parses an optionally signed decimal prefix; parsing stops at the
 // first non-digit, matching the CRT behavior.
