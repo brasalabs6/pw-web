@@ -5,6 +5,8 @@
 #ifndef _AUI_H_
 #define _AUI_H_
 
+#include <WindowsX.h>
+
 // Macros.
 #include "AUIDef.h"
 
