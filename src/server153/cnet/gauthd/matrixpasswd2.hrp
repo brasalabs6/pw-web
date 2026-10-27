@@ -7,6 +7,8 @@
 #include "state.hxx"
 #include "matrixpasswdarg"
 #include "matrixpasswd2res"
+#include "security.h"
+#include <string>
 
 namespace GNET
 {
@@ -17,27 +19,70 @@ class MatrixPasswd2 : public ProxyRpc
 	#include "matrixpasswd2"
 #undef	RPC_BASECLASS
 
+	void Process(Manager *manager, Manager::Session::ID sid)
+	{
+		// pw-web: gauthd is the TERMINAL node for this ProxyRpc. Mirror the
+		// base request bookkeeping, then answer directly (same pattern as
+		// the working MatrixPasswd v1 terminal).
+		if (!xid.IsRequest())
+			return;
+		xid.ClrRequest();
+		proxy_manager = manager;
+		proxy_sid     = sid;
+		proxy_xid     = xid;
+		xid.SetRequest();
+
+		// RPC_MATRIXPASSWD2 has no arg rpcdata of its own: gauthd/stubs.cxx
+		// registers it with the v1 MatrixPasswdArg (account, challenge, loginip).
+		MatrixPasswdArg arg;
+		MatrixPasswd2Res res;
+		proxy_data >> arg;
+
+		// dev-auth (same scheme as GQueryPasswd/matrixpasswd): accounts are
+		// numeric multiples of 16 and the stored hash is MD5(account||account).
+		res.userid = std::atoi(std::string((char*)arg.account.begin(), arg.account.size()).c_str());
+		if (res.userid % 16 || 0 == res.userid)
+		{
+			res.retcode = ERR_INVALID_ACCOUNT;
+			SetResult(res);
+			SendToSponsor();
+			return;
+		}
+
+		MD5Hash md5;
+		Octets digest;
+		md5.Update(arg.account);
+		md5.Update(arg.account);
+		md5.Final(digest);
+
+		// res.response must be the RAW stored hash, NOT HMAC(challenge,hash):
+		// with ChallengeAlgo()==ALGO_MD5 gdeliveryd's PostProcess applies
+		// CalcResponse() (HMAC over the challenge) and caches the raw value;
+		// with ALGO_SHA the field passes through unused (glinkd skips the
+		// comparison). Returning the HMAC here would double-HMAC under MD5.
+		res.response.swap(digest);
+		res.algorithm = 0;		// plain password: no card/handset/usbkey/phonetoken
+		res.rtime = 2954000;		// remaining playtime, same constant as userlogin
+		res.au_curtime = Timer::GetTime();	// delivery converts rtime to its clock
+
+		res.retcode = ERR_SUCCESS;
+		SetResult(res);
+		SendToSponsor();
+	}
+
 	bool Delivery(Manager::Session::ID proxy_sid, const OctetsStream& osArg)
 	{
-		// TODO
-		// MatrixPasswdArg arg;
-		// osArg >> arg;
 		// gauthd is the terminal server for this Rpc: no forward hop exists,
-		// so fail the delivery (sponsor receives ERR_DELIVER_SEND).
-			SetResult(MatrixPasswd2Res(ERR_DELIVER_SEND));
-			SendToSponsor();
-			return false;
-
+		// so fail the delivery (sponsor receives ERR_DELIVER_SEND). Unreachable
+		// while Process() above answers every request.
+		SetResult(MatrixPasswd2Res(ERR_DELIVER_SEND));
+		SendToSponsor();
+		return false;
 	}
 
 	void PostProcess(Manager::Session::ID proxy_sid,const OctetsStream& osArg, const OctetsStream& osRes)
 	{
 		// TODO
-		// MatrixPasswdArg arg;
-		// osArg >> arg;
-		// MatrixPasswd2Res res;
-		// osRes >> res;
-		// SetResult( &res ); // if you modified res, do not forget to call this. 
 	}
 
 	void OnTimeout( )

@@ -44,6 +44,11 @@ void GLinkServer::OnAddSession(Session::ID sid)
 	challenge.algo=challenge_algo;
 	challenge.edition = edition;
 	challenge.exp_rate = GetExpRate();
+	// pw-web debug: the client rejects the challenge when version != its
+	// GAME_VERSION (0x10503 for PWBR v145). Print what we actually send.
+	fprintf(stderr, "[challenge] sid=%d version=0x%08x algo=%d edition='%.*s' exp=%d\n",
+		(int)sid, version, (int)challenge_algo,
+		(int)edition.size(), (char*)edition.begin(), (int)GetExpRate());
 	Send(sid, challenge);
 	sessions[sid].challenge = challenge.nonce;
 	sessions[sid].policy.Initialize();

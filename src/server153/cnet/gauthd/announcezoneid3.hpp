@@ -22,6 +22,11 @@ class AnnounceZoneid3 : public GNET::Protocol
 		Thread::Mutex::Scoped l(GAuthServer::GetInstance()->locker_zonemap);
 		GAuthServer::GetInstance()->zonemap[sid] = zoneid;
 		DEBUG_PRINT("gauthd::annoucezoneid3: zoneid=%d,aid=%d belongs to session %d\n",zoneid,aid,sid);
+		// pw-web: announce the auth protocol version so gdeliveryd/glinkd
+		// activate the v2 login path (RPC_MATRIXPASSWD2/RPC_USERLOGIN2) that
+		// the 1.5.3 v145 client expects. Upstream never sent AuthdVersion
+		// (the handler was a TODO stub), so au_version stayed 0 forever.
+		manager->Send(sid, AuthdVersion(1, 0, 0));
 	}
 };
 
