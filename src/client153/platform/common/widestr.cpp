@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cwctype>
 #include <cstring>
+#include <vector>
 
 namespace pw153::platform {
 namespace {
@@ -164,18 +165,14 @@ int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
     }
     case L's': {
       const wchar_t *value = va_arg(list, const wchar_t *);
-      if (!value) {
-        const wchar_t nullText[] = L"(null)";
-        std::memcpy(body, nullText, sizeof(nullText) - sizeof(nullText[0]));
-        bodyLen = 6;
-      } else {
-        bodyLen = wide_length(value);
-        if (spec.hasPrecision && spec.precision >= 0 &&
-            static_cast<std::size_t>(spec.precision) < bodyLen)
-          bodyLen = static_cast<std::size_t>(spec.precision);
-        std::memcpy(body, value, bodyLen * sizeof(wchar_t));
-      }
-      break;
+      if (!value)
+        value = L"(null)";
+      bodyLen = wide_length(value);
+      if (spec.hasPrecision && spec.precision >= 0 &&
+          static_cast<std::size_t>(spec.precision) < bodyLen)
+        bodyLen = static_cast<std::size_t>(spec.precision);
+      pad_and_emit(cursorOut, value, bodyLen, spec);
+      continue;
     }
     case L'S': {
       //	MSVC wide printf: %S is the narrow string in a UNICODE build.
@@ -189,8 +186,10 @@ int wide_vformat(wchar_t *out, const wchar_t *format, va_list args) {
         if (spec.hasPrecision && spec.precision >= 0 &&
             static_cast<std::size_t>(spec.precision) < len)
           len = static_cast<std::size_t>(spec.precision);
-        widen_copy(body, value, len);
-        bodyLen = len;
+        std::vector<wchar_t> widened(len);
+        widen_copy(widened.data(), value, len);
+        pad_and_emit(cursorOut, widened.data(), len, spec);
+        continue;
       }
       break;
     }

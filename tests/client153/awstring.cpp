@@ -22,6 +22,17 @@ int main() {
   pw153::platform::wide_sprintf(font_record, L"%s###%d###%d###%d###%d",
                                 static_cast<const wchar_t*>(font), 1, 2, 0, 1);
   CHECK(AWString(font_record) == L"Fonte###1###2###0###1");
+  wchar_t long_text[301];
+  for (int i = 0; i < 300; ++i) long_text[i] = L'x';
+  long_text[300] = 0;
+  wchar_t long_result[400];
+  CHECK(pw153::platform::wide_sprintf(long_result, L"%s", long_text) == 300);
+  CHECK(AWString(long_result) == long_text);
+  char long_narrow[301];
+  for (int i = 0; i < 300; ++i) long_narrow[i] = 'x';
+  long_narrow[300] = 0;
+  CHECK(pw153::platform::wide_sprintf(long_result, L"%S", long_narrow) == 300);
+  CHECK(AWString(long_result) == long_text);
   AWString number(L"9223372036854775807");
   CHECK(number.ToInt64() == 9223372036854775807LL);
 }
