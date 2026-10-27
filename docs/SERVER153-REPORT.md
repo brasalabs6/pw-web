@@ -228,16 +228,19 @@ disponível na conta" era um bug do worker. O worker agora também expõe
 `/tcpprobe` (`getTcpPort(29000).connect()` do DO — o caminho TCP de
 mediação que o gateway do ADR-0006 usará).
 
-**Bloqueio atual (comprovado, plataforma)**: com o worker corrigido, o
-`container.start()` falha com a resposta literal do runtime:
-`"There is no container instance that can be provided to this Durable
-Object, try again later"` (HTTP 503 do nosso worker com o detail). Testado
-com instância `lite` (padrão) e `basic` (1GiB), com container app
-recriado do zero (`wrangler containers delete` + deploy) e em múltiplos
-deploys — o scheduler nunca fornece uma instância. O container app fica
-`ready` com 0 instâncias vivas. Sem acesso ao dashboard/suporte da conta
-para diagnosticar o lado da plataforma, o health público permanece
-indisponível: o worker responde 503 + Retry-After com o erro original.
+**Bloqueio atual (comprovado, plataforma — requer ticket de suporte)**: com o
+worker corrigido, o `container.start()` falha com a resposta literal do
+runtime: `"There is no container instance that can be provided to this
+Durable Object, try again later"` (HTTP 503 do nosso worker com o detail).
+Elegibilidade verificada: a conta **está no Workers Paid** — o Worker usa
+Durable Object com storage SQLite (`new_sqlite_classes`), que a doc oficial
+exige plano Paid, e o deploy passa; o operador confirma a assinatura.
+Testado: instância default (lite), nome inválido `basic` corrigido (a lista
+válida de start() é lite/standard-1..4), app recriado do zero
+(`wrangler containers delete` + deploy), múltiplos deploys ao longo de ~8h,
+imagem 480MB no registry da conta, app `ready` com 0 instâncias vivas.
+Ação necessária (só via dashboard/suporte): abrir ticket Cloudflare citando
+o erro literal, a conta `a22f860…` e o container app `pw-server153`.
 
 **Caminho alternativo validado**: o modelo suportado (Worker/DO →
 `getTcpPort().fetch()/connect()` → container) está implementado e
