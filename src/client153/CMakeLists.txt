@@ -65,6 +65,50 @@ if(EMSCRIPTEN)
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
 endif()
 
+# Build the original UI sources already supported by the browser port.
+# Full UI, renderer and client linking remain in progress.
+if(EMSCRIPTEN)
+  add_library(client153_aui_original OBJECT EXCLUDE_FROM_ALL
+    Common/AUInterface2/AUICheckBox.cpp
+    Common/AUInterface2/AUIConsole.cpp
+    Common/AUInterface2/AUILabel.cpp
+    Common/AUInterface2/AUIModelPicture.cpp
+    Common/AUInterface2/AUIPicture.cpp
+    Common/AUInterface2/AUIRadioButton.cpp
+    Common/AUInterface2/A2DDotLine.cpp
+    Common/AUInterface2/A3DAlterableSkinModel.cpp
+    Common/AUInterface2/AUI.cpp
+    Common/AUInterface2/AUICTranslate.cpp
+    Common/AUInterface2/AUIFrame.cpp
+    Common/AUInterface2/CSplit.cpp
+    Common/AUInterface2/AUICommon.cpp
+    Common/AUInterface2/AUIObject.cpp
+    Common/AUInterface2/AUIComboBox.cpp
+    Common/AUInterface2/AUIStillImageButton.cpp
+    Common/AUInterface2/AUIScroll.cpp
+    Common/AUInterface2/AUISlider.cpp
+    Common/AUInterface2/AUISubDialog.cpp
+    Common/AUInterface2/AUIVerticalText.cpp
+    Common/AUInterface2/AUITreeView.cpp
+    Common/AUInterface2/AXMLFile.cpp)
+  target_include_directories(client153_aui_original PRIVATE
+    Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header Angelica2/Angelica3D/Header
+    platform/common Common/AUInterface2 Common/Output/include/PropDlg Common/Output/include/Gfx
+    Common/Output/include/LuaWrapper Common/Output/include/aaudio Angelica2/Output/3rdsdk/include/lua
+    Angelica2/Output/3rdsdk/include Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
+    Angelica2/Output/afsdk/include Angelica2/Output/amsdk/include)
+  target_compile_features(client153_aui_original PRIVATE cxx_std_17)
+  target_compile_definitions(client153_aui_original PRIVATE WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
+  target_compile_options(client153_aui_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+  foreach(widget AUIListBox AUIComboBox AUIEditBox AUILabel AUIStillImageButton AUICheckBox AUIImagePicture AUIDialog)
+    target_compile_options(client153_aui_original PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Common/AUInterface2/${widget}.h")
+  endforeach()
+endif()
+
 add_library(client153_formats STATIC
   Angelica2/Angelica3D/port/mox.h
   Angelica2/Angelica3D/port/dds.h
