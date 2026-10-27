@@ -208,7 +208,6 @@ void BuildRoleInfo(GRoleBase & base, GRoleStatus & status, GRoleEquipment & equi
 	}
 	roleinfo.reincarnation_data = status.reincarnation_data;
 	roleinfo.realm_data = status.realm_data;
-	roleinfo.rank = status.rank;
 }
 
 /**

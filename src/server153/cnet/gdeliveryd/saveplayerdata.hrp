@@ -52,8 +52,7 @@ class SavePlayerData : public Rpc
 				role.referrer_role,
 				role.cash_add,
 				role.reincarnation_data,
-				role.realm_data,
-				role.rank);
+				role.realm_data);
 		
 		Octets roleinfo_pack = (Marshal::OctetsStream() << info);
 		

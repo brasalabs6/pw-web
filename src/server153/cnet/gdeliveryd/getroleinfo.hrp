@@ -125,8 +125,7 @@ class GetRoleInfo : public Rpc
 			role.referrer_role,
 			role.cash_add,
 			role.reincarnation_data,
-			role.realm_data,
-			role.rank);
+			role.realm_data);
 		
 		switch (role.status)
 		{
