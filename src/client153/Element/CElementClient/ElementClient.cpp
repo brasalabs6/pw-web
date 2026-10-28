@@ -227,6 +227,7 @@ bool prepare_file_structures()
 		}
 
 	} while( FindNextFileA(hFind, &fd) );
+	FindClose(hFind);
 
 	if( af_IsFileExist("logs\\dumpfile") )
 		g_bTrojanDumpLastTime = true;

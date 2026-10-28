@@ -940,6 +940,17 @@ inline HANDLE CreateFileW(const wchar_t *name, DWORD access, DWORD share,
                      flags, templateFile);
 }
 
+struct WIN32_FIND_DATAA {
+  DWORD dwFileAttributes;
+  FILETIME ftCreationTime, ftLastAccessTime, ftLastWriteTime;
+  DWORD nFileSizeHigh, nFileSizeLow, dwReserved0, dwReserved1;
+  char cFileName[MAX_PATH];
+  char cAlternateFileName[14];
+};
+HANDLE FindFirstFileA(const char *pattern, WIN32_FIND_DATAA *data);
+BOOL FindNextFileA(HANDLE handle, WIN32_FIND_DATAA *data);
+BOOL FindClose(HANDLE handle);
+
 // DeleteFileA accepts the Windows path separators used by the client.
 inline BOOL DeleteFileA(const char *path) {
   if (!path || !*path) return FALSE;
