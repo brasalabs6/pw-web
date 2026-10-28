@@ -10,7 +10,7 @@
  * Copyright (c) 2005 Archosaur Studio, All Rights Reserved.
  */
 
-#include "el_region.h"
+#include "EL_Region.h"
 #include <memory.h>
 
 #ifdef _ELEMENTCLIENT

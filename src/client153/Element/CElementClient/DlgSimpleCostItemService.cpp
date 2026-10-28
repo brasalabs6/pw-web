@@ -398,7 +398,8 @@ void CDlgChangeGenderPolicy::PrepareProtocolParameterImpl(){
 		
 		CECPlayer::PLAYER_CUSTOMIZEDATA custom_data;
 		if (CECPlayer::LoadDefaultCustomizeData(roleInfo.occupation, roleInfo.gender, custom_data)){
-			roleInfo.custom_data.swap(GNET::Octets((const void *)&custom_data, sizeof(custom_data)));
+			GNET::Octets octetsCustom((const void *)&custom_data, sizeof(custom_data));
+			roleInfo.custom_data.swap(octetsCustom);
 		}
 		m_pPlayerAfterChangeGender = new CECLoginPlayer(NULL);
 		if (!m_pPlayerAfterChangeGender->Load(roleInfo)){

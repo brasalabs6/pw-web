@@ -73,24 +73,33 @@ AUI_ON_EVENT("Lst_Left",	WM_LBUTTONDBLCLK,	CDlgGivingFor::OnEventLButtonDBClick_
 AUI_ON_EVENT("Lst_Right",	WM_LBUTTONDBLCLK,	CDlgGivingFor::OnEventLButtonDBClick_RightList)
 AUI_END_EVENT_MAP()
 
-struct SortDataName : public std::binary_function<const SortData&, const SortData&, bool> 
+struct SortDataName
 {
+	typedef const SortData& first_argument_type;
+	typedef const SortData& second_argument_type;
+	typedef bool result_type;
 	bool operator ()(const SortData& a, const SortData& b) const 
 	{ 
 		return a.roleName.CompareNoCase(b.roleName) < 0;
 	}
 };
 
-struct SortDataLevel : public std::binary_function<const SortData&, const SortData&, bool> 
+struct SortDataLevel
 {
+	typedef const SortData& first_argument_type;
+	typedef const SortData& second_argument_type;
+	typedef bool result_type;
 	bool operator ()(const SortData& a, const SortData& b) const 
 	{ 
 		return a.level < b.level;
 	}
 };
 
-struct SortDataProf : public std::binary_function<const SortData&, const SortData&, bool> 
+struct SortDataProf
 {
+	typedef const SortData& first_argument_type;
+	typedef const SortData& second_argument_type;
+	typedef bool result_type;
 	bool operator ()(const SortData& a, const SortData& b) const 
 	{ 
 		return a.prof < b.prof;
@@ -349,7 +358,7 @@ void CDlgGivingFor::OnCommandConfirm(const char *szCommand)
 		CDlgQShop*pQShop = dynamic_cast<CDlgQShop*>(GetGameUIMan()->GetDialog("Win_QShop"));
 		
 		ACString temp;
-		temp.Format(GetStringFromTable(10408), GetStringFromTable(m_bGiving ? 10405 : 10406), pItem->GetName(), pQShop->GetFormatTime(m_index, m_slot), pQShop->GetCashText(m_price * count) );
+		temp.Format(GetStringFromTable(10408), GetStringFromTable(m_bGiving ? 10405 : 10406), pItem->GetName(), (const wchar_t*)pQShop->GetFormatTime(m_index, m_slot), (const wchar_t*)pQShop->GetCashText(m_price * count) );
 
 		if(CheckAskForTaskLimitedItem(m_itemId))
 		{
@@ -564,9 +573,9 @@ void CDlgGivingFor::AddPlayerInfo(bool bLeft, int roleid, const ACHAR* szRoleNam
 	}
 
 	if(bOnline)
-		temp.Format(_AL("%s\t%s\t%s"), szRoleName, strLevel, strProfession);
+		temp.Format(_AL("%s\t%s\t%s"), (const wchar_t*)szRoleName, (const wchar_t*)strLevel, (const wchar_t*)strProfession);
 	else
-		temp.Format(_AL("^808080%s\t^808080%s\t^808080%s"), szRoleName, strLevel, strProfession);
+		temp.Format(_AL("^808080%s\t^808080%s\t^808080%s"), (const wchar_t*)szRoleName, (const wchar_t*)strLevel, (const wchar_t*)strProfession);
 	pListBox->AddString(temp);
 	pListBox->SetItemData(pListBox->GetCount() - 1, roleid);
 
@@ -620,7 +629,7 @@ void CDlgGivingFor::PlayerNameUpdate(int roleid, ACString strNewName, int level,
 	int rcount = m_pListBoxRight->GetCount();
 
 	ACString temp;
-	temp.Format(_AL("%s\t%d\t%s"), strNewName, level, GetGameRun()->GetProfName(profession));
+	temp.Format(_AL("%s\t%d\t%s"), (const wchar_t*)strNewName, level, GetGameRun()->GetProfName(profession));
 
 	int i;
 	for(i = 0;i < lcount; ++i)

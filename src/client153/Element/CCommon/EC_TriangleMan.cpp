@@ -8,10 +8,10 @@
 
 #include "A3DDevice.h"
 #include "A3DCollision.h"
-#include "A3dframe.h"
+#include "A3DFrame.h"
 #include "aassist.h"
-#include "A3dlitmodel.h"
-#include "A3dcamera.h"
+#include "A3DLitModel.h"
+#include "A3DCamera.h"
 #include "EC_TriangleMan.h"
 #include "EL_BrushBuilding.h"
 

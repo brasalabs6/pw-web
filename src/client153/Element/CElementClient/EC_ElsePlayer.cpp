@@ -47,8 +47,8 @@
 #include "EC_Matter.h"
 #include "EC_EPWork.h"
 
-#include "PlayerBaseInfo_Re.hpp"
-#include "GetCustomData_Re.hpp"
+#include "playerbaseinfo_re.hpp"
+#include "getcustomdata_re.hpp"
 
 #include "A3DGFXExMan.h"
 #include "elementdataman.h"

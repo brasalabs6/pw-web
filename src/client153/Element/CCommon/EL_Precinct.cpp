@@ -10,7 +10,7 @@
  * Copyright (c) 2005 Archosaur Studio, All Rights Reserved.
  */
 
-#include "el_precinct.h"
+#include "EL_Precinct.h"
 #include <memory.h>
 
 #ifdef _ELEMENTCLIENT

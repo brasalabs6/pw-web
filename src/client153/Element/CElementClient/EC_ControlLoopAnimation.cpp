@@ -100,7 +100,8 @@ bool CECControlLoopAnimation::Tick()
 					p->OnOneRound(m_pParent, m_nRound);
 				}
 			};
-			NotifyObservers(OneRoundCmd(this, ++m_nRound));
+			OneRoundCmd oneRoundCmd(this, ++m_nRound);
+			NotifyObservers(oneRoundCmd);
 			CreateAnimator();
 		}else{
 			class FinishedCmd : public CECControlLoopAnimationObserverNotifyCmd
@@ -112,7 +113,8 @@ bool CECControlLoopAnimation::Tick()
 					p->OnFinished(m_pParent);
 				}
 			};
-			NotifyObservers(FinishedCmd(this));
+			FinishedCmd finishedCmd(this);
+			NotifyObservers(finishedCmd);
 			bFinished = true;
 			RemoveAnimator();
 			delete m_pCreatePolicy;

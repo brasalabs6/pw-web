@@ -9,7 +9,7 @@
 
 //#include "stdafx.h"
 #include "EC_BrushMan.h"
-#include "a3dcollision.h"
+#include "A3DCollision.h"
 
 #if BMAN_VERBOSE_STAT
 #include "acounter.h"

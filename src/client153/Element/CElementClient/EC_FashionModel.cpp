@@ -234,7 +234,8 @@ bool CECFashionModel::CreatePlayer(int profession, int gender){
 	}
 	if (roleInfo.custom_data.size() == 0){
 		if (CECPlayer::LoadDefaultCustomizeData(profession, gender, custom_data)){
-			roleInfo.custom_data.swap(GNET::Octets((const void *)&custom_data, sizeof(custom_data)));
+			GNET::Octets octetsCustom((const void *)&custom_data, sizeof(custom_data));
+			roleInfo.custom_data.swap(octetsCustom);
 		}
 	}
 	

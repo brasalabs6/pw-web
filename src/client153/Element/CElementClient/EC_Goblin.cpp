@@ -2,8 +2,8 @@
 #include <A3DBone.h>
 #include <A3DSkinModel.h>
 #include <A3DSkinMan.h>
-#include <A3dEngine.h>
-#include <a3dskeleton.h>
+#include <A3DEngine.h>
+#include <A3DSkeleton.h>
 #include <A3DFuncs.h>
 
 #include "EC_Goblin.h"

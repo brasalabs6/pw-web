@@ -11,7 +11,7 @@
 #include "EC_GameSession.h"
 #include "EC_TimeSafeChecker.h"
 #include "acquestion.hpp"
-#include "..\\celementdata\\vector_string.h"
+#include "../CElementData/vector_string.h"
 #include "A3DWireCollector.h"
 
 #define new A_DEBUG_NEW

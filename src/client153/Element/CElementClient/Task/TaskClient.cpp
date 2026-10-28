@@ -91,7 +91,8 @@ void OnTaskCheckStatus(TaskInterface* pTask)
 
 			if((long)ulCurTime1 < 0)
 				ulCurTime1 = 0;
-			tm cur = *gmtime((long*)&ulCurTime1);			
+			time_t timeCur = (time_t)ulCurTime1;
+			tm cur = *gmtime(&timeCur);			
 			
 			if(pTempl->m_tmAbsFailTime.before(&cur))
 			{

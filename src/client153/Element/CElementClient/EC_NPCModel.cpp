@@ -21,7 +21,7 @@
 #include "ExpTypes.h"
 #include "ElementSkill.h"
 
-#include "AABBCD.h"
+#include "aabbcd.h"
 #include "A3DSkillGfxEvent2.h"
 #include "EC_Model.h"
 #include <A3DFuncs.h>

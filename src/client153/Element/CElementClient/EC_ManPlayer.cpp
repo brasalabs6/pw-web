@@ -41,8 +41,9 @@
 #include "EC_ManMatter.h"
 #include "EC_MemSimplify.h"
 
-#include "PlayerBaseInfo_Re.hpp"
-#include "GetCustomData_Re.hpp"
+#include "playerbaseinfo_re.hpp"
+#include "getcustomdata_re.hpp"
+#include "ACSWrapper.h"
 
 #include "EC_HPWorkForceNavigate.h"
 #include "EC_PlayerClone.h"
@@ -1909,7 +1910,7 @@ CECElsePlayer* CECPlayerMan::CreateElsePlayer(const S2C::info_player_1& Info, in
 	if (!pPlayer)
 	{
 		glb_ErrorOutput(ECERR_NOTENOUGHMEMORY, "CECPlayerMan::CreateElsePlayer", __LINE__);
-		return false;
+		return NULL;
 	}
 
 	pPlayer->SetBornStamp(g_pGame->GetGameRun()->GetWorld()->GetBornStamp());
@@ -1932,7 +1933,7 @@ CECElsePlayer* CECPlayerMan::CreateElsePlayer(const S2C::info_player_1& Info, in
 		if (!pPlayer->Init(Info, iAppearFlag, false))
 		{
 			glb_ErrorOutput(ECERR_FAILEDTOCALL, "CECPlayerMan::CreateElsePlayer", __LINE__);
-			return false;
+			return NULL;
 		}
 	}
 

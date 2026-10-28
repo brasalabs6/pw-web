@@ -12,7 +12,7 @@
 #include "DlgWorldMap.h"
 #include "EC_UIManager.h"
 #include "EC_HostPlayer.h"
-#include "EC_Gamesession.h"
+#include "EC_GameSession.h"
 #include "AUIDef.h"
 #include "EC_UIHelper.h"
 #include <A3DFlatCollector.h>
