@@ -64,3 +64,17 @@ O repositório já contém `agent-backlog.yml` (schedule 07:13/19:13 UTC, condic
 
 ## Atualização da classificação (2026-10-28)
 Documento migrado para `.agents/optimization`; candidatos PW23-021…037 e OPT-001…006 são **adiados** até funcionar o browser game, não bloqueios de port. Se houver segurança comprometida comprovadamente ou crash funcional, reclassificar em `.agents/issues` com evidência.
+
+
+## Segunda rodada estática — 2026-10-28, baseline 87a7748491f94bdf16e455c303218393a039de94
+Inspeções adicionais de A3DTerrainWater, A3DSkinModel, A3DTextureMan e AFilePackMan geraram OPT-007…012 em `.agents/optimization`. O custo de `GetNearestWaterArea` é proporcional às grades percorridas; consultas de imersão fazem scans de áreas; reflexo/refração despacham grupos de altura com culling já existente; modelos-filho reidentificam hangers; precache desenha por textura; e GetFilePck apresenta potencial truncamento de string sem terminador. São observações de código e riscos teóricos, não medições de performance ou prova de exploração. Segurança confirmada/crashes reais precisam ser movidos para `.agents/issues` mediante repro, não adiados como tuning.
+
+### Deduplicação
+- Água e consultas espaciais (OPT-007/008) não repetem o orçamento de streaming/LOD de terreno PW23-027.
+- Render de reflexo/refração (OPT-009) trata passes de água, distinto da transparência do visualizador PW23-029.
+- UpdateAsChild (OPT-010) localiza hangers; distinto de skinning GPU/crowd LOD PW23-030.
+- Texture precache (OPT-011) é cold-start GPU, distinto de lookup OPT-001, uploads compartilhados OPT-002 e TickAnimation OPT-006.
+- Roteamento PCK (OPT-012) é lookup de caminho/mount; distinto de inflate OPT-003.
+
+### Limites da revisão
+Sem compilação, teste em Android/iOS, profiling ou captura GPU nesta rodada; nenhum subagente foi lançado aqui. A equipe mantém prioridade no port WebAssembly funcional.

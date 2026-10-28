@@ -35,7 +35,7 @@
 
 Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file:line, separar hipótese de benchmark e deduplicar com os 17 registros históricos.
 
-## Novos candidatos estáticos (6)
+## Candidatos estáticos (12)
 
 | ID | Prioridade pós-port | Hipótese |
 |---|---|---|
@@ -45,6 +45,17 @@ Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file
 | [OPT-004](OPT-004-animation-track-cache-by-device.md) | P2 | Cache de tracksets com budget por dispositivo em vez de valor fixo |
 | [OPT-005](OPT-005-mox-animation-frames-resident.md) | P2 | Estudar residência parcial de frames MOX no heap |
 | [OPT-006](OPT-006-tick-only-animated-textures.md) | P2 | Evitar varredura de texturas estáticas em TickAnimation |
+
+## Rodada de investigação 2 — 2026-10-28 (6)
+
+| ID | Prioridade após port | Área | Hipótese |
+|---|---|---|---|
+| [OPT-007](OPT-007-water-nearest-grid-full-scan.md) | P1 | Água / consultas espaciais | Evitar varredura completa de grids na busca de água mais próxima |
+| [OPT-008](OPT-008-water-point-query-spatial-index.md) | P2 | Água / teste de imersão | Indexar consultas IsUnderWater/GetWaterHeight por célula espacial |
+| [OPT-009](OPT-009-water-reflection-refraction-pass-budget.md) | P1 | Água / custo GPU | Avaliar budgets de passes de reflexão/refração de água |
+| [OPT-010](OPT-010-child-skinmodel-hanger-lookup.md) | P2 | Animação / vínculos de modelo | Evitar pesquisa repetida do hanger em modelos-filho |
+| [OPT-011](OPT-011-texture-precache-bounded-scheduling.md) | P2 | Texturas / cold start e GPU | Substituir precache de todas as texturas por aquecimento incremental medido |
+| [OPT-012](OPT-012-pck-path-routing-bounds-and-prefix.md) | P1 | PCK / lookup e hardening preventivo | Auditar limites de caminho e roteamento por prefixo no AFilePackMan |
 
 ## Protocolo
 
