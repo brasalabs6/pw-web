@@ -293,7 +293,8 @@ bool CDlgGenCardRespawn::CanMinorInstall(CECIvtrItem* pItem)
 }
 CECIvtrItem* CDlgGenCardRespawn::GenerateTargetCart(CECIvtrItem* pMajor,CECIvtrItem* pMinor)
 {
-	if(!pMajor || !pMinor) return false;
+	//\tMSVC allowed `return false` in a pointer-returning function.
+	if(!pMajor || !pMinor) return NULL;
 
 	return NULL;
 }
