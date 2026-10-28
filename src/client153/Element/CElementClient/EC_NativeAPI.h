@@ -6,9 +6,9 @@
 #include <windows.h>
 
 typedef LONG    NTSTATUS;
-typedef ULONG   ACCESS_MASK;
+//\tACCESS_MASK is owned by the platform Windows.h (DWORD); MSVC accepted
+//\tthis header's ULONG redefinition, but the port's ULONG/DWORD differ.
 typedef ULONG    KPRIORITY ;
-typedef DWORD    ACCESS_MASK ;
 
 #define NT_SUCCESS(status)          ((NTSTATUS)(status)>=0)
 #define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
@@ -91,6 +91,17 @@ typedef struct _VM_COUNTERS {
     ULONG PagefileUsage;
     ULONG PeakPagefileUsage;
 } VM_COUNTERS, *PVM_COUNTERS;
+
+//\tThe IO_COUNTERS layout the original referenced (Windows 2000+ native
+//\tAPI record; the documented six 64-bit counters).
+typedef struct _IO_COUNTERS {
+    ULONGLONG ReadOperationCount;
+    ULONGLONG WriteOperationCount;
+    ULONGLONG OtherOperationCount;
+    ULONGLONG ReadTransferCount;
+    ULONGLONG WriteTransferCount;
+    ULONGLONG OtherTransferCount;
+} IO_COUNTERS, *PIO_COUNTERS;
 
 /*
 *Information Class 5
