@@ -41,6 +41,9 @@ class A3DTexture;
 struct A3DSkinMeshRef;
 class A3DVertexShader;
 class A3DPixelShader;
+//	Adaptation: the original build saw A3DSkinMan through the project's
+//	precompiled umbrella (A3D.h); the standalone TU needs the declaration.
+class A3DSkinMan;
 
 ///////////////////////////////////////////////////////////////////////////
 //
