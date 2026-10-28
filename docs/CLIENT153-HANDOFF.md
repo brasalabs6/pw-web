@@ -691,3 +691,26 @@ endereço de temporário por variável local, preservando a clonagem síncrona d
 local de 778 objetos e nove bibliotecas falhou com 4.401 ocorrências de
 referências indefinidas. Testes do probe: 11/11. Isso não prova jogo, UI ou
 rede em execução.
+
+## Rodada 6 — probe e link diagnóstico (2026-10-28)
+
+No HEAD `51ccb9d2`, o probe completo de objetos reportou 782/787 TUs do
+ElementClient e 46/46 TUs de AUI. Falharam quatro TUs de `defence` (código
+Windows/asm sem implementação browser) e `DlgQShopItem.cpp` com erro de
+lexing. Um probe individual posterior de `DlgQShopItem.cpp`, com o mesmo
+compilador e ambiente, compilou e produziu o objeto; a causa da falha
+intermitente do probe paralelo não foi determinada.
+
+Com os objetos disponíveis após essa recompilação e as bibliotecas/targets
+WASM construídos localmente, `python3 scripts/link-client153-full.py
+--error-limit 5000` incluiu 1100 objetos e 12 bibliotecas e falhou, reportando
+190 ocorrências e 112 nomes de símbolos distintos. O parser do diagnóstico
+trunca nomes em vírgulas, portanto essa contagem é aproximada e não representa
+uma lista completa de assinaturas. O link é `--no-entry` e inclui objetos de
+probes: mesmo se passar, não prova inicialização ou gameplay. Não foram
+validados login, entrada no mundo ou conexão com o servidor.
+
+Pendências visíveis incluem DirectShow BaseClasses, geometria de texto
+(CCharContour/CCharCurve/CCharOutline/GLU), área dos emissores, partes da
+engine de terreno e várias classes de interface de efeitos. Os arquivos do
+probe são locais e o CI do HEAD ainda precisa ser acompanhado.
