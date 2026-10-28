@@ -79,7 +79,8 @@ void CDlgMailList::OnShowDialog()
 	m_pLst_Mail->ResetContent();
 	GNET::GetMailList p;
 	p.roleid = GetHostPlayer()->GetPlayerInfo().cid;
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream marshalStream;
+	Octets o = p.marshal(marshalStream);
 	if(bIsFromInventory)
 		c2s_SendDebugCmd(50001, 4, 3, 501350, o.begin(), o.size());
 	else GetGameSession()->mail_GetList();
@@ -526,8 +527,8 @@ void CDlgMailList::MailAction(int idAction, void *pData)
 				else
 					strUnRead = _AL(" ");
 
-				strText.Format(_AL("%s\t%s\t  %s\t%s\t%s"),strUnRead, strMailCategory + strSubject,
-						strMailFrom, strAttach, strPreserve);
+				strText.Format(_AL("%s\t%s\t  %s\t%s\t%s"),(const wchar_t*)strUnRead, (const wchar_t*)(strMailCategory + strSubject),
+						(const wchar_t*)strMailFrom, (const wchar_t*)strAttach, (const wchar_t*)strPreserve);
 				m_pLst_Mail->AddString(strText);
 				m_pLst_Mail->SetItemData(i, mail.id, 0);
 				if( mail.sndr_type == _MST_PLAYER )
@@ -560,7 +561,7 @@ void CDlgMailList::MailAction(int idAction, void *pData)
 						if( a_stricmp(vec[3], GetStringFromTable(812)) != 0 )
 							vec[4] = GetPreserveTime((int)m_pLst_Mail->GetItemData(i, 2), false);
 						strText.Format(_AL("%s\t%s\t%s\t%s\t%s"),
-								vec[0], vec[1], vec[2], vec[3], vec[4] );
+								(const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], (const wchar_t*)vec[3], (const wchar_t*)vec[4] );
 						m_pLst_Mail->SetText(i, strText);
 					}
 				}
@@ -602,7 +603,7 @@ void CDlgMailList::MailAction(int idAction, void *pData)
 					m_pLst_Mail->SetItemData(i, GetGame()->GetServerGMTTime(), 2);
 					vec[4] = GetPreserveTime((int)m_pLst_Mail->GetItemData(i, 2), false);
 					strText.Format(_AL("%s\t%s\t%s\t%s\t%s"),
-							vec[0], vec[1], vec[2], vec[3], vec[4] );
+							(const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], (const wchar_t*)vec[3], (const wchar_t*)vec[4] );
 					m_pLst_Mail->SetText(i, strText);
 					break;
 				}
@@ -689,7 +690,7 @@ void CDlgMailList::MailAction(int idAction, void *pData)
 							a_stricmp(vec[0], GetStringFromTable(796)) == 0 );
 					}
 					strText.Format(_AL("%s\t%s\t%s\t%s\t%s"),
-							vec[0], vec[1], vec[2], vec[3], vec[4] );
+							(const wchar_t*)vec[0], (const wchar_t*)vec[1], (const wchar_t*)vec[2], (const wchar_t*)vec[3], (const wchar_t*)vec[4] );
 					m_pLst_Mail->SetText(i, strText);
 
 					break;

@@ -141,7 +141,7 @@ bool CELOutlineQuadTree::Load(AString& szDir)
 
 	m_bLoadOk = false;
 	char path[MAX_PATH];
-	sprintf(path, "%s%d.olm", szDir, m_iSubIndex);
+	sprintf(path, "%s%d.olm", (const char*)szDir, m_iSubIndex);
 	AFileImage fileImage;
 	if( !fileImage.Open(path, AFILE_OPENEXIST) )
 		return false;

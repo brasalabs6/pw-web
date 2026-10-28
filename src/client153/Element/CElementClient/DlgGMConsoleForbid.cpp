@@ -149,7 +149,7 @@ void CDlgGMConsoleForbid::OnCommand_ForbidUser(const char* szCommand)
 					player_info* pInfo = m_playerInfoMap[id];
 					
 					ACString strInfo;
-					strInfo.Format(GetStringFromTable(9622),pInfo->name,m_duration);
+					strInfo.Format(GetStringFromTable(9622),(const wchar_t*)pInfo->name,m_duration);
 					
 					PAUIDIALOG pMsgDlg;
 					
@@ -237,10 +237,10 @@ void CDlgGMConsoleForbid::GetLineString(player_info* pInfo,ACString& str)
 		if(info.bLoadFlag)
 		{
 			ACString avgtime = GetGameUIMan()->GetFormatTime(info.avg_time);
-			str.Format(_AL("%s\t%s\t%d\t%s\t%.2f\t%.2f\t%s"),name,prof,info.level,ipStr,info.fCash_add,info.fContrib,avgtime);
+			str.Format(_AL("%s\t%s\t%d\t%s\t%.2f\t%.2f\t%s"),(const wchar_t*)name,(const wchar_t*)prof,info.level,(const wchar_t*)ipStr,info.fCash_add,info.fContrib,(const wchar_t*)avgtime);
 		}
 		else
-			str.Format(_AL("%s\t%s\t%d\t-\t-\t-\t-"),name,prof,info.level);
+			str.Format(_AL("%s\t%s\t%d\t-\t-\t-\t-"),(const wchar_t*)name,(const wchar_t*)prof,info.level);
 	}
 }
 void CDlgGMConsoleForbid::FillPlayerList(float fDist)
@@ -485,8 +485,8 @@ bool CGMCommandKickOutRole_Consume::Execute(ACString & strErr, ACString &strDeta
 		_AL("playerID = [%d], duration = [%d], reason = [%s], name = [%s], prof = [%d], level = [%d], ip = [%s], cash_add = [%.2f], contrib = [%.2f], agvtime = [%d]"),
 		m_pInfo->id,
 		m_duration, 
-		m_reason,
-		m_pInfo->name,m_pInfo->prof,m_pInfo->level,ipStr,m_pInfo->fCash_add,m_pInfo->fContrib,m_pInfo->avg_time);
+		(const wchar_t*)m_reason,
+		(const wchar_t*)m_pInfo->name,m_pInfo->prof,m_pInfo->level,(const wchar_t*)ipStr,m_pInfo->fCash_add,m_pInfo->fContrib,m_pInfo->avg_time);
 	
 	g_pGame->GetGameSession()->gm_KickOutRole(m_pInfo->id, m_duration, m_reason);
 

@@ -51,7 +51,7 @@ public:
 
 	bool Register(const Identifier& id, ProductCreator creator)
 	{
-		return associations_.insert(AssocMap::value_type(id, creator)).second;
+		return associations_.insert(typename AssocMap::value_type(id, creator)).second;
 	}
 	
 	bool UnRegister(const Identifier& id)

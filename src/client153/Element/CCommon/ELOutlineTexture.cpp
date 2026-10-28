@@ -368,8 +368,8 @@ bool CELOutlineTexture::_LoadTex(CELTerrainOutline2 * pOutline)
 	char    szDayPath[200];
 	char    szNightPath[200];
 
-	sprintf(szDayPath, "%sday\\Level-%d\\%s", pOutline->m_szTexDir, m_iLevel, m_szName );
-	sprintf(szNightPath, "%snight\\Level-%d\\%s", pOutline->m_szTexDir, m_iLevel, m_szName );
+	sprintf(szDayPath, "%sday\\Level-%d\\%s", (const char*)pOutline->m_szTexDir, m_iLevel, (const char*)m_szName );
+	sprintf(szNightPath, "%snight\\Level-%d\\%s", (const char*)pOutline->m_szTexDir, m_iLevel, (const char*)m_szName );
 
 	bool bDay = true, bNight = true;
 	//check day

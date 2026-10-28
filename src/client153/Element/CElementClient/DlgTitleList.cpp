@@ -146,7 +146,7 @@ void CDlgTitleList::GetTitleDesc(unsigned short title_id)
 		ACString strColor;
 		// 称号名
 		strColor = pConfig->color ? A3DCOLOR_TO_STRING(pConfig->color) 
-			: pDescTab->GetWideString(ITEMDESC_COL_WHITE);
+			: ACString(pDescTab->GetWideString(ITEMDESC_COL_WHITE));
 		SET_TEXT(pConfig->name, false)
 			// 称号描述
 			strColor = pDescTab->GetWideString(ITEMDESC_COL_WHITE);
@@ -166,7 +166,7 @@ void CDlgTitleList::GetTitleDesc(unsigned short title_id)
 				const TITLE_CONFIG* pSub = CECPlayer::GetTitleConfig(id_sub);
 				if (pSub) {
 					strColor = pSub->color ? A3DCOLOR_TO_STRING(pSub->color) 
-						: pDescTab->GetWideString(ITEMDESC_COL_WHITE);
+						: ACString(pDescTab->GetWideString(ITEMDESC_COL_WHITE));
 					SET_TEXT(pSub->name, true)
 				}
 			}
@@ -227,7 +227,7 @@ void CDlgTitleList::Update()
 						t.tm_mday,
 						t.tm_hour,
 						t.tm_min );
-					strText.Format(m_pAUIManager->GetStringFromTable(10605), strTemp);
+					strText.Format(m_pAUIManager->GetStringFromTable(10605), (const wchar_t*)strTemp);
 					m_strDesc += _AL("\r");
 					m_strDesc += strText;
 				}

@@ -74,7 +74,7 @@ void CECGetHostByName::Add(const char *szHostName)
 
 	//	创建并启动查询线程
 	unsigned threadID = 0;
-	pEntry->thdl = ::_beginthreadex(NULL, 0, ThreadGetHostName, pEntry, CREATE_SUSPENDED, &threadID);
+	pEntry->thdl = (unsigned long)::_beginthreadex(NULL, 0, ThreadGetHostName, pEntry, CREATE_SUSPENDED, &threadID);
 	::ResumeThread((HANDLE) pEntry->thdl);
 }
 

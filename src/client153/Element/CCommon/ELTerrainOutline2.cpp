@@ -119,7 +119,7 @@ bool CELTerrainOutline2::Init(A3DDevice * pA3DDevice,  const char * szTexDir, co
 
 	// now try to open one olm file
 	char path[MAX_PATH];
-	sprintf(path, "%s%d.olm", m_szTileDir, 1);
+	sprintf(path, "%s%d.olm", (const char*)m_szTileDir, 1);
 	AFileImage fileImage;
 	if( !fileImage.Open(path, AFILE_OPENEXIST) )
 		return false;

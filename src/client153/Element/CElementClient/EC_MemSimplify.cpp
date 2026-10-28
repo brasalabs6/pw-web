@@ -173,7 +173,9 @@ void CECMemSimplify::Tick(DWORD dwDeltaTime)
 	if( m_bAutoOptimize && m_cntCheckMem.IncCounter(dwDeltaTime) )
 	{
 		// 获取当前虚拟内存
-		if (CECOptimize::Instance().GetVirtualSize(m_dwMemSize)){
+		SIZE_T stVirtualSize = 0;
+		if (CECOptimize::Instance().GetVirtualSize(stVirtualSize)){
+			m_dwMemSize = (DWORD)stVirtualSize;
 			if( m_dwMemSize < m_dwMemLow )
 			{
 				for( int i=MEMUSAGE_NUM-1;i>MEMUSAGE_NORMAL;i-- )

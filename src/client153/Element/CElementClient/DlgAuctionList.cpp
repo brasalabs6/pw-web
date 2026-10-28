@@ -43,7 +43,7 @@ void CDlgAuctionList::OnCommandGiveUp(const char* szCommand)
 		CSplit s(m_pLst_Item->GetText(nSel));
 		CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 		ACString szText;
-		szText.Format(GetStringFromTable(694), vec[1], m_pLst_Item->GetItemData(nSel));
+		szText.Format(GetStringFromTable(694), (const wchar_t*)vec[1], m_pLst_Item->GetItemData(nSel));
 		GetGameUIMan()->MessageBox("Game_AuctionGiveUp", szText, MB_YESNO, 
 			A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 		pMsgBox->SetData(m_pLst_Item->GetItemData(nSel));
@@ -120,7 +120,7 @@ void CDlgAuctionList::AuctionAction(int idAction, void *pData)
 					CSplit s(m_pLst_Item->GetText(i));
 					CSPLIT_STRING_VECTOR vec = s.Split(_AL("\t"));
 					ACString szText;
-					szText.Format(GetStringFromTable(695), vec[1], p->auctionid);
+					szText.Format(GetStringFromTable(695), (const wchar_t*)vec[1], p->auctionid);
 					GetGameUIMan()->MessageBox("",szText, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 					break;
 				}

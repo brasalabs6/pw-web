@@ -44,7 +44,7 @@ bool CECChangePill::Load(const char* pszFileName)
 
 	//载入变形丸数据
 	int nCount;
-	unsigned long uReadLength;
+	DWORD uReadLength;
 	
 	filePill.Read(&m_nCharacter, sizeof(int), &uReadLength);
 	filePill.Read(&m_nGender, sizeof(int), &uReadLength);

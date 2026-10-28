@@ -129,7 +129,7 @@ bool CDlgGMConsole::AddUserMessage(ACString strMsg, ACHAR type, int nPlayerID)
 
 	// compute data
 	ACString msg;
-	msg.Format(GetStringFromTable(6004), strMsg, nPlayerID);
+	msg.Format(GetStringFromTable(6004), (const wchar_t*)strMsg, nPlayerID);
 	
 	SimpleDB::DateTime *pTime = new SimpleDB::DateTime;
 	pTime->LoadSystemTime();
@@ -454,7 +454,7 @@ void CDlgGMConsole::AddItemToListboxPlayerMsg(int nPlayerID, ACHAR type, ACStrin
 	TheGMHelpMsgArray::Instance()->FindByType(type, &msgInfo);
 
 	ACString finalString;
-	finalString.Format(_AL("[%s] %s"), pReceivedTime->ToString(), msg);
+	finalString.Format(_AL("[%s] %s"), (const wchar_t*)pReceivedTime->ToString(), (const wchar_t*)msg);
 
 	int nIndex =  m_pLbxPlayerMsg->AddString(finalString) - 1;
 	m_pLbxPlayerMsg->SetItemTextColor(nIndex, msgInfo.color);

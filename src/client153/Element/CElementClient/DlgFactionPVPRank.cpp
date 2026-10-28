@@ -159,7 +159,7 @@ void CDlgFactionPVPRank::OnTick()
 				ACString currentText = m_pLst_Result->GetText(i);
 				CECSplitHelperW splitter(currentText, _AL("\t"));
 				ACString strText;
-				strText.Format(_AL("%s\t%s\t%s\t%s\t%d"), szName, splitter.ToString(1), splitter.ToString(2), splitter.ToString(3), splitter.ToString(4));
+				strText.Format(_AL("%s\t%s\t%s\t%s\t%d"), szName, (const wchar_t*)splitter.ToString(1), (const wchar_t*)splitter.ToString(2), (const wchar_t*)splitter.ToString(3), (const wchar_t*)splitter.ToString(4));
 				m_pLst_Result->SetText(i, strText);
 			}
 		}

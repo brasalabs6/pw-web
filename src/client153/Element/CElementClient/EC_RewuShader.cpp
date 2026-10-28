@@ -52,7 +52,7 @@ A3DShader * CECSpecialShader::Load()const{
 void CECSpecialShader::SetTexture(A3DShader *pShader, const char *szTexMap, const char *szTexMap2){
 	pShader->ChangeStageTexture(0, A3DSDTEX_NORMAL, (DWORD)szTexMap);	
 	if (pShader->GetGeneralProps().pPShader){
-		pShader->ChangeStageTexture(1, A3DSDTEX_NORMAL, (DWORD)(szTexMap2 ? szTexMap2 : MakeTexMap2With(szTexMap)));
+		pShader->ChangeStageTexture(1, A3DSDTEX_NORMAL, (DWORD)(szTexMap2 ? szTexMap2 : (const char*)MakeTexMap2With(szTexMap)));
 	}else{
 		pShader->ShowStage(2, false);
 	}	

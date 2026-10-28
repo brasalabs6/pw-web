@@ -89,7 +89,7 @@ bool CGMCommandKickOutRole::Execute(ACString & strErr, ACString &strDetail)
 		_AL("playerID = [%d], duration = [%d], reason = [%s]"),
 		nPlayerID,
 		nDuration, 
-		strReason);
+		(const wchar_t*)strReason);
 
 	GetGameSession()->gm_KickOutRole(nPlayerID, nDuration, strReason);
 	return true;
@@ -149,7 +149,7 @@ bool CGMCommandKickOutUser::Execute(ACString & strErr, ACString &strDetail)
 		_AL("playerID = [%d], duration = [%d], reason = [%s]"),
 		nPlayerID,
 		nDuration, 
-		strReason);
+		(const wchar_t*)strReason);
 
 	GetGameSession()->gm_KickOutUser(nPlayerID, nDuration, strReason);
 	return true;
@@ -275,7 +275,7 @@ bool CGMCommandShutupRole::Execute(ACString & strErr, ACString &strDetail)
 		_AL("playerID = [%d], duration = [%d], reason = [%s]"),
 		nPlayerID,
 		nDuration, 
-		strReason);
+		(const wchar_t*)strReason);
 
 	GetGameSession()->gm_ShutupRole(nPlayerID, nDuration, strReason);
 	return true;
@@ -335,7 +335,7 @@ bool CGMCommandShutupUser::Execute(ACString & strErr, ACString &strDetail)
 		_AL("playerID = [%d], duration = [%d], reason = [%s]"),
 		nPlayerID,
 		nDuration, 
-		strReason);
+		(const wchar_t*)strReason);
 
 	GetGameSession()->gm_ShutupUser(nPlayerID, nDuration, strReason);
 	return true;
@@ -466,7 +466,7 @@ bool CGMCommandBroadcast::Execute(ACString & strErr, ACString &strDetail)
 
 	strDetail.Format(
 		_AL("content = [%s]"),
-		strContent);
+		(const wchar_t*)strContent);
 
 
 	GetGameSession()->SendChatData(GP_CHAT_BROADCAST, strContent);
@@ -570,7 +570,7 @@ bool CGMCommandForbidRole::Execute(ACString & strErr, ACString &strDetail)
 		nType,
 		nPlayerID,
 		nDuration, 
-		strReason);
+		(const wchar_t*)strReason);
 
 	GetGameSession()->gm_ForbidRole(nType, nPlayerID, nDuration, strReason);
 	return true;
@@ -759,7 +759,7 @@ bool CGMCommandGenerateMob::Execute(ACString &strErr, ACString &strDetail)
 		visID,
 		mobNumber,
 		lifeTime,
-		mobName);
+		(const wchar_t*)mobName);
 
 	GetGameSession()->gm_GenerateMob(mobID, visID, mobNumber, lifeTime, mobName);
 
