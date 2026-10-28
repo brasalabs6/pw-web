@@ -43,13 +43,13 @@ const audit=async (db:Db,actor:string,action:string,resource:string,details:unkn
 // Shared durable rate limiting; works across control-api processes and fails closed.
 const authThrottle=async(action:'login'|'register', email:string) => {
   const key=sha256('pw-auth-v1:'+action+':'+email.toLowerCase());
-  const q=await db.query(\`INSERT INTO auth_rate_buckets(key_sha256,attempts,bucket_start)
+  const q=await db.query(`INSERT INTO auth_rate_buckets(key_sha256,attempts,bucket_start)
     VALUES($1,1,now()) ON CONFLICT(key_sha256) DO UPDATE SET
     attempts=CASE WHEN auth_rate_buckets.bucket_start < now()-interval '15 minutes'
       THEN 1 ELSE auth_rate_buckets.attempts+1 END,
     bucket_start=CASE WHEN auth_rate_buckets.bucket_start < now()-interval '15 minutes'
       THEN now() ELSE auth_rate_buckets.bucket_start END
-    RETURNING attempts\`,[key]);
+    RETURNING attempts`,[key]);
   return {key, allowed:q.rows[0].attempts <= (action==='login'?8:3)};
 };
 
