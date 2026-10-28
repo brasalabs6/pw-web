@@ -68,7 +68,10 @@ public:
 		for(DWORD i=0;i<m_arrBlocks.size();i++)
 			delete m_arrBlocks[i];
 		
-		m_arrBlocks.swap(vector<T* >());
+		//\tNamed local: abase::vector::swap takes a non-const lvalue ref; the
+		//\toriginal bound a temporary via the MSVC extension.
+		vector<T* > emptyBlocks;
+		m_arrBlocks.swap(emptyBlocks);
 		if (m_pDefaultBlock) 
 		{
 			delete[] m_pDefaultBlock;

@@ -2337,6 +2337,50 @@ inline BOOL SetCurrentDirectoryA(const char *path) {
   return chdir(path) == 0 ? TRUE : FALSE;
 }
 
+//	The MSVC _splitpath: divides a path into drive/dir/fname/ext; any
+//	component pointer may be NULL. POSIX paths have no drive component;
+//	Windows drive letters ("X:") are still recognized.
+inline void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext) {
+  const char *p = path ? path : "";
+  const char *driveEnd = p;
+  if (((p[0] >= 'A' && p[0] <= 'Z') || (p[0] >= 'a' && p[0] <= 'z')) && p[1] == ':')
+    driveEnd = p + 2;
+  const char *dirStart = driveEnd;
+  const char *dirEnd = driveEnd;
+  for (const char *q = dirStart; *q; ++q) {
+    if (*q == '/' || *q == '\\')
+      dirEnd = q + 1;  //  one past the last separator
+  }
+  const char *fnameStart = dirEnd;
+  const char *end = p + std::strlen(p);
+  const char *extStart = nullptr;  //  last dot inside the file name
+  for (const char *q = fnameStart; q < end; ++q) {
+    if (*q == '.')
+      extStart = q;
+  }
+  if (drive) {
+    std::size_t n = static_cast<std::size_t>(driveEnd - p);
+    std::memcpy(drive, p, n);
+    drive[n] = '\0';
+  }
+  if (dir) {
+    std::size_t n = static_cast<std::size_t>(dirEnd - dirStart);
+    std::memcpy(dir, dirStart, n);
+    dir[n] = '\0';
+  }
+  if (fname) {
+    std::size_t n = static_cast<std::size_t>((extStart ? extStart : end) - fnameStart);
+    std::memcpy(fname, fnameStart, n);
+    fname[n] = '\0';
+  }
+  if (ext) {
+    std::size_t n = extStart ? static_cast<std::size_t>(end - extStart) : 0;
+    if (extStart)
+      std::memcpy(ext, extStart, n);
+    ext[n] = '\0';
+  }
+}
+
 //	The MSVC _wfopen: opens through the UTF-8 path conversion (the same
 //	file the fopen path resolves).
 inline FILE *_wfopen(const wchar_t *path, const wchar_t *mode) {
