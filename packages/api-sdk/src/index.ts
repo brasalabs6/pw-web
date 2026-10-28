@@ -1,4 +1,4 @@
-import type {CatalogRealm,LaunchBootstrap} from '@pw/contracts';
+import type {CatalogRealm,LaunchBootstrap,LaunchRelease} from '@pw/contracts';
 export type AuthUser={id:string;email:string;displayName:string;role:string};
 export class ApiError extends Error {constructor(public status:number,message:string){super(message)}}
 export class PwApi {
@@ -15,7 +15,11 @@ export class PwApi {
   login(email:string,password:string){return this.request<{user:AuthUser}>('/v1/auth/login',{method:'POST',body:JSON.stringify({email,password})})}
   register(email:string,password:string,displayName:string){return this.request<{user:AuthUser}>('/v1/auth/register',{method:'POST',body:JSON.stringify({email,password,displayName})})}
   logout(){return this.request<{ok:boolean}>('/v1/auth/logout',{method:'POST'})}
-  launch(realmId:string){return this.request<{bootstrap:LaunchBootstrap}>('/v1/launcher/sessions',{method:'POST',body:JSON.stringify({realmId,channel:'stable'})})}
+  resolveRelease(realmId:string){return this.request<{release:LaunchRelease}>('/v1/launcher/releases',{
+    method:'POST',body:JSON.stringify({realmId,channel:'stable'})})}
+  launch(realmId:string,expectedPairingId:string,expectedClientDigest:string){
+    return this.request<{bootstrap:LaunchBootstrap}>('/v1/launcher/sessions',{
+      method:'POST',body:JSON.stringify({realmId,channel:'stable',expectedPairingId,expectedClientDigest})})}
   overview(){return this.request<{realms:any[];clientReleases:any[];serverReleases:any[];jobs:any[]}>('/v1/admin/overview')}
   createRealm(input:{slug:string;name:string;description:string}){return this.request<{realm:any}>('/v1/admin/realms',{method:'POST',body:JSON.stringify(input)})}
   updateRealm(id:string,input:{status?:string;name?:string}){return this.request<{realm:any}>('/v1/admin/realms/'+id,{method:'PATCH',body:JSON.stringify(input)})}

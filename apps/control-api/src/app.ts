@@ -2,7 +2,7 @@ import {Hono} from 'hono';
 import {getCookie,setCookie,deleteCookie} from 'hono/cookie';
 import {z} from 'zod';
 import {connectDb,type Db} from '@pw/database';
-import {registerInput,loginInput,launcherSessionInput,createRealmInput,updateRealmInput,
+import {registerInput,loginInput,launcherSessionInput,launchReleaseInput,createRealmInput,updateRealmInput,
   createPreviewInput,patchChannelInput,pairingCreateInput,releaseCreateInput,compatiblePair} from '@pw/contracts';
 import {randomToken,passwordHash,verifyPassword,sha256,safeOrigin} from './security.ts';
 
@@ -106,9 +106,14 @@ app.get('/v1/catalog/realms/:id',async c=>{
   if(!q.rowCount)return fail(c,404,'Realm not found');
   return c.json({realm:q.rows[0]});
 });
-app.post('/v1/launcher/sessions',async c=>{
-  const u=mustUser(c);if(!u)return fail(c,401,'Sign in required');
-  const input=await json(c,launcherSessionInput);if(!input)return fail(c,422,'Invalid launcher request');
+type PinnedSelection={
+  pairing_id:string; client_version:string;client_digest:string;client_manifest_url:string;
+  server_version:string;server_digest:string;deployment_id:string;gateway_url:string;asset_base_url:string;
+  status:string;deployment_state:string;pair_status:string;client_status:string;server_status:string;
+  health_checked_at:Date|null;
+};
+// Returns null if the selected realm is not compatible and healthy; never falls back to a different client.
+const resolvePinnedRelease=async(realmId:string,channel:'stable'):Promise<PinnedSelection|null>=>{
   const q=await db.query(
     `SELECT r.status,r.name,rc.pairing_id,p.status AS pair_status,p.protocol_profile,p.data_profile,
       cr.version AS client_version,cr.digest AS client_digest,cr.artifact_url AS client_manifest_url,cr.status AS client_status,
@@ -119,24 +124,42 @@ app.post('/v1/launcher/sessions',async c=>{
     JOIN client_releases cr ON cr.id=p.client_release_id
     JOIN server_releases sr ON sr.id=p.server_release_id
     JOIN deployments d ON d.realm_id=r.id AND d.server_release_id=sr.id
-    WHERE r.id=$1 ORDER BY d.updated_at DESC LIMIT 1`,[input.realmId,input.channel]);
-  const x=q.rows[0];
-  if(!x)return fail(c,409,'No compatible client has been published for this realm');
-  if(x.status!=='online'||x.deployment_state!=='ready'||x.pair_status!=='supported'||
-     x.client_status!=='published'||x.server_status!=='published')return fail(c,409,'Realm is not ready for gameplay');
-  if(!x.health_checked_at || Date.now()-new Date(x.health_checked_at).getTime()>30000)
-    return fail(c,409,'Realm health is stale');
-  if(!x.gateway_url.startsWith('wss://') || !x.asset_base_url.startsWith('https://') ||
-     !x.client_manifest_url.startsWith('https://'))return fail(c,409,'Invalid secure deployment configuration');
+    WHERE r.id=$1 ORDER BY d.updated_at DESC LIMIT 1`,[realmId,channel]);
+  const x=q.rows[0] as PinnedSelection|undefined;
+  if(!x || x.status!=='online'||x.deployment_state!=='ready'||x.pair_status!=='supported'||
+     x.client_status!=='published'||x.server_status!=='published')return null;
+  if(!x.health_checked_at||Date.now()-new Date(x.health_checked_at).getTime()>30000)return null;
+  if(!x.gateway_url.startsWith('wss://')||!x.asset_base_url.startsWith('https://')||
+     !x.client_manifest_url.startsWith('https://'))return null;
+  return x;
+};
+const releaseResponse=(x:PinnedSelection,realmId:string,channel:string)=>({
+  schema:2 as const,realmId,channel,pairingId:x.pairing_id,
+  client:{version:x.client_version,releaseDigest:x.client_digest,manifestUrl:x.client_manifest_url},
+  server:{version:x.server_version,releaseDigest:x.server_digest,deploymentId:x.deployment_id},
+  assetBaseUrl:x.asset_base_url
+});
+// Prepare/verify the client BEFORE requesting a 90-second one-use GNET ticket.
+app.post('/v1/launcher/releases',async c=>{
+  if(!mustUser(c))return fail(c,401,'Sign in required');
+  const input=await json(c,launchReleaseInput);if(!input)return fail(c,422,'Invalid realm');
+  const x=await resolvePinnedRelease(input.realmId,input.channel);
+  if(!x)return fail(c,409,'Realm not ready or no supported client release');
+  return c.json({release:releaseResponse(x,input.realmId,input.channel)});
+});
+app.post('/v1/launcher/sessions',async c=>{
+  const u=mustUser(c);if(!u)return fail(c,401,'Sign in required');
+  const input=await json(c,launcherSessionInput);if(!input)return fail(c,422,'Invalid launcher request');
+  const x=await resolvePinnedRelease(input.realmId,input.channel);
+  if(!x)return fail(c,409,'Realm not ready or no supported client release');
+  if(x.pairing_id!==input.expectedPairingId||x.client_digest!==input.expectedClientDigest)
+    return fail(c,409,'Client release changed during update; reverify new release');
   const token=randomToken();
   await db.query(
     'INSERT INTO game_tickets(token_sha256,session_id,realm_id,deployment_id,pairing_id,expires_at) VALUES($1,$2,$3,$4,$5,now()+interval \'90 seconds\')',
     [sha256(token),u.session_id,input.realmId,x.deployment_id,x.pairing_id]);
-  return c.json({bootstrap:{schema:2,realmId:input.realmId,channel:input.channel,pairingId:x.pairing_id,
-    client:{version:x.client_version,releaseDigest:x.client_digest,manifestUrl:x.client_manifest_url},
-    server:{version:x.server_version,releaseDigest:x.server_digest,deploymentId:x.deployment_id},
-    gateway:{url:x.gateway_url,ticket:token,ticketExpiresAt:new Date(Date.now()+90000).toISOString()},
-    assetBaseUrl:x.asset_base_url}});
+  return c.json({bootstrap:{...releaseResponse(x,input.realmId,input.channel),
+    gateway:{url:x.gateway_url,ticket:token,ticketExpiresAt:new Date(Date.now()+90000).toISOString()}}});
 });
 // Gateway is private-only, uses a separately configured bearer credential and consumes tickets once.
 app.post('/v1/internal/tickets/consume',async c=>{

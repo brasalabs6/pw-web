@@ -19,15 +19,19 @@ export default function App(){
   const launch=async()=>{
     if(!selected)return;setError('');setStage('checking');
     try{
-      const {bootstrap:b}=await api.launch(selected.id);
-      setBootstrap(b);setStage('updating');
+      const {release:r}=await api.resolveRelease(selected.id);
+      setStage('updating');
       // Server release determines the client; no client version selection is shown to players.
       const prepared=await prepareClient({
-        manifestUrl:b.client.manifestUrl,expectedDigest:b.client.releaseDigest,
+        manifestUrl:r.client.manifestUrl,expectedDigest:r.client.releaseDigest,
         trustedKeys:signingKeys(),onProgress:setProgress
       });
       // Binary verified and cached; launch requires the still-under-development Angelica entry ABI.
       if(prepared.wasm.byteLength===0)throw new Error('Runtime WASM inválido');
+      // The runtime is not wired yet: do not waste a 90-second one-use ticket.
+      // When the game adapter exists, api.launch(selected.id,r.pairingId,r.client.releaseDigest)
+      // must be called immediately before opening the WSS connection.
+      setBootstrap({...r,gateway:{url:'',ticket:'',ticketExpiresAt:''}});
       setStage('ready');
     }catch(e){setError(e instanceof Error?e.message:String(e));setStage('error')}
   };

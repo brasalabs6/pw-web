@@ -24,7 +24,7 @@ export const registerInput = z.object({
 export const loginInput = z.object({email: z.email(), password: z.string()});
 export const launcherSessionInput = z.object({
   realmId: z.string().uuid(),
-  channel: z.enum(['stable','beta','preview']).default('stable'),
+  channel: z.literal('stable').default('stable'),
   expectedPairingId: z.string().uuid(),
   expectedClientDigest: z.string().regex(/^[a-f0-9]{64}$/)
 });
