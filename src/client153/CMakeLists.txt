@@ -43,6 +43,11 @@ endif()
 # Original engine compilation target; linking the complete renderer is still pending.
 if(EMSCRIPTEN)
   add_library(client153_engine_original OBJECT EXCLUDE_FROM_ALL
+    Angelica2/Angelica3D/Source/A3DHermiteSpline.cpp
+    Angelica2/Angelica3D/Source/A3DHorizonCull.cpp
+    Angelica2/Angelica3D/Source/A3DImgModel.cpp
+    Angelica2/Angelica3D/Source/A3DModelCollector.cpp
+    Angelica2/AngelicaFile/Source/ATextTabFile.cpp
     Angelica2/Angelica3D/Source/A3DCamera.cpp
     Angelica2/Angelica3D/Source/A3DCameraBase.cpp
     Angelica2/Angelica3D/Source/A3DOrthoCamera.cpp
@@ -202,6 +207,12 @@ endif()
 # links; the sources live under Common/Output/source/Gfx).
 if(EMSCRIPTEN)
   add_library(client153_gfx_original OBJECT EXCLUDE_FROM_ALL
+    Common/Output/source/Gfx/A3DBoxEmitter.cpp
+    Common/Output/source/Gfx/A3DCurveEmitter.cpp
+    Common/Output/source/Gfx/A3DCylinderEmitter.cpp
+    Common/Output/source/Gfx/A3DEllipsoidEmitter.cpp
+    Common/Output/source/Gfx/A3DMultiPlaneEmitter.cpp
+    Common/Output/source/Gfx/A3DPointEmitter.cpp
     Common/Output/source/Gfx/A3DGFXEx.cpp
     Common/Output/source/Gfx/A3DGFXElement.cpp
     Common/Output/source/Gfx/A3DCombinedAction.cpp

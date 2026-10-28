@@ -181,7 +181,7 @@ bool A3DMultiPlaneEmitter::Save(AFile* pFile)
 
 	char	szLine[AFILE_LINEMAXLEN];
 
-	sprintf(szLine, _format_ref_model, m_strRefModel);
+	sprintf(szLine, _format_ref_model, (const char*)m_strRefModel); //\tPass the string contents through varargs.
 	pFile->WriteLine(szLine);
 
 	sprintf(szLine, _format_use_normal, m_bUseNormal);

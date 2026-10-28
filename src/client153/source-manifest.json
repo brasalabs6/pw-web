@@ -7,6 +7,50 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Angelica2/Angelica3D/Source/A3DHermiteSpline.cpp",
+      "sha256": "6e46660260cdae7c81e9d9537aa2bda0c70cd6ec27e2be94cf67754552dcb83e"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DHorizonCull.cpp",
+      "sha256": "9c7df50b4c32a925d1f83b5c4e555035c043a4e114c71cea9892fae5bedae674"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DImgModel.cpp",
+      "sha256": "7ea9182dc500fb1945c1b226377ecaf5e723554e8bbc7bf033b9594baa22eb4e"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DModelCollector.cpp",
+      "sha256": "1ed5cc9e603ba99bec382a4b43f20dd66bd9a284e06dfe0573dc48e164f5199c"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/ATextTabFile.cpp",
+      "sha256": "6e94994375a7b235ad21914f40d87e278c484d39ee405c572fbf1f265015dd81"
+    },
+    {
+      "path": "Common/GfxCommon/A3DBoxEmitter.cpp",
+      "sha256": "768246458deb890677fefded90f361cfaf8281907a2409ecaf2d7c29b955d2ea"
+    },
+    {
+      "path": "Common/GfxCommon/A3DCurveEmitter.cpp",
+      "sha256": "9eeb5b36b41626281add526d5698349fe7d2969a76a5404b83f88f561b3ee01c"
+    },
+    {
+      "path": "Common/GfxCommon/A3DCylinderEmitter.cpp",
+      "sha256": "7faf6e16a7fb896ee45bcfbee3242f31c487e2e0294b730b2ecfb75461b9c303"
+    },
+    {
+      "path": "Common/GfxCommon/A3DEllipsoidEmitter.cpp",
+      "sha256": "59c85dd76b375bbe688ec4cb1500683935787a4404a39338179cc3c1647915cf"
+    },
+    {
+      "path": "Common/GfxCommon/A3DMultiPlaneEmitter.cpp",
+      "sha256": "c0ec42375fda4d745ff30008771275306ee1ee27d83b5fd5e82c7d52b8257a35"
+    },
+    {
+      "path": "Common/GfxCommon/A3DPointEmitter.cpp",
+      "sha256": "a48be564d3f53921f05a09cf25f464eb68e564872a2c4297f24c3bc4896e8b51"
+    },
+    {
       "path": "Angelica2/Angelica3D/Source/A3DFrame.cpp",
       "sha256": "15a073d0138b076b4bb9bbe7daa51f3ca1a44e06b6e0bfff34e65fa74736aaff"
     },
@@ -9131,6 +9175,12 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Common/Output/source/Gfx/A3DMultiPlaneEmitter.cpp",
+      "upstream": "Common/GfxCommon/A3DMultiPlaneEmitter.cpp",
+      "functions": ["A3DMultiPlaneEmitter::Save"],
+      "notes": "Pass AString as const char* to sprintf varargs; source comments transcoded from GB18030 to UTF-8."
+    },
         "include StdAfx.h with the real header case"
       ]
     },
