@@ -721,6 +721,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	bool bStartPatcher = false;
 	bool bFirstInstance = true;
 	HANDLE hInstMutex = NULL;
+#ifndef __EMSCRIPTEN__
 	while (true)
 	{
 		//	上次更新被中断
@@ -756,6 +757,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 		ShellExecute(NULL,_AL("open"),path,NULL,_AL("..\\patcher"),SW_SHOWNORMAL);
 		return 0;
 	}
+#endif // Native Windows patcher and instance mutex.
 #ifdef _PROFILE_MEMORY
 	if (!bFirstInstance){
 		return 0;
