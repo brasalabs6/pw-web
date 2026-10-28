@@ -567,11 +567,13 @@ struct ISeekingPassThru : IUnknown {
 //	Property-page site (the documented IPropertyPageSite of ocidl.h; the
 //	vendored cprop.h carries the site pointer the page notifies).
 struct IPropertyPageSite : IUnknown {
+  //	The documented OLE contract (Wine ocidl.idl): the property page's
+  //	host surface. GetObjects/GetTranslation were a seam draft error —
+  //	they are not in the interface and would corrupt the vtable.
   virtual HRESULT OnStatusChange(DWORD dwFlags) = 0;
   virtual HRESULT GetLocaleID(LCID *pLocaleID) = 0;
   virtual HRESULT GetPageContainer(IUnknown **ppUnk) = 0;
-  virtual HRESULT GetObjects(IUnknown **ppUnk) = 0;
-  virtual HRESULT GetTranslation(LONG *plTranslateIndex) = 0;
+  virtual HRESULT TranslateAccelerator(MSG *pMsg) = 0;
 };
 typedef IPropertyPageSite *LPPROPERTYPAGESITE;
 
@@ -699,7 +701,17 @@ inline const GUID MEDIASUBTYPE_NULL = {};
 //	(renbase.h's CBaseVideoRenderer) derive from. The full DX SDK declared
 //	it in amvideo.h; the vendored 3rdsdk ships a partial set, so the
 //	declaration surface lives here (IQualityControl is declared above;
-//	the browser media adapter owns the runtime).
-struct IQualProp : IUnknown {};
+//	the browser media adapter owns the runtime). The six propget methods
+//	are the documented contract (Wine amvideo.idl): renbase.h overrides
+//	them, so the interface must declare them or the overrides do not
+//	bind and the vtable is wrong.
+struct IQualProp : IUnknown {
+  virtual HRESULT get_FramesDroppedInRenderer(int *pcFrames) = 0;
+  virtual HRESULT get_FramesDrawn(int *pcFramesDrawn) = 0;
+  virtual HRESULT get_AvgFrameRate(int *piAvgFrameRate) = 0;
+  virtual HRESULT get_Jitter(int *iJitter) = 0;
+  virtual HRESULT get_AvgSyncOffset(int *piAvg) = 0;
+  virtual HRESULT get_DevSyncOffset(int *piDev) = 0;
+};
 
 #endif // PW153_PLATFORM_STRMIF_H
