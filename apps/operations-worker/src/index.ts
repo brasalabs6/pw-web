@@ -23,7 +23,16 @@ async function dispatch(job:{id:string;payload:unknown}){
   if(response.status!==204)throw new Error('GitHub dispatch HTTP '+response.status);
 }
 
+let nextMaintenance=0;
 async function run(){
+  // Expired auth buckets, web sessions and one-use tickets must not grow forever.
+  // A web session deletion cascades outstanding game tickets.
+  if(Date.now()>=nextMaintenance){
+    await db.query("DELETE FROM auth_rate_buckets WHERE bucket_start < now()-interval '1 day'");
+    await db.query("DELETE FROM game_tickets WHERE expires_at < now()-interval '2 hours'");
+    await db.query("DELETE FROM web_sessions WHERE expires_at < now()-interval '24 hours'");
+    nextMaintenance=Date.now()+60*60*1000;
+  }
   const token=process.env.GITHUB_TOKEN;
   if(!token){console.warn('GITHUB_TOKEN not configured: preview queue remains waiting');return}
   // Never redispatch after an uncertain worker crash: request manual reconciliation
