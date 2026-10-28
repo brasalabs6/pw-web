@@ -60,6 +60,10 @@ class A3DDevice;
 class A3DCameraBase;
 class A3DViewport;
 
+//	A3DImageModelMan is declared in A3DImgModelMan.h after this header is
+//	pulled in; the friend and member pointer below need the name declared.
+class A3DImageModelMan;
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	Declare of Global functions
