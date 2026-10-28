@@ -8917,6 +8917,14 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DFlatCollector.cpp",
       "sha256": "eaa413ff951ed8cf674579ddb8d79796e6346d6c743f881716209d709f2eee50"
+    },
+    {
+      "path": "Common/LuaWrapper/ScriptValue.cpp",
+      "sha256": "c72e0b51f11bc96ff64c606ce2329ff6fbbc7890f941269967bd131917d54408"
+    },
+    {
+      "path": "Common/GfxCommon/EC_Model.cpp",
+      "sha256": "a542004af203f82ce70cfd41c55ef0039d1b0df88e2f10ceb8e4a877e6b67149"
     }
   ],
   "adaptations": [
@@ -9147,6 +9155,31 @@
         "IOLib backslash include paths fixed to POSIX separators in 2 adapted files",
         "probe: --adapted-root remap, mirrored include dirs, -fshort-wchar, forced Windows.h/sdk_forward.h/AUI widget prelude"
       ]
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/ScriptValue.cpp",
+      "upstream": "Common/LuaWrapper/ScriptValue.cpp",
+      "functions": [
+        "CScriptString (all)",
+        "CScriptValue (all)",
+        "LuaBind::GetStack",
+        "LuaBind::SetStack",
+        "LuaBind::GetScriptValue",
+        "LuaBind::SetScriptValue",
+        "LuaBind::DumpValue"
+      ],
+      "notes": "ported from the real upstream TU; code page from g_LuaStateMan -> CP_UTF8 (LuaState.obj unported; the port's narrow encoding is UTF-8), LUA_DEBUG_INFO -> a_LogOutput (LuaUtil.obj unported), size_t width, LuaBind::Call deferred to the LuaUtil.cpp port."
+    },
+    {
+      "path": "src/client153/Common/Output/source/Gfx/EC_Model.cpp",
+      "upstream": "Common/GfxCommon/EC_Model.cpp",
+      "functions": [
+        "CECModel (all 211 out-of-line symbols)",
+        "CECModelStaticData (all)",
+        "ECM_* Lua API",
+        "InitECMApi"
+      ],
+      "notes": "ported from the real upstream TU; StdAfx -> direct includes (the A3DMultiPlaneEmitter aggregate has an MSVC-laxity ambiguity), afi.h/scriptvalue.h case fixes, _isnan -> isnan, seven AString varargs casts, size_t luatab cast, std::auto_ptr -> std::unique_ptr."
     }
   ],
   "additionalCopyrights": [
