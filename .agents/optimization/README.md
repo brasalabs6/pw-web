@@ -72,3 +72,24 @@ Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file
 3. Não implementar otimizações antes do game rodar. Se algum risco virar blocker real, classificar em `issues` com teste.
 4. Depois do primeiro benchmark real, priorizar pelos ganhos por ms/MB e risco, sempre com before/after em hardware real.
 5. Não criar terceiro PR nem tocar servidor PR #17; apenas documentação nesta auditoria.
+
+
+## Rodada dedicada — combate, skills, PvP e multidões (13 candidatos, 2026-10-28)
+
+[Relatório detalhado da arquitetura e matriz de benchmarks](AUDIT-COMBAT-SKILLS-CROWD-2026-10-28.md). Todos os itens abaixo são `post-browser-port`, não bloqueiam o funcionamento do game.
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-016](OPT-016-combat-gfx-stop-cache-retention-60000s.md) | P1 | Efeitos — lifetime e memória | Reduzir retenção potencial de GFX de impacto parados durante guerras |
+| [OPT-017](OPT-017-aoe-skill-target-projectile-fanout.md) | P1 | Skills AoE — fanout de eventos | Evitar explosão multiplicativa de eventos visuais de skills AoE |
+| [OPT-018](OPT-018-skill-gfx-event-pool-active-capacity.md) | P1 | Skills — event pool / alocação | Orçamento de capacidade e reciclagem do pool de eventos SkillGfx |
+| [OPT-019](OPT-019-offscreen-gfx-simulation-vs-render.md) | P1 | VFX — CPU fora de tela | Desacoplar simulação de efeitos invisíveis do registro para render |
+| [OPT-020](OPT-020-skill-gfx-frustum-screen-space-culling.md) | P1 | VFX — GPU fillrate e visibilidade | Complementar culling de VFX por raio com frustum e tamanho projetado |
+| [OPT-021](OPT-021-crowd-player-tick-simulation-vs-presentation.md) | P1 | Crowd — scheduler CPU | Separar atualização de combate de apresentação de centenas de jogadores |
+| [OPT-022](OPT-022-crowd-per-player-shadow-submission.md) | P1 | Crowd — sombras GPU | Reduzir submissão de sombras por personagem sem afetar combate |
+| [OPT-023](OPT-023-crowd-combat-nameplate-ui-overdraw.md) | P2 | Crowd — UI e text | Orçamento de nomes, barras e textos de combate em multidões |
+| [OPT-024](OPT-024-skill-composer-eager-load-startup.md) | P2 | Skills — cold-start e memória | Avaliar eager load de compositores de skills e cache lazy por cena |
+| [OPT-025](OPT-025-skill-gfx-priority-policy-vs-binary-hide.md) | P1 | Combate — política de relevância | Evoluir flags binárias de GFX para orçamento adaptativo sem ocultar telegraphs |
+| [OPT-026](OPT-026-per-projectile-target-bone-hook-lookup.md) | P1 | Skills — follow target | Cache de posição/hook por entidade e frame para projéteis de skill |
+| [OPT-027](OPT-027-multisection-skill-composer-linear-find.md) | P2 | Skills — lookup de compositor | Indexar compositores de skills multietapa por (skill,section) |
+| [OPT-028](OPT-028-crowd-target-picking-raytrace-linear-scan.md) | P2 | Interação — alvo/ray tracing | Acelerar seleção de alvo em guerras com índice espacial de jogadores |
