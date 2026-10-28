@@ -16,3 +16,6 @@ evidence:
 impact: "Atacante público satura o backlog do glinkd via /tcpprobe (DoS de login). Qualquer arquivo colocado em /www/ é servido publicamente. Uma vulnerabilidade em daemon/CGI dá root dentro do container."
 proposed_action: "1) Rate limit no /tcpprobe (Cloudflare WAF rule ou contador no DO) + token de auth. 2) Whitelist de paths no Worker: só /health, /cgi-bin/health.sh, /tcpprobe. 3) USER builder no Dockerfile com chown de /opt,/www (portas >1024 dispensam root)."
 validation_notes: "ab -n 200 -c 50 no /tcpprobe deve ser throttled; path fora da whitelist deve dar 404; docker exec id → uid != 0."
+
+## Progresso
+- Progresso 2026-10-28: whitelist de paths implementada no worker (apenas /health, /cgi-bin/health.sh, /tcpprobe, /worldcheck; resto 404 — validado publicamente). Pendente: rate limit/auth do /tcpprobe e usuário não-root no container.

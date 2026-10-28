@@ -24,21 +24,34 @@
 
 ## O que está deployado
 
-- Container app `pw-server153`, política `durable_object`, imagem ~480 MB
-  (debian:12 + libs i386 + árvore de daemons com binários **stripped**).
-- Worker `pw-server153` (URL gerenciada) com endpoints:
-  - `GET /health` — JSON estático (via busybox httpd no container, porta 8080).
-  - `GET /probe` e `GET /cgi-bin/health.sh` — CGI shell que conta os 8
-    daemons em `/proc`: `{"ok":true,"daemons_alive":8,"expected":8}`.
-  - `GET /tcpprobe` — **TCP de mediação** ao glinkd:
-    `getTcpPort(29000).connect()` do próprio DO — o mesmo caminho que o
-    gateway ADR-0006 usará para clientes.
-- `INACTIVITY_TIMEOUT_MS = 30 min`; `enableInternet: false` no start
-  (o container não precisa de internet).
+- Container app `pw-server153`, política `durable_object`, imagem com os 8
+  daemons **+ o gs (world server) com o mapa is61** — o pacote de dados do
+  jogo (`gamed/`: config compartilhado + `maps/a61`) e nossos binários
+  stripped vão na imagem; o `gs.conf`/`gsalias.conf` têm o `Root`
+  normalizado para `./config/` (o pacote original aponta para
+  `/home/pwserver/gamed`, que só existe no runtime local).
+- **Instância custom** via `start({instance: {vcpu, memoryMib, diskMb}})`:
+  2 vCPU / 2048 MiB / 8192 MB — o is61 mede ~650 MB de RSS e a instância
+  `lite` (256 MiB) não o comportaria. `GS_INSTANCES` (env do container,
+  default `is61`) escolhe os mundos; `gs01 is61` precisa de ~3072 MiB e do
+  mapa `world/` no stage (`PW153_CF_MAPS="world a61"`).
+- Worker `pw-server153` (URL gerenciada) com endpoints (whitelist; resto 404):
+  - `GET /health` — **dinâmico**: proxy ao CGI que conta os 8 daemons + o gs
+    (`{"ok":true,"daemons_alive":8,"gs_alive":1,…}`); daemon ou gs morto
+    vira `ok:false`.
+  - `GET /worldcheck` — prova direta do mundo: `exec()` no container lê o
+    announce do gdeliveryd
+    (`"gameserver 101 … worldtag is 161"`) e a contagem de gs.
+  - `GET /tcpprobe` — TCP de mediação ao glinkd:
+    `getTcpPort(29000).connect()` do próprio DO.
+- `INACTIVITY_TIMEOUT_MS = 30 min`; `enableInternet: false` no start.
 
-**Evidência pública (2026-10-27 22:53 UTC):** os três endpoints responderam
-200 na primeira tentativa após o cold start (`cf-health-evidence.txt` no
-scratch do goal).
+**Evidência pública (2026-10-28, imagem digest `d00dda0f…`, worker
+`bc194134`):** `/health` → `{"ok":true,"daemons_alive":8,"gs_alive":1}`;
+`/worldcheck` → `world_up:true` com o announce do worldtag 161 lido do log
+do gdeliveryd dentro do container em produção; `/tcpprobe` → 200. A imagem
+idêntica foi validada localmente com o announce `gameserver 101 … worldtag
+is 161` e `world2.log` ativo (`gamed … world:161`).
 
 ## A saga do provisionamento (lição registrada)
 
@@ -59,29 +72,39 @@ scratch do goal).
 
 ## Recursos medidos
 
-- Instância **lite**: 1/16 vCPU, 256 MiB. Uso medido: **26 MiB** para os 8
-  daemons + httpd — cabe folgado; o limite prático é o cold start, não RAM.
+- **Instância custom** 2 vCPU / 2048 MiB (o is61 mede ~650 MB de RSS; a
+  `lite` de 256 MiB não o comportaria — por isso o deploy usa
+  `start({instance: {vcpu, memoryMib, diskMb}})`).
 
 ## Staging da imagem (`scripts/cloudflare-server153.sh`)
 
 ```
-stage   — monta dist/server153/cf-context/: árvore de daemons (binários
-          strips, .o/.a/.so-fonte/removidos) + Dockerfile/entrypoint
-local   — docker build + teste local (health + probe + logs dos daemons)
-deploy  — npx wrangler containers build + wrangler deploy
+stage   — monta o staging DENTRO de cloudflare/ (server153/ + gamed/):
+          o wrangler containers build usa o diretório do wrangler.jsonc
+          como contexto (o PATH positional não é honrado), então o staging
+          vai para cloudflare/server153 (daemons) e cloudflare/gamed
+          (dados do jogo + binários stripped) — ambos gitignored
+local   — docker build + teste local (health + announce do gdeliveryd + gs)
+deploy  — wrangler containers build + wrangler deploy
 ```
 
 Regras críticas do staging:
 
-1. **Remove TODO o storage de runtime** (`dbhome/dbdata/dblogs/backup/
-   dbhomewdb/unamewdb/backupwdb`). Uma cópia parcial (o `cp`/`docker cp`
-   falha em arquivos root-owned) quebra a inicialização do storage
-   ("Initialize storage environment failed") — foi o que derrubou o
-   uniquenamed na primeira imagem.
-2. No host, antes de stage: `sudo chown -R nonexphere:nonexphere
-   src/server153` (docker-created root-owned dirs abortam o `docker cp`).
-3. O entrypoint gera os mesmos confs de runtime do boot local (mesmos fixes
-   de portas/keys/pool 101) e sobe os 8 daemons + httpd.
+1. **`Root` do gs normalizado**: `gs.conf` E `gsalias.conf` do pacote vêm com
+   `[Template] Root = /home/pwserver/gamed/config/` (o alias é *appendado*
+   ao mesmo Conf no boot e vence) — o stage reescreve ambos para `./config/`.
+2. **Mapas em camadas separadas** (`gamed/maps/`, linkados em `config/` pelo
+   entrypoint): uma camada única de dados grande (~490 MB) falhou o push do
+   registry com 401 durante o upload longo; camadas menores passam.
+   Default `PW153_CF_MAPS=a61` (is61); `world` adiciona o mapa principal.
+3. **Remove TODO o storage de runtime** — cópia parcial (cp falha em
+   arquivos root-owned) quebra a inicialização ("Initialize storage
+   environment failed").
+4. **gshopsev convertido no host** (196→220 bytes) — o container não precisa
+   de python3; os `.old` não entram na imagem.
+5. No host, antes do stage: `sudo chown -R nonexphere:nonexphere src/server153`
+   (o stage tenta best-effort; logs root-owned do container local abortam o
+   cp no meio da árvore).
 
 ## Caminho para clientes de jogo (estado e plano)
 

@@ -234,23 +234,43 @@ drasticamente para a imagem de produção. Medição anterior (2026-10-26,
 141 MB de fonte sem build) permanece como referência do tamanho de
 source puro.
 
-## 6. Cloudflare Containers — VALIDADO (health público + probe TCP de mediação)
+## 6. Cloudflare Containers — VALIDADO (8 daemons + gs/is61 in-container; health dinâmico + prova do mundo)
 
-**Deploy funcional** (2026-10-27 22:53 UTC): Worker em
-`https://pw-server153.guibelongtovi-a22.workers.dev`, imagem de 480MB no
-registry da conta, container app `pw-server153` (política
-`durable_object`), instância **lite** (1/16 vCPU, 256 MiB — uso medido: 26
-MiB para os 8 daemons + httpd).
+**Deploy funcional** (atualizado 2026-10-28): Worker em
+`https://pw-server153.guibelongtovi-a22.workers.dev`, imagem no registry da
+conta (digest `d00dda0f…`), container app `pw-server153` (política
+`durable_object`), **instância custom 2 vCPU / 2048 MiB / 8192 MB** via
+`start({instance})` — o gs (is61) mede ~650 MB de RSS e a instância lite
+(256 MiB) não o comportaria. O container roda os 8 daemons **+ o gs com o
+mapa is61** (pacote `gamed` na imagem; `gs.conf`/`gsalias.conf` com `Root`
+normalizado; `GS_INSTANCES=is61` via env; mini-watchdog interno do gs).
 
-**Evidência pública** (capturada via curl, ver
-`cf-health-evidence.txt` no scratch do goal):
-- `GET /health` → 200 `{"ok":true,"app":"pw-server153",...}`
-- `GET /cgi-bin/health.sh` → 200 `{"ok":true,"daemons_alive":8,"expected":8}`
-  — **os 8 daemons rodando DENTRO do container Cloudflare**
+**Evidência pública** (2026-10-28):
+- `GET /health` → 200 `{"ok":true,"daemons_alive":8,"gs_alive":1,…}` —
+  health DINÂMICO (CGI conta daemons+gs; o antigo arquivo estático que
+  mascarava falhas foi removido).
+- `GET /worldcheck` → 200 `{"world_up":true,"worlds_registered":["…gameserver
+  101 … worldtag is 161"],"gs_alive":1}` — o announce do provider lido
+  DIRETAMENTE do log do gdeliveryd dentro do container em produção (exec()
+  da DO Container API).
 - `GET /tcpprobe` → 200 `{"glinkd_29000_mediation_tcp":true}` — o glinkd
   aceita TCP pelo caminho de mediação do Worker/DO
   (`getTcpPort(29000).connect()`), exatamente o caminho que o gateway do
   ADR-0006 usará para clientes.
+- Paths fora da whitelist respondem 404.
+
+**Histórico do bloqueio do mapa (resolvido 2026-10-28)**: o gs nunca subia
+porque o pacote de dados do jogo não estava na imagem (entrypoint antigo:
+"gs requires the server data package (absent)"). Além disso o `gs.conf` e o
+`gsalias.conf` do pacote apontam `Root` para `/home/pwserver/gamed/config/`
+(absoluto — funciona no runtime local por causa do bind mount; o alias é
+appendado ao Conf no boot e vence), e uma camada única de dados de ~490 MB
+falhava o push do registry com 401 durante o upload longo. Fixes: staging
+do `gamed` em `cloudflare/gamed` (camadas separadas `config/`+`maps/`,
+conversão do gshopsev no host, binários stripped), `Root` normalizado para
+`./config/`, entrypoint com wait da porta 29300 + mini-watchdog + rotação de
+logs + fix de version/edition do glinkd (10503 + edition pinada — sem isso
+o container rejeitava o cliente real).
 
 **Causa raiz do bloqueio anterior (resolvida)**: o entrypoint python3
 (http.server). Bissecção com 8 apps-probe na mesma conta: entrypoints
