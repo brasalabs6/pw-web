@@ -397,7 +397,7 @@ WikiEntityPtr WikiElementDataProvider::Next(WikiEntityPtr p)
 			idTemp = pElementDataMan->get_next_data_id((ID_SPACE)m_IDSpace, dataType);
 		
 		// current id is invalid
-		if(idTemp != idCandidate) return false;
+		if(idTemp != idCandidate) return NULL;
 	}
 	
 	if (idCandidate == 0)
@@ -724,7 +724,7 @@ bool WikiSearchByName::IsSearchPatternValid(const ACHAR *szPattern)
 //------------------------------------------------------------------------
 ACString WikiSearchEquipmentByName::GetSearchName(WikiEntityPtr p) const
 {
-	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, false);
+	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, NULL);
 	unsigned int idCandidate = ptr->GetID();
 
 	WikiEquipmentProp* pEP = WikiEquipmentProp::CreateProperty(idCandidate);
@@ -751,7 +751,7 @@ WikiSearcher::SearchCommand* WikiSearchEquipmentByName::Clone() const
 //------------------------------------------------------------------------
 ACString WikiSearchMonsterByName::GetSearchName(WikiEntityPtr p) const
 {
-	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, false);
+	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, NULL);
 	unsigned int idCandidate = ptr->GetID();
 
 	DATA_TYPE dataType = DT_INVALID;
@@ -781,7 +781,7 @@ WikiSearcher::SearchCommand* WikiSearchMonsterByName::Clone() const
 //------------------------------------------------------------------------
 ACString WikiSearchRecipeByName::GetSearchName(WikiEntityPtr p) const
 {
-	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, false);
+	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, NULL);
 	unsigned int idCandidate = ptr->GetID();
 	
 	DATA_TYPE dataType = DT_INVALID;
@@ -816,7 +816,7 @@ WikiSearchItemByName::WikiSearchItemByName(bool ignoreEquip)
 
 ACString WikiSearchItemByName::GetSearchName(WikiEntityPtr p) const
 {
-	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, false);
+	CONVERT_ENTITY_PTR(WikiElementDataProvider::Entity, p, NULL);
 	unsigned int idCandidate = ptr->GetID();
 
 	WikiItemProp* pEP = WikiItemProp::CreateProperty(idCandidate, m_NoEquip);
@@ -1080,7 +1080,7 @@ WikiSearcher::SearchCommand* WikiSearchSkillByClassLimit::Clone() const
 //------------------------------------------------------------------------
 ACString WikiSearchFeatureByName::GetSearchName(WikiEntityPtr p) const
 {
-	CONVERT_ENTITY_PTR(WikiSerialDataProvider::Entity, p, false);
+	CONVERT_ENTITY_PTR(WikiSerialDataProvider::Entity, p, NULL);
 	unsigned int id = ptr->GetID();
 	
 	const abase::vector<WikiGuideFeature>& features = WikiGuideData().Feature();

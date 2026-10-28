@@ -46,11 +46,11 @@ private:
 
 #include "AScriptFile.h"
 typedef WikiFileInterfaceImpl<AScriptFile> WikiFileReader;
-ACString WikiFileReader::Token()							{ return AS2AC(m_SF.m_szToken); }
+template<> ACString WikiFileInterfaceImpl<AScriptFile>::Token()	{ return AS2AC(m_SF.m_szToken); }
 
 #include "AWScriptFile.h"
 typedef WikiFileInterfaceImpl<AWScriptFile> WikiWFileReader;
-ACString WikiWFileReader::Token()						{ return WC2AC(m_SF.m_szToken); }
+template<> ACString WikiFileInterfaceImpl<AWScriptFile>::Token()	{ return WC2AC(m_SF.m_szToken); }
 
 WikiDataReader::WikiDataReader(bool isUnicode)
 :m_pFile(NULL)
