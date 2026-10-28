@@ -1,6 +1,6 @@
 # PAINEL.md — Plano diretor integral dos painéis de jogadores e administração do Perfect World Web 1.5.3
 
-> **Documento mestre de investigação, arquitetura, especificação funcional, contratos, segurança, operações, migração e backlog.**
+> **Documento mestre de investigação, arquitetura, especificação funcional, contratos, segurança, operações, migração e backlog; inclui o PW Shell multiversão e CI/CD de previews do cliente e servidor.**
 >
 > **Data de elaboração:** 2026-10-28 · **Repositório:** `brasalabs6/pw-web` · **Branch analisada e destino deste arquivo:** `feat/pw-source-1.5.3-ci-build` (PR #17, base `main`). **Snapshot consultado:** `6f798f803098f7afe56027b02dd81345460f336e`; confirmar HEAD antes de implementar porque o PR pode continuar recebendo commits.
 >
@@ -12,10 +12,11 @@
 
 ## 0. Objetivo, escopo e decisões essenciais
 
-Este documento especifica **dois produtos distintos, compartilhando identidade e back-end de integração**:
+Este documento especifica **três produtos distintos, compartilhando identidade, catálogo e back-end de integração**:
 
 1. **Portal do jogador:** criar conta real, verificar identidade, entrar no jogo, escolher realm, visualizar personagens, gerenciar segurança, recuperar credenciais, acompanhar gold/consumo, compras, suporte, bloqueios e eventos.
-2. **Console administrativo:** saúde do stack, visão de daemons/zonas/instâncias/mapas, operação de infraestrutura, controle de configurações, jogadores, contas, GMs, economia e loja, eventos, moderação, backup, restauração, auditoria, deploys, alertas e capacidade.
+2. **PW Shell / Launcher:** seleção de realm, cliente e versão, negociação de compatibilidade, carregamento de WASM e assets versionados por release, sessão e acesso a previews.
+3. **Console administrativo:** saúde do stack, visão de daemons/zonas/instâncias/mapas, operação de infraestrutura, controle de configurações, jogadores, contas, GMs, economia e loja, eventos, moderação, backup, restauração, auditoria, deploys, alertas e capacidade.
 
 O console administrativo **não deve ser uma página que executa shell/SSH arbitrário**. Deve ser um produto de operações sobre recursos tipados, políticas verificáveis e agentes locais restritos.
 
@@ -1409,7 +1410,976 @@ Estas referências são informativas. **Nenhum código externo foi copiado neste
 
 ---
 
-## 27. Critério final de sucesso do projeto
+
+## 27. Expansão arquitetural obrigatória: plataforma multi-realm, multi-cliente, multiversão e preview
+
+> **Solicitação do operador de 2026-10-28:** suporte a múltiplos servidores e múltiplos clientes, shell de seleção de servidor/cliente/versões, assets resolvidos conforme a configuração de cada versão, deploy previews tanto de servidor quanto de cliente, e gerenciamento integral pelo painel admin.
+>
+> **Status desta seção:** SPEC ONLY / não implementada. A branch do servidor é `feat/pw-source-1.5.3-ci-build` (PR #17); o PR único do cliente é o **#23**, atualmente com head `feat/client153-common-containers` no snapshot examinado (consolidou trabalhos anteriores). Não adicionar funcionalidades de frontend do cliente à branch do servidor neste documento.
+>
+> **Recomendação inequívoca:** tratar `PW Shell` como aplicação estável de bootstrap e navegação, `Client Runtime` e `Server Runtime` como artefatos versionados, `Realm` como identidade lógica estável e `Deployment` como instalação concreta e reversível. O painel é o **control plane** de todas essas unidades. Nunca codificar “um realm = um cliente = uma versão = um container”.
+
+### 27.1 Requisitos de produto
+
+| ID | Requisito | Comportamento obrigatório |
+| --- | --- | --- |
+| MV-001 | Multi-realm | vários realms independentes, inclusive diferentes versões do PW, na mesma plataforma; status/limites/DB específicos |
+| MV-002 | Multi-client | um único shell pode iniciar variantes de runtime diferentes (ex. cliente 1.5.3, futuros 1.4.4 e 1.3.6), com interfaces e assets correspondentes |
+| MV-003 | Multi-server | catalogar e executar diferentes engines/versões de servidor/branches/builds e configurações por realm, com adaptadores de runtime e schema |
+| MV-004 | Versionamento independente | versões do shell, WASM, assets, dados do servidor, gateway e binários servidor têm IDs próprios e não devem avançar implicitamente juntos |
+| MV-005 | Compatibilidade explícita | resolver pares aceitos por evidências homologadas, não apenas igualdade de string `1.5.3` |
+| MV-006 | Asset pinning | a seleção fixa um **release digest + asset set digest**; nenhum fetch `latest`, fallback silencioso nem mistura de arquivos |
+| MV-007 | Seleção no launcher | jogador autorizado pode escolher realm, canal, cliente permitido, idioma e preset gráfico; não pode fornecer endpoints/versões arbitrárias |
+| MV-008 | Preview de cliente | PR produz build de shell/runtime/assets de teste, URL com isolamento, smoke browser e expiração; sem credenciais de prod |
+| MV-009 | Preview de servidor | PR produz imagem testável, WDB próprio/descartável, dados autorizados de fixture e probes GNET/realm; **não** aponta para DB prod |
+| MV-010 | Preview combinado | executar um candidato de cliente contra um candidato de servidor em ambiente de integração e registrar resultado do pareamento |
+| MV-011 | Gestão pelo painel admin | criar/deletar realm, configurar versão e canais, selecionar releases, publicar preview, acompanhar CI/status/recursos, promover, reverter e inspecionar auditoria |
+| MV-012 | Políticas de rollout | staging/canary/produção com controle de compatibilidade, carga, aprovação e rollback independente de UI, runtime e backend |
+| MV-013 | Disponibilidade | uma falha de preview jamais indisponibiliza produção; sessões existentes mantêm release fixada |
+| MV-014 | Storage | WDB, nomes únicos, economia, log e cache separados por realm/ambiente/versão onde necessário |
+| MV-015 | Reprodutibilidade | reconstruir deployment pela combinação pinada de manifests, artefatos assinados, config revision e snapshot de dados apropriado |
+| MV-016 | Restrições jurídicas | apenas publicar source/artefatos/assets cuja redistribuição tenha autorização documentada; builds privados não são releases públicos |
+| MV-017 | CLI operacional opcional | operador pode usar `pwctl` com as mesmas APIs tipadas do painel, sem shell remoto arbitrário |
+| MV-018 | Extensibilidade | suporte a novas famílias de cliente/servidor com adapters registráveis, sem modificar a lógica central para cada versão |
+
+### 27.2 Não objetivos e invariantes
+
+- Não assumir que clientes 1.3.6, 1.4.4 e 1.5.3 conseguem conectar ao mesmo servidor ou usar os mesmos `elements.data`/`tasks.data`.
+- Não reescrever o protocolo do cliente legado automaticamente para atravessar versões; isso exigiria um projeto de compatibilidade próprio e provas byte a byte.
+- Não permitir que um administrador aponte um cliente preview para `glinkd` de produção digitando URL; compatibilidade e política determinam o destino.
+- Não publicar um preview só porque `wrangler deploy` devolveu sucesso; jogo/servidor requerem smoke de GNET e readiness semântica.
+- Não reutilizar o WDB de produção em preview, mesmo em “somente leitura” se o mecanismo de snapshot não for comprovado consistente e não tiver isolamento.
+- Não compartilhar cache local persistente por chave de path simples: versões diferentes podem conter o mesmo caminho com bytes distintos.
+- **Shell** significa launcher/aplicação de seleção e bootstrap no navegador, **não** terminal administrativo com acesso a Bash/SSH.
+- Um realm pode publicar uma versão compatível do cliente por canal, e um cliente pode ser usado por vários realms **se** os perfis de protocolo/dados passarem na compatibilidade.
+- O banco relacional do control plane não é substituto de WDB; os dados autoritativos do mundo são propriedade do deployment do servidor.
+- Previews de servidor podem ser caros e lentos; suportar criação sob demanda, suspensão controlada e TTL; não prometer start instantâneo.
+
+### 27.3 Topologia alvo
+
+```text
+                           https://play.example/... (shell estável)
+                                      |
+                           [PW SHELL / Launcher]
+                    login, realm catalog, versions, settings
+                           │                 │
+                    [Control API]     [Signed Catalog API]
+                           │                 │
+                   compatible pair resolver  │
+                           └────────┬────────┘
+                                    ▼
+                           [Session Bootstrap]
+                   pins: shell, client, assets, realm route,
+                         protocol, server deployment
+                                    │
+              ┌─────────────────────┴────────────────────┐
+              ▼                                          ▼
+     [Client Release A]                          [Client Release B]
+      e.g. 1.5.3 WASM                            e.g. future 1.4.4 WASM
+         │  chunks                                  │  chunks
+         ▼                                          ▼
+       [R2/CDN, objetos por SHA-256, manifest DAG, CACHE ISOLADO]
+         │                                            │
+         │ WSS/gateway correspondente ao par          │
+         └─────────────┬──────────────────────────────┘
+                       ▼
+              [Gateway Fleet / Routes]
+                │       │          │
+          prod realm A   staging B   preview PR 123
+                │       │          │
+             [server]  [server]   [server]
+               WDB-A     WDB-B       WDB-preview-123
+             gs/maps    gs/maps      gs/maps/fixtures
+
+Admin Console ──Control API── Catalog + Deployments + Preview Manager
+                              │
+                              ├─ Build pipeline / release registry
+                              ├─ Config revisions + secrets refs
+                              ├─ Environment/realm policies
+                              ├─ Rollout/reconcile/health
+                              └─ Audit + usage + cleanup
+```
+
+### 27.4 Separar família, versão, build, release e deployment
+
+| Conceito | Exemplo ilustrativo | Identidade/semântica |
+| --- | --- | --- |
+| Client family | `pw-client-angelica2` | família de adaptador/compiler/renderer, não uma versão |
+| Client source version | `1.5.3-v145` | rótulo humano do original e compatibilidade histórica |
+| Client build | commit + toolchain + perfil | resultado CI concreto; imutável |
+| Client release | digest SHA-256 do manifest assinado | artefato runtime + assetSet + protocolo + capacidades |
+| Server family | `pw-server-cpp32` | adaptador de daemons/GNET/WDB; outros futuros são novos adapters |
+| Server source version | `1.5.3-v145-derived` | proveniência e protocolo, sem afirmar oficialidade |
+| Server build | digest imagem/artefato + commit + toolchain | binários reproduzíveis |
+| Server release | digest do manifest do servidor | imagem + data pack + configuração contratual + migration policy |
+| Data profile | `pw153-v145-dataset-a` | checksums de servidor e cliente; edition/shape/encoding |
+| Protocol profile | `gnet-153-v145-role23` | assinatura de wire e testes, não número decorativo |
+| Realm | `servidor-br-01` | identidade pública persistente independente de process/host |
+| Zone | `zone-1` | agrupamento lógico de mundo, DB, user IDs e auth |
+| Environment | `production`/`staging`/`preview-pr-123` | fronteira de recursos/credenciais e dados |
+| Deployment | `dep_...` | uma instalação real com estado desejado/observado |
+| Channel | `stable`/`beta`/`canary`/`preview` | ponteiro controlado para release, não versão embutida |
+| Pairing | `pair_...` | release cliente + release servidor + protocolo + data hashes aprovados |
+| Session pin | `sess_...` | ligação temporária do jogador a um pairing e route |
+
+**IDs estáveis não dependem de branch Git, URL workers.dev ou nome de container.** Pode haver vários deployments da mesma release no mesmo ou em diferentes realms. Uma release pode ser promovida entre ambientes sem ser recompilada; segredos e rotas são injectados em deployment config, não no artefato.
+
+---
+
+## 28. Modelo de dados: registry, catálogo, compatibilidade e versionamento
+
+### 28.1 Entidades adicionais ao `control-api`
+
+| Entidade SQL proposta | Campos-chave e índices | Responsabilidade |
+| --- | --- | --- |
+| `game_products` | `id`, family, display_name, owner | catálogo lógico PW e futuros jogos |
+| `client_families` | `id`, adapter_key, compatibility_schema | registrar runtime loaders específicos |
+| `client_versions` | `id`, family_id, original_version, build, locale, status | versões conceituais liberadas e rights |
+| `client_builds` | `id`, version_id, git_sha, toolchain_digest, artifact_digest, ci_run_id, result | rastreabilidade do build |
+| `client_releases` | `id`, build_id, release_sha256 UNIQUE, signature_key_id, asset_set_sha256, protocol_profile_id, immutable, source_rights | release executável |
+| `server_families` | `id`, adapter_key, supported_arch, storage_adapter_key, health_adapter_key | ex. cpp32 GNET; Rust exige contrato próprio |
+| `server_versions` | `id`, family_id, source_revision, upstream_revision, original_version, protocol_candidate_id | versões concretas |
+| `server_builds` | `id`, version_id, git_sha, image_digest UNIQUE, toolchain_digest, ci_run_id, result | binários/imagem |
+| `server_releases` | `id`, build_id, manifest_sha256 UNIQUE, server_data_set_id, protocol_profile_id, schema_migration_id | pacote testável |
+| `asset_sets` | `sha256`, schema_version, cooker_version, rights_status, total_bytes | índice de conteúdo imutável |
+| `data_sets` | `id`, source_version, edition_fingerprint, server_files_digest, client_elements_digest, metadata | WDB inicial/refs data pack |
+| `protocol_profiles` | `id`, wire_fingerprint, client_challenge, rpc_schema_digest, validated_tests | semântica GNET |
+| `compatibility_rules` | `client_release_id`, `server_release_id`, `data_set_id`, `gateway_profile_id`, decision, evidence_ref, expires_at | allowlist de pares |
+| `deployment_environments` | `id`, kind, isolation_scope, secret_scope, account/project/bucket refs, visibility | fronteiras de execução |
+| `realms` (evoluir) | `id`, product_id, slug, visibility, owner, policy_id | identidade selecionável |
+| `realm_zones` | `id`, realm_id, legacy_zoneid, storage_ref, capacity, current_server_deployment_id | única por realm/zoneid |
+| `realm_routes` | `id`, realm_id, env_id, gateway_id, active_server_deployment_id, route_revision | roteamento sem URL arbitrária |
+| `release_channels` | `id`, realm_id, environment_id, name, client_release_id, server_release_id, pairing_id, pin_revision | seleção stable/beta/preview |
+| `compatibility_test_runs` | `id`, pair_id, suite_version, result, evidence, date, CI SHA | testes de paridade |
+| `deployment_revisions` | `id`, deployment_id, release_digest, config_sha256, data_set_id, desired, observed | rollout/rollback |
+| `deployments` | `id`, type: client-shell/server/gateway, env_id, realm_id?, provider, resource_ref, state, active_revision | existência concreta |
+| `preview_environments` | `id`, PR refs, owner, client_candidate?, server_candidate?, env resources, TTL, state | preview isolado |
+| `preview_access_grants` | `id`, preview_id, subject, role, expires_at | preview privado/token |
+| `session_release_pins` | `session_id`, user_id, realm_id, client_release_id, server_deployment_id, pair_id, expires_at | leases de sessão |
+| `artifact_references` | digest, owner_ref, release_ref, retention_lock, lease_expiry | GC seguro |
+| `deployment_jobs` | reuse `operation_jobs` with typed phases, owner, idempotency | publicação/rollout |
+| `provider_accounts` | id, env_id, provider_key, project/namespace, quota | providers infra |
+| `deployment_metrics` | time, deployment_id, bytes, cpu, memory, players, coldstart, errors | custos e performance |
+
+**Integridade:** nomes humanos não são primary key; não permitir duas versões `ACTIVE` para mesmo `realm/channel/environment` sem transição serializada. Version pins são imutáveis dentro de sessão. Um canal aponta para releases, não para `main` ou `latest`. `WDB` separado do control DB e isolado por zone/deployment/ambiente.
+
+### 28.2 Versões sem compatibilidade suposta
+
+**Exemplos de pares candidatos (NÃO homologados):**
+
+| Cliente | Backend | Assets/data | Estado inicial |
+| --- | --- | --- | --- |
+| Port WASM 1.5.3 v145 | servidor C++ 1.5.3 derivado, PR #17 | data pack PWBR v145 | `CANDIDATE`; gateway browser não comprovado |
+| Futuro WASM 1.4.4 | futura distribuição 1.4.4 | data files correspondentes | `NOT_SUPPORTED` até port/test |
+| Futuro WASM 1.3.6 | futura distribuição 1.3.6 | data files correspondentes | `NOT_SUPPORTED` até port/test |
+| Cliente 1.5.3 (nova build) | servidor antigo 1.5.3 | release anterior compatível? | `UNKNOWN` até testes wire/assets |
+| Cliente 1.5.3 | servidor Rust de referência | depende da implementação | `UNKNOWN` até testes GNET reais |
+
+Para declarar `SUPPORTED`, anexar: challenge/version/edition, GNET framing, `rpcalls` hash/wire golden, `RoleInfo` campos/serialização, asset `elements/tasks/gshop` digests, login/CreateRole/EnterWorld/combat/relog com sessão real, status de instâncias, DB schema e known issues. Compatibilidade pode ser parcial (`LOGIN_ONLY`), mas **`LOGIN_ONLY` nunca habilita PLAY**.
+
+### 28.3 API de resolução de compatibilidade
+
+```typescript
+type CompatibilityDecision =
+  | "SUPPORTED" | "PREVIEW_ONLY" | "INCOMPATIBLE"
+  | "NOT_TESTED" | "REVOKED" | "EXPIRED";
+
+type Pairing = {
+  pairingId: string;
+  clientReleaseDigest: string;
+  serverReleaseDigest: string;
+  assetSetDigest: string;
+  serverDataSetDigest: string;
+  protocolProfile: string;
+  gatewayProfile: string;
+  decision: CompatibilityDecision;
+  evidence: {suiteId: string; runId: string; commit: string; verdict: string}[];
+  reviewedAt: string;
+};
+```
+
+**Algoritmo:** resolver o realm + zone + channel autorizado; listar releases candidatas; rejeitar rights não liberados, data/edition errada, protocolo sem prova, browser capabilities ausentes e deployments sem readiness; escolher a release fixada do canal (não “a mais próxima”); criar sessão com pin + lease; responder bootstrap assinado. Em caso de erro, mostrar incompatibilidade e **não** mudar silenciosamente para production ou outra versão.
+
+### 28.4 Estratégia de migração do schema já existente
+
+**Fato do PR #23:** `tools/release/schemas/release-manifest.schema.json` **v1** restringe `sourceClient` a `1.5.3` e `upstreamCommit` a um SHA; `tools/assets/schemas/content-manifest.schema.json` **v1** também fixa `sourceClient=1.5.3`. `docs/CLOUDFLARE-DELIVERY.md` prevê shell mínimo, `releaseSha256`, R2 objects, SHA-256 e `protocolProfile`.
+
+**Não mudar os valores de `schema:1` em produção sob o mesmo nome**. Criar:
+
+- `release-manifest.v2.schema.json` aceitando `clientFamily`/`sourceClientVersion`, `sourceRevision`, `upstreamRevision`, ``compatibilityProfile`, `assetSetDigest`, `runtimeTargets`, `entryAssets`, `rights`; preservar a semântica do grafo imutável;
+- `content-manifest.v2.schema.json` com `clientFamily` + `clientVersion`, `dataProfile`, namespaces de paths e `assetsSchema`, mantendo validação de DAG/canonical bytes;
+- `server-release.v1.schema.json`: imagem/bins/arquitetura/i386, data pack pin, GNET profile, WDB engine/schema, roles/daemon list, health probes, startup phases e mínimos de recursos a medir;
+- `deployment-manifest.v1.schema.json`: release de servidor, config revision, env/realm/zone, volumes, provider refs, gateway profile, identidade de agente, instance spec;
+- `pairing-manifest.v1.schema.json`: compatibilidade explicitamente aprovada entre duas releases e data packs;
+- `shell-bootstrap.v2.schema.json`: release pin, realm/zone, session, URLs allowlisted e TTL sem secrets;
+- validadores antigos aceitam v1; consumidores v2 discriminam `schema` estritamente; nenhuma interpretação implícita de v2 como v1.
+
+**A transformação de hashes/manifest v1→v2 é nova identidade de release.** Não alterar objetos originais, pins antigos ou cookies de sessões ativas. Possível armazenar release v1 no registry com `family=client153` e version/protocol extraídos da validação, sem reemitir seu SHA.
+
+---
+
+## 29. PW Shell / Launcher: produto independente e contrato de bootstrap
+
+### 29.1 O que é o shell
+
+Aplicação pequena e estável que roda **antes** de qualquer cliente C++/WASM. Faz login web, escolhe realm e versão, verifica compatibilidade/capacidades, resolve release assinada, prepara cache/download inicial, monta runtime escolhido, estabelece conexão ao gateway correto e oferece retorno ao launcher. **É diferente da UI dentro do jogo** e pode evoluir sem recompilar todas as versões do cliente.
+
+O shell não conhece os caminhos internos `assets/xxx.pck` de cada versão. Cada adapter e manifest publicados definem a árvore de arquivos lógica e o loader responsável pela versão. O shell conhece somente **contratos genéricos e plugin interfaces**.
+
+### 29.2 Layout de interface sugerido
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ PW WEB                  Minha conta  Downloads/Cache  Configurações │
+├──────────────────────────────────────────────────────────────────────┤
+│ Selecionar servidor                                                  │
+│  [Brasil PWBR]  Online ✓   173/500  Versão preferida 1.5.3          │
+│  [Classic 1.4.4]  Em desenvolvimento      Preview não habilitado     │
+│  [Oldschool 1.3.6] Indisponível                                     │
+│                                                                      │
+│ Cliente para este servidor                                           │
+│  [1.5.3 v145] [Beta 1.5.3...]     (somente versões compatíveis)      │
+│                                                                      │
+│ Canal: [Estável]    Idioma: [pt-BR]   Gráficos: [Automático]          │
+│                                                                      │
+│ Conteúdo inicial: 125 MB estimados (valor ilustrativo, não medido)   │
+│ Dados aproveitados do cache: —                                       │
+│ [Instalar/Atualizar]   [JOGAR]                                       │
+│                                                                      │
+│ Avançado (para testers autorizados): [Preview PR #123]               │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+Os números da tela acima são **mock**, não métricas do servidor. Views reais: `Home`, `Realms`, `Select Client`, `Version Details`, `Downloads/Cache`, `Settings`, `Preview Access`, `Error Recovery` e `Launch/Loading`.
+
+### 29.3 Fluxo de inicialização
+
+1. Browser recebe HTML/JS do shell com CSP e headers seguros; versão do shell independe do runtime do jogo.
+2. Shell detecta WebAssembly, WebGL2, WebGPU opcional, memória aproximada, SIMD/threads se apropriado, storage disponível, idioma, conectividade e política do ambiente.
+3. Requisita `GET /v1/catalog/realms`; mostra realms com disponibilidade real, gate de convite/teste e canal padrão.
+4. Escolhe realm → `GET /v1/catalog/realms/{id}/clients` retorna somente releases homologadas para aquele realm, canal e navegador.
+5. Usuário escolhe versão compatível (ou política do realm restringe a uma). Persistir preferência por usuário/dispositivo, nunca presumir que preferência sobrevive a incompatibilidade.
+6. `POST /v1/launcher/sessions` valida identidade, direitos, compatibilidade, região, maintenance e capacidade; devolve `session bootstrap` assinada e de curta duração.
+7. Shell verifica o manifesto release **por hash e assinatura**, confirma protocolos, runtime capability, URLs HTTPS/WSS allowlisted e autorização para executar aquele código.
+8. Loader `ClientAdapterRegistry` escolhe adaptador de versão pelo `family+schema`, valida seu módulo/runtime, inicializa VFS/engine; **nenhum script arbitrário indicado pelo usuário pode ser importado**.
+9. Loader percorre asset DAG, baixa `entryBundles`, verifica SHA-256 dos objetos e do arquivo final, grava cache atomically e disponibiliza na VFS; renderiza progresso, cancelamento e retries.
+10. Inicia WASM/config com `realmId`, `zoneId`, `protocolProfile`, `gatewayUrl`, `sessionToken` curto e budget; não entregar segredos permanentes ao frontend.
+11. Testa gateway/sessão do jogo e só exibe `PLAYING` quando runtime afirma readiness; loading de mundo pode ocorrer depois do login.
+12. Ao sair, libera sockets, observers, heap, contexto gráfico, leases de cache e session pin; retorna ao shell sem manter threads de outro cliente vivas.
+
+### 29.4 Máquina de estados do shell
+
+```text
+BOOTSTRAPPING → CATALOG_LOADING → REALM_SELECTED
+      └→ INCOMPATIBLE / AUTH_REQUIRED / OFFLINE
+REALM_SELECTED → CLIENT_SELECTED → RESOLVING_PAIR
+RESOLVING_PAIR → VERIFYING_MANIFEST → RESOLVING_ASSETS
+RESOLVING_ASSETS → DOWNLOADING → VERIFYING_CONTENT
+VERIFYING_CONTENT → INSTANTIATING_WASM → CONNECTING_GATEWAY
+CONNECTING_GATEWAY → READY_TO_PLAY → IN_GAME
+IN_GAME → UNLOADING → REALM_SELECTED
+(any) → FAILED (typed code, retry policy)
+```
+
+Fazer double-click em `Jogar` é idempotente: uma única instância do runtime por aba, downloads compartilhados por hash e cancelamento cooperativo. Proteger navegador contra bundles excessivos, decompression bombs, imports externos e exaustão da memória.
+
+### 29.5 Política de troca de cliente/servidor/versão
+
+- **Realm diferente:** encerrar sessão, desmontar runtime, resetar sessão/GNET e selecionar novo pairing.
+- **Versão de cliente diferente:** teardown completo do WASM, VFS e GPU (ou reinicializar a aba se o runtime não liberar recursos com segurança); **nunca hot-swap binário WASM durante combate**.
+- **Build nova do mesmo cliente:** fixar release existente durante sessão; atualizar no próximo launch ou após logout/migração explícita.
+- **Servidor altera versão:** novas sessões pegam pairing novo após aprovação; sessões atuais continuam no deployment antigo apenas se server drain/canary e coexistência tiverem suporte; caso contrário manutenção e reconnect explícito.
+- **Canal beta:** consentimento, dados claros, rollback independente e aviso de incompatibilidades.
+- **Preview:** acesso com convite/role; isolado, banner “PREVIEW”, TTL, sem compras reais ou linking involuntário com conta/realm de produção.
+- **Modo diagnóstico:** ``release-manifest v1 mode=diagnostic` possui `protocolProfile=null`; **jamais** conectar a um realm ou usar player login.
+
+### 29.6 Carregamento condicionado à versão
+
+**Requisito central:** ao escolher `client 1.5.3` baixar `runtime/assetSet` 1.5.3 e ao escolher versão diferente, resolver outro conjunto de manifests. Mesmo caminho lógico de arquivo entre versões **não** significa conteúdo igual. Dedupe só por hash validado.
+
+```typescript
+interface ClientAdapter {
+  key: string; // e.g. "angelica2-153"
+  supportedManifestSchemas: number[];
+  detectCapabilities(): Promise<CapabilityReport>;
+  planEntry(release: ClientRelease, map?: MapDescriptor): AssetPlan;
+  mountAssets(plan: AssetPlan, cache: ContentAddressableStore): Promise<void>;
+  start(options: {
+    releaseDigest: string;
+    realm: string; zone: number; gateway: string;
+    protocolProfile: string; sessionToken: string;
+  }): Promise<GameRuntimeHandle>;
+  stop(): Promise<void>;
+}
+interface ContentAddressableStore {
+  getVerified(sha256: string): Promise<Uint8Array | null>;
+  putVerified(sha256: string, bytes: Uint8Array): Promise<void>;
+  lease(sha256: string, sessionId: string): Promise<void>;
+  releaseSession(sessionId: string): Promise<void>;
+}
+```
+
+- `clientAdapterKey` é um nome **allowlisted em código confiável**; não um URL arbitrário em manifest.
+- Cliente v145 mapeia paths do PCK/PKX, encoding CP936 e version de `elements/tasks/gshop` por recipe; outro cliente terá seu próprio `asset compiler/recipe`, transformações autorizadas e testes.
+- Separar `launcher shell`, `client runtime`, `common UI/login`, `locale`, `character entry`, `world entry` e `streamed map/instance`. Uma versão pode trocar também JS glue, WASM e UI.
+- Reutilizar por hash blocos iguais entre versões **quando bytes forem idênticos e rights permitirem**; não mesclar índice lógico, cache de objetos sem hash ou servidor de assets de preview e produção.
+- Prefetch de mapa baseado no `worldtag` e destino real, com planos por versão; os `entryBundles` garantem somente a entrada inicial.
+- Arquivos com nome igual e conteúdo diferente permanecem separados no mount virtual da sessão.
+- Cache local OPFS/IndexedDB/memória com commits em duas fases, quotas, leases para múltiplas abas e verificação pós-recuperação; a especificação de e15 é a base.
+- Nenhuma release antiga é apagada enquanto `session_release_pins` ou rollback/canais a referenciarem. GC somente mark/sweep depois de leases e grace period.
+
+### 29.7 Exemplo de bootstrap (ILUSTRATIVO)
+
+```json
+{
+  "schema": 2,
+  "shell_release": "sha256:<digest>",
+  "realm": {"id":"realm-br","zone_id":1,"environment":"preview-pr-123"},
+  "channel": "preview",
+  "pairing_id": "pair-123",
+  "client": {"family":"pw-client-angelica2","version":"1.5.3-v145","release_sha256":"<64hex>"},
+  "server": {"family":"pw-server-cpp32","release_sha256":"<64hex>","deployment_id":"dep-123"},
+  "assets": {"schema":2,"asset_set_sha256":"<64hex>","asset_base_url":"https://assets-preview.example.invalid"},
+  "connection": {"protocol_profile":"gnet-153-v145-role23","gateway_url":"wss://gateway-preview.example.invalid","ticket":"<short-lived opaque ticket>"},
+  "capabilities": {"required":["wasm","webgl2"],"optional":["webgpu"]},
+  "expires_at":"2026-10-28T11:00:00Z",
+  "signature":{"algorithm":"Ed25519","key_id":"preview-key-01","value":"<signature>"}
+}
+```
+
+O bootstrap não é o próprio manifesto do cliente: é um **binding temporário de pairing e rota**. Assinar também audiência/realm/env/zone, anti-replay nonce e expiração; o exemplo acima omite detalhes de criptografia e **não é schema válido v1**.
+
+---
+
+## 30. Releases, pipelines de preview e promoção: cliente, servidor e pares
+
+### 30.1 Unidades de publicação independentes
+
+- **Shell release:** HTML/JS/CSS públicos, APIs de descoberta, chaves públicas de assinatura, capability checks. Pode ter preview próprio de UI sem build de cliente.
+- **Client release:** WASM/JS glue, módulos, shader/UI, conteúdo assinado por digest, asset set. Pode existir como `diagnostic` sem backend.
+- **Server release:** container/binaries dos oito daemons e `gs`, scripts de start, versões exatas de libs, esquema WDB, data pack declarado, protocolos/health checks e informações de migração.
+- **Gateway release:** transporte WSS/mediador GNET e regras de sessão/roteamento; testes de framing.
+- **Pairing release:** as referências imutáveis e decisões homologadas de compatibilidade; não é rebuild de cliente ou servidor.
+- **Environment deployment:** materializa releases em recursos concretos, config, secrets references e volumes.
+
+### 30.2 Contrato de release do servidor [PROPOSTO]
+
+```json
+{
+  "schema": 1,
+  "family": "pw-server-cpp32",
+  "source_version": "1.5.3-v145-derived",
+  "source_commit": "<40hex>",
+  "source_provenance": "references/server-153-source@7dde52f",
+  "toolchain_digest": "sha256:<digest>",
+  "image_digest": "sha256:<digest>",
+  "runtime_arch": "linux/386",
+  "service_manifest": ["gauthd","gdeliveryd","gamedbd","uniquenamed","gfactiond","gacd","logservice","glinkd","gs"],
+  "data_set_digest": "sha256:<digest>",
+  "protocol_profile": "gnet-153-v145-role23",
+  "storage": {"engine":"wdb","schema_profile":"wdb-153-branch17","migration":"NONE"},
+  "startup_profile": "ordered-stack-153",
+  "readiness_suite": "gameplay-probe-153",
+  "minimum_resources": {"status":"UNMEASURED"},
+  "rights_status": "REVIEW_REQUIRED",
+  "build_evidence": ["ci-run-id"]
+}
+```
+
+Dados de exemplo: `runtime_arch` precisa ser confirmado no manifest OCI gerado; `minimum_resources` não pode receber chute. `service_manifest` exige `gs` para declarar gameplay READY; previews diagnósticos sem `gs` devem ser marcados `DAEMONS_ONLY`.
+
+### 30.3 Tipos de preview
+
+| Preview | Origem | Infra/artefatos | Entrada | Pré-condições |
+| --- | --- | --- | --- | --- |
+| Shell-only | PR UI shell/admin | Worker Preview separado + mocks/fixture estável | URL preview shell | sem backend prod |
+| Client diagnostic | PR cliente ou commit | runtime WASM + conteúdos sintéticos/ou autorizados | URL selecionável | `mode=diagnostic`, realm nulo |
+| Client game | PR cliente | release com assets + pairing aprovado contra servidor staging | shell preview | matriz de compatibilidade e gateway staging |
+| Server-only | PR servidor | imagem por commit + WDB/uniquenamed isolados + test clients | health/agent endpoint privado | data pack autorizado, supervisor e recovery |
+| Paired integration | PR cliente + PR servidor | duas candidatas + gateway + dados próprios | shell preview → realm preview | provas GNET e compatibilidade |
+| Staging | releases aprovadas | ambiente e WDB duráveis de teste | shell staging privado | testes e aprovação |
+| Canary | release de produção em subset de tráfego **se homologado** | deployment controlado e roteamento seguro | apenas jogadores opt-in | regras de sessão e compatibilidade |
+| Production | release homologada | realm principal | shell público | aprovação, backup, smoke, compliance |
+
+**Preview de cliente não exige recriar servidor** quando servidor staging compatível e isolado já existe. **Preview de servidor sempre exige DB separado** (ou snapshot sanitizado restaurado em volume único e isolado). Preview combinado é obrigatório se o PR modifica protocolo, `RoleInfo`, handshake, `edition`, gamedata ou lógica de login.
+
+### 30.4 Pipeline de cliente
+
+```text
+PR cliente -> tests unit/nativo/WASM -> static/security/IP -> build client
+ -> cook assets (inputs autorizados e versão fixa)
+ -> manifests canonical JSON + hashes + assinatura de PREVIEW
+ -> publish objetos em R2 preview
+ -> provision shell preview com pin e gateway staging compatível
+ -> Chrome desktop/mobile smoke + invalid-signature + cold/warm cache
+ -> link preview ao PR e painel
+ -> reviewer aprova -> staging -> smoke real -> prod
+```
+
+**Aproveitar** `docs/CLOUDFLARE-DELIVERY.md`, `CF-01..CF-24`, `tools/contracts/manifest-validator.mjs`, `tools/release/schemas` e `tools/assets/schemas` já existentes na branch do cliente. **Não implementar segundo manifest validator incompatível** em outro serviço.
+
+### 30.5 Pipeline de servidor
+
+```text
+PR servidor -> build i386 reproduzível + scan/rights -> image by digest
+ -> static protocol compatibility / conf/schema check
+ -> stage immutable server data pack
+ -> create isolated preview environment (network + WDB volumes + secrets)
+ -> boot supervisor with 8 daemons + gs/required maps
+ -> test GNET / enter world / persistence / safe stop + recover
+ -> publish private preview status + metrics + logs
+ -> combine with client candidate/staging pair -> integration test
+ -> approval -> staging -> backup/migration plan -> prod rollback gate
+```
+
+**Provisão por provider:** VM/container runtime próprio com volumes persistentes; Cloudflare Containers somente para cenários que tiverem capacidade/storage/uptime comprovados. O `cloudflare/entrypoint.sh` atual prova daemons sem `gs`: não pode ser usado como critério `gameplay_ready` do preview.
+
+### 30.6 Paired preview e contrato de isolamento
+
+- O painel escolhe explicitamente duas revisões candidatas e ambiente próprio; pode ser disparado por etiqueta/associação entre PR #17 e #23.
+- Backends de preview **não usam** banco WDB, tabelas de contas, storage de log, credenciais nem PSP de produção.
+- Para dados de test, usar fixtures, contas fake e WDB novo. Se importar snapshot de prod para repro de bug, sanitizar dados pessoais, obter autorização, restaurar em sandbox sem rede de prod e remover ao término.
+- Tokens de prévia diferentes de tokens de prod; restrições de zone/realm e audiência.
+- Diferentes previews podem compartilhar **objetos imutáveis por hash em bucket preview** se direitos e ACL permitirem, mas **não** DB, secrets ou filas.
+- Preview público deve ser conscientemente configurado; por default privado e protegido por login/invite; jamais publicar assets/fontes só porque estão em um PR.
+- TTL configurável e quotas de CPU, memória, armazenamento, R2 e horas ativas; criação/eliminação idempotentes.
+- Feedback do painel registra erros de incompatibilidade por `protocol_profile`, hashes de dados e status dos daemons, não só HTTP status.
+
+### 30.7 Estados de preview
+
+```text
+REQUESTED -> VALIDATING -> BUILDING -> ARTIFACT_READY
+          -> PROVISIONING -> BOOTING -> WIRING_GATEWAY
+          -> SMOKE_TESTING -> READY | DEGRADED
+READY -> SUSPENDING -> SUSPENDED -> RESUMING -> SMOKE_TESTING
+READY/DEGRADED/SUSPENDED -> EXPIRING -> CLEANUP -> DELETED
+(any) -> FAILED -> RETRYABLE/NEEDS_REVIEW
+```
+
+Cada transição tem `operation_id`, SLA/TTL definido, deadline, retries com backoff, owner, custo estimado/medido, health observado e evidência; `FAILED` **não** pode apontar a URL para produção como fallback. Secrets e storage do preview devem ser efetivamente eliminados após TTL; chunks de release seguem política de leases/retention.
+
+### 30.8 Promoção, rollback e estado WDB
+
+- Promover **o mesmo digest** do artefato já testado; staging/prod alteram deployment/env binding e config revision, nunca recompilam a partir de branch flutuante.
+- Na promoção de cliente, trocar ponteiro do canal `stable` por CAS (`expected_pin_revision`), conservando preview/rollback release, e sem interromper sessões existentes.
+- Na promoção de servidor, testar se há migration de WDB: `NONE`/`BACKWARD_COMPATIBLE`/`REQUIRES_OFFLINE`/`IRREVERSIBLE`. Só `NONE` e `BACKWARD_COMPATIBLE` com testes reais admitem rollback direto; mudanças irreversíveis exigem plano forward recovery e restore explícito.
+- Para redeploy do mesmo runtime em realm com dados persistentes, reusar **volume protegido** mediante preflight/migration safety; para preview novo, usar volume novo.
+- Rollback do shell/client **não** reverte banco, economia, config, realm routing ou protocolo do servidor; essas ações precisam de planos independentes e de pairing válido.
+- Utilizar `expected_current_digest` na promoção, lock por `environment+realm+channel`, aprovações e audit; redeploy concorrente não deve sobrescrever decisão recente.
+- Alteração de canal/preview não interrompe usuários em `session_release_pins`; validar reserva/capacidade do deployment antigo até drain.
+- Usuário com duas abas/versões diferentes mantém isolamentos de cache, pairing e sessão; proibir abrir mesma role no mesmo realm duas vezes conforme semântica do jogo.
+- Se não for possível executar duas versões de servidor em paralelo no **mesmo** realm/WDB, fazer cutover em janela de manutenção, não canary falso.
+
+### 30.9 Segurança específica de CI/preview
+
+- PRs externos/não confiáveis podem gerar artifacts de CI sem token de publicação. Publisher confiável revalida SHA/metadata/allowlist e **não executa hooks do PR** com credenciais.
+- Cada ambiente usa tokens IAM próprios, scope de bucket separado, e nenhuma autorização de preview para production; documentar exceções reais de provider.
+- Evitar alias de Workers/Version URL que herde bindings de production; Preview precisa de configuração explícita e verificada.
+- Validar digest após upload e GET; CDNs e `ETag` não são substitutos de SHA-256.
+- Assinatura de produção somente em etapa protegida; chave preview reconhecida **apenas** pelo shell de teste e não aceita em shell production.
+- URL preview não substitui login: proteção com allowlist, expiração e rate-limit; API de control plane nunca pode executar código de PR arbitrário.
+
+---
+
+## 31. Painel admin: gerenciador completo de clientes, servidores, versões e deploys
+
+### 31.1 Árvore de navegação adicional obrigatória
+
+```text
+Admin Console
+├─ Plataforma
+│  ├─ Produtos / famílias (Cliente PW, Servidor PW)
+│  ├─ Catálogo de clientes e versões
+│  │  ├─ 1.5.3-v145 / builds / releases / assets
+│  │  ├─ 1.4.4 / estado e compatibilidade
+│  │  └─ 1.3.6 / estado e compatibilidade
+│  ├─ Catálogo de servidores e versões
+│  │  ├─ PW C++ 1.5.3 (gs + 8 daemons)
+│  │  └─ variantes futuras / adapters
+│  ├─ Pacotes de dados e storage schemas
+│  ├─ Protocolos e matriz de compatibilidade
+│  ├─ Releases e assinaturas
+│  └─ Shell / Launcher e versões do próprio shell
+├─ Mundos e infraestrutura
+│  ├─ Realms / zones / roteamento
+│  ├─ Deployments (client shell / gateway / server)
+│  ├─ Hosts / containers / volumes / backups
+│  ├─ Mapas / gs instances / capacity
+│  └─ Configs e environment variables (secret refs)
+├─ Entrega
+│  ├─ Build pipelines (CI GitHub)
+│  ├─ Deploy previews
+│  │  ├─ Preview cliente
+│  │  ├─ Preview servidor
+│  │  ├─ Preview pareado
+│  │  └─ TTL / quotas / cleanup
+│  ├─ Staging e testes
+│  ├─ Canais: stable / beta / canary
+│  ├─ Promoção / aprovações / rollback
+│  └─ Histórico de releases e incidentes
+├─ Jogadores
+│  ├─ Contas por realm e permissões
+│  ├─ Versões usadas, erros de conexão
+│  └─ Telemetria de carregamento/cache
+└─ Gestão / auditoria / custo
+   ├─ Access grants e chaves de publicação
+   ├─ Custos por realm, preview e versão
+   ├─ Retenção de releases e GC com leases
+   └─ Eventos, logs, jobs e postmortems
+```
+
+### 31.2 Tela **Realms** (ponto de entrada admin)
+
+Tabela principal: nome, região, versão do servidor/`server_release_digest`, `gameplay_ready`, gateways, zonas, usuários, mapas, asset/data profile, canal stable, release cliente aceito, deployment ativo, config revision e responsável.
+
+Ações com validação:
+- criar realm (nome, zoneid, region, server family/version, data pack, WDB provisionado, gateway, owner e políticas);
+- editar display/status/visibilidade sem recompilar;
+- atribuir releases de cliente compatíveis para `stable/beta/preview`;
+- agendar maintenance, drain, operação no `gs`, reiniciar stack e encerrar realm;
+- clonar **config** para realm novo, sem clonar identidade/personagens por padrão;
+- habilitar preview ou realm de teste para equipe autorizada;
+- comparar topologia/custo/estado de múltiplos realms lado a lado;
+- exportar manifest do realm e montar plano de disaster recovery.
+
+### 31.3 Tela **Client Versions / Releases**
+
+Para cada release mostrar: fonte/tag original, commit, pipeline, toolchain, WASM bytes, JS bytes, shader/UI, asset set digest, tamanho de downloads `entry`/total, rights, schema, status de assinatura, suporte a browser/mobile, compatibilidade conhecida, hashes e URLs/CDN por ambiente.
+
+Ações:
+- importar/registrar candidato do CI;
+- ver diff entre duas builds, asset changes e bytes extras;
+- executar testes browser/Chrome, mobile e memória;
+- assinar release de preview/produção pelo pipeline aprovado;
+- publicar/retirar do catálogo um canal, preservar referências;
+- gerar preview sem tocar em realm de produção;
+- definir versões suportadas por realm e mínimo do browser;
+- rollback de pin de cliente, comparar cold/warm cache e error rates;
+- marcar release de segurança como `REVOKED` e impedir novas sessões com motivo auditado.
+
+### 31.4 Tela **Server Versions / Releases**
+
+Por release: commit, variante/família, toolchain, image digest, compatibilidade de GNET/cliente, WDB schema, data pack, scripts de boot, serviços, ports, perfil de runtime, testes, CPU/RSS medidos, crash-free, perf por instância e status jurídico.
+
+Ações:
+- importar imagem já construída ou mandar pipeline construir;
+- preview com DB isolado e data set selecionado;
+- editar `config revision`, selecionar mapa e capacidade **dentro de schema**;
+- rodar smoke completo login→mundo, stress, recuperação e backup;
+- simular atualização e rollback de storage;
+- deploy para staging/realm escolhido com aprovação;
+- drenar/cortar/reverter release conforme estratégia segura;
+- visualizar diferenças de protocolos, configurações, arquivos e dependências.
+
+### 31.5 Tela **Compatibility Matrix**
+
+Grid CLIENT RELEASE × SERVER RELEASE × DATA PROFILE, filtrado por realm/canal. Colunas: wire signature, handshake, `RoleInfo`, schema WDB, edition, GNET conformance, build smoke, browser smoke, PvE/skills e status `SUPPORTED/PREVIEW_ONLY/NOT_TESTED/INCOMPATIBLE/REVOKED`.
+
+Ações: iniciar teste pareado, anexar evidência, bloquear combinação, promover homologação com revisão humana. **Não** permitir botão “forçar compatibilidade” que contorne testes em produção.
+
+### 31.6 Tela **Deployment Previews**
+
+Tabela: PR/commit, tipo `shell/client/server/paired`, criador, status, endereço, private/public, branch SHA, digest do artefato, pairing, backend isolado, zone, data pack, métricas, TTL, custo e último smoke.
+
+Ações:
+- `Create Preview` com escolha de commit/tag/artefatos e ambiente;
+- escolher somente cliente, somente servidor ou ambos;
+- “Usar servidor staging existente” quando client-only e homologado;
+- montar preview pareado com server candidate;
+- abrir link do shell e link de logs/testes; compartilhar por convite de curta duração;
+- pausar/retomar (se runtime/provider suportar) e reiniciar com WDB preservado;
+- estender TTL com autorização; atualizar candidato ou criar novo revision sem destruir logs anteriores;
+- descartar recursos do preview (confirmar por dry-run quais volumes e secrets serão apagados);
+- aprovar/promover release para staging; **não promover estado WDB de preview como dados de produção**;
+- ver comparação UI/latência/bugs entre candidato e stable.
+
+### 31.7 Tela **Rollouts / Channels**
+
+Para cada realm e canal: `current_pairing_id`, client pin, server pin, gateway pin, data revision, assignment %, grupo de testers, previsão de drain, janela e last-known-good.
+
+Wizard de rollout:
+1. Selecionar candidato e verificar assinaturas/compatibilidade/data/rights.
+2. Simular impacto: usuários ativos, mapas, jobs econômicos, storage migration, custo, cache invalidation.
+3. Mostrar smoke/benchmark/restore evidences.
+4. Definir modo: shell-only, client-only, backend maintenance cutover, canary **quando possível** ou preview.
+5. Solicitar aprovações e MFA.
+6. Publicar por transação CAS/expected pin, monitorar readiness, erros e jogador.
+7. Aprovar finalização ou executar rollback tipado.
+8. Manter histórico completo; cada mudança de pin tem `actor`/`reason`/`operation_id`.
+
+### 31.8 Tela **Assets / CDN / Cache**
+
+- Tamanho do assetSet por versão, objetos exclusivos/compartilhados, taxa de dedupe estimada e real, objetos 404/sha mismatch, CORS, capacidade OPFS, bytes de entry.
+- Coverage por release: `manifest graph closed?`, conteúdo autorizado? armazenamento requerido e objetos ausentes.
+- Histórico do cooker/recipe e mapping CP936→UTF-8 NFC, alterações de `elements/tasks/gshop`.
+- Invalidation por pointer de bootstrap ou assetset, **não apagar objetos imutáveis** para invalidar.
+- GC somente dry-run com roots ativos: session pins, channels, previews vivos, rollback e retention.
+
+### 31.9 Tela **Shell Configuration**
+
+Controles: realm default, ordenação de servidores, versões disponíveis, suporte a navegador, idioma, aviso de dados/tamanho, regras de escolha, preset gráfico, políticas de preview, status/banner, suporte mobile, manutenção e fallback de armazenamento. A configuração pública é um manifest assinado/versionado. Opções administrativas não viram código executável injetado no shell.
+
+---
+
+## 32. Contratos de API e eventos da plataforma multi-version
+
+Todas as rotas são [PROPOSTAS], versão `/v1` até contratos estabilizados. Os endpoints públicos **não** entregam segredo nem aceitam URL de origem fornecida pelo browser. Admin herda MFA, RBAC, `realm-scoped permissions`, audit e `operation_jobs`.
+
+### 32.1 Launcher / catálogo público
+
+| Rota | Efeito |
+| --- | --- |
+| `GET /v1/catalog/realms` | realm status/visibilidade e features sem detalhes sensíveis |
+| `GET /v1/catalog/realms/{id}/clients` | releases de cliente **compatíveis e permitidas** por canal |
+| `GET /v1/catalog/clients/{releaseId}` | metadados públicos/assinatura e requirements |
+| `GET /v1/catalog/realms/{id}/channels` | stable/beta/tester allowlist sem credentials |
+| `GET /v1/catalog/compatibility?realm=...` | opções de pares redigidas (não endpoints internos) |
+| `POST /v1/launcher/sessions` | valida identidade, compatibilidade, disponibiliza bootstrap/ticket curto |
+| `DELETE /v1/launcher/sessions/{id}` | encerra pin, fecha sessão via gateway |
+| `POST /v1/launcher/sessions/{id}/renew` | renovar ticket permitido no mesmo pairing, dentro da política |
+| `GET /v1/launcher/download-plan?release=...` | planejamento de entry e progresso sem conteúdo sensível |
+| `GET /v1/catalog/previews/{id}` | somente usuário convidado, status e client preview autorizado |
+
+### 32.2 Admin: catálogo, clients e servers
+
+| Rota | Efeito |
+| --- | --- |
+| `GET/POST /v1/admin/client-families` | registrar adapters/version families, permitido a system manager |
+| `GET/POST /v1/admin/client-versions` | catálogo de versões e metadados |
+| `GET /v1/admin/client-builds` | CI e resultados |
+| `POST /v1/admin/client-releases/import` | registrar artefato validado por digest |
+| `GET /v1/admin/client-releases/{id}` | conteúdo/assinatura/testes/rights |
+| `GET/POST /v1/admin/server-families` | cadastro restrito de adapters |
+| `GET/POST /v1/admin/server-versions` | catálogo de backend |
+| `GET /v1/admin/server-builds` | builds de servidor |
+| `POST /v1/admin/server-releases/import` | registrar imagem/build por SHA-256 |
+| `GET /v1/admin/server-releases/{id}` | binários, data, WDB schema e testes |
+| `GET/POST /v1/admin/data-sets` | referências a data packs autorizados e hashes |
+| `GET/POST /v1/admin/protocol-profiles` | profiles GNET e provas |
+| `GET/POST /v1/admin/compatibility/pairings` | propor par homologado e anexar testes |
+| `POST /v1/admin/compatibility/pairings/{id}/validate` | executar wire/browser/server suite |
+| `POST /v1/admin/compatibility/pairings/{id}/approve` | aprovação de suporte, com revisão |
+| `POST /v1/admin/compatibility/pairings/{id}/revoke` | proibir novas sessões de par inseguro |
+
+### 32.3 Admin: realms, previews, deployments e rollouts
+
+| Rota | Efeito |
+| --- | --- |
+| `GET/POST /v1/admin/realms` | listar/criar realm |
+| `GET/PATCH /v1/admin/realms/{id}` | properties e política declarativa |
+| `GET/POST /v1/admin/realms/{id}/zones` | zonas e storage policy |
+| `GET/POST /v1/admin/realms/{id}/channels` | canais e current pairing pin |
+| `POST /v1/admin/realms/{id}/channels/{channel}/rollouts/plan` | plano sem mutação |
+| `POST /v1/admin/realms/{id}/channels/{channel}/rollouts/apply` | job aprovado, CAS |
+| `POST /v1/admin/realms/{id}/channels/{channel}/rollouts/rollback` | rollback seguro, checa DB/compat |
+| `GET/POST /v1/admin/previews` | listar/criar ambiente preview |
+| `GET /v1/admin/previews/{id}` | status, logs, URL, recursos e pairing |
+| `POST /v1/admin/previews/{id}/suspend` | suspend (se suportado) |
+| `POST /v1/admin/previews/{id}/resume` | resume |
+| `POST /v1/admin/previews/{id}/extend` | TTL maior e aprovação |
+| `POST /v1/admin/previews/{id}/cleanup/plan` | listar todos recursos e riscos antes de apagar |
+| `POST /v1/admin/previews/{id}/delete` | cleanup idempotente sem apagar chunks compartilhados |
+| `GET /v1/admin/deployments` | filtrar por realm/version/env/provider |
+| `GET /v1/admin/deployments/{id}` | revision, status, runtime, maps, metrics |
+| `POST /v1/admin/deployments/{id}/restart/plan` | restart seguro |
+| `POST /v1/admin/deployments/{id}/reconcile` | reaplicar desired state |
+| `GET /v1/admin/releases/retention` | GC roots, leases, locks |
+| `POST /v1/admin/releases/gc/dry-run` | simular GC, nunca apagar automaticamente sem leases |
+| `GET /v1/admin/builds/jobs` | consultar workflows e traces |
+| `POST /v1/admin/builds/jobs` | iniciar build via workflow allowlisted, com autorização |
+| `GET /v1/admin/metrics/release-usage` | distribuição versões em uso e sessões antigas |
+
+### 32.4 Exemplo de criação de preview pareado
+
+```json
+{
+  "type": "PAIRED",
+  "environment": "preview",
+  "source": {
+    "client": {"repository":"brasalabs6/pw-web","pr":23,"commit":"<head-sha>"},
+    "server": {"repository":"brasalabs6/pw-web","pr":17,"commit":"<head-sha>"}
+  },
+  "client_release_digest": "sha256:<digest>",
+  "server_release_digest": "sha256:<digest>",
+  "data_set_id": "pw153-v145-test-fixture",
+  "realm_template_id": "realm153-test",
+  "visibility": "PRIVATE",
+  "ttl_hours": 48,
+  "max_resources": {"vcpus":2,"memory_mib":2048,"disk_gib":10},
+  "idempotency_key": "pair-preview-pr17-pr23-unique"
+}
+```
+
+Os números de quota são **exemplo** e precisam de benchmark por mapa; o backend **não aceita `pr` ou SHA sem resolver e validar artifact/publisher trusted**. Como o PR #23 muda de head frequentemente, todo preview deve indicar o **commit exato** usado.
+
+### 32.5 Eventos/event sourcing de deploy
+
+```typescript
+type ReleaseEvent =
+ | { type: "CLIENT_BUILD_FINISHED"; clientBuildId: string; digest: string; result: string }
+ | { type: "SERVER_BUILD_FINISHED"; serverBuildId: string; imageDigest: string; result: string }
+ | { type: "PAIRING_TESTED"; pairingId: string; status: string; evidenceRef: string }
+ | { type: "PREVIEW_REQUESTED"; previewId: string; actorId: string }
+ | { type: "PREVIEW_READY"; previewId: string; urlRef: string; healthProofRef: string }
+ | { type: "PREVIEW_EXPIRED"; previewId: string }
+ | { type: "DEPLOYMENT_STATE_CHANGED"; deploymentId: string; from: string; to: string }
+ | { type: "CHANNEL_PIN_CHANGED"; realmId: string; channel: string; oldPin: string; newPin: string }
+ | { type: "RELEASE_REVOKED"; releaseId: string; reasonCode: string }
+ | { type: "SESSION_PIN_CREATED"; sessionId: string; pairingId: string }
+ | { type: "SESSION_PIN_RELEASED"; sessionId: string; pairingId: string };
+```
+
+Eventos contêm `event_id`, tenant/realm, timestamp UTC, traceId, idempotency key e schema version. Distribuir por outbox confiável e permitir replay de read models. Evitar que eventos de um realm acionem processos de outro.
+
+### 32.6 Permissões específicas
+
+`catalog.read`, `client.release.import`, `client.release.approve`, `server.release.import`, `server.deploy.preview`, `server.deploy.staging`, `server.deploy.production`, `pairing.test`, `pairing.approve`, `realm.create`, `realm.configure`, `realm.channel.promote`, `preview.create`, `preview.read`, `preview.extend`, `preview.delete`, `config.secrets.manage`, `release.gc.dryrun`, `release.revoke`.
+
+Separação `viewer`, `tester`, `release-engineer`, `realm-operator`, `infra-operator`, `security-reviewer`, `production-approver`. Aprovação de deploy para produção não pode ser concedida implicitamente pelo autor do build.
+
+---
+
+## 33. Operações de múltiplos servidores e lifecycle seguro
+
+### 33.1 Realm controller com providers intercambiáveis
+
+```typescript
+interface DeploymentProvider {
+  id: string; // "linux-supervisor", "cloudflare-containers"...
+  capabilities: {
+    hasPersistentVolumes: boolean;
+    hasStaticIngress: boolean;
+    supportsPause: boolean;
+    supportsGracefulDrain: boolean;
+    supportsSnapshot: boolean;
+    supportsHorizontalScale: boolean;
+  };
+  plan(spec: ServerDeploymentSpec): Promise<Plan>;
+  provision(plan: Plan): Promise<DeploymentRef>;
+  observe(ref: DeploymentRef): Promise<ObservedDeployment>;
+  reconcile(ref: DeploymentRef, desired: ServerDeploymentSpec): Promise<OperationRef>;
+  deprovision(ref: DeploymentRef, policy: DataRetentionPolicy): Promise<OperationRef>;
+}
+```
+
+**Não confundir provider de infraestrutura com `GProviderServer` do PW/GNET**. Cada backend deve declarar capacidades reais. `cloudflare-containers` não pode prometer vol persistente/hot-map/1000 players até testes. `linux-supervisor` pode ser primeiro target para game real, mas também exige testes de drain/volume.
+
+### 33.2 Tenant e isolamento de servidores
+
+Cada realm/zone recebe identificador, DB WDB, hostname interno, gateways, config, secrets e storage próprios. Compartilhar oito daemons entre realms só após existir suporte multi-zone do legado **comprovado**; por default executar um stack lógico por realm para reduzir risco de colisão de `zoneid`/`gameid`/`UserContainer`. Namespaces de storage e backup devem incluir realm/env/zone.
+
+**Vários realms com mesmo cliente:** permitidos se matriz e edição dos dados coincidirem. **Vários clientes em um realm:** somente se todos estiverem `SUPPORTED` contra servidor/data/patch selecionados. **Várias versões de servidor no mesmo realm:** por default não, até comprovar schema backward-compat, migração online e roteamento de jogadores.
+
+### 33.3 Provisionamento de servidor
+
+Wizard do admin:
+1. escolher family/version/server release;
+2. escolher ambiente/host provider e política de persistência;
+3. escolher data pack e hash (sem arquivos desconhecidos);
+4. configurar zona/IDs globais, portas e domínio gateway;
+5. selecionar mapas mínimos, `gs01`/`is61` conforme data e spawn;
+6. revisar template de auth/DB/unique names/secrets;
+7. reservar recursos e budgets; não usar valores sem medição;
+8. validar compatibilidade com client releases disponíveis;
+9. gerar manifest imutável, plano de deploy, backup/rollback;
+10. aprovar, provisionar, executar smoke semântico e publicar no catálogo após `READY`.
+
+### 33.4 Ações do shell do operador via `pwctl` [OPCIONAL]
+
+Não significa expor um terminal público. CLI usa autenticação/admin API e os mesmos `OperationJob` e permisos:
+
+```bash
+pwctl realms list
+pwctl clients versions --realm realm-br
+pwctl servers releases --family pw-server-cpp32
+pwctl pairings test --client-sha <digest> --server-sha <digest> --data <profile>
+pwctl previews create --client-release <digest> --server-release <digest> --ttl 48h
+pwctl previews status <id>
+pwctl realms deploy-plan realm-br --server-release <digest>
+pwctl rollouts plan realm-br --channel stable --client-release <digest>
+pwctl operations get <operation-id>
+```
+
+Comandos documentais, não implementados. `pwctl` nunca recebe parâmetros `--command "rm -rf ... "` ou `--ssh-root`. Mutação requer aprovação e controle de concorrência mesmo via CLI.
+
+---
+
+## 34. Preview UX, qualidade, segurança e observabilidade próprias
+
+### 34.1 Comportamento visível de preview para jogador/tester
+
+- Shell anuncia ambiente `PREVIEW` claramente e apresenta versão de cliente, servidor, protocolo, asset set e commit.
+- URL carrega `previewId` mas o backend valida AccessGrant antes de retornar bootstrap; compartilhar URL não pode contornar ACL.
+- Sem compra real ou uso involuntário de personagem real; personagem de preview pertence a WDB de teste.
+- Loading mostra cache-hit, bytes baixados, download total de entry, status de `gs`, download/instalação e conexão; evitar expor segredos.
+- Se preview expirar durante sessão, respeitar política de janela/grace ou informar desconexão antes de deprovisionar; não apagar DB antes de parar o servidor e confirmar política.
+- “Reportar bug” gera trace sanitized: release digests, realm/zone, browser features, logs permitidos e timestamps.
+
+### 34.2 Métricas do shell e releases
+
+Por `clientReleaseId`/`serverReleaseId`/`pairingId`/`realmId`:
+- adoption/percentagem de jogadores em cada versão;
+- download total, download até login, cache hit ratio, bytes de CDN e p95 de carregamento;
+- falhas por schema/manifest/assinatura, 404 object, SHA mismatch, CDN/CORS;
+- browser/device capabilities e qualidade gráfico/memória;
+- login→mundo, reconexão e erros GNET, crash-free sessões e ticks de servidor;
+- custo de preview por execução/horas, RAM, storage, R2 requests, logs e artefatos;
+- percentage canary/rollout somente se roteamento multi-version comprovado;
+- tempo de build, preview deploy e primeira readiness semântica;
+- incidentes e rollback por versão.
+
+### 34.3 Checklists de segurança
+
+- Não permitir que o shell execute WASM de URL arbitrário: releases assinadas com public key pin no shell confiável; produtor de releases não assina código de PR sem gate.
+- Não reutilizar chaves de assinatura preview em produção.
+- Não expor WDB, interfaces `gauthd`/`gamedbd`, admin API ou `realm-agent` pela rota do jogo.
+- Não assumir que ``preview_urls` fornece isolamento do estado: provar bindings/env/buckets/sockets reais.
+- Proibir server preview de acessar banco de produção e pagamento real inclusive por erro de configuração; criar tests negativos de rede/iam.
+- Confirmar origem/rights de cada assetSet por versão (o jogo 1.3.6/1.4.4 futuro pode ter licença e layout diferente).
+- Páginas e APIs de catálogo não publicam IP interno, credenciais, hashes de senha ou tokens de pagamento.
+- Preview artifacts não podem conter src/provas privadas/debug symbols não permitidos.
+- Guardar backups e snapshots de preview com retenção curta e labels; nenhum processo de GC pode apagar objetos ainda referenciados por versões ativas.
+
+---
+
+## 35. Testes e critérios de aceitação de multiversão e deploy preview
+
+| ID | Teste | Expectativa |
+| --- | --- | --- |
+| MV-T01 | Dois realms com configs/DBs diferentes em paralelo | sem cross-zone, usuários separados e status independente |
+| MV-T02 | Selecionar `1.5.3` no shell | somente release/assetSet pinado 1.5.3; SHA e assinatura verificados |
+| MV-T03 | Registrar segunda versão em fixture sintética | shell escolhe adapter específico e não mistura assets de caminho igual |
+| MV-T04 | Matriz marca client/server incompatible | `Jogar` desabilitado; nenhuma conexão GNET |
+| MV-T05 | Modo diagnostic | realm/gateway nulos e login de jogo não executado |
+| MV-T06 | Release adulterada ou asset faltante | erro tipado; nenhuma execução ou fallback para `latest` |
+| MV-T07 | Troca realm ou versão na mesma aba | WASM, VFS, sessões, GPU e gateway anteriores liberados |
+| MV-T08 | Duas abas com versões diferentes | cada uma mantém release pin e objetos do cache próprios/verificados |
+| MV-T09 | Preview client-only contra staging compatível | browser smoke e nenhum recurso prod acessado |
+| MV-T10 | Preview servidor com GNET login/role/world | oito daemons + `gs`, WDB isolado, real/synthetic client probe |
+| MV-T11 | Preview combinado entre PRs | matriz e smoke registram par de digests exatos |
+| MV-T12 | CI de PR não confiável | nenhuma permissão de publicação/secret de production |
+| MV-T13 | Prod sem cliente compatível | bootstrap recusa e lista motivo; sem fallback inseguro |
+| MV-T14 | PR atualizado depois do build | preview permanece associado ao commit exato; UI avisa que está desatualizado |
+| MV-T15 | Preview eliminado | recursos exclusivos apagados; chunks compartilhados e releases ativos preservados |
+| MV-T16 | Canal stable promovido de release A→B | sessões A permanecem pinadas; novas recebem B; CAS protege concorrência |
+| MV-T17 | Rollback de cliente após B falhar | pin volta a A; app e assets antigos funcionam; nenhum WDB revertido |
+| MV-T18 | Rollback de servidor com migration irreversível | operação bloqueada, exige plano manual/forward recovery |
+| MV-T19 | Dois realms usam mesmo client release | dedupe por SHA; cada sessão usa realm/gateway próprios |
+| MV-T20 | Queda do `gs` em um preview | preview `DEGRADED` e produção intacta |
+| MV-T21 | Realm sem servidor `gs` no Cloudflare atual | `gameplay_ready=false`, mesmo com `/health=200` |
+| MV-T22 | Sobrecarga/cache insuficiente de dispositivo | downloader degrada com loading, não misturando versões |
+| MV-T23 | Teste de chaves preview em shell prod | assinatura rejeitada |
+| MV-T24 | Teste de compatibilidade `CreateRole` wire v145 | golden 23 campos/1704 bytes enquanto aplicável |
+| MV-T25 | Config de preview aponta para storage prod | preflight/restrição de rede/IAM bloqueiam deploy |
+| MV-T26 | Reutilizar build para staging/prod | digest idêntico, apenas bindings/route/env mudam |
+| MV-T27 | Gateway interage com deployment divergente do pairing | ticket de sessão recusado e erro auditado |
+| MV-T28 | Client assetSet com `elements.data` incompatível | pairing rejeitado antes de jogo iniciar |
+| MV-T29 | Homologação da versão futura 1.4.4 ou 1.3.6 | somente após loader/compiler/protocol/real client evidence |
+| MV-T30 | Controle admin de TTL, quotas, rollback e approvals | audit+jobs completos, sem “sucesso” antes do health proof |
+
+**Aceite de MVP de plataforma multiversão:** pelo menos **dois perfis independentes** exercitados em fixtures/sandbox, um deles 1.5.3 real quando o port alcançar gameplay, launcher selecionando realm e release por pairing, cliente preview publicado por hash, servidor preview isolado com `gs`/WDB, preview pareado, admin acompanhando ações/health/links, rollback de pin e testes negativos de isolamento. **Não chamar 1.4.4 ou 1.3.6 de implementadas** até existirem fontes/ports/assets direitos e teste com cliente.
+
+---
+
+## 36. Backlog complementar para transformar o painel em plataforma
+
+### 36.1 Fundação — prioridade mais alta
+
+| ID | Trabalho | Dependência e critério |
+| --- | --- | --- |
+| MULTI-P0-01 | Novo ADR e `panel-types` para family/version/build/release/deployment/pairing | não alterar v1; schemas v2 com golden tests |
+| MULTI-P0-02 | Resolver compatibilidade `client↔server↔data↔gateway` | regras allowlist + evidências, fail-closed |
+| MULTI-P0-03 | Entidades SQL e migrations de registry/realms/channels/preview | índices e isolamento por realm/env |
+| MULTI-P0-04 | Shell bootstrap v2 assinado, verificador e seleção de cliente | funciona com fixture de duas versões; sem import arbitrário |
+| MULTI-P0-05 | Versioned client adapters e recipe de assets | loader isolado com VFS e hashes |
+| MULTI-P0-06 | Server release manifest + validation | binários+data+WDB schema identificados por digest |
+| MULTI-P0-07 | Ambiente preview servidor isolado (inclui `gs`) | data volumes exclusivos + tests GNET + recovery |
+| MULTI-P0-08 | Promotor de preview/staging/prod com CAS, signature e IAM separado | não promove release incompatível nem PR unsafe |
+
+### 36.2 Primeira experiência/admin
+
+| ID | Trabalho | Aceite |
+| --- | --- | --- |
+| MULTI-P1-01 | UI do PW Shell para realm/client/version/channel | escolha acessível, status e tratamento de incompatibilidades |
+| MULTI-P1-02 | Asset/cache por release e sessão | SHA/DAG/leases, cold/warm, duas abas |
+| MULTI-P1-03 | Admin Client/Server Versions + Releases | metadados, assets, builds, filtros e estado |
+| MULTI-P1-04 | Admin Realms/Zones + Config Revisões | criação com datas/ids/volume e validação |
+| MULTI-P1-05 | Admin Compatibility Matrix | UI de homologação + CI evidência |
+| MULTI-P1-06 | Admin Deploy Previews (client/server/paired) | criação, status, links, logs, TTL e quotas |
+| MULTI-P1-07 | GitHub Actions CI preview cliente | reaproveita CF-19/20/21 e manifest existing |
+| MULTI-P1-08 | GitHub Actions CI preview servidor | build i386 e GNET/gs/DB isolated smoke |
+| MULTI-P1-09 | Telemetria de release/client/browser/backend | dashboards p95 e falhas tipadas |
+| MULTI-P1-10 | CLI `pwctl` opcional | paridade com API/RBAC, sem SSH arbitrário |
+
+### 36.3 Rollout e evolução
+
+| ID | Trabalho | Aceite |
+| --- | --- | --- |
+| MULTI-P2-01 | Admin channels/rollouts/promotions | preview→staging→prod mesmo digest + approvals |
+| MULTI-P2-02 | Rollback de client pin e servidores sem migration | sessão antiga intacta, estado realmente verificado |
+| MULTI-P2-03 | Preview pair test matrix CI | smoke real cliente + backend candidate |
+| MULTI-P2-04 | Snapshots WDB para staging/preview | isolamento e anonimização em caso de cópia |
+| MULTI-P2-05 | Multi-realm health/cost/capacity | monitoramento por versão e realm |
+| MULTI-P2-06 | Lifecycle automation e cleanup seguro | GC mark/sweep protege shared chunks e leases |
+| MULTI-P2-07 | Feature flags/canary client-only | só pares compatíveis, sem canary unsafe do WDB |
+| MULTI-P3-01 | Adapter de cliente 1.4.4 | port + assets + rights + wire/golden |
+| MULTI-P3-02 | Adapter de cliente 1.3.6 | port + assets + rights + wire/golden |
+| MULTI-P3-03 | Adapter de backend alternativo, ex. Rust | GNET/DB/consistência e provas |
+| MULTI-P3-04 | Migração de servidor/realm entre providers | storage/identity/backup/restore sem perda |
+
+### 36.4 Ownership e limites de PR
+
+- **PR #17 (servidor):** este documento e futura implementação de `server release manifest`, `server preview runtime` e `realm-agent`; **não** modificar files do cliente do PR #23 por referência.
+- **PR #23 (cliente):** continuar port original, schema de release/asset atual, futura evolução v2 + PW Shell/streaming para multiversão em sequência controlada.
+- **Control plane** depois de revisão de branches: novo escopo `apps/`/`services/` em branch a partir de `main`/merge base compatível; evitar conflito e não misturar código de produção com PR de vendor do servidor.
+- **Cross-branch tests:** acionar CI de preview pareado usando SHAs explícitos de PR #17 e #23, sem exigir merge antecipado. Se branch/PR mudar, usar refs atualmente resolvidos, não hardcode de ref histórica.
+- Atualizar `docs/CLOUDFLARE-DELIVERY.md` e os contratos e15/e17 **na branch do cliente ou depois do merge**; essa branch do servidor só registra os novos requisitos para que ninguém esqueça.
+
+---
+
+## 37. Plano de implantação gradual e decisões ainda abertas
+
+### Fase A — sem gameplay multiversão real
+
+Implementar registry de múltiplos perfis (v1 preservado), shell UI com fixture diagnostic, admin catálogo/realms, preview apenas de cliente diagnóstico e previews de backend GNET isolados. Não expor versões indisponíveis como jogáveis.
+
+### Fase B — cliente 1.5.3 + servidor 1.5.3 integrados
+
+Homologar o pairing cliente portado + backend C++ + data pack v145. Publicar realm de staging. Ativar portal real por conta, definir runtime básico, browser assets e sessão pinada; validar preview integrado e rollback.
+
+### Fase C — múltiplos realms com mesma versão
+
+Criar pelo menos dois realms independentes com volumes WDB e configs separados, ambos aceitando a release 1.5.3 homologada, com staff RBAC e telemetry/custos distintos. Esta é a **primeira prova real** de multi-servidor, mais importante que anunciar 1.4.4 sem port.
+
+### Fase D — múltiplas versões de cliente
+
+Adaptar 1.4.4/1.3.6 com compiladores/assets/runtime próprios, validar explicitamente as combinações. Ampliar shell para escolher versões diferentes em realms distintos. Não dar downgrade da source v145 por renomeação de build.
+
+### Fase E — previews de pares, release engineering robusta
+
+Ativar deploys por PR para cliente/servidor combinados, workflow de homologação e canais beta/stable com promotora de artefatos. Introduzir canary de servidor **somente** se estado/players/DB permitirem.
+
+### Decisões para o ADR
+
+1. Onde ficará o catálogo/região inicial de realms e versões? Recomendação: control-api SQL com cache HTTP/CDN para leitura pública, nunca hardcode no cliente.
+2. Shell único para todas as famílias vs shell específico? Recomendação: shell único versionado e adapters de cliente.
+3. PostgreSQL vs outra DB do control plane? Proposto PostgreSQL; não impõe migração do WDB.
+4. Runtime de servidor de produção? Preferir host/VM persistente até validar requisitos no Cloudflare; provider interface permite trocar.
+5. Relação entre contas de um usuário e múltiplos realms/versions? Identidade web global, `game_account` vinculado a realm/zone e política explícita de migração/compartilhamento.
+6. Preview de cliente público? Por padrão privado; uma release demonstrável com assets autorizados pode ter link público sob controle.
+7. WDB de preview: sempre sintético ou cópia anonimizada? Padrão sintético; cópias requerem operação protegida.
+8. Preservar releases antigas? Sim, por channels/leases/rollback e janela de suporte; GC só com prova de ausência de refs.
+9. Controles de produção do shell por designer? Sim, config revision tipada e direitos; não JS livre.
+10. Quanto tempo/custo de preview? Medir por provider/mapa, definir quota/TTL configurável por equipe.
+11. Roadmap de versões externas: 1.3.6/1.4.4 como planejado, não escopo automático do port 1.5.3.
+12. Estrutura final de monorepo após merges? Manter `pw-web` com contratos compartilhados, sem copiar código entre branches; documentar ownership.
+
+**Condição de sucesso da expansão:** o usuário entra no PW Shell, escolhe um realm e uma versão **homologada**, baixa apenas os objetos daquele release, joga num backend isolado e administrado; um operador consegue visualizar e alterar releases/canais/previews/deployments e fazer rollback seguro — com **version/asset/protocol pins imutáveis, persistência WDB protegida e evidências reais**.
+
+
+---
+
+## 38. Critério final de sucesso do projeto (incluindo multiversão)
 
 Teremos o painel certo quando um operador autorizado puder, com segurança:
 
@@ -1422,6 +2392,9 @@ Teremos o painel certo quando um operador autorizado puder, com segurança:
 - permitir contas reais e seguras, inclusive com cliente original 1.5.3 v145 e depois browser;
 - vender gold de forma auditável, idempotente e conciliada;
 - manter direitos de acesso e auditoria mesmo com equipe grande;
-- aumentar capacidade **com base em medições** de CPU/RSS/tick/latência por mapa e jogador.
+- aumentar capacidade **com base em medições** de CPU/RSS/tick/latência por mapa e jogador;
+- escolher no **PW Shell** diferentes realms, versões de cliente e canais, sempre com compatibilidade homologada;
+- publicar previews isolados de cliente, servidor e pares integrados, associando PR, digest, TTL e evidência;
+- gerenciar releases, catalogar assets, promover e reverter versões separadamente, sem misturar WDB, runtime, dados ou sessões.
 
-**Visão-alvo:** transformar o servidor 1.5.3 herdado em uma plataforma de MMO observável, administrável e operacionalmente confiável, preservando protocolo, estado e compatibilidade, sem encobrir as limitações técnicas que hoje ainda existem.
+**Visão-alvo:** transformar o servidor 1.5.3 herdado em uma **plataforma de MMO multi-servidor, multi-cliente e multiversão**, observável, administrável e operacionalmente confiável, preservando protocolo, estado e compatibilidade, sem encobrir as limitações técnicas que hoje ainda existem.
