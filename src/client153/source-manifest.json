@@ -9852,6 +9852,34 @@
     {
       "path": "Angelica2/ImmWrapper/Source/AMImmEffect.cpp",
       "sha256": "15dedb0d396fae10e12622afbfeaa18ed7e85a8c029b84363229b9c1ec3b5509"
+    },
+    {
+      "path": "Common/LuaWrapper/LD_NameValue.cpp",
+      "sha256": "f23781196ada77ba2b1ea4753d63879851fc2b235ca04b0ff1c5325870e235f2"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebugHelper.cpp",
+      "sha256": "5daf5193fae13e4342dbad574667d95e23cef70a960946a20395d8bb7a86cd30"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebugIPC.cpp",
+      "sha256": "cbae2d06393c56a17711ab0c9ef6edf98e7e03e5c733a293096876d0fa6086f4"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebugMsg.cpp",
+      "sha256": "44ab7f7414b2ecd33ab286c389bb77547742f3599ec50f3b8a847e7e50a6dca6"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaManager.cpp",
+      "sha256": "608fcdfa04298d964927b65a594ad02b0394b10f27cb6f2049a4541b3a1d9ee8"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaManager.h",
+      "sha256": "9b088c5ef3cb39e1c4261671ac22dd196d3762284299da793dc43699fdc6a216"
+    },
+    {
+      "path": "Common/LuaWrapper/Debugger.cpp",
+      "sha256": "9afda78e9b148708cd05466ccfc4b000b54dcd46e43d5732b63dc25bf5e1697e"
     }
   ],
   "adaptations": [
@@ -11030,6 +11058,53 @@
         "CMpg123::mpg123_getinfo"
       ],
       "notes": "explicit-failing seam: the pinned tree ships the MP3 decoder as Mp3Lib.h + mpg123lib.lib only; mpg123_open fails (0) so AMMp3File::Open fails and the game continues without MP3 audio."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaDebugMsg.cpp",
+      "upstream": "Common/LuaWrapper/LuaDebugMsg.cpp",
+      "functions": [
+        "LDM_RTError::FromLDM"
+      ],
+      "notes": "Comments transcoded GB18030->UTF-8. The header declares LDM_RTError::FromLDM but the original never defined it (every sibling payload-less class carries the inline empty body; this one was left out); the dead vtable reference surfaces in the --no-gc-sections diagnostic link, so the port supplies the same empty body the sibling classes have. Nothing constructs LDM_RTError, so no reachable behavior changes."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaDebugHelper.cpp",
+      "upstream": "Common/LuaWrapper/LuaDebugHelper.cpp",
+      "functions": [],
+      "notes": "Verbatim TU; the _UNICODE generic-text path selected in-file like LuaDebug.cpp (the adapted headers fix _TCHAR to the port's 16-bit wide type; the original project shipped the Unicode configuration)."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaDebugIPC.cpp",
+      "upstream": "Common/LuaWrapper/LuaDebugIPC.cpp",
+      "functions": [],
+      "notes": "Verbatim TU. The named shared-memory IPC it drives cannot exist in a browser, so the CreateFileMapping/MapViewOfFile seams fail explicitly and Init reports the failure; the Lua debugger is a development tool and stays disabled (CLuaState::Init continues without debug)."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/Debugger.cpp",
+      "upstream": "Common/LuaWrapper/Debugger.cpp",
+      "functions": [],
+      "notes": "Verbatim TU; the _UNICODE generic-text path selected in-file like LuaDebug.cpp."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LD_NameValue.cpp",
+      "upstream": "Common/LuaWrapper/LD_NameValue.cpp",
+      "functions": [],
+      "notes": "verbatim TU."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaManager.cpp",
+      "upstream": "Common/LuaWrapper/LuaManager.cpp",
+      "functions": [],
+      "notes": "verbatim TU; not in the original LuaWrapper.vcproj/.vcxproj build and no m-link demand (LuaState.cpp's thread-API references are commented out upstream); ported verbatim because it compiles without adaptation."
+    },
+    {
+      "path": "src/client153/Common/Output/include/LuaWrapper/ATString.h",
+      "upstream": "Common/LuaWrapper/ATString.h",
+      "functions": [
+        "sprintf_utf82w",
+        "sprintf2w"
+      ],
+      "notes": "The macros passed the string object through the varargs stream depending on the MSVC bitwise pass (AWString's first member is the data pointer); non-trivial types cannot travel through C++ varargs, so the port casts explicitly to (const wchar_t*)/(const char*) — same pointer, same formatted result. Header otherwise byte-identical to upstream."
     }
   ],
   "additionalCopyrights": [
