@@ -63,7 +63,8 @@ public:
 	{
 		CECStringTab* pStrTab = g_pGame->GetSkillDesc();
 		const wchar_t* str = pStrTab->GetWideString(id);
-		return str ? (wchar_t*)str : L"";
+		static wchar_t empty[] = L"";
+		return str ? (wchar_t*)str : empty;
 	}
 };
 

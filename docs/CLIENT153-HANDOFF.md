@@ -654,3 +654,10 @@ foi adicionada ao workflow `client153-port.yml`; isso verifica objetos, não
 fecha o link nem executa AUI. Probe individual com
 `--entry EC_GameUIManDlgs.cpp --object-dir ...` passou; link diagnóstico
 com 774 objetos segue falhando. Os 11 testes do probe passaram.
+
+`EC_Skill.cpp` original compila para WASM: o fallback vazio retornado pela
+interface legada mutável é um array `wchar_t` em vez de literal constante.
+Probe individual `--entry EC_Skill.cpp --object-dir ...` e 11 testes do probe
+passaram; o link diagnóstico com 775 objetos ainda falha. A constness do texto
+retornado pela tabela original e o comportamento da interface de habilidades
+em execução continuam sem validação no browser.
