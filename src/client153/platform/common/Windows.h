@@ -814,6 +814,7 @@ typedef LRESULT *LPRESULT;
 #define GWLP_WNDPROC (-4)
 #define GWLP_USERDATA (-21)
 #define GWL_STYLE (-16)
+#define GWL_HWNDPARENT (-8)
 #define GWL_EXSTYLE (-20)
 #define GWL_USERDATA (-21)
 
@@ -1591,6 +1592,22 @@ inline int GetClassNameA(HWND hWnd, char *className, int maxCount) {
     className[0] = '\0';
   return 0;
 }
+inline int GetClassNameW(HWND hWnd, wchar_t *className, int maxCount) {
+  (void)hWnd;
+  if (className && maxCount)
+    className[0] = L'\0';
+  return 0;
+}
+inline int GetClassName(HWND hWnd, wchar_t *className, int maxCount) {
+  return GetClassNameW(hWnd, className, maxCount);
+}
+
+//	The enabled check rides the same registry: headless there are no
+//	windows, and Win32 reports invalid windows as not enabled.
+inline BOOL IsWindowEnabled(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
 
 //	The top-level window enumeration: no desktop windows exist, so the
 //	callback is never invoked; the defence callers treat the empty
@@ -2349,6 +2366,15 @@ inline int GetWindowTextA(HWND hWnd, char *text, int count) {
   if (text && count > 0)
     text[0] = '\0';
   return 0;
+}
+inline int GetWindowTextW(HWND hWnd, wchar_t *text, int count) {
+  (void)hWnd;
+  if (text && count > 0)
+    text[0] = L'\0';
+  return 0;
+}
+inline int GetWindowText(HWND hWnd, wchar_t *text, int count) {
+  return GetWindowTextW(hWnd, text, count);
 }
 
 //	The default window procedure: the adapter's dispatch supplies the real
