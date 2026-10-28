@@ -852,8 +852,26 @@ extern "C" void pw153_set_canvas_origin(LONG x, LONG y);
 BOOL ScreenToClient(HWND hWnd, POINT *point);
 BOOL ClientToScreen(HWND hWnd, POINT *point);
 BOOL CreateCaret(HWND hWnd, HBITMAP bitmap, int width, int height);
-HWND SetCapture(HWND hWnd);
-BOOL ReleaseCapture();
+//	Mouse capture tracking for the single-window browser host: SetCapture
+//	records the capturing window, GetCapture returns it, ReleaseCapture
+//	clears it. The JS host owns the real pointer capture; this tracks the
+//	Win32 capture contract the client queries. The shared state lives in a
+//	single accessor so every TU sees the same window.
+inline HWND &pw153_capture_window() {
+  static HWND s_captured = nullptr;
+  return s_captured;
+}
+inline HWND SetCapture(HWND hWnd) {
+  pw153_capture_window() = hWnd;
+  return hWnd;
+}
+inline HWND GetCapture() {
+  return pw153_capture_window();
+}
+inline BOOL ReleaseCapture() {
+  pw153_capture_window() = nullptr;
+  return TRUE;
+}
 
 //	The GetAncestor constants.
 #define GA_PARENT 1
