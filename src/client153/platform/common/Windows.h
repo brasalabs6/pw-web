@@ -3581,7 +3581,6 @@ inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
 #include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
 #include "eh.h"	//	SEH record layouts (EXCEPTION_RECORD/CONTEXT/EXCEPTION_POINTERS) for the minidump surface.
 #include "ddraw.h"	//	DirectDraw surface (the DirectShow SDK headers the media engine compiles expect it, like the original PCH did).
-#include "dshow.h"	//	DirectShow interface surface (the vendored base classes derive from these; the media adapter owns the runtime).
 
 // ---------------------------------------------------------------------------
 // IMM32 / clipboard / GDI-capture / caret / input-synthesis surface.
