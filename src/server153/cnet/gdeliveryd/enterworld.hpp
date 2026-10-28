@@ -51,8 +51,12 @@ class EnterWorld : public GNET::Protocol
 	{
 		// pw-web trace: BEFORE the usercontainer lock — distinguishes "never
 		// dispatched" (no trace at all) from "blocked on the lock" (first
-		// trace only). The single priority-101 pool worker was observed stuck
-		// while EnterWorld tasks starved in the queue (TaskQueueSize=7).
+		// trace only). With the corrupted rwlock, the single priority-101
+		// pool worker (auth RPCs: userlogin2/matrixpasswd2 PriorPolicy=101)
+		// was observed stuck on the lock with the auth queue piling up
+		// (TaskQueueSize=7), while EnterWorld — which runs INLINE on the
+		// poll thread (default PriorPolicy 0, protocol.h Task::Dispatch) —
+		// blocked on the same lock, stalling all daemon I/O.
 		Log::log(LOG_DEBUG, "[enterworld] roleid=%d Process entered, acquiring usercontainer lock", roleid);
 		PlayerInfo * pinfo = NULL;
 		UserInfo* user = NULL;

@@ -85,12 +85,20 @@ resposta vs. challenge no protocolo de senha.
 
 ## Despacho e prioridades
 
-- Cada protocolo tem um `PriorPolicy` (prioridade de fila no `Thread::Pool`).
-- `EnterWorld`, `CreateRole`, `RoleList` = **101** (alta). Workers por
-  prioridade vêm do conf `[ThreadPool]` — no runtime do gdeliveryd:
-  `(1,3)(100,1)(101,4)(0,1)`.
-- Um worker bloqueado na 101 trava só a fila 101 (com 1 worker, travava o
-  fluxo inteiro de entrada — bug B13).
+- Cada protocolo tem um `PriorPolicy` (`protocol.h:573`, default **0**). O
+  `Dispatch` (`protocol.h:455-468`) é binário: prioridade **0** → a task roda
+  **inline na thread de poll (I/O)**; prioridade ≠ 0 → entra na fila do
+  `Thread::Pool` com essa prioridade.
+- No gdeliveryd, quem sobrescreve `PriorPolicy() { return 101; }` são os RPCs
+  de autenticação: `userlogin2.hrp:30`, `userlogin.hrp`,
+  `matrixpasswd2.hrp:29`, `matrixpasswd.hrp`, `gquerypasswd.hrp:27`,
+  `matrixtoken.hrp`, `playerpositionresetrqst.hrp`.
+- `EnterWorld`, `CreateRole`, `RoleList` (classes `GNET::Protocol`) herdam
+  prioridade 0 → rodam inline na thread de poll. Com o rwlock corrompido
+  (bug B12), a thread de poll travava no lock do EnterWorld e o worker
+  único da fila 101 travava no mesmo lock acumulando os RPCs de auth
+  (TaskQueueSize=7 observado ao vivo). O runtime conf
+  `(1,3)(100,1)(101,4)(0,1)` dá headroom na fila de auth (4 workers).
 
 ## Criptografia de stream (isec/osec)
 

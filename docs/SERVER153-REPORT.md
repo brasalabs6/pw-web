@@ -155,11 +155,15 @@ de tradução. Cada uma causava segfault na inicialização:
     `WRScoped`/`RDScoped` do `share/common/mutex.h` agora só destravam o
     que conseguiram travar — uma aquisição aninhada (EDEADLK) vira no-op
     em vez de envenenar o contador. A classe inteira de bug está morta.
-13. **Fila de prioridade 101 do gdeliveryd**: `EnterWorld`, `CreateRole` e
-    `RoleList` despacham com `PriorPolicy=101` para o pool de threads; o
-    conf commitado tem UM worker nessa prioridade. Um worker bloqueado
-    (ex.: pelo rwlock corrompido acima) matava o fluxo inteiro. Runtime
-    conf agora usa `(101,4)`.
+13. **Fila de prioridade 101 do gdeliveryd (auth) + EnterWorld inline**:
+    os RPCs de autenticação (`userlogin2.hrp:30`, `matrixpasswd2.hrp:29`,
+    `gquerypasswd.hrp:27`, `matrixtoken.hrp`) despacham com `PriorPolicy=101`;
+    o conf commitado tem UM worker nessa prioridade — travado no rwlock
+    corrompido (item 12), acumulava a fila de auth (TaskQueueSize=7 ao
+    vivo). `EnterWorld`/`CreateRole`/`RoleList` herdam prioridade 0 e rodam
+    inline na thread de poll (`protocol.h:455-468`), que travava no mesmo
+    lock. Runtime conf agora usa `(101,4)`. (Correção factual 2026-10-28:
+    a redação original atribuía 101 ao EnterWorld.)
 14. **Use-after-free logout↔re-login (derrubava o gdeliveryd — corrigido)**:
     o usuário fecha o cliente e re-loga rápido; o logout antigo
     (`RoleLogout`) ainda roda quando o re-login (`RoleLogin`) faz

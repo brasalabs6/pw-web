@@ -62,15 +62,17 @@ Binário do gs: **`gs`** (cgame) — mundo/instâncias por processo (ver
 ## Threading
 
 - Cada daemon tem um `Thread::Pool` configurado em `[ThreadPool]`:
-  `threads = (prioridade,quantidade)…` — prioridade **0** = thread de I/O
-  (`PollIO::Task`), **1** = workers normais, **100** = housekeeping,
-  **101** = alta (RPCs de login/entrada: `EnterWorld`, `CreateRole`,
-  `RoleList`).
+  `threads = (prioridade,quantidade)…` — prioridade **0** = execução inline
+  na thread de poll (I/O), **1** = workers normais, **100** = housekeeping,
+  **101** = alta (RPCs de auth: `userlogin2`, `matrixpasswd2`,
+  `gquerypasswd`, `matrixtoken`).
 - `max_queuesize` (default 1048576) limita a fila; `prior_strict=1` = fila
   estrita por prioridade.
-- Runtime do gdeliveryd usa `(1,3)(100,1)(101,4)(0,1)` — 4 workers na 101
-  (o conf upstream tem 1 e um worker bloqueado matava o fluxo inteiro —
-  bug B13).
+- Runtime do gdeliveryd usa `(1,3)(100,1)(101,4)(0,1)` — 4 workers na fila
+  de auth 101 (o conf upstream tem 1; um worker travado no rwlock corrompido
+  acumulava a fila — bug B13). Protocolos de mundo como `EnterWorld` herdam
+  prioridade 0 e rodam **inline na thread de poll** (ver
+  [`04-PROTOCOL.md`](04-PROTOCOL.md)).
 - Locks: `Thread::Mutex`/`RWLock` (`share/common/mutex.h`) com wrappers
   `WRScoped`/`RDScoped` que só destravam o que travaram (fix estrutural do
   bug B12). O `cgame` tem seu próprio `rwlock.h`/`spinlock.h`

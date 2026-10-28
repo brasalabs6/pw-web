@@ -56,8 +56,8 @@ Passo a passo com os marcos reais de log (evidência 2026-10-27, conta de teste
    vem do storage `clsconfig` (importado a cada boot do gamedbd de
    `cnet/gamedbd/clsconfig`).
 9. **EnterWorld** — o gdeliveryd resolve o gameserver pela worldtag da role
-   (`map.cpp` gameservermap), despacha `EnterWorld` (prioridade 101) e
-   anuncia o player online. Traces:
+   (`map.cpp` gameservermap), processa o `EnterWorld` (inline na thread de
+   poll — prioridade default 0) e anuncia o player online. Traces:
    `[enterworld] roleid=1024 Process entered → lock acquired → dispatching
    to gameid=101`. O gs aceita o player no mundo (worldtag 161 → instância
    is61) e o logservice registra em `world2.log`

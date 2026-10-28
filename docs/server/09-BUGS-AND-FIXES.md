@@ -133,14 +133,23 @@ real conectando. Eles são a razão de várias regras operacionais desta doc.
 - **Evidência:** traces `[enterworld] lock acquired → dispatching to
   gameid=101`; entrada no mundo com cliente real.
 
-## B13 — Pool de prioridade 101 com 1 worker (starvation)
+## B13 — Fila de auth (101) com 1 worker + EnterWorld inline na thread de poll
 
 - **Sintoma:** TaskQueueSize preso em 7 com workers idle em futex;
-  `EnterWorld::Process` nunca entrava.
-- **Causa raiz:** `EnterWorld`, `CreateRole` e `RoleList` despacham com
-  `PriorPolicy=101`; o conf commitado tem UM worker nessa prioridade — um
-  worker bloqueado (ex.: pelo rwlock de B12) matava o fluxo inteiro.
-- **Fix:** runtime conf com `threads=(1,3)(100,1)(101,4)(0,1)`.
+  `EnterWorld::Process` nunca entrava (trace ausente).
+- **Causa raiz (dois efeitos do mesmo rwlock corrompido de B12):** os RPCs
+  de auth (`userlogin2.hrp:30`, `matrixpasswd2.hrp:29`, `gquerypasswd.hrp:27`,
+  `matrixtoken.hrp`) despacham com `PriorPolicy=101` e o conf commitado tem
+  UM worker nessa prioridade — travado no lock, acumulava a fila inteira de
+  auth. `EnterWorld`/`CreateRole`/`RoleList` herdam prioridade 0 e rodam
+  **inline na thread de poll** (`protocol.h:455-468`), que travava no mesmo
+  lock — o daemon inteiro parava de processar I/O.
+- **Fix:** o rwlock estrutural de B12 matou a causa; o runtime conf
+  `(1,3)(100,1)(101,4)(0,1)` dá headroom na fila de auth (4 workers).
+- **Nota:** a primeira redação deste finding atribuía prioridade 101 ao
+  `EnterWorld` — corrigido após auditoria de 2026-10-28
+  (`PriorPolicy()` default = 0 em `protocol.h:573`; override 101 existe só
+  nos RPCs de auth).
 
 ## B14 — Use-after-free logout↔re-login (derrubava o gdeliveryd)
 
