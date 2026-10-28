@@ -1,0 +1,32 @@
+name: PW platform diagnostic preview build
+# Only validates input; this is not a playable realm preview.
+on:
+  workflow_dispatch:
+    inputs:
+      operation_id: {description: Operation UUID,type: string,required: true}
+      kind: {description: Preview type,type: choice,options: [client, server, paired],required: true}
+      client_sha: {description: Client commit SHA,type: string,required: false}
+      server_sha: {description: Server commit SHA,type: string,required: false}
+      ttl_hours: {description: TTL hours,type: string,required: true}
+permissions:
+  contents: read
+jobs:
+  validate-input:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate typed inputs
+        shell: bash
+        env:
+          OPERATION_ID: ${{ inputs.operation_id }}
+          KIND: ${{ inputs.kind }}
+          CLIENT_SHA: ${{ inputs.client_sha }}
+          SERVER_SHA: ${{ inputs.server_sha }}
+          TTL: ${{ inputs.ttl_hours }}
+        run: |
+          set -euo pipefail
+          [[ "$OPERATION_ID" =~ ^[a-f0-9-]{36}$ ]]
+          [[ "$KIND" =~ ^(client|server|paired)$ ]]
+          [[ "$TTL" =~ ^[0-9]+$ ]] && (( TTL>=1 && TTL<=72 ))
+          if [[ "$KIND" != server ]]; then [[ "$CLIENT_SHA" =~ ^[a-f0-9]{40}$ ]]; fi
+          if [[ "$KIND" != client ]]; then [[ "$SERVER_SHA" =~ ^[a-f0-9]{40}$ ]]; fi
+          echo "Validated dispatch only; no game/asset/WDB preview provisioned." >> "$GITHUB_STEP_SUMMARY"
