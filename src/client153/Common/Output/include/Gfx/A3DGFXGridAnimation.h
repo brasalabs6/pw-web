@@ -1,9 +1,11 @@
 #ifndef _A3DGFXGRIDANIMATION_H_
 #define _A3DGFXGRIDANIMATION_H_
 
+#include "A3DGridDecalEx.h"
 
-struct A3DGridDecalEx::GRID_VERTEX_DATA;
-
+//	The upstream line `struct A3DGridDecalEx::GRID_VERTEX_DATA;` is an
+//	ill-formed namespace-scope forward declaration of a nested class
+//	(MSVC laxity); include the defining header instead.
 struct GRID_ANIM_KEY 
 {
 	int	 time;
