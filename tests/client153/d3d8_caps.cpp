@@ -6,6 +6,7 @@ static_assert(sizeof(D3DCAPS8) == 212, "D3DCAPS8 size");
 static_assert(D3DFVF_TEX3 == 0x0300 && D3DFVF_TEX5 == 0x0500, "D3D texture coordinate counts");
 static_assert(D3DFVF_XYZ == 0x002, "D3D position vertex format");
 static_assert(D3DRS_ZWRITEENABLE == 14, "D3D depth write state");
+static_assert(D3DCOLOR_RGBA(0x12, 0x34, 0x56, 0x78) == 0x78123456u, "D3D RGBA packing");
 static_assert(D3D_OK == 0, "D3D success code");
 static_assert(D3DLOCK_NOOVERWRITE == 0x1000, "D3D streaming lock flag");
 static_assert(D3DLOCK_READONLY == 0x0010, "D3D read-only lock flag");

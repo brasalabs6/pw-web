@@ -8961,6 +8961,18 @@
     {
       "path": "Angelica2/Angelica3D/Source/A2DSpriteTextures.cpp",
       "sha256": "ce4352e11b146671473168e094606cb79517f805f9a0b516a301ea83c0097780"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTextureMan.cpp",
+      "sha256": "28e5c3c16ffeb491c22c6007a6883af5786bf0e36f22830d482330943c240f09"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DControl.cpp",
+      "sha256": "09bef4bf252beab752cae4ab67c928176ec1a043cd9c08cce040a64578cef5ef"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2Env.cpp",
+      "sha256": "bb1362f6062c217cff35e3357f18a39f441b034fcdf6b858723bfc1dc16d55fa"
     }
   ],
   "adaptations": [

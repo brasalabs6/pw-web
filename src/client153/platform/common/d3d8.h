@@ -29,6 +29,10 @@
 #define D3DFVF_TEX5 0x0500
 #define D3DTSS_BORDERCOLOR 15
 
+constexpr unsigned int D3DCOLOR_RGBA(unsigned int r, unsigned int g, unsigned int b, unsigned int a) {
+  return ((a & 0xffu) << 24) | ((r & 0xffu) << 16) | ((g & 0xffu) << 8) | (b & 0xffu);
+}
+
 #include "Windows.h"
 #include "unknwn.h"	//	GUID (D3DADAPTER_IDENTIFIER8's DeviceIdentifier).
 
