@@ -92,6 +92,10 @@ typedef const wchar_t *LPCWSTR;
 struct _EXCEPTION_POINTERS;
 typedef _EXCEPTION_POINTERS *LPEXCEPTION_POINTERS;
 typedef void *HANDLE;
+//	The pointer-to-handle form (the token-query seam functions take it;
+//	declared with the base types so every later user sees it — the
+//	duplicate typedef further down stays legal).
+typedef HANDLE *PHANDLE;
 typedef BYTE *LPBYTE;
 typedef BYTE *PBYTE;
 typedef DWORD *LPDWORD;
@@ -827,6 +831,22 @@ inline int lstrlenA(const char *text) {
   int length = 0;
   while (text[length]) ++length;
   return length;
+}
+
+//	lstrcpy: the kernel32 copy without a length check (the callers size
+//	the buffer themselves, as the Win32 contract requires).
+inline wchar_t *lstrcpyW(wchar_t *dst, const wchar_t *src) {
+  wchar_t *out = dst;
+  while ((*dst++ = *src++) != L'\0') {}
+  return out;
+}
+inline wchar_t *lstrcpy(wchar_t *dst, const wchar_t *src) {
+  return lstrcpyW(dst, src);
+}
+inline char *lstrcpyA(char *dst, const char *src) {
+  char *out = dst;
+  while ((*dst++ = *src++) != '\0') {}
+  return out;
 }
 
 //	The character advance (the documented Win32 signature: the next
@@ -1627,6 +1647,7 @@ inline BOOL FileTimeToLocalFileTime(const FILETIME *fileTime,
 }
 
 //	The token privilege record (the documented WinNT layout).
+typedef HANDLE *PHANDLE;
 typedef struct _LUID {
   DWORD LowPart;
   LONG HighPart;
@@ -1641,6 +1662,47 @@ typedef struct _TOKEN_PRIVILEGES {
   DWORD PrivilegeCount;
   LUID_AND_ATTRIBUTES Privileges[1];
 } TOKEN_PRIVILEGES, *PTOKEN_PRIVILEGES;
+
+//	The token access rights and privilege constants (the documented
+//	WinNT values; the port is a UNICODE seam, so the privilege name is
+//	the wide literal).
+#define TOKEN_QUERY 0x0008
+#define TOKEN_ADJUST_PRIVILEGES 0x0020
+#define SE_PRIVILEGE_ENABLED 0x00000002
+#define SE_DEBUG_NAME L"SeDebugPrivilege"
+#define ERROR_NO_TOKEN 1008
+#define ERROR_NOT_ALL_ASSIGNED 1300
+
+//	Access-token queries: the browser target has no process/thread
+//	tokens and no privilege model; the calls fail explicitly (the crash
+//	writer's null checks then skip the dump path).
+inline BOOL OpenThreadToken(HANDLE thread, DWORD access, BOOL openAsSelf,
+                            PHANDLE token) {
+  (void)thread; (void)access; (void)openAsSelf; (void)token;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
+inline BOOL OpenProcessToken(HANDLE process, DWORD access, PHANDLE token) {
+  (void)process; (void)access; (void)token;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
+inline BOOL LookupPrivilegeValue(const wchar_t *system, const wchar_t *name,
+                                 PLUID luid) {
+  (void)system; (void)name; (void)luid;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
+inline BOOL AdjustTokenPrivileges(HANDLE token, BOOL disableAll,
+                                  const TOKEN_PRIVILEGES *newState,
+                                  DWORD bufferLength,
+                                  TOKEN_PRIVILEGES *previousState,
+                                  DWORD *returnLength) {
+  (void)token; (void)disableAll; (void)newState; (void)bufferLength;
+  (void)previousState; (void)returnLength;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
 
 //	The critical section pointer (criticalsection.h owns the type).
 typedef CRITICAL_SECTION *LPCRITICAL_SECTION;
@@ -1704,7 +1766,6 @@ inline BOOL IsDebuggerPresent() {
 //	the seam provides the pointer typedefs they reference.
 typedef SIZE_T *PSIZE_T;
 typedef wchar_t *PWSTR;
-typedef HANDLE *PHANDLE;
 typedef DWORD ACCESS_MASK;
 #define ERROR_BUFFER_OVERFLOW 111
 
@@ -2184,6 +2245,10 @@ inline HMODULE LoadLibraryA(const char *name) {
 inline HMODULE LoadLibraryW(const wchar_t *name) {
   (void)name;
   return nullptr;
+}
+//	The A/W-neutral name (the UNICODE build maps it to the wide form).
+inline HMODULE LoadLibrary(const wchar_t *name) {
+  return LoadLibraryW(name);
 }
 inline void *GetProcAddress(HMODULE module, const char *name) {
   (void)module;
@@ -2811,6 +2876,13 @@ inline HANDLE CreateFileW(const wchar_t *name, DWORD access, DWORD share,
   return CreateFileA(narrow.c_str(), access, share, security, disposition,
                      flags, templateFile);
 }
+//	The A/W-neutral name (the UNICODE build maps it to the wide form).
+inline HANDLE CreateFile(const wchar_t *name, DWORD access, DWORD share,
+                         void *security, DWORD disposition, DWORD flags,
+                         HANDLE templateFile) {
+  return CreateFileW(name, access, share, security, disposition, flags,
+                     templateFile);
+}
 
 struct WIN32_FIND_DATAA {
   DWORD dwFileAttributes;
@@ -2962,6 +3034,33 @@ struct IMAGE_NT_HEADERS32 {
 
 typedef IMAGE_NT_HEADERS32 *PIMAGE_NT_HEADERS32;
 
+//	The 32-bit alias (winnt.h names the 32-bit optional header
+//	IMAGE_OPTIONAL_HEADER on non-64-bit targets) and the section record
+//	the PE reader walks.
+typedef IMAGE_OPTIONAL_HEADER32 IMAGE_OPTIONAL_HEADER;
+
+struct IMAGE_SECTION_HEADER {
+  BYTE Name[8];
+  union {
+    DWORD PhysicalAddress;
+    DWORD VirtualSize;	//	the Misc union member the PE reader queries.
+  } Misc;
+  DWORD VirtualAddress;
+  DWORD SizeOfRawData;
+  DWORD PointerToRawData;
+  DWORD PointerToRelocations;
+  DWORD PointerToLinenumbers;
+  WORD NumberOfRelocations;
+  WORD NumberOfLinenumbers;
+  DWORD Characteristics;
+};
+
+typedef IMAGE_SECTION_HEADER *PIMAGE_SECTION_HEADER;
+
+//	The PE signature constants (the documented values: "MZ" and "PE\0\0").
+#define IMAGE_DOS_SIGNATURE 0x5A4D
+#define IMAGE_NT_SIGNATURE 0x00004550
+
 inline HMODULE GetModuleHandle(const char *name) {
   (void)name;
   return nullptr;
@@ -2982,6 +3081,7 @@ inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
 }
 
 #include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
+#include "eh.h"	//	SEH record layouts (EXCEPTION_RECORD/CONTEXT/EXCEPTION_POINTERS) for the minidump surface.
 
 // ---------------------------------------------------------------------------
 // IMM32 / clipboard / GDI-capture / caret / input-synthesis surface.
