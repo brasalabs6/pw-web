@@ -143,3 +143,11 @@ Inspeção no SHA `d3ebee66b6a1de165a0f5eba28f62cbbe81d24f8`. Distinto de OPT-04
 | [OPT-042](OPT-042-scene-binary-counts-reads-and-string-bounds.md) | P1 | Angelica / A3DScene binary loader | Validar contagens, multiplicações, leituras completas e limites de strings antes de alocar/parsear cenas |
 
 Inspeção estática no SHA `97dfe0d423494ee35178c082c518a66659cfd0d2`. Diferente de OPT-013 (água), OPT-014 (DDS) e OPT-036 (PCK). Sem crash reproduzido, benchmark, teste mobile ou mudança de código; somente fase post-browser-port. IDs históricos PW23-021…037 preservados.
+
+## Auditoria incremental — horizon culling Angelica (2026-10-28; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-043](OPT-043-horizon-culling-screen-column-scan.md) | P2 | Angelica / A3DHorizonCull / CPU-WASM | Medir varredura por coluna de tela e custo/benefício do culling; verificar segmentos degenerados após port funcional |
+
+Inspeção estática no SHA `c4eb8fe8cb8262a217bdae69789174cae334db64`. Distinto de PW23-036 (LOD/culling geral) e OPT-015 (render slots). Sem benchmark, teste mobile ou correção de código. Preservados os IDs PW23-021…037; execução do jogo no navegador segue prioritária.
