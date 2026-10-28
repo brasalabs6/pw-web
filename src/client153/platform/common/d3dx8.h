@@ -31,14 +31,25 @@
 #define D3DVSD_END() 0xFFFFFFFF
 #define D3DVSDT_FLOAT1 0x00
 #define D3DVSDT_FLOAT2 0x01
+#define D3DVSDT_FLOAT3 0x02
+#define D3DVSDT_FLOAT4 0x03
+#define D3DVSDT_D3DCOLOR 0x04
+#define D3DVSDT_UBYTE4 0x05
 #define D3DVSDE_POSITION 0
 #define D3DVSDE_BLENDWEIGHT 1
 #define D3DVSDE_BLENDINDICES 2
 #define D3DVSDE_NORMAL 3
+#define D3DVSDE_PSIZE 4
 #define D3DVSDE_DIFFUSE 5
 #define D3DVSDE_SPECULAR 6
 #define D3DVSDE_TEXCOORD0 7
 #define D3DVSDE_TEXCOORD1 8
+#define D3DVSDE_TEXCOORD2 9
+#define D3DVSDE_TEXCOORD3 10
+#define D3DVSDE_TEXCOORD4 11
+#define D3DVSDE_TEXCOORD5 12
+#define D3DVSDE_TEXCOORD6 13
+#define D3DVSDE_TEXCOORD7 14
 
 //	The image header record (the documented D3DXIMAGE_INFO layout; the
 //	format field carries the documented D3DFORMAT enum now that the
@@ -315,9 +326,6 @@ inline HRESULT D3DXGetImageInfoFromFileInMemory(const void *srcData,
   }
   return D3DERR_INVALIDCALL;
 }
-#define D3DVSDT_FLOAT3 0x02
-#define D3DVSDT_FLOAT4 0x03
-#define D3DVSDT_D3DCOLOR 0x04
 
 //	D3D8 texture stage states (documented d3d8types.h values).
 #define D3DTSS_TCI_CAMERASPACEPOSITION 0x20000
@@ -339,6 +347,88 @@ inline D3DXMATRIX *D3DXMatrixOrthoOffCenterLH(D3DXMATRIX *out, float left,
                     (top + bottom) / (bottom - top),
                     nearZ / (nearZ - farZ), 1.f);
   return out;
+}
+
+//	D3DXDeclaratorFromFVF: builds the vertex shader declarator from an
+//	FVF code per the documented DX8 D3DX contract
+//	(https://learn.microsoft.com/en-us/troubleshoot/win32/directx/flexible-vertex-format
+//	and the DX8 SDK D3DX reference): a D3DVSD_STREAM(0) token first, then
+//	one D3DVSD_REG per FVF component in vertex-data order (position,
+//	blend weights, blend indices, normal, point size, diffuse, specular,
+//	texture coordinates) bound to the fixed-function input registers
+//	(D3DVSDE_*), terminated by D3DVSD_END(). The texture-size bits follow
+//	the documented D3DFVF_TEXCOORDSIZEn encoding (2 bits per coordinate
+//	set at bit 16; 0=FLOAT2, 1=FLOAT3, 2=FLOAT4, 3=FLOAT1). FVF codes
+//	without a position component fail explicitly (E_FAIL); the remainder
+//	of the declarator array is zero-filled.
+inline HRESULT D3DXDeclaratorFromFVF(DWORD FVF, DWORD *pDeclarator) {
+  if (!pDeclarator)
+    return E_INVALIDARG;
+  int i = 0;
+  pDeclarator[i++] = D3DVSD_STREAM(0);
+  //	The position field is bits 1-3 and the encodings are alternatives
+  //	(XYZ, XYZRHW, XYZB1..XYZB5 - XYZBn does NOT include the XYZ bit).
+  const DWORD positionBits = FVF & D3DFVF_POSITION_MASK;
+  if (positionBits == D3DFVF_XYZRHW) {
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT4);
+  } else if (positionBits != 0) {
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+    //	D3DFVF_XYZB1..XYZB5 encode n blend weights; with a LASTBETA flag
+    //	the last DWORD is the blend indices (UBYTE4/D3DCOLOR) instead, and
+    //	plain XYZB5's fifth DWORD is UBYTE4 blend indices (the documented
+    //	DX8 FVF semantics).
+    const int numWeights =
+        positionBits >= D3DFVF_XYZB1
+            ? (int)((positionBits - D3DFVF_XYZB1) / 2) + 1
+            : 0;
+    if (numWeights > 0) {
+      if (FVF & D3DFVF_LASTBETA_UBYTE4) {
+        if (numWeights >= 2)
+          pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT,
+                                        D3DVSDT_FLOAT1 + (numWeights - 2));
+        pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDINDICES, D3DVSDT_UBYTE4);
+      } else if (FVF & D3DFVF_LASTBETA_D3DCOLOR) {
+        if (numWeights >= 2)
+          pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT,
+                                        D3DVSDT_FLOAT1 + (numWeights - 2));
+        pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDINDICES, D3DVSDT_D3DCOLOR);
+      } else if (numWeights == 5) {
+        pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT, D3DVSDT_FLOAT4);
+        pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDINDICES, D3DVSDT_UBYTE4);
+      } else {
+        pDeclarator[i++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT,
+                                      D3DVSDT_FLOAT1 + (numWeights - 1));
+      }
+    }
+  } else {
+    return E_FAIL;
+  }
+  if (FVF & D3DFVF_NORMAL)
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_NORMAL, D3DVSDT_FLOAT3);
+  if (FVF & D3DFVF_PSIZE)
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_PSIZE, D3DVSDT_FLOAT1);
+  if (FVF & D3DFVF_DIFFUSE)
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR);
+  if (FVF & D3DFVF_SPECULAR)
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_SPECULAR, D3DVSDT_D3DCOLOR);
+  const int texCount = (int)((FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
+  for (int t = 0; t < texCount; ++t) {
+    const DWORD sizeBits = (FVF >> (t * 2 + 16)) & 0x3;
+    DWORD type = D3DVSDT_FLOAT2;
+    if (sizeBits == 3)
+      type = D3DVSDT_FLOAT1;
+    else if (sizeBits == 1)
+      type = D3DVSDT_FLOAT3;
+    else if (sizeBits == 2)
+      type = D3DVSDT_FLOAT4;
+    pDeclarator[i++] = D3DVSD_REG(D3DVSDE_TEXCOORD0 + t, type);
+  }
+  if (i >= MAX_FVF_DECL_SIZE - 1)
+    return E_FAIL;
+  pDeclarator[i++] = D3DVSD_END();
+  for (; i < MAX_FVF_DECL_SIZE; ++i)
+    pDeclarator[i] = 0;
+  return D3D_OK;
 }
 
 //	The D3DX 4-component vector (the ported A3DVECTOR4 carries the same

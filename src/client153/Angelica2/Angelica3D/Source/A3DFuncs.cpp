@@ -988,6 +988,12 @@ void a3d_MakeMorphVSDeclarator(A3DVERTEXTYPE VertexType, int iNumChannel, DWORD*
 	pDecl[iCnt++] = D3DVSD_END();
 }
 
+//	Build vertex shader declarator from FVF
+void a3d_MakeVSDeclarator(DWORD dwFVF, DWORD* pDecl)
+{
+	D3DXDeclaratorFromFVF(dwFVF, pDecl);
+}
+
 A3DMATRIX3 a3d_Matrix3Rotate(float fRad)
 {
 	A3DMATRIX3 mat;
