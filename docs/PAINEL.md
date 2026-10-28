@@ -1691,7 +1691,7 @@ Fazer double-click em `Jogar` é idempotente: uma única instância do runtime p
 - **Servidor altera versão:** novas sessões pegam pairing novo após aprovação; sessões atuais continuam no deployment antigo apenas se server drain/canary e coexistência tiverem suporte; caso contrário manutenção e reconnect explícito.
 - **Canal beta:** consentimento, dados claros, rollback independente e aviso de incompatibilidades.
 - **Preview:** acesso com convite/role; isolado, banner “PREVIEW”, TTL, sem compras reais ou linking involuntário com conta/realm de produção.
-- **Modo diagnóstico:** ``release-manifest v1 mode=diagnostic` possui `protocolProfile=null`; **jamais** conectar a um realm ou usar player login.
+- **Modo diagnóstico:** `release-manifest v1 mode=diagnostic` possui `protocolProfile=null`; **jamais** conectar a um realm ou usar player login.
 
 ### 29.6 Carregamento condicionado à versão
 
