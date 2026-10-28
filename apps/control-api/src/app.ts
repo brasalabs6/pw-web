@@ -12,7 +12,7 @@ const app=new Hono<Env>();
 export const db=connectDb();
 const cookieOpts={httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'Strict' as const,path:'/',maxAge:7*86400};
 const fail=(c:any,status:400|401|403|404|409|422|503,message:string)=>c.json({error:message},status);
-const json=async (c:any,schema:z.ZodType)=>{try{return schema.parse(await c.req.json())}catch{return null}};
+const json=async <T extends z.ZodType>(c:any,schema:T):Promise<z.output<T>|null>=>{try{return schema.parse(await c.req.json())}catch{return null}};
 
 app.use('/v1/*',async(c,next)=>{
   const origin=c.req.header('origin')??null;
