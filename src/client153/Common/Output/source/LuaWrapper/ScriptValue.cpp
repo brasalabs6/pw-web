@@ -11,7 +11,7 @@
 	authorization in docs/LEGAL.md, 2026-10-25). The component shipped
 	prebuilt as Win32 .obj files; this file is the browser-target port of
 	that translation unit. Adaptations are marked with '//'+tab comments;
-	LuaBind::Call is deferred to the LuaUtil.obj port (see the note below). */
+	LuaBind::Call landed with the LuaUtil.cpp port (see the note below). */
 
 #include <assert.h>
 #include <AWString.h>
@@ -20,9 +20,11 @@
 #include <windows.h>
 #include "ScriptValue.h"
 
-//	LuaUtil.h and LuaState.h dropped: their translation units (LuaUtil.obj,
-//	LuaState.obj) are not ported yet. The debug sink they provided is
-//	re-pointed below; the code page they provided is fixed to UTF-8.
+//	LuaUtil.h and LuaState.h stay dropped: pulling them in would couple this
+//	TU to the debug/IPC header chain for no behavior change. The debug sink
+//	they provided is re-pointed below; the code page they provided is fixed
+//	to UTF-8 (both remain documented divergences now that LuaState.cpp and
+//	LuaUtil.cpp are ported).
 #include "ALog.h"
 //	LUA_DEBUG_INFO originally routes to LuaBind::OutputDbgInfo (LuaUtil.obj,
 //	not ported); the port logs through a_LogOutput, the same sink the
@@ -465,11 +467,28 @@ void SetStack(lua_State * L, const abase::vector<CScriptValue>& values)
 	}
 }
 
-//	LuaBind::Call is deferred, not dropped: like the original TU, it forwards
-//	to the four-argument LuaBind::Call(L, tbl, method, nargs, nresults),
-//	which lives in the not-yet-ported LuaUtil.obj; porting it now would
-//	leave that symbol undefined in the link. It lands with the LuaUtil.cpp
-//	port, in this TU, next to GetStack/SetStack as in the original.
+//	LuaBind::Call landed with the LuaUtil.cpp port: like the original TU, it
+//	forwards to LuaBind::Call(L, tbl, method, nargs, nresults) (LuaUtil.cpp).
+//	The original saw that declaration through the project's precompiled
+//	header (LuaUtil.h); the port drops that include, so it is declared here
+//	with the real LuaUtil.h signature.
+bool Call(lua_State * L, const char* szTblName, const char * szMethod, int nargs = 0, int nresults = 0);
+
+bool Call(lua_State*L, const char * szTblName, const char * szMethod, const abase::vector<CScriptValue>& args, abase::vector<CScriptValue>& results)
+{
+	int n = lua_gettop(L); //save the stack pos
+	SetStack(L, args);
+	if (!Call(L, szTblName, szMethod, args.size(), LUA_MULTRET))
+	{
+		lua_settop(L, n);   //restore the stack pos
+		return false;
+	}
+
+	GetStack(L, results, n+1);
+	lua_settop(L, n);
+
+	return true;
+}
 
 #if 0
 /*	szFormat string describe following arguments type sequentially. 
