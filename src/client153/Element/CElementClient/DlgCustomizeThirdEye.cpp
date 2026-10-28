@@ -21,7 +21,8 @@ AUI_END_EVENT_MAP()
 
 CDlgCustomizeThirdEye::CDlgCustomizeThirdEye()
 {
-	CDlgCustomizeBase::CDlgCustomizeBase();
+	//\tMSVC allowed the qualified base constructor call below; standard
+	//\tC++ runs the base default constructor implicitly.
 }
 
 CDlgCustomizeThirdEye::~CDlgCustomizeThirdEye()
