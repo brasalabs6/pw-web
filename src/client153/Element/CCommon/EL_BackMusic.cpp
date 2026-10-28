@@ -11,7 +11,8 @@
  */
 
 #include "EL_BackMusic.h"
-#include "IO.h"
+//	The upstream "IO.h" include does not exist in the pinned tree and no
+//	symbol from it is used here; the dead include is dropped.
 #include "AFI.h"
 #include "AFileUnicode.h"
 
