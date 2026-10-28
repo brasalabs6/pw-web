@@ -48,7 +48,8 @@ def main() -> int:
         objects += sorted(gfx_dir.rglob('*.o'))
     libraries = []
     for name in ('skeleton', 'animation', 'file', 'math', 'common',
-                 'platform', 'formats', 'webgl_caps', 'skinning'):
+                 'platform', 'formats', 'webgl_caps', 'skinning',
+                 'speedtree_stub'):
         archive = pathlib.Path(args.wasm_build) / f'libclient153_{name}.a'
         if archive.exists():
             libraries.append(str(archive))

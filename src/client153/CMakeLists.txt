@@ -149,6 +149,24 @@ endif()
 # Build the original UI sources already supported by the browser port.
 # Full UI, renderer and client linking remain in progress.
 if(EMSCRIPTEN)
+  # SpeedTreeRT browser-build boundary: the pinned tree ships the SDK headers
+  # and the prebuilt Windows library only (no source), so the referenced
+  # CSpeedTreeRT surface is defined once with explicit failure semantics.
+  # See src/client153/thirdparty/speedtree/SpeedTreeRT_stub.cpp.
+  add_library(client153_speedtree_stub STATIC
+    thirdparty/speedtree/SpeedTreeRT_stub.cpp)
+  target_include_directories(client153_speedtree_stub PRIVATE
+    platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
+    Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
+    Angelica2/Output/amsdk/include Angelica2/AngelicaMedia/Header Angelica2/Output/3rdsdk/include)
+  target_compile_features(client153_speedtree_stub PRIVATE cxx_std_17)
+  target_compile_options(client153_speedtree_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
+endif()
+
+# Build the original UI sources already supported by the browser port.
+# Full UI, renderer and client linking remain in progress.
+if(EMSCRIPTEN)
   add_library(client153_aui_original OBJECT EXCLUDE_FROM_ALL
     Common/AUInterface2/AUICheckBox.cpp
     Common/AUInterface2/AUIConsole.cpp
