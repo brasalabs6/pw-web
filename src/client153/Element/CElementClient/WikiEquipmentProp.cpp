@@ -24,7 +24,9 @@ class EssenceExtractor : public WikiEquipmentProp
 
 private:
 	const Essence* m_pE;
-	CECIvtrItem* m_pItem;
+	//	The lazy initializers run from const getters (MSVC assigned through
+	//	the const_cast rvalue); mutable keeps that legal in the standard form.
+	mutable CECIvtrItem* m_pItem;
 
 	EssenceExtractor(const void* pE):m_pE((const Essence*)pE), m_pItem(NULL)
 	{}
@@ -53,19 +55,19 @@ public:
 		// lazy initializaton
 		if(!m_pItem)
 		{
-			const_cast<CECIvtrItem*>(m_pItem) = CECIvtrItem::CreateItem(GetID(), 0, 1);
+			m_pItem = CECIvtrItem::CreateItem(GetID(), 0, 1);
 			m_pItem->GetDetailDataFromLocal();
 		}
 
 		return const_cast<CECIvtrItem*>(m_pItem)->GetDesc();
 	}
-	
+
 	virtual AString GetIconFile() const
 	{
 		// lazy initializaton
 		if(!m_pItem)
 		{
-			const_cast<CECIvtrItem*>(m_pItem) = CECIvtrItem::CreateItem(GetID(), 0, 1);
+			m_pItem = CECIvtrItem::CreateItem(GetID(), 0, 1);
 			m_pItem->GetDetailDataFromLocal();
 		}
 		
@@ -142,6 +144,18 @@ unsigned int EXTRACTOR_TYPE(FASHION)::GetRandPropSize() const {return 0;};
 template<>
 ACString EXTRACTOR_TYPE(FASHION)::GetRandPropName(unsigned int i) const {return _AL("");};
 
+//	The GetRandPropSize specialization must be declared before the
+//	GetRandPropID body calls it, or the call implicitly instantiates the
+//	primary first and the later specialization is ill-formed (MSVC deferred
+//	the lookup; moved up to the standard order).
+template<>
+unsigned int EXTRACTOR_TYPE(WEAPON)::GetRandPropSize() const
+{
+	// both unique and addon property
+	return (sizeof(m_pE->uniques)/sizeof(m_pE->uniques[0]))
+		+ (sizeof(m_pE->addons)/sizeof(m_pE->addons[0]));
+};
+
 template<>
 unsigned int EXTRACTOR_TYPE(WEAPON)::GetRandPropID(unsigned int i) const
 {
@@ -187,13 +201,6 @@ unsigned int EXTRACTOR_TYPE(WEAPON)::GetRandPropID(unsigned int i) const
 
 	return rand_id;
 }
-template<>
-unsigned int EXTRACTOR_TYPE(WEAPON)::GetRandPropSize() const
-{
-	// both unique and addon property
-	return (sizeof(m_pE->uniques)/sizeof(m_pE->uniques[0]))
-		+ (sizeof(m_pE->addons)/sizeof(m_pE->addons[0]));
-};
 template<>
 ACString EXTRACTOR_TYPE(WEAPON)::GetRandPropName(unsigned int i) const
 {

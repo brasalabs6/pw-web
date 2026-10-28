@@ -101,12 +101,14 @@ void CELCloudSprite::ReShading(A3DViewport *pViewport,float fSpriteSize)
 			
 		m_vResultColor[i] = clrAmb + clrSun;
 		
-		float max = max(max(m_vResultColor[i].r,m_vResultColor[i].g),m_vResultColor[i].b);
-		if( max > 1.0 )
+		//	Upstream declared the local as `max`, shadowing the max() call
+		//	(MSVC allowed it); renamed so the calls stay callable.
+		float fMax = max(max(m_vResultColor[i].r,m_vResultColor[i].g),m_vResultColor[i].b);
+		if( fMax > 1.0 )
 		{
-			max = 1/max;
-			m_vResultColor[i] *= max;
-		}		
+			fMax = 1/fMax;
+			m_vResultColor[i] *= fMax;
+		}
 	}
 }
 

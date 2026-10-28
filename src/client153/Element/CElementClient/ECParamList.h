@@ -69,11 +69,19 @@ private:
 		Param(long & host) : data(host) {}
 		virtual void ConvertFrom(AString str) { data = static_cast<long>(str.ToInt()); }
 	};
-	template<> struct Param<unsigned long> : public ParamBase 
+	template<> struct Param<unsigned long> : public ParamBase
 	{
 		unsigned long & data;
 		Param(unsigned long & host) : data(host) {}
 		virtual void ConvertFrom(AString str) { data = static_cast<unsigned long>(str.ToInt()); }
+	};
+	//	The port's DWORD is unsigned int (MSVC's was unsigned long); the same
+	//	ToInt conversion contract, so DWORD params keep instantiating.
+	template<> struct Param<unsigned int> : public ParamBase
+	{
+		unsigned int & data;
+		Param(unsigned int & host) : data(host) {}
+		virtual void ConvertFrom(AString str) { data = static_cast<unsigned int>(str.ToInt()); }
 	};
 	template<> struct Param<float> : public ParamBase 
 	{
