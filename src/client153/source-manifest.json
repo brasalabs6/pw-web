@@ -8913,6 +8913,10 @@
     {
       "path": "Angelica2/AngelicaMedia/Source/AMSoundEngine.cpp",
       "sha256": "fff7243e13788f48beb5d46dd1017dff7c6d47b43ec107a22cbcc04f7ab66b2a"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DFlatCollector.cpp",
+      "sha256": "eaa413ff951ed8cf674579ddb8d79796e6346d6c743f881716209d709f2eee50"
     }
   ],
   "adaptations": [

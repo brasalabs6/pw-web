@@ -52,6 +52,7 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DSkinModel.cpp
     Angelica2/Angelica3D/Source/A3DSkin.cpp
     Angelica2/Angelica3D/Source/A3DLight.cpp
+    Angelica2/Angelica3D/Source/A3DFlatCollector.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
