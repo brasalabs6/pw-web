@@ -3,7 +3,9 @@
 
 #include <A3DVector.h>
 #include "FWConfig.h"
-#include <WTypes.h>
+//	Upstream include "WTypes.h" relies on Win32 case-insensitive
+//	resolution; the platform seam's real header is wtypes.h.
+#include <wtypes.h>
 
 struct MeshParam
 {

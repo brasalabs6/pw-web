@@ -17,11 +17,11 @@ public:
 	{
 		if (ar.IsStoring())
 		{
-			ar << GetCount();
-			ALISTPOSITION pos = GetHeadPosition();
+			ar << this->GetCount();
+			ALISTPOSITION pos = this->GetHeadPosition();
 			while (pos)
 			{
-				T p = GetNext(pos);
+				T p = this->GetNext(pos);
 				ar.WriteObject(p);
 			}
 		}
@@ -40,17 +40,17 @@ public:
 	}
 	virtual void DeleteAll()
 	{
-		ALISTPOSITION pos = GetHeadPosition();
+		ALISTPOSITION pos = this->GetHeadPosition();
 		while (pos)
 		{
-			T p = GetNext(pos);
+			T p = this->GetNext(pos);
 			delete p;
 		}
-		RemoveAll();
+		this->RemoveAll();
 	}
 	bool IsEmpty()
 	{
-		return GetHeadPosition() != NULL;
+		return this->GetHeadPosition() != NULL;
 	}
 	void AddTail(const FWObPtrList<T> *pListSrc)
 	{

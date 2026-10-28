@@ -77,8 +77,11 @@ public:
 	bool IsLoading();
 
 
-	UINT Read(void *lpBuf, UINT uMax) throw(FWExceptionArchive);
-	void Write(void *lpBuf, UINT uLen) throw(FWExceptionArchive);
+	//	C++17 removes dynamic exception specifications; the
+	//	FWExceptionArchive failures still propagate (the original
+	//	throw(...) semantics).
+	UINT Read(void *lpBuf, UINT uMax);
+	void Write(void *lpBuf, UINT uLen);
 
 	FWObject* ReadObject();
 	void WriteObject(const FWObject* pObj);
@@ -113,8 +116,9 @@ public:
 	{ Write(&w, sizeof(WORD)); return *this; }
 	FWArchive& operator <<( int i )
 	{ Write(&i, sizeof(int)); return *this; }
-	FWArchive& operator <<( LONG l )
-	{ Write(&l, sizeof(LONG)); return *this; }
+	//	The upstream `operator <<( LONG )` is an exact duplicate of the
+	//	int overload in this environment (the platform seam's LONG is
+	//	std::int32_t); removed as an ill-formed redeclaration.
 	FWArchive& operator <<( DWORD dw )
 	{ Write(&dw, sizeof(DWORD)); return *this; }
 	FWArchive& operator <<( float f )
@@ -156,8 +160,9 @@ public:
 	{ Read(&w, sizeof(WORD)); return *this; }
 	FWArchive& operator >>( int & i )
 	{ Read(&i, sizeof(int)); return *this; }
-	FWArchive& operator >>( LONG & l )
-	{ Read(&l, sizeof(LONG)); return *this; }
+	//	The upstream `operator >>( LONG & )` is an exact duplicate of the
+	//	int overload in this environment (the platform seam's LONG is
+	//	std::int32_t); removed as an ill-formed redeclaration.
 	FWArchive& operator >>( DWORD & dw )
 	{ Read(&dw, sizeof(DWORD)); return *this; }
 	FWArchive& operator >>( float & f )

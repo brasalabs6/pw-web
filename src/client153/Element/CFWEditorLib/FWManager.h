@@ -6,7 +6,9 @@ class FWView;
 class A3DGFXExMan;
 class A3DEngine;
 class A3DDevice;
-typedef unsigned long DWORD;
+//	The local `typedef unsigned long DWORD;` of the upstream header
+//	redefines the seam's DWORD with a different underlying type; the
+//	force-included platform Windows.h already provides it.
 
 class FWManager  
 {

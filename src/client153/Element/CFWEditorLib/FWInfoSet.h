@@ -46,21 +46,21 @@ public:
 
 	void DeleteAll()
 	{
-		ALISTPOSITION pos = GetHeadPosition();
+		ALISTPOSITION pos = this->GetHeadPosition();
 		while (pos)
 		{
-			T *p = GetNext(pos);
+			T *p = this->GetNext(pos);
 			SAFE_DELETE(p);
 		}
-		RemoveAll();
+		this->RemoveAll();
 	}
 
 	T * FindByID(int nID)
 	{
-		ALISTPOSITION pos = GetHeadPosition();
+		ALISTPOSITION pos = this->GetHeadPosition();
 		while (pos)
 		{
-			T *p = GetNext(pos);
+			T *p = this->GetNext(pos);
 			if (p->ID == nID)
 				return p;
 		}
@@ -68,10 +68,10 @@ public:
 	}
 	T * FindByName(const AString & strName)
 	{
-		ALISTPOSITION pos = GetHeadPosition();
+		ALISTPOSITION pos = this->GetHeadPosition();
 		while (pos)
 		{
-			T *p = GetNext(pos);
+			T *p = this->GetNext(pos);
 			if (p->Name == strName)
 				return p;
 		}
@@ -80,10 +80,10 @@ public:
 
 	const T * FindByID(int nID) const
 	{
-		ALISTPOSITION pos = GetHeadPosition();
+		ALISTPOSITION pos = this->GetHeadPosition();
 		while (pos)
 		{
-			T *p = GetNext(pos);
+			T *p = this->GetNext(pos);
 			if (p->ID == nID)
 				return p;
 		}
@@ -91,10 +91,10 @@ public:
 	}
 	const T * FindByName(const AString & strName) const
 	{
-		ALISTPOSITION pos = GetHeadPosition();
+		ALISTPOSITION pos = this->GetHeadPosition();
 		while (pos)
 		{
-			T *p = GetNext(pos);
+			T *p = this->GetNext(pos);
 			if (p->Name == strName)
 				return p;
 		}

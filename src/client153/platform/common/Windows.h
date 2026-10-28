@@ -544,6 +544,114 @@ typedef struct tagLOGFONTW {
   wchar_t lfFaceName[32];
 } LOGFONTW, *LPLOGFONTW;
 
+//	The text metric and font-enumeration records (the documented wingdi
+//	layouts; the browser has no GDI font enumeration - the FWFontEnum
+//	callback is never invoked, the Init path fails on the NULL DC).
+#define LF_FACESIZE 32
+#define LF_FULLFACESIZE 64
+
+typedef struct tagTEXTMETRICA {
+  LONG tmHeight;
+  LONG tmAscent;
+  LONG tmDescent;
+  LONG tmInternalLeading;
+  LONG tmExternalLeading;
+  LONG tmAveCharWidth;
+  LONG tmMaxCharWidth;
+  LONG tmWeight;
+  LONG tmOverhang;
+  LONG tmDigitizedAspectX;
+  LONG tmDigitizedAspectY;
+  BYTE tmFirstChar;
+  BYTE tmLastChar;
+  BYTE tmDefaultChar;
+  BYTE tmBreakChar;
+  BYTE tmItalic;
+  BYTE tmUnderlined;
+  BYTE tmStruckOut;
+  BYTE tmPitchAndFamily;
+  BYTE tmCharSet;
+} TEXTMETRICA, *PTEXTMETRICA;
+
+typedef struct tagTEXTMETRICW {
+  LONG tmHeight;
+  LONG tmAscent;
+  LONG tmDescent;
+  LONG tmInternalLeading;
+  LONG tmExternalLeading;
+  LONG tmAveCharWidth;
+  LONG tmMaxCharWidth;
+  LONG tmWeight;
+  LONG tmOverhang;
+  LONG tmDigitizedAspectX;
+  LONG tmDigitizedAspectY;
+  WCHAR tmFirstChar;
+  WCHAR tmLastChar;
+  WCHAR tmDefaultChar;
+  WCHAR tmBreakChar;
+  BYTE tmItalic;
+  BYTE tmUnderlined;
+  BYTE tmStruckOut;
+  BYTE tmPitchAndFamily;
+  BYTE tmCharSet;
+} TEXTMETRICW, *PTEXTMETRICW;
+
+typedef struct tagNEWTEXTMETRICA {
+  LONG ntmHeight;
+  LONG ntmAscent;
+  LONG ntmDescent;
+  LONG ntmCellHeight;
+  LONG ntmAvgWidth;
+  TEXTMETRICA tmA;
+} NEWTEXTMETRICA, *PNEWTEXTMETRICA;
+
+typedef struct tagNEWTEXTMETRICW {
+  LONG ntmHeight;
+  LONG ntmAscent;
+  LONG ntmDescent;
+  LONG ntmCellHeight;
+  LONG ntmAvgWidth;
+  TEXTMETRICW tmW;
+} NEWTEXTMETRICW, *PNEWTEXTMETRICW;
+
+typedef struct tagNEWTEXTMETRICEXA {
+  NEWTEXTMETRICA ntmTm;
+  DWORD ntmFontSig;
+  DWORD ntmSysSig;
+} NEWTEXTMETRICEXA, *PNEWTEXTMETRICEXA;
+
+typedef struct tagNEWTEXTMETRICEXW {
+  NEWTEXTMETRICW ntmTm;
+  DWORD ntmFontSig;
+  DWORD ntmSysSig;
+} NEWTEXTMETRICEXW, *PNEWTEXTMETRICEXW;
+
+typedef struct tagENUMLOGFONTEXA {
+  LOGFONTA elfLogFont;
+  BYTE elfFullName[LF_FULLFACESIZE];
+  BYTE elfStyle[LF_FACESIZE];
+  BYTE elfScript[LF_FACESIZE];
+} ENUMLOGFONTEXA, *LPENUMLOGFONTEXA;
+
+typedef struct tagENUMLOGFONTEXW {
+  LOGFONTW elfLogFont;
+  WCHAR elfFullName[LF_FULLFACESIZE];
+  WCHAR elfStyle[LF_FACESIZE];
+  WCHAR elfScript[LF_FACESIZE];
+} ENUMLOGFONTEXW, *LPENUMLOGFONTEXW;
+
+#ifdef UNICODE
+typedef ENUMLOGFONTEXW ENUMLOGFONTEX;
+typedef LPENUMLOGFONTEXW LPENUMLOGFONTEX;
+typedef NEWTEXTMETRICEXW NEWTEXTMETRICEX;
+typedef PNEWTEXTMETRICEXW PNEWTEXTMETRICEX;
+#else
+typedef ENUMLOGFONTEXA ENUMLOGFONTEX;
+typedef LPENUMLOGFONTEXA LPENUMLOGFONTEX;
+typedef NEWTEXTMETRICEXA NEWTEXTMETRICEX;
+typedef PNEWTEXTMETRICEXA PNEWTEXTMETRICEX;
+#endif
+
 //	The high-resolution performance counter: the real monotonic clock
 //	(the documented Win32 contract; the functions live below with the
 //	LARGE_INTEGER layout they reference).
@@ -716,6 +824,11 @@ typedef LARGE_INTEGER *PLARGE_INTEGER;
 #define WAIT_FAILED 0xFFFFFFFFu
 #define INFINITE 0xFFFFFFFFu
 #define GENERIC_READ 0x80000000u
+
+//	The file seek origins (the documented Win32 values).
+#define FILE_BEGIN 0
+#define FILE_CURRENT 1
+#define FILE_END 2
 #define GENERIC_WRITE 0x40000000u
 #define FILE_SHARE_READ 1u
 #define FILE_SHARE_WRITE 2u
@@ -1913,6 +2026,15 @@ inline BOOL CreateProcess(const wchar_t *application, const wchar_t *command,
   return CreateProcessW(application, command, processAttrs, threadAttrs,
                         inheritHandles, creationFlags, environment, currentDir,
                         startup, info);
+}
+
+//	WinExec: the legacy process launcher; the browser target cannot spawn
+//	native processes, so it reports file-not-found (the callers' error
+//	paths handle it, like CreateProcess above).
+inline UINT WinExec(const char *commandLine, UINT showCmd) {
+  (void)commandLine;
+  (void)showCmd;
+  return ERROR_FILE_NOT_FOUND;
 }
 
 //	The OS version: the documented GetVersion encoding for Windows 5.1
@@ -3868,6 +3990,11 @@ inline BOOL SetCaretPos(int x, int y) { (void)x; (void)y; return TRUE; }
 // the DC and returns early; CaptureWindow's BitBlt is a no-op over NULL).
 inline HDC GetWindowDC(HWND hWnd) { (void)hWnd; return NULL; }
 inline int ReleaseDC(HWND hWnd, HDC hDC) { (void)hWnd; (void)hDC; return 0; }
+
+//	The desktop window: the browser host owns the single canvas; there is
+//	no desktop window and the handle is none (the font-enumeration callers
+//	fail on the NULL DC, like GetDC above).
+inline HWND GetDesktopWindow(void) { return NULL; }
 
 //	The screen device context and capability probe: no GDI contexts
 //	exist on the browser target (the canvas adapter owns the real
