@@ -9089,6 +9089,10 @@
     {
       "path": "Common/GfxCommon/FX_BINDING.CPP",
       "sha256": "bfb5726b04efeaf8fd72944424106b8b070bacea2c2164610af95cf3dd4eaf4c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DShadowMap.cpp",
+      "sha256": "d5a5c63ecdbd94f2a33074eb5f8926da145b65c071ed50dc2daa2a8432054cf5"
     }
   ],
   "adaptations": [
@@ -9574,6 +9578,15 @@
         "AUDIOEVENT_BINDING (all)"
       ],
       "notes": "ASCII upstream file, verbatim port with a provenance header; the original 'A3DGfxInterface.h' include resolves to the real A3DGFXInterface.h (case-insensitive Win32 resolution); the AudioEngine calls it makes resolve against the explicit FMOD failing seam (thirdparty/fmod/FAudioEngine_stub.cpp)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DShadowMap.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DShadowMap.cpp",
+      "functions": [
+        "A3DShadowMap (all out-of-line methods)",
+        "global A3D::g_pShadowMap"
+      ],
+      "notes": "ASCII upstream file; verbatim port, zero adaptations; copyright header preserved exactly."
     }
   ],
   "additionalCopyrights": [

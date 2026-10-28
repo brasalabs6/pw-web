@@ -76,6 +76,7 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DWireCollector.cpp
     Angelica2/Angelica3D/Source/A3DGDI.cpp
     Angelica2/Angelica3D/Source/A3DLitModelRender.cpp
+    Angelica2/Angelica3D/Source/A3DShadowMap.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
