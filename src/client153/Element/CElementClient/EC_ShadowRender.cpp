@@ -589,16 +589,20 @@ bool CECShadowRender::SetupStreamForShadower(A3DViewport * pViewport, const SHAD
 		D3DXMatrixShadow(&shadowMatrix, &shadowLight, &terrianPlane);
 		const A3DVECTOR3 &aabbCenter = shadower.aabb.Center;
 		const A3DVECTOR3 &aabbExtents = shadower.aabb.Extents;
+		//	The original constructs D3DXVECTOR3 from the vector's float[3]
+		//	storage (the SDK FLOAT* constructor); the alias A3DVECTOR3 has
+		//	no array constructor, so the copy constructor carries the same
+		//	three floats.
 		D3DXVECTOR3 aabbVertices[] =
 		{
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(aabbExtents.x, aabbExtents.y, aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(aabbExtents.x, aabbExtents.y, -aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(aabbExtents.x, -aabbExtents.y, aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(aabbExtents.x, -aabbExtents.y, -aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(-aabbExtents.x, aabbExtents.y, aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(-aabbExtents.x, aabbExtents.y, -aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(-aabbExtents.x, -aabbExtents.y, aabbExtents.z)).m),
-			D3DXVECTOR3((aabbCenter + A3DVECTOR3(-aabbExtents.x, -aabbExtents.y, -aabbExtents.z)).m),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(aabbExtents.x, aabbExtents.y, aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(aabbExtents.x, aabbExtents.y, -aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(aabbExtents.x, -aabbExtents.y, aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(aabbExtents.x, -aabbExtents.y, -aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(-aabbExtents.x, aabbExtents.y, aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(-aabbExtents.x, aabbExtents.y, -aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(-aabbExtents.x, -aabbExtents.y, aabbExtents.z)),
+			D3DXVECTOR3(aabbCenter + A3DVECTOR3(-aabbExtents.x, -aabbExtents.y, -aabbExtents.z)),
 		};
 
 		A3DAABB terrainAABB;

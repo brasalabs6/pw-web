@@ -187,6 +187,46 @@ inline D3DXMATRIX *D3DXMatrixOrthoOffCenterLH(D3DXMATRIX *out, float left,
   return out;
 }
 
+//	The D3DX 4-component vector (the ported A3DVECTOR4 carries the same
+//	layout the original D3DX header wrapped).
+typedef A3DVECTOR4 D3DXVECTOR4;
+
+//	D3DXMatrixShadow: the flattening matrix per the published Microsoft
+//	formula (https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixshadow):
+//	P = normalize(Plane); L = Light; d = -dot(P, L);
+//	M[row][col] = P[row] * L[col] + (row == col ? d : 0).
+inline D3DXMATRIX *D3DXMatrixShadow(D3DXMATRIX *out, const D3DXVECTOR4 *light,
+                                    const D3DXPLANE *plane) {
+  const float len = std::sqrt(plane->a * plane->a + plane->b * plane->b +
+                              plane->c * plane->c);
+  const float p[4] = {plane->a / len, plane->b / len, plane->c / len,
+                      plane->d / len};
+  const float l[4] = {light->x, light->y, light->z, light->w};
+  const float d = -(p[0] * l[0] + p[1] * l[1] + p[2] * l[2] + p[3] * l[3]);
+  for (int row = 0; row < 4; ++row)
+    for (int col = 0; col < 4; ++col)
+      out->m[row][col] = p[row] * l[col] + (row == col ? d : 0.0f);
+  return out;
+}
+
+//	D3DXVec3TransformCoord: the row-vector transform of (x, y, z, 1)
+//	with the perspective divide back into w = 1 (the documented
+//	D3DXVec3TransformCoord contract).
+inline D3DXVECTOR3 *D3DXVec3TransformCoord(D3DXVECTOR3 *out,
+                                           const D3DXVECTOR3 *v,
+                                           const D3DXMATRIX *m) {
+  const float x = v->x, y = v->y, z = v->z;
+  const float tx = x * m->_11 + y * m->_21 + z * m->_31 + m->_41;
+  const float ty = x * m->_12 + y * m->_22 + z * m->_32 + m->_42;
+  const float tz = x * m->_13 + y * m->_23 + z * m->_33 + m->_43;
+  const float tw = x * m->_14 + y * m->_24 + z * m->_34 + m->_44;
+  const float invW = 1.0f / tw;
+  out->x = tx * invW;
+  out->y = ty * invW;
+  out->z = tz * invW;
+  return out;
+}
+
 inline D3DXMATRIX *D3DXMatrixPerspectiveFovLH(D3DXMATRIX *out, float fovy,
                                                float aspect, float zn, float zf) {
   const float yscale = 1.0f / std::tan(fovy * 0.5f);
