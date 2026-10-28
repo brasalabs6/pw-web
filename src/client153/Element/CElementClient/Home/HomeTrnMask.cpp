@@ -10,6 +10,10 @@
  * Copyright (c) 2006 Archosaur Studio, All Rights Reserved.
  */
 
+//	A3DTerrain2Blk.h (pulled in by HomeTrnMask.h) references A3DTerrain2
+//	without declaring it; the original build resolved it through the
+//	project's include order, so the terrain header comes first here.
+#include <A3DTerrain2.h>
 #include "HomeTrnMask.h"
 #include "HomeTerrain.h"
 #include "AutoScene.h"
