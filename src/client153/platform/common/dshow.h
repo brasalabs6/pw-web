@@ -49,13 +49,43 @@ struct IMediaControl : IDShowUnknown {
   virtual HRESULT Stop() = 0;
 };
 
-struct IMediaEventEx : IDShowUnknown {
+//	The event pump (the documented IMediaEvent surface; IMediaEventEx
+//	extends it with the notify window below).
+struct IMediaEvent : IDShowUnknown {
   virtual HRESULT GetEvent(LONG *lEventCode, LONG_PTR *lParam1,
                            LONG_PTR *lParam2, LONG msTimeout) = 0;
   virtual HRESULT FreeEventParams(LONG lEventCode, LONG_PTR lParam1,
                                   LONG_PTR lParam2) = 0;
+};
+
+struct IMediaEventEx : IMediaEvent {
   virtual HRESULT SetNotifyWindow(HWND hwnd, UINT message,
                                   LONG_PTR lInstanceParam) = 0;
+};
+
+//	The filter-graph pin surface the video clip walks (the documented
+//	DirectShow signatures; the media cycle's adapter implements them).
+enum PIN_DIRECTION { PINDIR_INPUT = 0, PINDIR_OUTPUT = 1 };
+
+struct IPin : IDShowUnknown {
+  virtual HRESULT QueryDirection(PIN_DIRECTION *pPinDir) = 0;
+  virtual HRESULT QueryId(wchar_t **pId) = 0;
+};
+
+struct IEnumPins : IDShowUnknown {
+  virtual HRESULT Next(ULONG cPins, IPin **ppPins, ULONG *pcFetched) = 0;
+};
+
+struct IFilterGraph;
+
+struct FILTER_INFO {
+  wchar_t achName[128];
+  IFilterGraph *pGraph;
+};
+
+struct IBaseFilter : IDShowUnknown {
+  virtual HRESULT EnumPins(IEnumPins **ppEnum) = 0;
+  virtual HRESULT QueryFilterInfo(FILTER_INFO *pInfo) = 0;
 };
 
 struct IMediaPosition : IDShowUnknown {
