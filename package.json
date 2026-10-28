@@ -20,7 +20,8 @@
     "typecheck": "tsc -p tsconfig.platform.json --noEmit",
     "test:platform": "node --test tests/platform/*.test.mjs",
     "db:seed-demo": "npm run seed:demo -w @pw/database",
-    "test:updater": "node --import tsx --test tests/platform/update-kit.test.ts"
+    "test:updater": "node --import tsx --test tests/platform/update-kit.test.ts",
+    "test:sdk": "node --import tsx --test tests/platform/sdk.test.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

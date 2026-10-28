@@ -40,6 +40,7 @@ jobs:
       - run: npm run build:web
       - run: npm run test:platform
       - run: npm run test:updater
+      - run: npm run test:sdk
       - run: npm run db:migrate
       - name: Ephemeral Ed25519 health attestation key for synthetic fixture
         shell: bash
