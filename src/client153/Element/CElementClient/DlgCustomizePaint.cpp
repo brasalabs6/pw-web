@@ -159,8 +159,8 @@ void CPaletteControl::MoveIndicator(POINT center)
 
 A3DCOLOR CPaletteControl::GetColorFromPt(POINT pt)
 {
-	a_Clamp<long>(pt.x, 0, m_pPane->GetSize().cx - 1);
-	a_Clamp<long>(pt.y, 0, m_pPane->GetSize().cy - 1);
+	a_Clamp<LONG>(pt.x, 0, m_pPane->GetSize().cx - 1);
+	a_Clamp<LONG>(pt.y, 0, m_pPane->GetSize().cy - 1);
 
 	// 处理surface和imagepicture大小不一致（如缩放）的情况
 	pt.x = pt.x * (float)m_pSurface->GetWidth() / (float)m_pPane->GetRect().Width() + 0.5f;
@@ -180,8 +180,8 @@ A3DCOLOR CPaletteControl::GetColorFromPt(POINT pt)
 POINT CPaletteControl::ClampPointToPane(POINT &pt)
 {
 	A3DRECT rect = m_pPane->GetRect();
-	a_Clamp<long>(pt.x, 0, rect.Width() - 1);
-	a_Clamp<long>(pt.y, 0, rect.Height() - 1);
+	a_Clamp<LONG>(pt.x, 0, rect.Width() - 1);
+	a_Clamp<LONG>(pt.y, 0, rect.Height() - 1);
 	
 	return pt;
 }
