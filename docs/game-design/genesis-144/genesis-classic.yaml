@@ -1,0 +1,642 @@
+# Manifesto de design do mundo Genesis Classic. Não é configuração executável.
+schema_version: 1
+kind: "pw-web.world-design-spec"
+document_version: "1.0.0"
+updated_on: "2026-10-28"
+status: "design_only_not_runtime_configuration"
+applies_to_realm: "genesis-classic"
+source_of_truth: "docs/game-design/genesis-144/PW_WEB_GENESIS_144_GAME_DESIGN_SPEC.md"
+governance:
+  values: "approved = decisão do produto; proposed = alvo a homologar; pending = depende de inventário real"
+  do_not_deploy_as_is: true
+  required_signoffs:
+    - "game_design"
+    - "combat_balance"
+    - "economy"
+    - "content_era_audit"
+    - "security"
+    - "legal"
+world:
+  id: "genesis-classic"
+  name: "PW Gênesis — Clássico"
+  tagline: "O Perfect World de 2011, com progressão e economia valorizadas"
+  type: "low_rate_persistent_pve_pvp"
+  target_audience:
+    - "veteranos da era Genesis"
+    - "PvE e Dungeons em grupo"
+    - "guildas e guerra territorial"
+    - "comerciantes e artesãos"
+  design_pillars:
+    - "fidelidade à era 1.4.4"
+    - "progressão duradoura"
+    - "itens com valor econômico"
+    - "integração social e dependência de grupos"
+    - "sem pay-to-win"
+  pvp_opt_in:
+    value: true
+    status: "proposed"
+    reason: "Definir regras detalhadas de PK e zonas conforme snapshot histórico"
+  persistence:
+    value: "permanent_no_character_reset"
+    status: "approved"
+  account_namespace: "shared_identity_only"
+  character_namespace: "genesis-classic"
+  economy_namespace: "genesis-classic"
+  item_transfer_to_other_realms:
+    value: false
+    status: "approved"
+  cross_realm_currency_transfer:
+    value: false
+    status: "approved"
+compatibility:
+  content_era:
+    value: "genesis_1_4_4"
+    status: "approved"
+  baseline_runtime: "webassembly_port_of_client_1_5_3_candidate"
+  runtime_era_equivalence: false
+  client_selection: "automatic_by_realm_manifest"
+  shell_display: "lista de servidores -> Gênesis Clássico -> login -> mundo"
+  supported_targets:
+    - "web_desktop"
+    - "web_android"
+    - "web_ios"
+  additional_launchers_future:
+    - "windows"
+    - "linux"
+    - "android_wrapper"
+  content_integrity:
+    canonical_source: "snapshot_1_4_4_to_be_selected_and_verified"
+    hash_required_for:
+      - "items"
+      - "skills"
+      - "quests"
+      - "monsters"
+      - "npc"
+      - "drops"
+      - "recipes"
+      - "maps"
+      - "assets"
+      - "protocol"
+    server_enforces_era: true
+    reject_unverified_post_era_content: true
+    artifact_asset_distribution: "subject_to_legal_clearance"
+  build_id: "TBD"
+  protocol_version: "TBD"
+  patch_manifest_ref: "TBD"
+  asset_pack_ref: "TBD"
+character_creation:
+  available_races_and_classes:
+    -
+      race: "human"
+      classes:
+        -
+          id: "blademaster"
+          name_pt_br: "Guerreiro"
+          role:
+            - "melee"
+            - "control"
+        -
+          id: "wizard"
+          name_pt_br: "Mago"
+          role:
+            - "magic_dps"
+            - "aoe"
+    -
+      race: "untamed"
+      classes:
+        -
+          id: "barbarian"
+          name_pt_br: "Bárbaro"
+          role:
+            - "tank"
+            - "melee"
+        -
+          id: "venomancer"
+          name_pt_br: "Feiticeira"
+          role:
+            - "pet"
+            - "debuff"
+    -
+      race: "winged_elf"
+      classes:
+        -
+          id: "archer"
+          name_pt_br: "Arqueiro"
+          role:
+            - "ranged_dps"
+        -
+          id: "cleric"
+          name_pt_br: "Sacerdote"
+          role:
+            - "healer"
+            - "support"
+    -
+      race: "tideborn"
+      classes:
+        -
+          id: "assassin"
+          name_pt_br: "Mercenário"
+          role:
+            - "stealth"
+            - "melee_dps"
+        -
+          id: "psychic"
+          name_pt_br: "Espiritualista"
+          role:
+            - "magic_dps"
+            - "support"
+    -
+      race: "earthguard"
+      classes:
+        -
+          id: "seeker"
+          name_pt_br: "Arcano"
+          role:
+            - "melee"
+            - "aoe"
+        -
+          id: "mystic"
+          name_pt_br: "Místico"
+          role:
+            - "summons"
+            - "healer"
+  playable_class_count:
+    value: 10
+    status: "approved"
+  starting_level:
+    value: 1
+    status: "proposed"
+  starter_location: "canonical_class_race_spawn"
+  character_create_limits:
+    status: "pending_canonical_1_4_4_data"
+    description: "Limites reais por conta e slots de personagem devem ser definidos"
+  starter_items: "canonical_low_value_bound_gear_only"
+  class_power_normalization: false
+  tutorial: "historical_quests_plus_optional_accessibility_guidance"
+progression:
+  progression_model: "legacy_quest_monster_cultivation_dungeon_crafting"
+  level_cap:
+    value: 105
+    status: "proposed"
+    reason: "Homologar limite e requisitos do snapshot escolhido"
+  exp_rates:
+    monster:
+      value: 1.5
+      status: "approved"
+    quest:
+      value: 1.5
+      status: "proposed"
+      reason: "Aprovação pendente do escopo de EXP"
+    spirit:
+      value: 1.5
+      status: "proposed"
+      reason: "Evitar habilidades insuficientes durante evolução"
+    kill_streak_bonus:
+      value: 1
+      status: "approved"
+    global_vip_xp_bonus:
+      value: false
+      status: "approved"
+  target_level_100_active_hours:
+    value:
+      median_range:
+        - 120
+        - 240
+      measurement: "instrumented_beta"
+    status: "proposed"
+    reason: "Estimativa a aferir por classe e estilo de jogo"
+  bands:
+    -
+      from: 1
+      to: 39
+      objectives:
+        - "história racial"
+        - "primeiros cultivos"
+        - "habilidades"
+        - "profissões"
+    -
+      from: 40
+      to: 69
+      objectives:
+        - "missões cooperativas"
+        - "cultivo"
+        - "dungeons"
+        - "equipamentos intermediários"
+    -
+      from: 70
+      to: 89
+      objectives:
+        - "Dusk conforme era"
+        - "farm de materiais"
+        - "produção artesanal"
+        - "guildas"
+    -
+      from: 90
+      to: 99
+      objectives:
+        - "conjunto 99"
+        - "preparação Nirvana"
+        - "grupos avançados"
+    -
+      from: 100
+      to: 105
+      objectives:
+        - "Nirvana"
+        - "refino de longo prazo"
+        - "guerra territorial"
+        - "maestria de classe"
+  unlocks:
+    cultivation: "canonical_class_cultivation_1_4_4"
+    skills: "canonical_1_4_4_skill_tables"
+    genies: "canonical_1_4_4_genie_system"
+    pets_and_summons: "canonical_class_rules"
+    mounts_and_flight: "canonical_race_rules"
+    teleport: "canonical_npc_service"
+  blocked_shortcuts:
+    - "gratificação com nível alto"
+    - "itens endgame por login"
+    - "venda de XP de vantagem"
+    - "boost acumulativo não auditado"
+equipment:
+  philosophy: "Nirvana é o teto; Dusk e equipamentos 99 permanecem úteis"
+  maximum_gear_family:
+    value: "nirvana_1_4_4"
+    status: "approved"
+  canonical_catalog_status:
+    status: "pending_canonical_1_4_4_data"
+    description: "Mapear item_template_id, classe, tipo, atributo, requisito, grade, slot, receita, drop e flags de vínculo do snapshot"
+  families:
+    -
+      key: "starter_legacy"
+      grade: "initial"
+      acquisition:
+        - "quests"
+        - "basic_npc"
+        - "monster_drops"
+      trade: "canonical_era_rules"
+    -
+      key: "world_drops"
+      grade: "early_mid"
+      acquisition:
+        - "monsters"
+        - "elite_monsters"
+      trade: "canonical_era_rules"
+    -
+      key: "craft_professions"
+      grade: "early_high"
+      acquisition:
+        - "gathering"
+        - "crafting"
+      trade: "canonical_era_rules"
+    -
+      key: "dusk_twilight_temple"
+      grade: "mid_high"
+      acquisition:
+        - "Dusk instances"
+        - "player_trade"
+      trade: "canonical_era_rules"
+      availability: "pending_era_audit"
+    -
+      key: "level_99"
+      grade: "high"
+      acquisition:
+        - "legacy_dungeons"
+        - "crafting"
+      trade: "canonical_era_rules"
+      availability: "pending_era_audit"
+    -
+      key: "moon_valley"
+      grade: "high"
+      acquisition:
+        - "Moon Valley content"
+      trade: "canonical_era_rules"
+      availability: "pending_era_audit"
+    -
+      key: "nirvana_genesis"
+      grade: "endgame"
+      acquisition:
+        - "Nirvana instances"
+        - "canonical_upgrade_recipes"
+      trade: "canonical_era_rules"
+      availability: "pending_era_audit"
+  allowed_slots:
+    - "weapon"
+    - "armor"
+    - "helmet"
+    - "cape"
+    - "rings"
+    - "necklace"
+    - "belt"
+    - "accessories_where_historically_valid"
+  allowed_upgrade_systems:
+    - "canonical_refine"
+    - "canonical_gems"
+    - "canonical_forge"
+    - "canonical_recipes"
+  refinements:
+    maximum_level:
+      value: 8
+      status: "proposed"
+      reason: "Teto +8 ainda depende de aprovação"
+    reference_formula: "historical_1_4_4"
+    soften_above_plus_10: false
+    free_high_refine: false
+    rmt_bought_refining_advantage: false
+  socket_gems: "canonical_1_4_4_rules"
+  item_binding: "enforce_template_bind_flags"
+  explicitly_excluded:
+    - "post_genesis_item_families"
+    - "nirvana_third_recast"
+    - "morai_future"
+    - "unapproved_rank9_variants"
+    - "custom_plus_13"
+  exact_item_ids:
+    status: "pending_canonical_1_4_4_data"
+    description: "Não inventar IDs ou atributos; extrair das tabelas de dados licenciadas"
+economy:
+  purpose: "escassez compreensível, comércio necessário, moeda não inflacionária"
+  coin_rate_monster:
+    value: 1
+    status: "proposed"
+  drop_rate_monster:
+    value: 1
+    status: "proposed"
+  gathering_rate:
+    value: 1
+    status: "proposed"
+  dungeon_drop_tables: "canonical_1_4_4_snapshot"
+  currencies:
+    -
+      id: "coins"
+      tradeable: true
+      sources:
+        - "monster_loot"
+        - "quests"
+        - "npc_sales"
+      sinks:
+        - "npc_shops"
+        - "repair"
+        - "teleport"
+        - "crafting"
+        - "auction_fees"
+        - "guild_services"
+    -
+      id: "historical_shop_currency_if_enabled"
+      tradeable: "depends_on_era"
+      sources:
+        - "canonical_only"
+      sinks:
+        - "canonical_only"
+      status: "pending_era_audit"
+  material_sources:
+    - "world_gathering"
+    - "monster_drops"
+    - "Dusk"
+    - "Nirvana"
+    - "bosses"
+    - "crafting"
+  material_sinks:
+    - "consumables"
+    - "gear_recipes"
+    - "crafting"
+    - "historical_enhancement"
+  markets:
+    player_trade: true
+    auction_house: "only_if_era_supported"
+    offline_stalls: "only_if_era_supported"
+    cross_realm_auction: false
+  anti_inflation:
+    - "no_unbounded_high_price_npc_buyback"
+    - "no_large_login_coin_gifts"
+    - "trace_item_mint_burn"
+    - "moderate_transaction_fees_if_economy_needs"
+  player_protection:
+    - "guides"
+    - "starter_group_matching"
+    - "light_bound_starter_consumables"
+    - "progression_transparency"
+  pay_to_win:
+    value: false
+    status: "approved"
+  forbidden_sales:
+    - "tradeable_currency"
+    - "competitive_gear"
+    - "exclusive_damage_buff"
+    - "exclusive_refine_material"
+  guardrails:
+    real_money_price_setting: "do_not_implement_until_legal_review"
+    reward_per_hour: "events_must_not_obsolete_historical_farming"
+    economy_alerts:
+      - "money_supply_growth"
+      - "materials_stock"
+      - "market_basket_inflation"
+      - "wealth_concentration"
+activities:
+  story_quests:
+    enabled: true
+    source: "snapshot_1_4_4"
+  cultivation:
+    enabled: true
+    source: "snapshot_1_4_4"
+  guilds:
+    enabled: true
+    roles:
+      - "grouping"
+      - "territory_war"
+      - "social"
+      - "guild_base_if_historical"
+  dungeons:
+    -
+      id: "classic_instanced_dungeons"
+      enabled: true
+      era_validation: true
+    -
+      id: "twilight_temple_dusk"
+      enabled: true
+      era_validation: true
+    -
+      id: "nirvana"
+      enabled: true
+      era_validation: true
+    -
+      id: "moon_valley"
+      enabled: "pending_era_audit"
+      era_validation: true
+    -
+      id: "cube_of_fate"
+      enabled: "pending_era_audit"
+      era_validation: true
+  crafting:
+    enabled: true
+    professions: "canonical_snapshot"
+    gathering: true
+  pets:
+    enabled: true
+    canon_era_only: true
+  genies:
+    enabled: true
+    canon_era_only: true
+  mounts_flight:
+    enabled: true
+    canon_era_only: true
+  pvp:
+    world_pvp: "historical_rules_with_newcomer_protection"
+    duels: true
+    arenas: "only_if_historically_supported_or_explicitly_approved"
+    territory_war: true
+    guild_war: "historical_rules"
+    ranked_gear_normalization: false
+    anti_spawn_camping: true
+  live_events:
+    weekly_calendar: "configure_without_inflating_market"
+    rewards:
+      - "cosmetics"
+      - "historical_consumables"
+      - "limited_tradeable_materials"
+    prohibit:
+      - "free_nirvana"
+      - "rare_gear_giveaway"
+      - "permanent_power_prize"
+  social:
+    - "party"
+    - "guild"
+    - "chat"
+    - "trade"
+    - "friends"
+    - "party_finder_proposed"
+competitive_seasons:
+  season_resets:
+    value: "rankings_only"
+    status: "approved"
+  world_reset: false
+  character_reset: false
+  inventory_reset: false
+  guild_reset: false
+  territory_reset: "not_automatic_review_specific_rules"
+  ranking_history_immutable: true
+  ranked_ladders:
+    value:
+      - "pvp"
+      - "guilds"
+      - "achievements"
+    status: "proposed"
+  cycle_weeks:
+    value: null
+    status: "proposed"
+    reason: "Clássico pode ter rankings mensais sem temporada formal"
+balance:
+  policy: "historical_first_minimal_tuning"
+  preserve_class_identity: true
+  test_modes:
+    - "pve_solo"
+    - "pve_group"
+    - "duel"
+    - "guild_vs_guild"
+    - "territory_war"
+  metrics:
+    - "time_to_kill"
+    - "burst_damage"
+    - "effective_healing"
+    - "threat_management"
+    - "skill_resource_uses"
+    - "matchup_outliers"
+  change_control:
+    revision_required: true
+    simulation_before_release: true
+    patch_notes: true
+    rollback_ready: true
+  excessive_power_alert: "revisar combos sem contrajogo"
+anti_abuse:
+  server_authoritative:
+    - "damage"
+    - "healing"
+    - "loot"
+    - "inventory"
+    - "currency"
+    - "movement_validation"
+    - "cooldowns"
+    - "trades"
+  idempotent_economy_events: true
+  unique_item_instances: true
+  admin_action_log: true
+  bot_signals: true
+  client_file_integrity: true
+  exploit_triage: true
+  rollback_policy: "only_with_evidence_and_audit"
+platform_and_quality:
+  same_character_desktop_mobile: true
+  server_side_save: true
+  touch_ui: "mobile_adaptive_no_auto_rotation"
+  update_flow: "shell_selects_version_downloads_verified_manifest"
+  latency_profiles_ms:
+    - 20
+    - 80
+    - 150
+    - 250
+  required_tests:
+    - "login"
+    - "create_character"
+    - "movement"
+    - "skills"
+    - "cultivation"
+    - "quest"
+    - "trade"
+    - "craft"
+    - "dungeon"
+    - "world_pvp"
+    - "territory_war"
+    - "reconnect"
+    - "restart"
+    - "mobile"
+  release_gates:
+    - "legal_approval"
+    - "era_manifest_audit"
+    - "economy_no_dupe"
+    - "minimum_functional_port"
+    - "beta_retention"
+    - "mass_combat_performance"
+telemetry:
+  gameplay:
+    - "onboarding_completion"
+    - "median_hours_to_level_100"
+    - "dungeon_completion"
+    - "active_guilds"
+    - "daily_active_accounts"
+    - "retention_d1_d7_d30"
+  economy:
+    - "coins_minted_burned"
+    - "item_creation_destruction"
+    - "market_prices_p25_p50_p75"
+    - "materials_supply"
+    - "wealth_top_percent"
+  combat:
+    - "class_matchups"
+    - "pve_damage_healing"
+    - "time_to_kill"
+    - "server_desync"
+  operational:
+    - "crash_free_sessions"
+    - "fps_distribution_by_device"
+    - "time_to_first_play"
+    - "asset_cache_hit_rate"
+open_decisions:
+  -
+    id: "CL-001"
+    question: "Teto de refino Clássico +8?"
+    candidate: 8
+  -
+    id: "CL-002"
+    question: "EXP de quest e espírito 1.5x?"
+    candidate: 1.5
+  -
+    id: "CL-003"
+    question: "Snapshot exato dos conteúdos e tabela canônica da 1.4.4?"
+    candidate: null
+  -
+    id: "CL-004"
+    question: "Quais modelos de comércio e loja estarão presentes?"
+    candidate: null
+  -
+    id: "CL-005"
+    question: "Regras específicas de PK, territórios e ranking?"
+    candidate: null
