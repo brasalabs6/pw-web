@@ -848,7 +848,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	if( l_CmdParams.iRenderWid == -1 )
 		GameInit.iRenderWid		= g_GameCfgs.GetSystemSettings().iRndWidth;
 	else
-		GameInit.iRenderWid		= l_CmdParams.iRenderHei;
+		GameInit.iRenderWid		= l_CmdParams.iRenderWid;
 	if( l_CmdParams.iRenderHei == -1 )
 		GameInit.iRenderHei		= g_GameCfgs.GetSystemSettings().iRndHeight;
 	else

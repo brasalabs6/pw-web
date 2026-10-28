@@ -661,3 +661,11 @@ Probe individual `--entry EC_Skill.cpp --object-dir ...` e 11 testes do probe
 passaram; o link diagnóstico com 775 objetos ainda falha. A constness do texto
 retornado pela tabela original e o comportamento da interface de habilidades
 em execução continuam sem validação no browser.
+
+O bootstrap original selecionava `iRenderHei` para a largura quando havia
+largura explícita. `ElementClient.cpp` agora usa `iRenderWid` nesse ramo; o
+teste `python3 -m unittest discover -s tests/client153 -p
+ test_browser_bootstrap.py` verifica valores padrão, explícitos e mistos, e
+falhou antes da correção. O probe individual de `ElementClient.cpp` gerou
+objeto WASM. O teste compila um trecho nativo extraído do bootstrap; não é
+prova de inicialização do cliente no browser.
