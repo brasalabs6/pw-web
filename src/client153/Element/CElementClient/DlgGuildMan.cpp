@@ -653,9 +653,19 @@ void CDlgGuildMan::OnCommand_SendMassMail(const char *szCommand)
 
 /*Alien - adicionado botao de aprimoramento*/
 void CDlgGuildMan::OnCommand_Aprimoramento(const char *szCommand)
-{	
+{
 	Octets o = GNET::upgrade_param_ct().marshal();
-	c2s_SendDebugCmd(50003, 2, 11, o);	
+	//	Upstream defect: the original passed the Octets object itself through
+	//	the varargs, and c2s_SendDebugCmd reads each parameter with
+	//	va_arg(int), so MSVC sent the object's first 4 bytes — the Octets data
+	//	pointer (the same member begin() returns) — as the second wire
+	//	parameter. The server handler (playercmd.cpp case 50003) reads
+	//	GUILD_MANAGER{iAction, codigo} from those bytes and ignores codigo for
+	//	iAction 11 (_O_FACTION_UPGRADE), so we reproduce the same value
+	//	explicitly to stay byte-compatible with the Windows client; the
+	//	marshaled payload itself is never transmitted by the original.
+	int iParam = (int)(intptr_t)o.begin();
+	c2s_SendDebugCmd(50003, 2, 11, iParam);
 }
 
 void CDlgGuildMan::OnCommand_Convocar(const char *szCommand)
