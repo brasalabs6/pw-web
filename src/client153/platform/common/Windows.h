@@ -425,6 +425,7 @@ BOOL GetCursorPos(POINT *point);
 extern "C" void pw153_set_canvas_origin(LONG x, LONG y);
 BOOL ScreenToClient(HWND hWnd, POINT *point);
 BOOL ClientToScreen(HWND hWnd, POINT *point);
+BOOL CreateCaret(HWND hWnd, HBITMAP bitmap, int width, int height);
 HWND SetCapture(HWND hWnd);
 BOOL ReleaseCapture();
 

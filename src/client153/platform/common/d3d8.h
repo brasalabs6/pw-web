@@ -105,7 +105,11 @@ struct IDirect3DIndexBuffer8 : IUnknownD3D {
   virtual HRESULT Unlock() = 0;
 };
 
+constexpr DWORD D3DRS_ZWRITEENABLE = 14;
+
+// Port interface only; this subset is not a native Direct3D COM vtable.
 struct IDirect3DDevice8 : IUnknownD3D {
+  virtual HRESULT GetRenderState(DWORD state, DWORD *value) = 0;
   virtual HRESULT Clear(DWORD count, const D3DRECT *pRects, DWORD flags,
                         DWORD color, float z, DWORD stencil) = 0;
 };

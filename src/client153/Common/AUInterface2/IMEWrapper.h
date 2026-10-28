@@ -5,11 +5,13 @@
 #ifndef IME_WRAPPER_H
 #define IME_WRAPPER_H
 
+#ifndef __EMSCRIPTEN__
 #include <usp10.h>
 #if _MSC_VER < 1300
 #include <msctf.h>
 #else
 #include <dimm.h>
+#endif
 #endif
 #include "ImeUi.h"
 

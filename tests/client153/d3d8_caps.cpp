@@ -3,6 +3,7 @@
 
 // D3D8 SDK layout: verified against Wine's d3d8caps.h.
 static_assert(sizeof(D3DCAPS8) == 212, "D3DCAPS8 size");
+static_assert(D3DRS_ZWRITEENABLE == 14, "D3D depth write state");
 static_assert(D3D_OK == 0, "D3D success code");
 static_assert(D3DLOCK_READONLY == 0x0010, "D3D read-only lock flag");
 static_assert(D3DTSS_BORDERCOLOR == 15, "D3D border color state");
