@@ -793,3 +793,27 @@ Após reconstruir a biblioteca de plataforma e relinkar com `-g2`, `node
 do módulo sem chamada à entrada: login, render, navegador, rede e gameplay
 permanecem não validados. A implementação de GLU adicionada é somente a
 parte de tesselação; `GetGlyphOutline` ainda retorna erro.
+
+### Primeira chamada da entrada original em Node
+
+O diagnóstico agora pode chamar `wWinMain` com linha de comando vazia,
+sem montar a instalação original nem escrever nela. `PW153_PROBE_FILES` é
+um array JSON de caminhos locais para pacotes PCK/PKX; o script copia os
+arquivos para o filesystem virtual, portanto consome memória proporcional ao
+tamanho dos pacotes. Não incluir dados ou caminhos privados no repositório.
+
+```sh
+python3 scripts/link-client153-full.py --error-limit 5000 \
+  --entry-symbol _Z8wWinMainPvS_Pwi \
+  --node-probe-pre-js scripts/client153-entry-node-pre.js \
+  --output /tmp/client153-entry.js
+PW153_PROBE_FILES='[]' node /tmp/client153-entry.js
+```
+
+Sem pacotes, a entrada retornou -1 solicitando `configs.pck`. Com cópias
+locais autorizadas de `configs.pck` e `facedata.pck`, avançou ao pedido de
+`gfx.pck` e retornou -1, como esperado para esse teste incompleto. O probe
+retorna status não zero quando a entrada falha. Isso não valida todos os
+dados dos pacotes, inicialização gráfica, login ou execução no browser.
+Os objetos de entrada ainda são produzidos pelo probe local, não por um build
+limpo completo; o transporte eficiente de assets permanece pendente.

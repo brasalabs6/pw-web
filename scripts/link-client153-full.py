@@ -39,6 +39,10 @@ def retention_flags(entry_symbol: str | None) -> list[str]:
     return [f'-Wl,--export={entry_symbol}'] if entry_symbol else ['-Wl,--no-gc-sections']
 
 
+def node_probe_flags(pre_js: str | None) -> list[str]:
+    return ['--pre-js', pre_js, '-sEXPORTED_FUNCTIONS=_malloc'] if pre_js else []
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--emxx', default=str(
@@ -61,6 +65,7 @@ def main() -> int:
         ROOT / 'build/client153-full-link/client153-full-probe.js'))
     parser.add_argument('--error-limit', type=int, default=60)
     parser.add_argument('--entry-symbol', help='retain this mangled symbol and its reachable sections')
+    parser.add_argument('--node-probe-pre-js', help='Node-only entry probe script')
     parser.add_argument('--list-only', action='store_true')
     args = parser.parse_args()
 
@@ -90,7 +95,7 @@ def main() -> int:
     output = pathlib.Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     command = [
-        args.emxx, '--no-entry', '-fexceptions', '-sUSE_ZLIB=1',
+        args.emxx, '--no-entry', '-fexceptions', '-sUSE_ZLIB=1', *node_probe_flags(args.node_probe_pre_js),
         *retention_flags(args.entry_symbol), f'-Wl,--error-limit={args.error_limit}',
         *objects, *libraries, '-o', str(output),
     ]

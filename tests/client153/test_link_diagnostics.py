@@ -26,6 +26,11 @@ wasm-ld: error: /tmp/c.o: undefined symbol: foo(int, double), referenced by z
                          ["-Wl,--export=_Z8wWinMainPvS_Pwi"])
         self.assertEqual(link.retention_flags(None), ["-Wl,--no-gc-sections"])
 
+    def test_node_probe_flags_export_malloc_and_preserve_js_path(self):
+        self.assertEqual(link.node_probe_flags("/tmp/probe.js"),
+                         ["--pre-js", "/tmp/probe.js", "-sEXPORTED_FUNCTIONS=_malloc"])
+        self.assertEqual(link.node_probe_flags(None), [])
+
     def test_unexpected_linker_failure_is_reported(self):
         self.assertIn('duplicate symbol', link.format_link_errors('wasm-ld: error: duplicate symbol: x\n'))
 
