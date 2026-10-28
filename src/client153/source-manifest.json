@@ -7,6 +7,14 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWArt.cpp",
+      "sha256": "6d60e9b10fa89d9b05a735144518533d278406873966d31c3fa426e78bd6c089"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifier.cpp",
+      "sha256": "4565866ecd743655d6c5a1e50b2462f0278348209ddaf3480075b5f936002d24"
+    },
+    {
       "path": "Element/CFWEditorLib/FWFormulaElement.cpp",
       "sha256": "6cfb579b2e2052ecfc50b92493aa52eb97707cfcbb8962305d19a0a505940141"
     },

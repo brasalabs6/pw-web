@@ -374,6 +374,8 @@ if(EMSCRIPTEN)
     Element/CFWEditorLib/FWFormulaElement.cpp
     Element/CFWEditorLib/FWOperand.cpp
     Element/CFWEditorLib/FWOperator.cpp
+    Element/CFWEditorLib/FWArt.cpp
+    Element/CFWEditorLib/FWModifier.cpp
     Element/CFWEditorLib/FWArtArc.cpp
     Element/CFWEditorLib/FWArtDoubleArc.cpp
     Element/CFWEditorLib/FWArtNoChange.cpp
