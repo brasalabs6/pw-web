@@ -3687,6 +3687,7 @@ typedef struct tagMINMAXINFO {
 
 // Global memory flags (documented): GHND = moveable | zero-init, LPTR = fixed | zero-init.
 #define GMEM_MOVEABLE 0x0002
+#define GMEM_DDESHARE 0x2000
 #define GMEM_ZEROINIT 0x0040
 #define GHND (GMEM_MOVEABLE | GMEM_ZEROINIT)
 #define LPTR GMEM_ZEROINIT

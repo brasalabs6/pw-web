@@ -7,6 +7,162 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWCommandCombine.h",
+      "sha256": "3c40868b0422291419e923247ade560f5ab92a341e8fb80925ea8f0d6c1cb0ba"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandCreate.h",
+      "sha256": "006607b57781045e8d14fb8a4e7843a10a3e15ededb9efdf344cbc9407de280b"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandDelete.h",
+      "sha256": "b3ae627956d92eb40e3cdb09ecf11187ee2fb6ecf9736d46d4488a5b0b760cd3"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandDuplicateHandle.h",
+      "sha256": "5529b6ea6e2a8895074ab89a7f9c98f642a9dace2aaf85e31053a68a058ccccb"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandMove.h",
+      "sha256": "af189019fe7e2cf192a633fa01d63f7c1cdf994041b3abd648e58f0e7d4aa5a6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandRemoveHandle.h",
+      "sha256": "aed7590adc78eb507e7b56b6484b5db891ac12fbe29c7f8ebdcbe5addd84bfaa"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandSetBezierMode.h",
+      "sha256": "85557850794817816b8c21753f529b8ece9a336ea2cddb22615365274f7c0896"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandSetGlyphProp.cpp",
+      "sha256": "c501ec1b86b890e37fb8f6003528f4e99410265f394cc33689be7f40055e13f6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandUnCombine.h",
+      "sha256": "fd014ab5a47ba3719a737f4bfeb369a02f71d1ae5541f7cfd61bd7a043df3312"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogBezierMenu.cpp",
+      "sha256": "9f9e23601995dba0b82dab6b86b1a5318e2d8282a816f07f5f4c3054a2c6e651"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogBoard.cpp",
+      "sha256": "2939a5992cf4a1b369f47c3c12dc64f04b61496170028d5ca921e6ab76b0fd86"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogCustom.cpp",
+      "sha256": "ca4fc7d70e04538e7632751949283d5e3f590836c0b3773058d513509cea7480"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogEdit.cpp",
+      "sha256": "35795949d98fac3c4b5167e684d37565787d3afd3518f48decb95e9b09141aed"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogGraph.cpp",
+      "sha256": "93e8551dc996730e5c00081d9ac10af5d409885ec9b4ca57135ecb11033b365e"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogGraphMenu.cpp",
+      "sha256": "bdf7d6f5a006d643c29abd93fb05022516edd7fac61bcd280bd11847a128ba0b"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogLanch.cpp",
+      "sha256": "0a434793c173b3ef13b123fca43de155676a3eaa47bde7410f3535623cd56e6d"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogMain.cpp",
+      "sha256": "28e2f0e2d3bbe71f5aaf5469d42934f4e29b05e1d1f80c63a19ebc9a788084ed"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogParam.cpp",
+      "sha256": "4407c2246b0ffda309a828b831d48c229b322ed18b7b9455d2d28a13be15aaae"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogPlay.cpp",
+      "sha256": "13b960c3a1fa85d2f001c91a1b97f318337953aa8d2f9c3e8a9246844b6e92a9"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogPolygonMenu.cpp",
+      "sha256": "86d3fafb165adbb2d533a6efe810b222bf9bf6597ecc24cff732d59330d06a88"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogScale.cpp",
+      "sha256": "d250d44a15f3f836fa9a018cc3c803e18ea2b38f00d1ccf950a5b6ca501def00"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogSimple.cpp",
+      "sha256": "085c844551183a56b6d908f4915d8fd5cd266f2c81a0df5d7ba0df31f2dcb7a8"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogText.cpp",
+      "sha256": "ffa1019c3206c852c492eba81e65ee3ce59a926921dcd315c6cf6e97fd2e3730"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogTool.cpp",
+      "sha256": "0e28d5c66e74ba1615c87813b1ed4cd18627acd9dfcb9bd3c035a284553589ff"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphEllipse.h",
+      "sha256": "4c5880cf8e007b93a4e9033ed88f436c3bafb2e965c2d725d242f55215dfbc0e"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphRectangle.h",
+      "sha256": "188d911f51afc67195b8995edcef602177cb80ede21435b7a2f988c17f2d96cc"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWSharedFile.h",
+      "sha256": "04987d30cfd4ee9050a9dee48bce54121b81f2c371a30d069fd5e7204f7d7405"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateCreateBezier.h",
+      "sha256": "52d5ce516607029bcf417b5a3f192df3845a0acf72c99d63aaa1b79ee73fce1b"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateCreateFirework.h",
+      "sha256": "ea742ff5e3362dd2fd397dbe26299aa59f0f93e9b668b3044cb8db50e9e04ccd"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateCreatePolygon.h",
+      "sha256": "4c4642f61ec1bc53e94883ded07ea434a0054833ad7f1af1fb90f998bf640fff"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateCreateRect.h",
+      "sha256": "1111f775d576871d0d9190f4202af388599086947305fed95ca14ab2d3823ea6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateCreateText.h",
+      "sha256": "a9847c70e2b6694d70a29df0bf3419c6a9d72c615cbb82ee3cefdb3232618adb"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateMove.h",
+      "sha256": "136c90c7c3fd962ea1293eedd57277d2e157d1ff19ee069dc962406ed9e391fd"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateMoveHandle.h",
+      "sha256": "69c639dc224eed7652b8501419efc9b7b25d217cf27d72505ff505027ef27e20"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateMoveWindow.h",
+      "sha256": "ffa96a99e9091f61f2fdf0d3538fd167678f12fa89d232ac012a1e5e2d5a6d9c"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateNetSelect.h",
+      "sha256": "be53648517d227a7933ff1a88a6c745c69b2e931214cde1d80fca083ee2d580d"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateResize.h",
+      "sha256": "9e8f60706bef93f4d6a0f07bdeafae6e395cc92dd8046c39dc5124253656e932"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateRotate.h",
+      "sha256": "a0db2114ac5603172eabee01d5b7983f93eb477235309de93ce5f29158852a38"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateSelect.cpp",
+      "sha256": "4128c6266987b7e1dc6cdf5176e4c702b3d6b5e227aaf11b210e50486bf3d4d3"
+    },
+    {
       "path": "Element/CFWEditorLib/FWArt.cpp",
       "sha256": "6d60e9b10fa89d9b05a735144518533d278406873966d31c3fa426e78bd6c089"
     },
@@ -9403,6 +9559,24 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWDialogEdit.cpp",
+      "upstream": "Element/CFWEditorLib/FWDialogEdit.cpp",
+      "functions": [],
+      "notes": "Pass AWString contents to variadic Format. GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWDialogParam.cpp",
+      "upstream": "Element/CFWEditorLib/FWDialogParam.cpp",
+      "functions": [],
+      "notes": "Pass AWString contents to variadic Format. GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWDialogText.cpp",
+      "upstream": "Element/CFWEditorLib/FWDialogText.cpp",
+      "functions": [],
+      "notes": "Qualify member function addresses in event map. GB18030 comments transcoded to UTF-8."
+    },
     {
       "path": "src/client153/Element/CFWEditorLib/FWOperand.cpp",
       "upstream": "Element/CFWEditorLib/FWOperand.cpp",

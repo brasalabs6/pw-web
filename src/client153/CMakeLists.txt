@@ -420,6 +420,23 @@ if(EMSCRIPTEN)
     Element/CFWEditorLib/FWPlayer.cpp
     Element/CFWEditorLib/FWState.cpp
     Element/CFWEditorLib/FWDialogBase.cpp
+    Element/CFWEditorLib/FWDialogBezierMenu.cpp
+    Element/CFWEditorLib/FWDialogBoard.cpp
+    Element/CFWEditorLib/FWDialogCustom.cpp
+    Element/CFWEditorLib/FWDialogEdit.cpp
+    Element/CFWEditorLib/FWDialogGraph.cpp
+    Element/CFWEditorLib/FWDialogGraphMenu.cpp
+    Element/CFWEditorLib/FWDialogLanch.cpp
+    Element/CFWEditorLib/FWDialogMain.cpp
+    Element/CFWEditorLib/FWDialogParam.cpp
+    Element/CFWEditorLib/FWDialogPlay.cpp
+    Element/CFWEditorLib/FWDialogPolygonMenu.cpp
+    Element/CFWEditorLib/FWDialogScale.cpp
+    Element/CFWEditorLib/FWDialogSimple.cpp
+    Element/CFWEditorLib/FWDialogText.cpp
+    Element/CFWEditorLib/FWDialogTool.cpp
+    Element/CFWEditorLib/FWStateSelect.cpp
+    Element/CFWEditorLib/FWCommandSetGlyphProp.cpp
     Element/CFWEditorLib/FWOutterProperty.cpp
     Element/CFWEditorLib/FWAUIManager.cpp
     Element/CFWEditorLib/FWCommandList.cpp
