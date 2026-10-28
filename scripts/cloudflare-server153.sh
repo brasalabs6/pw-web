@@ -29,7 +29,9 @@ stage() {
   find "$CTX" \( -name '*.o' -o -name '*.a' -o -name '*.so' -o -name '*.hpp' \
         -o -name '*.cpp' -o -name '*.cxx' -o -name '*.h' -o -name '*.hrp' \
         -o -name 'Makefile*' -o -name '*.bak' \) -delete
-  rm -rf "$CTX"/server153/cnet/*/{dbhome,dbdata,dblogs,backup,dbhomewdb,backupwdb}
+  # Drop ALL daemon storage state: a partial WDB copy (root-owned files fail
+  # mid-cp) breaks storage init ("Initialize storage environment failed").
+  rm -rf "$CTX"/server153/cnet/*/{dbhome,dbdata,dblogs,backup,dbhomewdb,unamewdb,backupwdb}
   cp "$CF/Dockerfile" "$CF/entrypoint.sh" "$CF/health-server.py" "$CTX/"
   du -sh "$CTX"
 }
