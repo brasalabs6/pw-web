@@ -33,7 +33,9 @@
 #include "EC_InputCtrl.h"
 #include "ECScriptMan.h"
 #include "ECScriptContext.h"
-#include "ECSCriptCheckState.h"
+//	The real header is ECScriptCheckState.h; the original include relied
+//	on the Windows case-insensitive resolution.
+#include "ECScriptCheckState.h"
 #include "ElementSkill.h"
 #include "EC_AutoPolicy.h"
 #include "EC_PlayerWrapper.h"
@@ -774,7 +776,10 @@ CECNPC* CECNPCMan::CreateNPC(const S2C::info_npc& Info, bool bBornInSight)
 	{
 		delete pNPC;
 		glb_ErrorOutput(ECERR_FAILEDTOCALL, "CECNPCMan::CreateNPC", __LINE__);
-		return false;
+		//	The original returned false where the declared return type is
+		//	a pointer (an MSVC-only acceptance); the null pointer carries
+		//	the same failure meaning.
+		return NULL;
 	}
 
 	return pNPC;
