@@ -58,6 +58,11 @@ inline void SetLastError(DWORD error) { *ThreadLastErrorSlot() = error; }
 #define MAX_PATH 260
 #endif
 
+//	The MSVC CRT name of the same path-length constant (stdlib.h).
+#ifndef _MAX_PATH
+#define _MAX_PATH 260
+#endif
+
 #ifndef MAXBYTE
 #define MAXBYTE 255
 #endif
@@ -139,6 +144,9 @@ typedef std::int32_t HRESULT;
 #endif
 #ifndef E_INVALIDARG
 #define E_INVALIDARG 0x80070057
+#endif
+#ifndef E_OUTOFMEMORY
+#define E_OUTOFMEMORY 0x8007000E
 #endif
 #ifndef S_OK
 #define S_OK 0
