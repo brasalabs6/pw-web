@@ -124,7 +124,10 @@ void AP_ActionEvent(int iEvent, int iParam)
 
 const char* AP_GetActionName(int iAction)
 {
-#define CONVERT_TYPE_TO_TEXT(iAction) case CECPlayerWrapper::##iAction: return #iAction;
+	//	The original pasted the parameter onto the scope operator
+	//	(CECPlayerWrapper::##iAction, an MSVC-only laxity that forms the
+	//	invalid token ::ACTION_IDLE); the parameter expands without it.
+#define CONVERT_TYPE_TO_TEXT(iAction) case CECPlayerWrapper::iAction: return #iAction;
 
 	switch(iAction)
 	{
