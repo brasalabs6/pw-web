@@ -15,7 +15,7 @@
 5. Vincular ao épico/workorder existente. Não substituir roadmap nem modificar PR #17 do servidor sem coordenação; seguir `AGENTS.md` (PR único do cliente, sem self-merge).
 6. Revisões futuras podem registrar novas issues **quando efetivamente executadas**; esta pasta não representa monitoramento automático em background.
 
-## Índice de 21 achados de portabilidade e funcionamento
+## Índice de 21 achados de portabilidade e funcionamento (20 abertos, 1 resolvido)
 
 | ID | Prioridade | Estado | Título | Épico |
 |---|---|---|---|---|
@@ -42,7 +42,7 @@
 
 | [PW23-020](PW23-020-assets-streaming-cache-cloudflare-pending.md) | P2 | open | Streaming/caching/Cloudflare de cliente completo continuam não implementados | [e15-assets-streaming-perf-v1](../epics/e15-assets-streaming-perf-v1/README.md) |
 
-| [PW23-038](PW23-038-ddraw-struct-layout-ci-regression.md) | P1 | open | CI falha: DDSURFACEDESC2 136 vs 124 bytes em host 64-bit | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
+| [PW23-038](PW23-038-ddraw-struct-layout-ci-regression.md) | P1 | resolved | Regressão de layout DDS 64-bit corrigida no commit 368c9da; CI #158 verde | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
 
 **Triagem sugerida:** começar por memória/lock e compatibilidade de wire (001–004), depois shims obrigatórios + link do jogo (006–009, 014, 019). Qualidade de testes e evidência (013/017) devem acompanhar cada milestone.
 
