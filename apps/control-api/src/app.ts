@@ -1,4 +1,5 @@
 import {Hono} from 'hono';
+import {createPublicKey,verify as verifySignature} from 'node:crypto';
 import {getCookie,setCookie,deleteCookie} from 'hono/cookie';
 import {z} from 'zod';
 import {connectDb,type Db} from '@pw/database';
@@ -332,21 +333,46 @@ app.post('/v1/admin/releases/:kind/:id/status',async c=>{
   await audit(db,u.id,'release.'+kind+'.'+input.status,q.rows[0].id,{evidenceUrl:input.evidenceUrl});
   return c.json({release:q.rows[0]});
 });
-// Only trusted probes can update readiness. TCP reachability alone never implies gameplay ready.
-// An external probe MUST verify login, role and entry world before sending gameplayReady=true.
+// Only a probe authorized by the deployment environment can attest gameplay health.
+// Bearer credential alone must NEVER be enough to mark a world READY.
 app.post('/v1/internal/deployments/:id/health',async c=>{
   const expected=process.env.AGENT_SHARED_TOKEN;
-  if(!expected||expected.length<32||c.req.header('Authorization')!=='Bearer '+expected)return fail(c,403,'Forbidden');
+  if(!expected||expected.length<32||c.req.header('Authorization')!=='Bearer '+expected)
+    return fail(c,403,'Forbidden');
   const input=await json(c,z.object({
+    checkedAt:z.iso.datetime({offset:true}),
     daemonsReady:z.boolean(),gsReady:z.boolean(),loginAndEnterWorldPassed:z.boolean(),
-    evidenceUrl:z.url()
-  }));if(!input)return fail(c,422,'Invalid health proof');
+    evidenceUrl:z.url().startsWith('https://'),
+    signature:z.base64()
+  }));if(!input)return fail(c,422,'Invalid health attestation');
+  const configuredKey=process.env.HEALTH_PROOF_PUBLIC_KEY_SPKI_B64;
+  if(!configuredKey)return fail(c,503,'Health proof trust root not configured');
+  const stamp=Date.parse(input.checkedAt);
+  if(!Number.isFinite(stamp)||Math.abs(Date.now()-stamp)>20000)
+    return fail(c,422,'Health proof timestamp expired or in future');
+  const deploymentId=c.req.param('id');
+  if(!z.string().uuid().safeParse(deploymentId).success)return fail(c,422,'Invalid deployment id');
+  const payload=['pw-gameplay-health-v1',deploymentId,input.checkedAt,
+    String(input.daemonsReady),String(input.gsReady),
+    String(input.loginAndEnterWorldPassed),input.evidenceUrl].join('\n');
+  let valid=false;
+  try {
+    const publicKey=createPublicKey({key:Buffer.from(configuredKey,'base64'),format:'der',type:'spki'});
+    valid=verifySignature(null,Buffer.from(payload),publicKey,Buffer.from(input.signature,'base64'));
+  }catch{valid=false}
+  if(!valid)return fail(c,403,'Invalid gameplay health signature');
   const ready=input.daemonsReady&&input.gsReady&&input.loginAndEnterWorldPassed;
-  const q=await db.query(
-    "UPDATE deployments SET state=$2,health_checked_at=now(),updated_at=now() WHERE id=$1 RETURNING realm_id",
-    [c.req.param('id'),ready?'ready':'degraded']);
-  if(!q.rowCount)return fail(c,404,'Unknown deployment');
+  const tx=await db.connect();
+  try{
+    await tx.query('BEGIN');
+    const q=await tx.query(
+      "UPDATE deployments SET state=$2,health_checked_at=now(),updated_at=now() WHERE id=$1 RETURNING realm_id",
+      [deploymentId,ready?'ready':'degraded']);
+    if(!q.rowCount){await tx.query('ROLLBACK');return fail(c,404,'Unknown deployment')}
+    await tx.query('INSERT INTO audit_events(action,resource,details) VALUES($1,$2,$3)',
+      ['deployment.health.report',deploymentId,JSON.stringify({ready,checkedAt:input.checkedAt,evidenceUrl:input.evidenceUrl})]);
+    await tx.query('COMMIT');
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
   return c.json({ready,gameplayProof:ready,evidenceUrl:input.evidenceUrl});
 });
-
 export {app};
