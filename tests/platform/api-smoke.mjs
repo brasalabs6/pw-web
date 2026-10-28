@@ -86,16 +86,26 @@ r=await json('/v1/launcher/sessions','POST',{realmId,expectedPairingId:pairingId
 assert.equal(r.status,200,JSON.stringify(r.data));
 const ticket=r.data.bootstrap.gateway.ticket;
 const gatewayBearer={Authorization:'Bearer '+process.env.GATEWAY_CONTROL_TOKEN};
-r=await json('/v1/internal/tickets/consume','POST',{ticket,deploymentId},undefined,gatewayBearer);
-assert.equal(r.status,200,'first ticket use should succeed');
+const outcomes=await Promise.all([
+  json('/v1/internal/tickets/consume','POST',{ticket,deploymentId},undefined,gatewayBearer),
+  json('/v1/internal/tickets/consume','POST',{ticket,deploymentId},undefined,gatewayBearer)
+]);
+assert.deepEqual(outcomes.map(x=>x.status).sort(),[200,401],
+  'exactly one concurrent consumer may use a GNET ticket');
 r=await json('/v1/internal/tickets/consume','POST',{ticket,deploymentId},undefined,gatewayBearer);
 assert.equal(r.status,401,'ticket replay must fail');
-// Wrong credentials are throttled across requests at the database layer.
-for(let i=0;i<8;i++){
- const invalid=await json('/v1/auth/login','POST',{email:'no-one-'+Date.now()+'@example.invalid',password:'wrong'});
- // test uses varied addresses, only validates missing-user behavior here
- assert.equal(invalid.status,401);
+// Durable brute-force throttling: the ninth attempt is denied across requests.
+const blockedEmail='blocked-'+Date.now()+'@example.invalid';
+for(let i=0;i<9;i++){
+  const invalid=await json('/v1/auth/login','POST',{email:blockedEmail,password:'wrong'});
+  assert.equal(invalid.status,i<8?401:429,'login attempt '+i);
 }
+// Logging out must revoke an unconsumed game ticket by FK CASCADE.
+r=await json('/v1/launcher/sessions','POST',{realmId,expectedPairingId:pairingId,expectedClientDigest:clientDigest},cookie);
+assert.equal(r.status,200,'synthetic ready fixture can issue ticket');
+const outstandingTicket=r.data.bootstrap.gateway.ticket;
 r=await json('/v1/auth/logout','POST',undefined,cookie);assert.equal(r.status,200);
 r=await json('/v1/auth/me','GET',undefined,cookie);assert.equal(r.status,401);
+r=await json('/v1/internal/tickets/consume','POST',{ticket:outstandingTicket,deploymentId},undefined,gatewayBearer);
+assert.equal(r.status,401,'logout must revoke outstanding tickets');
 console.log('API smoke passed: identity, atomic realm, idempotency, signed health, release pin, ticket replay and logout (synthetic ready fixture only)');
