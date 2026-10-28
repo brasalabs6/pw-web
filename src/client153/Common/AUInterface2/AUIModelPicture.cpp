@@ -232,7 +232,7 @@ bool AUIModelPicture::Render(void)
 	m_pA3DViewport->ClearDevice();
 
 	DWORD dwTime = a_GetTime();
-	DWORD dwDiff = min(dwTime - m_dwTime, 100);
+	DWORD dwDiff = min(dwTime - m_dwTime, (DWORD)100);	//	explicit DWORD so the seam min overload resolves.
 	m_pA3DModel->Update(dwDiff);
 	m_dwTime = dwTime;
 

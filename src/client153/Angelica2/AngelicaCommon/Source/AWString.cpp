@@ -598,7 +598,7 @@ AWString& AWString::Format(const wchar_t* szFormat, ...)
 	//	exhaust the caller's list, so the sizing pass walks a copy.
 	va_list sizing;
 	va_copy(sizing, argList);
-	int iNumWritten, iMaxLen = GetFormatLen(szFormat, sizing) + 1;
+	int iMaxLen = GetFormatLen(szFormat, sizing) + 1;
 	va_end(sizing);
 
 	s_STRINGDATA* pData = GetData();
