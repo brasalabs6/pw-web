@@ -90,6 +90,18 @@ class ProjectPaths(unittest.TestCase):
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(len(list(objects.glob('*.o'))), 2)
+            single_objects = root / 'single-objects'
+            single = [sys.executable, str(Path(probe.__file__)), '--source', str(root),
+                      '--project', 'main/main.vcproj', '--emxx', str(wrapper),
+                      '--output', str(output), '--object-dir', str(single_objects)]
+            result = subprocess.run(single, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(len(list(single_objects.glob('*.o'))), 1)
+            (main / 'ElementClient.cpp').write_text('#error broken entry\n')
+            result = subprocess.run(single, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(len(list(single_objects.glob('*.o'))), 0)
+            (main / 'ElementClient.cpp').write_text('int main_source() { return 0; }')
             library.write_text('#error extra compilation failed\n')
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0)

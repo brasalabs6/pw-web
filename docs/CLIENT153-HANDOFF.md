@@ -574,3 +574,17 @@ sejam carregadas em gameplay. O inventário revela instruções de textura,
 modificadores, coissue, `phase` e declarações que uma tradução real precisa
 tratar. Nenhum conteúdo proprietário é extraído nem incluído no repositório.
 Reproduzir testes: `python3 -m unittest discover -s tests/assets`.
+
+### Objetos individuais do cliente
+
+O probe aceita `--object-dir` sem `--all`: compila somente `--entry` no
+mesmo diretório de objetos usado pelo link, removendo primeiro um objeto
+anterior para que falhas não preservem uma compilação obsoleta. Por exemplo,
+use os argumentos de probe acima, `--entry EC_Utility.cpp`, `--output` para um
+relatório temporário e `--object-dir` para o diretório de objetos. Também
+foram compilados `EC_CustomizeMgr.cpp` e `EC_IvtrItem.cpp`. No diagnóstico
+local o link passou a incluir 767 objetos e falhou com 4.935 ocorrências de
+símbolos indefinidos; essas contagens são referências repetidas, não testes
+de funcionalidade. Objetos gerados são locais e não são versionados.
+Os testes do probe rodam com `python3 -m unittest discover -s tests/client153
+-p test_project_probe.py`.

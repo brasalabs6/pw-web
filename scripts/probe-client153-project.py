@@ -86,10 +86,8 @@ def main():
     parser.add_argument('--adapted-root', type=Path, help='compile the adapted copy of a source when one exists under this root')
     parser.add_argument('--extra-project', type=Path, action='append', help='additional .vcproj to compile after the main project')
     parser.add_argument('--jobs', type=int, default=4)
-    parser.add_argument('--object-dir', type=Path, help='compile actual WASM objects instead of syntax-only checks (requires --all)')
+    parser.add_argument('--object-dir', type=Path, help='compile the entry or, with --all, every source to WASM objects')
     args = parser.parse_args()
-    if args.object_dir and not args.all:
-        parser.error('--object-dir requires --all')
     if args.jobs < 1 or args.jobs > 16:
         parser.error('--jobs must be between 1 and 16')
     root = args.source.resolve()
@@ -166,6 +164,10 @@ def main():
     for path in includes:
         command += ['-I', str(path)]
     command += ['-D' + d for d in cc['PreprocessorDefinitions'].split(';') if d]
+    if args.object_dir and not args.all:
+        args.object_dir.mkdir(parents=True, exist_ok=True)
+        command = object_command(command, args.object_dir.resolve(), str(entry.relative_to(root)))
+        Path(command[-1]).unlink(missing_ok=True)
     result = subprocess.run(command, capture_output=True, text=True)
     report = dict(project=args.project, configuration=args.configuration, sources=sources,
                   includes=[dict(path=str(p.relative_to(root)) if p.is_relative_to(root) else str(p), exists=p.is_dir()) for p in includes],
