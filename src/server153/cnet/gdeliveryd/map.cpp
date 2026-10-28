@@ -200,6 +200,15 @@ void UserContainer::UserLogin(int userid, const Octets& account, int linksid, in
 
 void UserContainer::UserLogout(UserInfo * pinfo, char kicktype, bool force)
 {
+	// pw-web fix: hold the usercontainer write lock for the whole logout.
+	// The logout path runs without a lock upstream, so a concurrent re-login
+	// (RoleLogin deletes user->role) can free the PlayerInfo under this
+	// function — observed live: RoleLogout hashed role->name after the
+	// re-login freed it (hash<Octets> segfault, gdeliveryd died, every
+	// inter-server link went down with it). The lock serializes logout vs
+	// login. The internal EraseUser below becomes EraseUserNoLock to avoid
+	// the nested acquisition (the safe Scoped wrapper would no-op it).
+	Thread::RWLock::WRScoped l(GetLocker());
 	if(!force && pinfo->status == _STATUS_REMOTE_LOGIN) return;
 	
 	if(kicktype == 0)
@@ -260,7 +269,8 @@ void UserContainer::UserLogout(UserInfo * pinfo, char kicktype, bool force)
 	
 	EraseRemoteOnline(pinfo->userid);
 
-	EraseUser(pinfo->userid);
+	// pw-web: EraseUserNoLock — this function already holds the write lock.
+	EraseUserNoLock(pinfo->userid);
 }
 
 void UserContainer::RoleLogout(UserInfo* user, bool is_cross_related)
@@ -304,8 +314,18 @@ void UserContainer::RoleLogout(UserInfo* user, bool is_cross_related)
 		LogoutRoleTask::Add(*role);
 	}
 
+	// pw-web fix: copy the role name BEFORE the slow logout path. If a
+	// concurrent RoleLogin deletes this PlayerInfo while the sends and
+	// manager calls below are still running, role->name becomes freed
+	// memory and the EraseName hash below segfaults (observed live). The
+	// Octets copy keeps the shared buffer alive independently of the
+	// PlayerInfo lifetime.
+	Octets role_name_copy;
 	if(role->name.size())
-		EraseName( role->name );
+		role_name_copy = role->name;
+
+	if(role->name.size())
+		EraseName( role_name_copy );
 	
 	user->rolelist.SeekToBegin();
 	user->gameid = _GAMESERVER_ID_INVALID;
