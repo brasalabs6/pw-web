@@ -18,6 +18,11 @@
 //	The ATL version gate SafeWinImpl.h checks.
 #define _ATL_VER 0x0800
 
+//\tThe ATL assertion macro (the documented assert spelling; NDEBUG in the
+//\tgame configuration makes it a no-op).
+#include <cassert>
+#define ATLASSERT(expr) assert(expr)
+
 //	The ATL window state flags.
 #define WINSTATE_DESTROYED 0x00000002
 
@@ -55,20 +60,34 @@ public:
     return ::SetTimer(m_hWnd, id, elapse, nullptr);
   }
   BOOL KillTimer(UINT_PTR id) { return ::KillTimer(m_hWnd, id); }
+  //\tThe remaining CWindow members the browser wrapper drives (the
+  //\tdocumented ATL signatures over the Win32 seam functions).
+  int MessageBox(LPCTSTR text, LPCTSTR caption = nullptr, UINT type = MB_OK) {
+    return ::MessageBox(m_hWnd, text, caption, type);
+  }
+  BOOL ShowWindow(int command) { return ::ShowWindow(m_hWnd, command); }
+  BOOL MoveWindow(LPCRECT bounds, BOOL repaint) {
+    return bounds ? ::MoveWindow(m_hWnd, bounds->left, bounds->top,
+                                 bounds->right - bounds->left,
+                                 bounds->bottom - bounds->top, repaint)
+                  : FALSE;
+  }
   HWND m_hWnd;
 };
 
 //\tThe message-map macros: the original expanded to ATL's message map
-//\tmachinery; the adapter's dispatch consumes the same entries.
+//\tmachinery — a ProcessWindowMessage override of the CWindowImpl pure
+//\tvirtual (the entry SafeWinImpl's window procedure dispatches through);
+//\tthe adapter's dispatch consumes the same entries.
 #define BEGIN_MSG_MAP(theClass) \
 public: \
-  LRESULT ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &handled) { \
-    (void)hWnd; (void)uMsg; (void)wParam; (void)lParam; handled = TRUE; \
-    LRESULT result = 0;
+  BOOL ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT &result, DWORD dwMsgMapID) { \
+    (void)hWnd; (void)dwMsgMapID; (void)result; \
+    BOOL handled = TRUE;
 #define MESSAGE_HANDLER(msg, func) \
-    if (uMsg == (msg)) { result = func(uMsg, wParam, lParam, handled); if (handled) return result; }
+    if (uMsg == (msg)) { handled = TRUE; result = func(uMsg, wParam, lParam, handled); if (handled) return TRUE; }
 #define END_MSG_MAP() \
-    return result; \
+    return FALSE; \
   }
 
 #define DECLARE_WND_CLASS(className) \
@@ -119,8 +138,18 @@ public:
     return m_hWnd;
   }
   BOOL DestroyWindow() { return TRUE; }
-  _ATL_MSG *m_pCurrentMsg = nullptr;
+  //\tThe message-map contract (the original CWindowImplRoot pure virtual;
+  //\tthe derived class supplies it through BEGIN_MSG_MAP — the entry
+  //\tSafeWinImpl's window procedure dispatches through).
+  virtual BOOL ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam,
+                                    LPARAM lParam, LRESULT &result,
+                                    DWORD dwMsgMapID) = 0;
+  //\tThe final-message hook (the original CWindowImplRoot default; the
+  //\tsafe window procedure calls it after the window is destroyed).
+  virtual void OnFinalMessage(HWND hWnd) { (void)hWnd; }
+  const _ATL_MSG *m_pCurrentMsg = nullptr;
   HWND m_hWnd = nullptr;
+  DWORD m_dwState = 0;
   WNDPROC m_pfnSuperWindowProc = &DefWindowProcWrapper;
   static LRESULT DefWindowProcWrapper(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return ::DefWindowProc(hWnd, msg, wParam, lParam);

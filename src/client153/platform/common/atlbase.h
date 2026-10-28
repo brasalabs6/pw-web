@@ -112,6 +112,15 @@ public:
   CComVariant() { vt = VT_EMPTY; }
   CComVariant(int value) { vt = VT_I4; lVal = value; }
   CComVariant(const wchar_t *value) { vt = VT_BSTR; bstrVal = SysAllocString(value); }
+  //\tThe narrow-string constructor (the original converted through the
+  //\tOLE conversion macros; the port routes through the strict conversion
+  //\tabove).
+  CComVariant(const char *value) { vt = VT_BSTR; bstrVal = SysAllocString(A2W_helper(value)); }
+  //\tCopy construction: the original deep-copies a BSTR value
+  //\t(CopyIndirect); a shallow union copy would hand both variants the
+  //\tsame string and free it twice.
+  CComVariant(const CComVariant &other) { CopyVariant(other); }
+  CComVariant(const tagVARIANT &other) { CopyVariant(other); }
   ~CComVariant() { Clear(); }
   void Clear() {
     if (vt == VT_BSTR && bstrVal) {
@@ -121,6 +130,20 @@ public:
     vt = VT_EMPTY;
   }
   CComVariant &operator=(int value) { Clear(); vt = VT_I4; lVal = value; return *this; }
+  CComVariant &operator=(const CComVariant &other) {
+    if (this != &other) {
+      Clear();
+      CopyVariant(other);
+    }
+    return *this;
+  }
+
+private:
+  void CopyVariant(const tagVARIANT &other) {
+    *static_cast<tagVARIANT *>(this) = other;
+    if (vt == VT_BSTR)
+      bstrVal = SysAllocString(other.bstrVal);
+  }
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -264,7 +287,12 @@ public:
 template <class T>
 class CComObject : public T {
 public:
-  static CComObject<T> *CreateInstance() { return new CComObject<T>(); }
+  //\tThe documented ATL creation form (out-parameter + HRESULT, the form
+  //\tthe browser container's sink creation uses).
+  static HRESULT CreateInstance(CComObject<T> **result) {
+    *result = new CComObject<T>();
+    return S_OK;
+  }
 };
 
 template <class T>

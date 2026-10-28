@@ -32,6 +32,11 @@ struct IWebBrowser2 : IDispatch {
   virtual HRESULT Stop() = 0;
   virtual HRESULT Navigate(BSTR url, VARIANT *flags, VARIANT *targetFrame,
                            VARIANT *postData, VARIANT *headers) = 0;
+  //\tNavigate2: the wrapper's primary navigation entry (the documented
+  //\tfive-argument form the browser container drives).
+  virtual HRESULT Navigate2(VARIANT *url, VARIANT *flags,
+                            VARIANT *targetFrame, VARIANT *postData,
+                            VARIANT *headers) = 0;
   virtual HRESULT get_Busy(VARIANT_BOOL *busy) = 0;
   virtual HRESULT get_Document(IDispatch **document) = 0;
   virtual HRESULT get_LocationURL(BSTR *url) = 0;
@@ -54,6 +59,10 @@ struct IHTMLStyle : IDispatch {
   virtual HRESULT put_width(VARIANT width) = 0;
   virtual HRESULT get_height(VARIANT *height) = 0;
   virtual HRESULT put_height(VARIANT height) = 0;
+  //\tput_overflow: the wrapper sets the document body's overflow; the
+  //\tcall site passes a string literal, so the parameter is the
+  //\tconst-correct spelling of the BSTR setter.
+  virtual HRESULT put_overflow(const wchar_t *overflow) = 0;
 };
 struct IHTMLStyle2 : IHTMLStyle {};
 struct IHTMLStyle3 : IHTMLStyle2 {};
@@ -68,6 +77,9 @@ struct IHTMLElement2 : IHTMLElement {
   virtual HRESULT put_scrollTop(LONG top) = 0;
   virtual HRESULT get_scrollLeft(LONG *left) = 0;
   virtual HRESULT put_scrollLeft(LONG left) = 0;
+  //\tget_scrollHeight: the wrapper reports the document height to the
+  //\tgame's scroll bar.
+  virtual HRESULT get_scrollHeight(LONG *height) = 0;
 };
 struct IHTMLDocument : IDispatch {};
 struct IHTMLDocument2 : IHTMLDocument {

@@ -19,7 +19,28 @@
 #include "EC_TimeSafeChecker.h"
 //#include "ExplorerMan.h"
 
-BOOL PreTranslateMessage(const MSG& msg,CPWBrowser* pBrowser) 
+#include <cstdio>
+
+//\tThe IE/MSHTML container cannot exist in a browser sandbox: the ATL host
+//\tseams (AtlAxGetControl/AtlAxWinInit) fail explicitly, so the control is
+//\tnever created and every request through it fails. The first request
+//\treports the limitation once.
+static void PWBrowser_IEUnavailable()
+{
+	static bool logged = false;
+	if (!logged)
+	{
+		logged = true;
+		std::fprintf(stderr,
+			"pw-browser: the in-game IE/MSHTML web browser is unavailable in "
+			"the browser build (an IE ActiveX container cannot exist in a "
+			"browser sandbox); navigation and browser-control requests fail "
+			"explicitly. Declared limitation: in-game web pages need an "
+			"HTML-overlay implementation later.\n");
+	}
+}
+
+BOOL PreTranslateMessage(const MSG& msg,CPWBrowser* pBrowser)
 {
 	//add by lzh to solve the msg problem of webbrowser
 	if(pBrowser!=NULL)
@@ -377,7 +398,7 @@ LRESULT CPWBrowser::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 			m_hwndBackIE = CreateWindow(_T("AtlAxWin"), _T("Shell.Explorer.2"), WS_CHILD, 0, 0, 10, 10, 
 				m_hWnd, (HMENU)100, GetModuleHandle(NULL), NULL); 
 			
-			SetWindowText(szPWB_ClassTitle);
+			SetWindowTextW(szPWB_ClassTitle);	//	the UNICODE SetWindowText macro resolved to the wide member; the port names it explicitly.
 			
 			CComPtr<IUnknown>	 punkIE;
 			CComPtr<IUnknown>	 punkBackIE;
@@ -427,7 +448,11 @@ LRESULT CPWBrowser::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 				{
 					MessageBox(_T("获取浏览器控件IWebBrowser2接口失败"), _T("警告"), MB_OK|MB_ICONWARNING) ;
 					CWindow::DestroyWindow();
-				}	
+				}
+			}
+			else
+			{
+				PWBrowser_IEUnavailable();	//	the container creation is the root failure; every later request no-ops.
 			}
 			m_hUrlMutex = CreateMutex(NULL,FALSE,NULL);
 			SetTimer(PWB_Timer1,PWB_Timer1_SLAP);
@@ -512,29 +537,36 @@ LRESULT CPWBrowser::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 		}
 		if(m_upUrl)
 		{
-			CComVariant vempty;		
+			CComVariant vempty;
 			m_upUrl = FALSE;
 			if(((IWebBrowser2*)m_pWB2))
 				m_pWB2->Navigate2( &m_Url, &vempty, &vempty, &vempty, &vempty );
-	
+			else
+				PWBrowser_IEUnavailable();	//	the queued navigation request fails (no IE control).
 		}
 		if(m_upRefresh)
 		{
 			m_upRefresh = FALSE;
 			if(((IWebBrowser2*)m_pWB2))
 				m_pWB2->Refresh();
+			else
+				PWBrowser_IEUnavailable();	//	the queued refresh request fails (no IE control).
 		}
 		if(m_upGoBackward)
-		{ 
+		{
 			m_upGoBackward = FALSE;
 			if(((IWebBrowser2*)m_pWB2))
 				m_pWB2->GoForward();
+			else
+				PWBrowser_IEUnavailable();	//	the queued history request fails (no IE control).
 		}
 		if(m_upGoForward)
 		{
 			m_upGoForward = FALSE;
 			if(((IWebBrowser2*)m_pWB2))
 				m_pWB2->GoBack();
+			else
+				PWBrowser_IEUnavailable();	//	the queued history request fails (no IE control).
 		}
 		if (m_upNavigate)
 		{
@@ -556,9 +588,13 @@ LRESULT CPWBrowser::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 						if (m_LocalUrl.GetLength() > 200)
 						{
 							m_LocalUrl.CutRight(m_LocalUrl.GetLength() - 200);
-						}						
+						}
 					}
-				}	
+				}
+				else
+				{
+					PWBrowser_IEUnavailable();	//	the URL query fails (no IE control).
+				}
 				ReleaseMutex(m_hUrlMutex);
 			}
 		}
@@ -666,24 +702,29 @@ BOOL CPWBrowser::AddDownloadUrl(WCHAR *FileUrl)
 
 VOID CPWBrowser::DelayDestroy()
 {
-	QueueUserAPC(APCDestroyWindowProc,m_hthread,(ULONG_PTR)this);
+	if(!QueueUserAPC(APCDestroyWindowProc,m_hthread,(ULONG_PTR)this))
+		PWBrowser_IEUnavailable();	//	the deferred destroy fails (no APC queue); the object is not deleted.
 }
 
 void CPWBrowser::NavigateUrl(const CHAR *Url)
 {
 	WaitForSingleObject(m_hUrlMutex,INFINITE);
 	if(m_dwThreadId!=GetCurrentThreadId())
-	{	
+	{
 		CComVariant vUrl(Url);
 		m_Url =vUrl;
 		m_upUrl = TRUE;
 	}
 	else
-	{	
+	{
 		CComVariant vempty, vUrl(Url);
 		if(((IWebBrowser2*)m_pWB2))
 		{
-			m_pWB2->Navigate2 ( &vUrl, &vempty, &vempty, &vempty, &vempty );	
+			m_pWB2->Navigate2 ( &vUrl, &vempty, &vempty, &vempty, &vempty );
+		}
+		else
+		{
+			PWBrowser_IEUnavailable();	//	the navigation request fails (no IE control).
 		}
 	}
 	ReleaseMutex(m_hUrlMutex);
@@ -693,17 +734,21 @@ void CPWBrowser::NavigateUrl(VARIANT* pvUrl)
 {
 	WaitForSingleObject(m_hUrlMutex,INFINITE);
 	if(m_dwThreadId!=GetCurrentThreadId())
-	{	
+	{
 		CComVariant vUrl(*pvUrl);
 		m_Url =vUrl;
 		m_upUrl = TRUE;
 	}
 	else
-	{	
+	{
 		CComVariant vempty, vUrl(*pvUrl);
 		if(((IWebBrowser2*)m_pWB2))
 		{
-			m_pWB2->Navigate2 ( &vUrl, &vempty, &vempty, &vempty, &vempty );	
+			m_pWB2->Navigate2 ( &vUrl, &vempty, &vempty, &vempty, &vempty );
+		}
+		else
+		{
+			PWBrowser_IEUnavailable();	//	the navigation request fails (no IE control).
 		}
 	}
 	ReleaseMutex(m_hUrlMutex);
@@ -713,17 +758,21 @@ void CPWBrowser::NavigateUrl(const WCHAR *Url)
 {
 	WaitForSingleObject(m_hUrlMutex,INFINITE);
 	if(m_dwThreadId!=GetCurrentThreadId())
-	{	
+	{
 		CComVariant vUrl(Url);
 		m_Url =vUrl;
 		m_upUrl = TRUE;
 	}
 	else
-	{	
+	{
 		CComVariant vempty, vUrl(Url);
 		if(((IWebBrowser2*)m_pWB2))
 		{
-			m_pWB2->Navigate2 ( &vUrl, &vempty, &vempty, &vempty, &vempty );	
+			m_pWB2->Navigate2 ( &vUrl, &vempty, &vempty, &vempty, &vempty );
+		}
+		else
+		{
+			PWBrowser_IEUnavailable();	//	the navigation request fails (no IE control).
 		}
 	}
 	ReleaseMutex(m_hUrlMutex);
@@ -733,14 +782,18 @@ void CPWBrowser::GoForward()
 {
 	WaitForSingleObject(m_hUrlMutex,INFINITE);
 	if(m_dwThreadId!=GetCurrentThreadId())
-	{	
+	{
 		m_upGoForward = TRUE;
 	}
 	else
 	{
 		if(((IWebBrowser2*)m_pWB2))
-		{			
-			m_pWB2->GoForward();	
+		{
+			m_pWB2->GoForward();
+		}
+		else
+		{
+			PWBrowser_IEUnavailable();	//	the navigation request fails (no IE control).
 		}
 	}
 	ReleaseMutex(m_hUrlMutex);
@@ -750,14 +803,18 @@ void CPWBrowser::GoBackward()
 {
 	WaitForSingleObject(m_hUrlMutex,INFINITE);
 	if(m_dwThreadId!=GetCurrentThreadId())
-	{	
+	{
 		m_upGoBackward = TRUE;
 	}
 	else
 	{
 		if(((IWebBrowser2*)m_pWB2))
 		{
-			m_pWB2->GoBack();	
+			m_pWB2->GoBack();
+		}
+		else
+		{
+			PWBrowser_IEUnavailable();	//	the navigation request fails (no IE control).
 		}
 	}
 	ReleaseMutex(m_hUrlMutex);
@@ -768,14 +825,18 @@ void CPWBrowser::Refresh()
 {
 	WaitForSingleObject(m_hUrlMutex,INFINITE);
 	if(m_dwThreadId!=GetCurrentThreadId())
-	{	
+	{
 		m_upRefresh = TRUE;
 	}
 	else
-	{	
+	{
 		if(((IWebBrowser2*)m_pWB2))
 		{
 			m_pWB2->Refresh();
+		}
+		else
+		{
+			PWBrowser_IEUnavailable();	//	the navigation request fails (no IE control).
 		}
 	}
 	ReleaseMutex(m_hUrlMutex);
@@ -933,7 +994,7 @@ void CPWBrowser::DocumentComplete(IDispatch* pDisp,VARIANT* URL)
 		if (!spDoc) break;
 		
 		CComPtr<IHTMLDocument2> spDoc2;
-		spDoc->QueryInterface(IID_IHTMLDocument2, (void **)&spDoc2);
+		spDoc->QueryInterface(IID_IHTMLDocument2(), (void **)&spDoc2);	//	the port exposes the GUID through an accessor.
 		if (!spDoc2) break;
 		
 		CComPtr<IHTMLElement> spBody;
@@ -941,20 +1002,20 @@ void CPWBrowser::DocumentComplete(IDispatch* pDisp,VARIANT* URL)
 		if (!spBody) break;
 		
 		CComPtr<IHTMLElement2> spElement2;
-		spBody->QueryInterface(IID_IHTMLElement2,(void**)&spElement2);
+		spBody->QueryInterface(IID_IHTMLElement2(),(void**)&spElement2);	//	the port exposes the GUID through an accessor.
 		if (spElement2)
 		{
 			long scroll_height;
 			// 向下滚动100个像素
 			spElement2->put_scrollTop( 0 ); 
 			// 获得滚动条高度
-			spElement2->get_scrollHeight( &scroll_height );
+			spElement2->get_scrollHeight( (LONG*)&scroll_height );	//	the original local was 32-bit long; the port's LONG is a distinct type.
 			SetScrollHeight( scroll_height);
 			// 获得滚动条宽度
 			// pElement->get_scrollWidth( &scroll_width );
 			// 获得滚动条位置，从顶端开始
 			long scroll_top;
-			spElement2->get_scrollTop( &scroll_top );
+			spElement2->get_scrollTop( (LONG*)&scroll_top );	//	the original local was 32-bit long; the port's LONG is a distinct type.
 			SetScrollPos(scroll_top);
 		}
 		

@@ -34,6 +34,17 @@ public:
     m_hWnd = nullptr;
     return m_hWnd;
   }
+  //\tThe external UI handler registration (the documented
+  //\tIDocHostUIHandlerDispatch hookup). The adapter supplies the real
+  //\thost; until it registers, the registration fails explicitly. The
+  //\tparameter stays generic: the seam's IDispatchImpl resolves the
+  //\tdispatch by type, so the wrapper's handler object carries no
+  //\tdispatch-interface conversion to bind here.
+  template <class Handler>
+  HRESULT SetExternalUIHandler(Handler *handler) {
+    (void)handler;
+    return E_FAIL;
+  }
 };
 
 //\tControl retrieval: resolves the hosted control's dispatch interface.

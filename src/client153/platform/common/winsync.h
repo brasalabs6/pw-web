@@ -590,6 +590,20 @@ inline BOOL CloseHandle(HANDLE handle) {
   CreateMutexW(attributes, initialOwner, name)
 #endif
 
+//	The APC queue: the browser target has no Win32 APC queues (the
+//	hosted threads are std::thread); the queue request fails and the
+//	caller's error path handles it (the browser wrapper's deferred
+//	window move/destroy stay unqueued).
+typedef VOID(WINAPI *PAPCFUNC)(ULONG_PTR parameter);
+
+inline BOOL QueueUserAPC(PAPCFUNC function, HANDLE thread,
+                         ULONG_PTR parameter) {
+  (void)function;
+  (void)thread;
+  (void)parameter;
+  return FALSE;
+}
+
 //	The legacy thread entry: the same real thread object as _beginthreadex
 //	with the void-returning start signature.
 inline HANDLE _beginthread(void (*start)(void *), unsigned stackSize,
