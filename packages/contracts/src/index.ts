@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const realmStatus = z.enum(['offline', 'maintenance', 'starting', 'online']);
 export const releaseStatus = z.enum(['draft', 'validated', 'published', 'revoked']);
-export const operationStatus = z.enum(['queued', 'dispatched', 'running', 'ready', 'failed', 'cancelled', 'blocked']);
+export const operationStatus = z.enum(['queued', 'dispatching', 'dispatched', 'running', 'ready', 'failed', 'cancelled', 'blocked']);
 export const previewKind = z.enum(['client', 'server', 'paired']);
 
 export const catalogRealm = z.object({
@@ -24,8 +24,24 @@ export const registerInput = z.object({
 export const loginInput = z.object({email: z.email(), password: z.string()});
 export const launcherSessionInput = z.object({
   realmId: z.string().uuid(),
-  channel: z.enum(['stable','beta','preview']).default('stable')
+  channel: z.enum(['stable','beta','preview']).default('stable'),
+  expectedPairingId: z.string().uuid(),
+  expectedClientDigest: z.string().regex(/^[a-f0-9]{64}$/)
 });
+export const launchReleaseInput = z.object({
+  realmId: z.string().uuid(),
+  channel: z.literal('stable').default('stable')
+});
+export type LaunchRelease = {
+  schema: 2;
+  realmId: string;
+  channel: string;
+  pairingId: string;
+  client: { version: string; releaseDigest: string; manifestUrl: string };
+  server: { version: string; releaseDigest: string; deploymentId: string };
+  assetBaseUrl: string;
+};
+
 export const createRealmInput = z.object({
   slug: z.string().regex(/^[a-z0-9][a-z0-9-]{2,47}$/),
   name: z.string().min(3).max(100),

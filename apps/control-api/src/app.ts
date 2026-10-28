@@ -40,10 +40,25 @@ const audit=async (db:Db,actor:string,action:string,resource:string,details:unkn
   await db.query('INSERT INTO audit_events(actor_id,action,resource,details) VALUES($1,$2,$3,$4)',[actor,action,resource,JSON.stringify(details)]);
 };
 
+// Shared durable rate limiting; works across control-api processes and fails closed.
+const authThrottle=async(action:'login'|'register', email:string) => {
+  const key=sha256('pw-auth-v1:'+action+':'+email.toLowerCase());
+  const q=await db.query(\`INSERT INTO auth_rate_buckets(key_sha256,attempts,bucket_start)
+    VALUES($1,1,now()) ON CONFLICT(key_sha256) DO UPDATE SET
+    attempts=CASE WHEN auth_rate_buckets.bucket_start < now()-interval '15 minutes'
+      THEN 1 ELSE auth_rate_buckets.attempts+1 END,
+    bucket_start=CASE WHEN auth_rate_buckets.bucket_start < now()-interval '15 minutes'
+      THEN now() ELSE auth_rate_buckets.bucket_start END
+    RETURNING attempts\`,[key]);
+  return {key, allowed:q.rows[0].attempts <= (action==='login'?8:3)};
+};
+
 app.get('/healthz',c=>c.json({status:'alive',service:'control-api'}));
 app.get('/readyz',async c=>{try{await db.query('SELECT 1');return c.json({status:'ready'})}catch{return fail(c,503,'database unavailable')}});
 app.post('/v1/auth/register',async c=>{
   const input=await json(c,registerInput);if(!input)return fail(c,422,'Invalid registration input');
+  const throttle=await authThrottle('register',input.email);
+  if(!throttle.allowed)return c.json({error:'Registration temporarily restricted'},429);
   const exists=await db.query('SELECT 1 FROM users WHERE email=$1',[input.email]);if(exists.rowCount)return fail(c,409,'Email already registered');
   const q=await db.query(
     'INSERT INTO users(email,display_name,password_hash) VALUES($1,$2,$3) RETURNING id,email,display_name,role',
@@ -52,10 +67,13 @@ app.post('/v1/auth/register',async c=>{
 });
 app.post('/v1/auth/login',async c=>{
   const input=await json(c,loginInput);if(!input)return fail(c,422,'Invalid credentials');
+  const throttle=await authThrottle('login',input.email);
+  if(!throttle.allowed)return c.json({error:'Too many login attempts. Try again later.'},429);
   const q=await db.query('SELECT * FROM users WHERE email=$1',[input.email.toLowerCase()]);
   const user=q.rows[0];if(!user||!verifyPassword(input.password,user.password_hash))return fail(c,401,'Invalid credentials');
   const token=randomToken();
   await db.query('INSERT INTO web_sessions(user_id,token_sha256,expires_at) VALUES($1,$2,now()+interval \'7 days\')',[user.id,sha256(token)]);
+  await db.query('DELETE FROM auth_rate_buckets WHERE key_sha256=$1',[throttle.key]);
   setCookie(c,'pw_session',token,cookieOpts);
   return c.json({user:{id:user.id,email:user.email,displayName:user.display_name,role:user.role}});
 });
@@ -148,13 +166,19 @@ app.get('/v1/admin/overview',async c=>{
 app.post('/v1/admin/realms',async c=>{
   const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
   const input=await json(c,createRealmInput);if(!input)return fail(c,422,'Invalid realm');
-  const q=await db.query(
-    'INSERT INTO realms(slug,name,description,default_channel) VALUES($1,$2,$3,$4) ON CONFLICT(slug) DO NOTHING RETURNING *',
-    [input.slug,input.name,input.description,input.defaultChannel]);
-  if(!q.rowCount)return fail(c,409,'Realm slug already exists');
-  await db.query('INSERT INTO realm_channels(realm_id,name) VALUES($1,$2)',[q.rows[0].id,input.defaultChannel]);
-  await audit(db,u.id,'realm.create',q.rows[0].id,{slug:input.slug});
-  return c.json({realm:q.rows[0]},201);
+  const tx=await db.connect();
+  try{
+    await tx.query('BEGIN');
+    const q=await tx.query(
+      'INSERT INTO realms(slug,name,description,default_channel) VALUES($1,$2,$3,$4) ON CONFLICT(slug) DO NOTHING RETURNING *',
+      [input.slug,input.name,input.description,input.defaultChannel]);
+    if(!q.rowCount){await tx.query('ROLLBACK');return fail(c,409,'Realm slug already exists')}
+    await tx.query('INSERT INTO realm_channels(realm_id,name) VALUES($1,$2)',[q.rows[0].id,input.defaultChannel]);
+    await tx.query('INSERT INTO audit_events(actor_id,action,resource,details) VALUES($1,$2,$3,$4)',
+      [u.id,'realm.create',q.rows[0].id,JSON.stringify({slug:input.slug})]);
+    await tx.query('COMMIT');
+    return c.json({realm:q.rows[0]},201);
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
 });
 app.patch('/v1/admin/realms/:id',async c=>{
   const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
@@ -220,13 +244,29 @@ app.post('/v1/admin/previews',async c=>{
   const input=await json(c,createPreviewInput);if(!input)return fail(c,422,'Invalid preview');
   const key=c.req.header('Idempotency-Key');
   if(!key||key.length<12||key.length>120)return fail(c,422,'Idempotency-Key required (12-120 chars)');
-  const q=await db.query(
-    `INSERT INTO operation_jobs(kind,payload,actor_id,idempotency_key)
-      VALUES('preview.create',$1,$2,$3)
-      ON CONFLICT(idempotency_key) DO UPDATE SET idempotency_key=EXCLUDED.idempotency_key
-      RETURNING id,kind,state,payload,created_at`,[JSON.stringify(input),u.id,key]);
-  await audit(db,u.id,'preview.request',q.rows[0].id,input);
-  return c.json({operation:q.rows[0]},202);
+  const tx=await db.connect();
+  try{
+    await tx.query('BEGIN');
+    const inserted=await tx.query(
+      `INSERT INTO operation_jobs(kind,payload,actor_id,idempotency_key)
+        VALUES('preview.create',$1,$2,$3)
+        ON CONFLICT(idempotency_key) DO NOTHING
+        RETURNING id,kind,state,payload,created_at`,[JSON.stringify(input),u.id,key]);
+    if(inserted.rowCount){
+      await tx.query('INSERT INTO audit_events(actor_id,action,resource,details) VALUES($1,$2,$3,$4)',
+        [u.id,'preview.request',inserted.rows[0].id,JSON.stringify(input)]);
+      await tx.query('COMMIT');
+      return c.json({operation:inserted.rows[0]},202);
+    }
+    const existing=await tx.query(
+      'SELECT id,kind,state,payload,created_at,actor_id FROM operation_jobs WHERE idempotency_key=$1',[key]);
+    const x=existing.rows[0];
+    if(!x || x.actor_id!==u.id || JSON.stringify(x.payload)!==JSON.stringify(input)){
+      await tx.query('ROLLBACK');return fail(c,409,'Idempotency key already used for another operation');
+    }
+    await tx.query('COMMIT');
+    return c.json({operation:{id:x.id,kind:x.kind,state:x.state,payload:x.payload,created_at:x.created_at}},202);
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
 });
 app.get('/v1/admin/jobs',async c=>{
   if(!mustAdmin(c))return fail(c,403,'Operator required');
