@@ -40,6 +40,7 @@
 
 #include "EC_TimeSafeChecker.h"
 #include "EC_WinAPI.h"
+#include "log_cleanup.h"
 
 #ifdef _PROFILE_MEMORY
 #include "Memory\EC_HookMemory.h"
@@ -202,29 +203,9 @@ bool prepare_file_structures()
 		char szFileName[MAX_PATH];
 		
 		sprintf(szFileName, "logs\\%s", fd.cFileName);
-		strlwr(szFileName);
-		
-		if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-		{
-			// ignore folders
-			continue;
-		}
-		else
-		{
-			//	we only delete .log and .dmp files in Logs folder
-			const char * pszExt = strstr(szFileName, ".log");
-			if( !pszExt )
-			{
-				pszExt = strstr(szFileName, ".dmp");
-				if( !pszExt )
-					pszExt = strstr(szFileName, ".bin");
-			}
-
-			if( pszExt && pszExt + 4 == szFileName + strlen(szFileName) )
-			{
-				DeleteFileA(szFileName);
-			}
-		}
+		if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+		    pw153_is_transient_log(fd.cFileName))
+			DeleteFileA(szFileName);
 
 	} while( FindNextFileA(hFind, &fd) );
 	FindClose(hFind);

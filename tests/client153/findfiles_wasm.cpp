@@ -1,4 +1,5 @@
 #include "Windows.h"
+#include "log_cleanup.h"
 #include <cstdio>
 #include <cstring>
 #include <set>
@@ -24,6 +25,9 @@ int main() {
   CHECK(std::strcmp(data.cFileName, "OLD.LOG") == 0);
   CHECK(data.nFileSizeLow == 3);
   CHECK(!FindNextFileA(find, &data)); CHECK(FindClose(find));
+  CHECK(pw153_is_transient_log("OLD.LOG"));
+  CHECK(pw153_is_transient_log("dump.DmP"));
+  CHECK(!pw153_is_transient_log("log.log.backup"));
   CHECK(DeleteFileA("logs\\OLD.LOG"));
   CHECK(!DeleteFileA("logs\\OLD.LOG"));
   CHECK(FindFirstFileA("logs\\*.log", &data) == INVALID_HANDLE_VALUE);
