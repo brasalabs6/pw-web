@@ -30,6 +30,15 @@ int a_WideCharToMultiByte(int iCodePage, const wchar_t* wszWideChar, int iWideCh
 int a_MultiByteToWideChar(const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar);
 int a_MultiByteToWideChar(int iCodePage, const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar);
 
+//	The string-class conversions (the Win32 conversion contract over the
+//	platform's UTF-16/UTF-8 converters; the code page argument is the
+//	Win32 legacy - the port always converts UTF-8 to UTF-16). The
+//	AS2AC/AC2AS/... macros in the SDK headers map here.
+AWString AS2WC(const char* szAnsi);
+AString WC2AS(const wchar_t* szWide);
+AWString AS2WC(int iCodePage, const char* szAnsi);
+AString WC2AS(int iCodePage, const wchar_t* szWide);
+
 
 
 #include "ABaseDef.h"

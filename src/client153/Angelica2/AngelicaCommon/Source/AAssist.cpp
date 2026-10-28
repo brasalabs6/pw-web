@@ -315,6 +315,39 @@ int a_MultiByteToWideChar(int iCodePage, const char* szMultiByte, int iMultiByte
 	return a_MultiByteToWideChar(szMultiByte, iMultiByte, wszWideChar, iWideChar);
 }
 
+/*	The string-class conversions: the Win32 conversion contract over the
+	platform's UTF-16/UTF-8 converters (the code page argument is the
+	Win32 legacy; the port always converts UTF-8 to UTF-16).
+*/
+
+AWString AS2WC(const char* szAnsi)
+{
+	if (!szAnsi) return AWString();
+	std::wstring wide;
+	if (!pw153::platform::utf8_to_utf16(szAnsi, wide)) return AWString();
+	return AWString(wide.c_str());
+}
+
+AWString AS2WC(int iCodePage, const char* szAnsi)
+{
+	(void)iCodePage;
+	return AS2WC(szAnsi);
+}
+
+AString WC2AS(const wchar_t* szWide)
+{
+	if (!szWide) return AString();
+	std::string narrow;
+	if (!pw153::platform::utf16_to_utf8(szWide, narrow)) return AString();
+	return AString(narrow.c_str());
+}
+
+AString WC2AS(int iCodePage, const wchar_t* szWide)
+{
+	(void)iCodePage;
+	return WC2AS(szWide);
+}
+
 /*	Memory statistics: the custom memory manager is not ported (a_malloc
 	maps to the platform allocator), so the size statistics report the
 	real process heap (the sbrk growth since the first query) and the
