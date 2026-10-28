@@ -1490,6 +1490,12 @@ inline HANDLE OpenProcess(DWORD access, BOOL inherit, DWORD processId) {
 //	The process id: the single browser module is process 1.
 inline DWORD GetCurrentProcessId() { return 1; }
 
+//	The command line: the browser module has no process arguments; the
+//	string is empty (the debug gates that scan it stay off).
+inline const char *GetCommandLineA() { return ""; }
+inline const wchar_t *GetCommandLineW() { return L""; }
+inline const wchar_t *GetCommandLine() { return GetCommandLineW(); }
+
 //	The heap: the C malloc/free heap (GetProcessHeap's sentinel; the
 //	calls route to malloc/free).
 inline HANDLE GetProcessHeap() { return (HANDLE)1; }
@@ -2016,6 +2022,29 @@ inline DWORD GetFileAttributesW(const wchar_t *name) {
   if (!pw153::platform::utf16_to_utf8(name ? name : L"", narrow))
     return INVALID_FILE_ATTRIBUTES;
   return GetFileAttributesA(narrow.c_str());
+}
+
+//	File attribute write: the read-only bit maps to the real filesystem
+//	write permission (chmod); the other DOS attributes have no target
+//	equivalent and are ignored (the callers only clear FILE_ATTRIBUTE_READONLY).
+inline BOOL SetFileAttributesA(const char *name, DWORD attributes) {
+  if (!name)
+    return FALSE;
+  struct stat info;
+  if (stat(name, &info) != 0)
+    return FALSE;
+  mode_t mode = info.st_mode;
+  if (attributes & FILE_ATTRIBUTE_READONLY)
+    mode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
+  else
+    mode |= S_IWUSR;
+  return chmod(name, mode) == 0 ? TRUE : FALSE;
+}
+inline BOOL SetFileAttributesW(const wchar_t *name, DWORD attributes) {
+  std::string narrow;
+  if (!pw153::platform::utf16_to_utf8(name ? name : L"", narrow))
+    return FALSE;
+  return SetFileAttributesA(narrow.c_str(), attributes);
 }
 
 #define SW_HIDE 0
