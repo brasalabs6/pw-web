@@ -12,6 +12,8 @@
 #define PW153_PLATFORM_D3DX8_H
 #include "d3d8.h"
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 
 //	D3D8 vertex shader declarator tokens (documented d3d8types.h values).
 #define D3DVSD_TOKENTYPESHIFT 29
@@ -39,14 +41,15 @@
 #define D3DVSDE_TEXCOORD1 8
 
 //	The image header record (the documented D3DXIMAGE_INFO layout; the
-//	format fields carry the enum values as unsigned ints until the
-//	graphics cycle defines the enums).
+//	format field carries the documented D3DFORMAT enum now that the
+//	graphics cycle defines it, the resource/file-format fields stay
+//	unsigned ints until their enums land).
 typedef struct _D3DXIMAGE_INFO {
   UINT Width;
   UINT Height;
   UINT Depth;
   UINT MipLevels;
-  UINT Format;
+  D3DFORMAT Format;
   UINT ResourceType;
   UINT ImageFileFormat;
 } D3DXIMAGE_INFO;
@@ -131,6 +134,34 @@ inline HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface8 *destination,
   return D3DERR_INVALIDCALL;
 }
 
+//	The image decode into a surface: the same explicit failure (no
+//	real image decode on the browser target yet; the callers' error
+//	paths handle it).
+inline HRESULT D3DXLoadSurfaceFromFileInMemory(
+    IDirect3DSurface8 *destinationSurface, const PALETTEENTRY *destinationPalette,
+    const RECT *destinationRect, const void *srcData, UINT srcDataSize,
+    const RECT *srcRect, DWORD filter, D3DCOLOR colorKey,
+    D3DXIMAGE_INFO *srcInfo) {
+  (void)destinationSurface;
+  (void)destinationPalette;
+  (void)destinationRect;
+  (void)srcData;
+  (void)srcDataSize;
+  (void)srcRect;
+  (void)filter;
+  (void)colorKey;
+  if (srcInfo) {
+    srcInfo->Width = 0;
+    srcInfo->Height = 0;
+    srcInfo->Depth = 0;
+    srcInfo->MipLevels = 0;
+    srcInfo->Format = D3DFMT_UNKNOWN;
+    srcInfo->ResourceType = 0;
+    srcInfo->ImageFileFormat = 0;
+  }
+  return D3DERR_INVALIDCALL;
+}
+
 //	The D3DX default sentinel (the documented d3dx8 value).
 #define D3DX_DEFAULT 0xFFFFFFFF
 
@@ -172,6 +203,72 @@ inline HRESULT D3DXGetErrorStringA(HRESULT hr, char *buffer, UINT size) {
   return D3D_OK;
 }
 
+//	The shader byte buffer (the documented D3DXCreateBuffer contract: a
+//	ref-counted memory block). Pure data allocation that works on any
+//	target, unlike the device shader calls which fail explicitly.
+struct D3DXShaderBuffer : ID3DXBuffer {
+  D3DXShaderBuffer() : data_(nullptr), size_(0), refs_(1) {}
+  ~D3DXShaderBuffer() { std::free(data_); }
+  HRESULT QueryInterface(const void *riid, void **ppvObject) override {
+    (void)riid;
+    if (!ppvObject)
+      return E_POINTER;
+    *ppvObject = this;
+    AddRef();
+    return D3D_OK;
+  }
+  ULONG AddRef() override { return ++refs_; }
+  ULONG Release() override {
+    const ULONG refs = --refs_;
+    if (!refs)
+      delete this;
+    return refs;
+  }
+  void *GetBufferPointer() override { return data_; }
+  DWORD GetBufferSize() override { return size_; }
+  void *data_;
+  DWORD size_;
+  ULONG refs_;
+};
+
+inline HRESULT D3DXCreateBuffer(UINT numBytes, ID3DXBuffer **ppBuffer) {
+  if (!ppBuffer)
+    return D3DERR_INVALIDCALL;
+  *ppBuffer = nullptr;
+  D3DXShaderBuffer *buffer = new D3DXShaderBuffer;
+  if (numBytes) {
+    buffer->data_ = std::malloc(numBytes);
+    if (!buffer->data_) {
+      delete buffer;
+      return E_OUTOFMEMORY;
+    }
+    std::memset(buffer->data_, 0, numBytes);
+  }
+  buffer->size_ = numBytes;
+  *ppBuffer = buffer;
+  return D3D_OK;
+}
+
+//	The shader assembler: real D3D shader assembly does not exist on the
+//	browser target (the shader programs land with the graphics cycle's
+//	translation strategy); the call fails explicitly and the loader's
+//	error path handles it (the documented DX8.1 signature).
+inline HRESULT D3DXAssembleShader(const void *srcData, UINT srcDataLen,
+                                  DWORD flags, ID3DXBuffer **constants,
+                                  ID3DXBuffer **compiledShader,
+                                  ID3DXBuffer **compilationErrors) {
+  (void)srcData;
+  (void)srcDataLen;
+  (void)flags;
+  if (constants)
+    *constants = nullptr;
+  if (compiledShader)
+    *compiledShader = nullptr;
+  if (compilationErrors)
+    *compilationErrors = nullptr;
+  return D3DERR_INVALIDCALL;
+}
+
 //	The D3DX texture filters (the documented d3dx8tex values).
 #define D3DX_FILTER_NONE (1 << 0)
 #define D3DX_FILTER_POINT (2 << 0)
@@ -193,7 +290,7 @@ inline HRESULT D3DXGetImageInfoFromFileA(const char *file,
     info->Height = 0;
     info->Depth = 0;
     info->MipLevels = 0;
-    info->Format = 0;
+    info->Format = D3DFMT_UNKNOWN;
     info->ResourceType = 0;
     info->ImageFileFormat = 0;
   }
@@ -212,7 +309,7 @@ inline HRESULT D3DXGetImageInfoFromFileInMemory(const void *srcData,
     info->Height = 0;
     info->Depth = 0;
     info->MipLevels = 0;
-    info->Format = 0;
+    info->Format = D3DFMT_UNKNOWN;
     info->ResourceType = 0;
     info->ImageFileFormat = 0;
   }
