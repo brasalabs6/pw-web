@@ -45,7 +45,10 @@ C0001 : Modified by Hyo Sun Hwang (hyosun@future.co.kr) 2000/00/00
 	#elif defined(_MSC_VER)
 		#define LITTLE_ENDIAN	//	Little-Endian machine with pointer casting
 	#else
-		#error
+		//\tThe port's targets (wasm32 per the WebAssembly spec, x86-64 for
+		//\tthe native test builds) are all little-endian; this selects the
+		//\tsame layout the MSVC branch of the original selected.
+		#define LITTLE_ENDIAN	//	Little-Endian machine with pointer casting
 	#endif
 #endif
 
