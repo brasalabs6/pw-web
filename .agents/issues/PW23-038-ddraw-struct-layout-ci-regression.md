@@ -2,16 +2,27 @@
 id: PW23-038
 title: "Regressão CI: layout DDSURFACEDESC2 diverge no build nativo 64-bit"
 priority: P1
-status: open
+status: resolved
 kind: reproduced-ci-regression
 first_observed: 2026-10-28
-verified_against: 07b8e843acd4a019d2fda991bf14c2f5b63433f1
+verified_against: 4bd108b30650647d1c510db252442de764b27dd1
+resolved_at: 2026-10-28
+resolution_commit: 368c9da207cb6b8a38e86dea39d39b0b6dd2b8f8
+resolution_ci_run: 40712327768
 epic: e03-platform-portability-v1
 scope: pr-23
 validation: github-actions-ci-log
 ---
 
 # PW23-038 — CI falha em layout DDSURFACEDESC2
+
+## Resolução revalidada no HEAD 4bd108b (2026-10-28)
+
+**Estado: resolved (regressão de layout/CI).** O commit [368c9da](https://github.com/brasalabs6/pw-web/commit/368c9da207cb6b8a38e86dea39d39b0b6dd2b8f8) substituiu `LONG lPitch` por campo de 32 bits e o slot `void *lpSurface` por `DWORD dwSurfaceSlot` no layout do DDS serializado. O header mantém os `static_assert` de 124 bytes e offsets fixos: [ddraw.h L78–137](https://github.com/brasalabs6/pw-web/blob/4bd108b30650647d1c510db252442de764b27dd1/src/client153/platform/common/ddraw.h#L78-L137). O teste [test_ddraw_header.py](https://github.com/brasalabs6/pw-web/blob/4bd108b30650647d1c510db252442de764b27dd1/tests/client153/test_ddraw_header.py#L1-L22) compila o contrato no host nativo.
+
+O [CI Client 1.5.3 port build #158 — run 40712327768](https://github.com/brasalabs6/pw-web/actions/runs/40712327768) terminou **success** no SHA `4bd108b30650647d1c510db252442de764b27dd1`; job `native-and-wasm` #122900609259: **Native original-layout and bounded package tests = success** e **Build WebGL2 runtime and execute WASM parser regressions = success**. Isso confirma que o gate antes falho voltou a passar. Não demonstra render da Angelica original, gameplay, nem prova teste de DDS em todos os aparelhos/formatos.
+
+**Observação:** a seção abaixo conserva o diagnóstico histórico da falha no SHA original. Os testes de corpus DDS completo, GPUs reais e a validação de compatibilidade de todas as interfaces COM permanecem trabalho futuro, não são necessários para classificar como resolvida a regressão CI específica.
 
 ## Evidência reproduzida pelo CI
 No [workflow Client 1.5.3 port build, run 40699845272](https://github.com/brasalabs6/pw-web/actions/runs/40699845272), job [native-and-wasm #122856356455](https://github.com/brasalabs6/pw-web/actions/runs/40699845272/job/122856356455), a etapa **Native original-layout and bounded package tests** falhou em 2026-10-28 13:49 UTC, executando `tests/client153/test_ddraw_header.py::test_interface_contract`.
