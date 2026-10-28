@@ -176,7 +176,10 @@ CECSoundCache::FILECACHEITEM* CECSoundCache::AllocFileCacheItem(AFileImage* pFil
 	if (!pItem)
 	{
 		glb_ErrorOutput(ECERR_NOTENOUGHMEMORY, "CECSoundCache::AllocFileCacheItem", __LINE__);
-		return false;
+		//	The original returned false where the declared return type is
+		//	a pointer (an MSVC-only acceptance); the null pointer carries
+		//	the same failure meaning.
+		return NULL;
 	}
 
 	pItem->pFile		= pFile;
