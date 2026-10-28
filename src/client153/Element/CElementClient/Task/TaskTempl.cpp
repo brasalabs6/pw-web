@@ -5004,6 +5004,10 @@ void ATaskTempl::SaveTributeBin(FILE* fp)
 #include "windows.h"
 #define CODE_PAGE CP_ACP
 
+//	The AUI prelude chain pulls AVariant.h, which carries a byte-identical
+//	CSafeString; the local copy below is skipped when that header is
+//	already in (the guard is AVariant.h's own include guard).
+#ifndef _AVARIANT_H__
 class CSafeString
 {
 	LPSTR m_szBuf;
@@ -5130,6 +5134,7 @@ public:
 		delete[] m_wszBuf;
 	}
 };
+#endif	//	duplicate CSafeString guard end
 
 void save_talk_text(FILE* fp, const talk_proc* pTalk)
 {
