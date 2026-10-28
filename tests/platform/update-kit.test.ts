@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPairSync,sign,createHash} from 'node:crypto';
-import {canonicalJson,verifyManifest} from '../../packages/update-kit/src/index.ts';
+import {canonicalJson,verifyManifest,prepareClient,digest} from '../../packages/update-kit/src/index.ts';
 const {publicKey,privateKey}=generateKeyPairSync('ed25519');
 const pub=Buffer.from(publicKey.export({format:'der',type:'spki'})).subarray(-32).toString('base64');
 const raw={
@@ -40,4 +40,62 @@ test('case-colliding file paths are rejected',async()=>{
  const digest2=createHash('sha256').update(canonicalJson(raw2)).digest('hex');
  const signature2=sign(null,Buffer.from('pw-client-release-v2\n'+digest2),privateKey).toString('base64');
  await assert.rejects(()=>verifyManifest({...raw2,releaseDigest:digest2,signature:{keyId:'test-public',value:signature2}},digest2,{'test-public':pub}),/Duplicate/);
+});
+
+test('client update checks manifest, verifies every byte and reuses cache by hash',async()=>{
+ const js=new TextEncoder().encode('export const angelicaEntry=1;');
+ const wasm=new Uint8Array([0,97,115,109,1,0,0,0]); // valid minimal WASM binary
+ const fakeManifestUrl='https://cdn.example.invalid/pw/client153/release.json';
+ const jsURL='https://cdn.example.invalid/pw/client153/main.js';
+ const wasmURL='https://cdn.example.invalid/pw/client153/main.wasm';
+ const release={
+   schema:2,clientVersion:'pw153-ci-fixture',assetSetDigest:'f'.repeat(64),
+   entry:{
+     js:{url:jsURL,bytes:js.byteLength,sha256:await digest(js)},
+     wasm:{url:wasmURL,bytes:wasm.byteLength,sha256:await digest(wasm)}
+   },files:[]
+ };
+ const releaseDigest=createHash('sha256').update(canonicalJson(release)).digest('hex');
+ const signedManifest={...release,releaseDigest,signature:{
+   keyId:'test-public',
+   value:sign(null,Buffer.from('pw-client-release-v2\n'+releaseDigest),privateKey).toString('base64')
+ }};
+ const body=canonicalJson(signedManifest)+'\n';
+ let assetFetches=0;
+ const store=new Map<string,Response>();
+ const origFetch=globalThis.fetch;
+ const origCaches=globalThis.caches;
+ const origLocation=globalThis.location;
+ (globalThis as any).location={origin:'https://launcher.example.invalid',hostname:'launcher.example.invalid'};
+ (globalThis as any).caches={open:async()=>({
+   match:async(req:Request)=>store.get(req.url)?.clone(),
+   put:async(req:Request,res:Response)=>{store.set(req.url,res.clone())},
+   delete:async(req:Request)=>store.delete(req.url)
+ })};
+ (globalThis as any).fetch=async (raw:URL|string)=>{
+   const url=String(raw);
+   if(url===fakeManifestUrl)return new Response(body,{headers:{'Content-Type':'application/json'}});
+   if(url===jsURL){assetFetches++;return new Response(js)}
+   if(url===wasmURL){assetFetches++;return new Response(wasm)}
+   throw new Error('Unexpected URL '+url);
+ };
+ try{
+   const options={manifestUrl:fakeManifestUrl,expectedDigest:releaseDigest,trustedKeys:{'test-public':pub}};
+   const first=await prepareClient(options);
+   assert.deepEqual(first.wasm,wasm);
+   assert.equal(assetFetches,2,'first launch fetches both assets');
+   const second=await prepareClient(options);
+   assert.deepEqual(second.js,js);
+   assert.equal(assetFetches,2,'warm-cache must avoid redundant download');
+   // A duplicate JSON key is rejected even if the parsed object appears harmless.
+   (globalThis as any).fetch=async(raw:URL|string)=>{
+     if(String(raw)===fakeManifestUrl)return new Response(body.replace('"schema":2','"schema":2,"schema":2'));
+     throw new Error('Unexpected asset request after manifest corruption');
+   };
+   await assert.rejects(()=>prepareClient(options),/Noncanonical|duplicate-key/);
+ }finally{
+   globalThis.fetch=origFetch;
+   (globalThis as any).caches=origCaches;
+   (globalThis as any).location=origLocation;
+ }
 });
