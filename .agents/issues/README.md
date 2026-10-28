@@ -2,7 +2,9 @@
 
 **Escopo:** problemas e lacunas identificados em revisões do cliente C++/WASM, preservados em arquivos rastreáveis. Esta pasta complementa (não substitui) os épicos/workorders de `.agents/epics`. **Não são GitHub Issues.**
 
-**Nova rodada estática de performance/mobile:** 2026-10-28, baseline `6184be84d4d8766ac02f489c4867df2e0044539a` (PW23-021…037). Ver [`AUDIT-CLIENT153-PERFORMANCE-MOBILE.md`](AUDIT-CLIENT153-PERFORMANCE-MOBILE.md). Nenhum benchmark Android executado.\n\n**Snapshot da inspeção:** e0cf055be10f9bab95aa9429c90f977c5cd00c8f (2026-10-27). O agente local deve **revalidar cada issue contra o HEAD antes de implementá-la**. O status `open` não implica que a branch permaneceu sem alterações desde o snapshot.
+**Nova rodada estática de performance/mobile:** 2026-10-28, baseline `6184be84d4d8766ac02f489c4867df2e0044539a` (PW23-021…037). Ver [`AUDIT-CLIENT153-PERFORMANCE-MOBILE.md`](AUDIT-CLIENT153-PERFORMANCE-MOBILE.md). Nenhum benchmark Android executado.
+
+**Snapshot da inspeção:** e0cf055be10f9bab95aa9429c90f977c5cd00c8f (2026-10-27). O agente local deve **revalidar cada issue contra o HEAD antes de implementá-la**. O status `open` não implica que a branch permaneceu sem alterações desde o snapshot.
 
 ## Fluxo de manutenção
 
