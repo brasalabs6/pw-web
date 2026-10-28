@@ -18,6 +18,7 @@ if(BUILD_TESTING)
     add_executable(client153_mesh_shrink_test
       tests/client153/mesh_shrink.cpp
       src/client153/Element/CFWEditorLib/Mesh.cpp
+      src/client153/Element/CFWEditorLib/FWTextMesh.cpp
       src/client153/Element/CFWEditorLib/Triangle.cpp)
     target_include_directories(client153_mesh_shrink_test PRIVATE
       src/client153/Element/CFWEditorLib $<TARGET_PROPERTY:client153_game_original,INCLUDE_DIRECTORIES>)

@@ -7,6 +7,10 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWTextMesh.cpp",
+      "sha256": "4eaabb7a3135312ce68a678671555fb0b6cedb3342aa0f75a53e5c3011c70f49"
+    },
+    {
       "path": "Element/CFWEditorLib/Mesh.cpp",
       "sha256": "ac314c6261d27ed0ce9a1d07456c5a046ec3d87b63d966a97fe714dc6e21dad0"
     },

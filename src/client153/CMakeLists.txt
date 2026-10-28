@@ -367,6 +367,7 @@ if(EMSCRIPTEN)
   # definitions the probe uses for the game project).
   add_library(client153_game_original OBJECT EXCLUDE_FROM_ALL
     Element/CFWEditorLib/Mesh.cpp
+    Element/CFWEditorLib/FWTextMesh.cpp
     Element/CFWEditorLib/Triangle.cpp
     Element/CFWEditorLib/CharContour.cpp
     Element/CFWEditorLib/CharCurve.cpp
