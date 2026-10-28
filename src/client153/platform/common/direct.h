@@ -32,4 +32,15 @@ inline int _chdir(const char *path) {
   return chdir(normalized.c_str());
 }
 
+//	_mkdir: the real directory creation over the UTF-8 path conversion
+//	(the Win32 contract: EEXIST from an existing directory reports
+//	failure, and the callers treat it as such).
+inline int _mkdir(const char *path) {
+  if (!path || !*path)
+    return -1;
+  std::string normalized(path);
+  std::replace(normalized.begin(), normalized.end(), '\\', '/');
+  return mkdir(normalized.c_str(), 0777);
+}
+
 #endif // PW153_PLATFORM_DIRECT_H
