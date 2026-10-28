@@ -222,6 +222,17 @@ inline BOOL IntersectRect(LPRECT out, LPCRECT a, LPCRECT b) {
   *out = overlap;
   return TRUE;
 }
+//	The rectangle queries (the documented user32 contracts; pure
+//	computations on the RECT fields).
+inline BOOL PtInRect(LPCRECT rect, POINT point) {
+  return point.x >= rect->left && point.x < rect->right &&
+                 point.y >= rect->top && point.y < rect->bottom
+             ? TRUE
+             : FALSE;
+}
+inline BOOL IsRectEmpty(LPCRECT rect) {
+  return rect->left >= rect->right || rect->top >= rect->bottom ? TRUE : FALSE;
+}
 typedef DWORD COLORREF;
 typedef BOOL (*WNDENUMPROC)(HWND, LPARAM);
 struct GUITHREADINFO {
@@ -1442,6 +1453,36 @@ typedef std::uint64_t ULONGLONG, *PULONGLONG;
 
 //	The hook handle (the browser target has no hookable message flow).
 typedef void *HHOOK;
+
+//	The message-hook surface (the documented winuser.h values, types and
+//	signatures; placed after HHOOK/LRESULT/POINT). A browser page has no
+//	global hookable message flow, so SetWindowsHookEx fails with NULL and
+//	never invokes the procedure - Mouse::SetMouseHook reports the failure
+//	and the anti-cheat counters stay zero.
+#define WH_MOUSE 7
+#define HC_ACTION 0
+typedef LRESULT(CALLBACK *HOOKPROC)(int code, WPARAM wParam, LPARAM lParam);
+typedef struct tagMOUSEHOOKSTRUCT {
+  POINT pt;
+  HWND hwnd;
+  UINT wHitTestCode;
+  ULONG_PTR dwExtraInfo;
+} MOUSEHOOKSTRUCT;
+typedef MOUSEHOOKSTRUCT *PMOUSEHOOKSTRUCT;
+inline HHOOK SetWindowsHookEx(int idHook, HOOKPROC proc, HINSTANCE instance,
+                              DWORD threadId) {
+  (void)idHook; (void)proc; (void)instance; (void)threadId;
+  return NULL;
+}
+inline BOOL UnhookWindowsHookEx(HHOOK hook) {
+  (void)hook;
+  return FALSE;
+}
+inline LRESULT CallNextHookEx(HHOOK hook, int code, WPARAM wParam,
+                              LPARAM lParam) {
+  (void)hook; (void)code; (void)wParam; (void)lParam;
+  return 0;
+}
 
 //	The IME composition string flags, notification actions and
 //	composition actions (the documented imm.h values).

@@ -1,5 +1,7 @@
 //#include "stdafx.h"
-#include "mouse.h"
+//	a3d adaptation: the original include relied on Windows case-insensitive
+//	resolution; the real file is Mouse.h.
+#include "Mouse.h"
 #include <math.h>
 #include <time.h>
 
