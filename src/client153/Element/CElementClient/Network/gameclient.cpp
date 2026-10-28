@@ -116,7 +116,10 @@ namespace GNET
 			else
 			{
 				MD5Hash md5;
-				md5.Update(Octets(para.token, para.token.GetLength()));
+				//\tNamed locals: Update(Octets&) takes a non-const lvalue ref;
+				//\tthe original bound temporaries via the MSVC extension.
+				Octets tokenOct(para.token, para.token.GetLength());
+				md5.Update(tokenOct);
 				md5.Update(para.nonce);
 				md5.Final(data.response);
 			}
@@ -131,8 +134,12 @@ namespace GNET
 					HMAC_MD5Hash hash;
 					MD5Hash md5;
 					Octets digest;
-					md5.Update(Octets(para.name, para.name.GetLength()));
-					md5.Update(Octets(para.passwd, para.passwd.GetLength()));
+					//\tNamed locals: Update(Octets&) takes a non-const lvalue ref;
+					//\tthe original bound temporaries via the MSVC extension.
+					Octets nameOct(para.name, para.name.GetLength());
+					Octets passOct(para.passwd, para.passwd.GetLength());
+					md5.Update(nameOct);
+					md5.Update(passOct);
 					md5.Final(digest);
 					hash.SetParameter(digest);
 					hash.Update(para.nonce);

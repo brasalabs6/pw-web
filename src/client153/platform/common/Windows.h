@@ -75,6 +75,9 @@ typedef unsigned long ULONG;
 typedef unsigned short USHORT;
 typedef std::uint16_t ATOM;
 typedef unsigned char UCHAR;
+//	The Win32 BOOLEAN (the documented 1-byte boolean of winnt.h; the HID
+//	callback typedefs in UsbHidKey.h use it).
+typedef unsigned char BOOLEAN;
 typedef std::uint64_t UINT64;
 typedef std::int64_t INT64;
 typedef wchar_t WCHAR;
@@ -92,9 +95,13 @@ typedef void *HANDLE;
 typedef BYTE *LPBYTE;
 typedef BYTE *PBYTE;
 typedef DWORD *LPDWORD;
+typedef DWORD *PDWORD;
 typedef const char *PSZ;
 
 typedef const char *PCSZ;
+//	The Win32 PSTR family (the setupapi callback typedefs use PCSTR).
+typedef char *PSTR;
+typedef const char *PCSTR;
 typedef void *HFONT;
 typedef void *HBITMAP;
 typedef void *HBRUSH;
@@ -1767,6 +1774,12 @@ typedef struct _GUID {
   unsigned short Data3;
   unsigned char Data4[8];
 } GUID;
+
+//	Pointer forms of the identifier (the HID/setupapi headers the game
+//	declares through UsbHidKey.h use LPGUID; the const form shares the
+//	surface).
+typedef GUID *LPGUID;
+typedef const GUID *LPCGUID;
 
 inline bool IsEqualGUID(const GUID &a, const GUID &b) {
   return a.Data1 == b.Data1 && a.Data2 == b.Data2 && a.Data3 == b.Data3 &&
@@ -3489,6 +3502,18 @@ inline HFILE OpenFile(const char *name, OFSTRUCT *info, UINT action) {
 
 //	No more find matches (the documented WinBase value).
 #define ERROR_NO_MORE_FILES 18
+
+//	Enum-device-interfaces reached the end of the list (the documented
+//	setupapi value; UsbHidKey.h's enumeration loop stops on it).
+#define ERROR_NO_MORE_ITEMS 259
+
+//	The setupapi detail-data buffer is too small (the documented WinBase
+//	value; the enumeration loop grows the buffer on it).
+#define ERROR_INSUFFICIENT_BUFFER 122
+
+//	The flexible-array member size of the setupapi detail-data structs
+//	(the documented WinBase value of 1).
+#define ANYSIZE_ARRAY 1
 
 //	The disk free space: the real statvfs numbers over the adapter's
 //	filesystem (the documented Win32 out-parameters).
