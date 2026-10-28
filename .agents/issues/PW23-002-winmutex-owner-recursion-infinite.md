@@ -2,7 +2,7 @@
 id: PW23-002
 title: "WinMutex não preserva ownership, recursão nem INFINITE"
 priority: P0
-status: open
+status: resolved
 kind: review-finding
 first_observed: 2026-10-27
 verified_against: e0cf055be10f9bab95aa9429c90f977c5cd00c8f
@@ -12,7 +12,13 @@ scope: pr-23
 
 # PW23-002 — WinMutex não preserva ownership, recursão nem INFINITE
 
-**Status:** `open` para triagem no HEAD local. Registro da revisão: a evidência descreve código e testes vistos, não constitui confirmação de que o defeito persiste em commits posteriores.
+**Status:** `resolved` no commit `a2a9c251` (branch `feat/client153-common-containers`, PR #23).
+
+## Resolução (2026-10-27, commit a2a9c251)
+`WinMutex` agora rastreia a thread owner (`DWORD owner`) e a profundidade recursiva (`unsigned depth`). O owner readquire livremente (cada aquisição incrementa a profundidade), `ReleaseMutex` de terceiro falha, release parcial mantém o ownership, e o último nível acorda os waiters. `WaitForSingleObject` trata `INFINITE` como espera verdadeiramente não limitada (`cv.wait`) em eventos, semáforos, mutexes e threads — não mais `wait_for(~49 dias)`. O `PollSignaled` do mutex ficou consistente com a aquisição recursiva.
+
+**Comando/ambiente:** `cmake --build build/client153-{native,sanitize} && ctest --test-dir build/client153-{native,sanitize}` — GCC 16, ASan+UBSan no build sanitize.
+**Evidência:** teste novo `tests/client153/winsync_semantics.cpp` cobrindo os critérios: reentrância dupla/tripla, release parcial, release por terceiro rejeitado, timeout zero/positivo de terceiro, create initialOwner (owner recursivo + timeout de outra thread), espera INFINITE entregue pelo release do owner, waits concorrentes. Native 31/31, wasm 26/26, sanitize 31/31.
 
 ## Evidência verificável
 `winsync.h`: `WinMutex` guarda só `bool owned`; `WaitForSingleObject` espera `!owned`; `ReleaseMutex` não confere thread owner; `INFINITE` passa por `wait_for(milliseconds)`.

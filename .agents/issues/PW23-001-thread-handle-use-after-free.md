@@ -2,7 +2,7 @@
 id: PW23-001
 title: "CloseHandle de thread ativa pode causar use-after-free"
 priority: P0
-status: open
+status: resolved
 kind: review-finding
 first_observed: 2026-10-27
 verified_against: e0cf055be10f9bab95aa9429c90f977c5cd00c8f
@@ -12,7 +12,13 @@ scope: pr-23
 
 # PW23-001 — CloseHandle de thread ativa pode causar use-after-free
 
-**Status:** `open` para triagem no HEAD local. Registro da revisão: a evidência descreve código e testes vistos, não constitui confirmação de que o defeito persiste em commits posteriores.
+**Status:** `resolved` no commit `a2a9c251` (branch `feat/client153-common-containers`, PR #23).
+
+## Resolução (2026-10-27, commit a2a9c251)
+O estado de execução da thread (mutex/cv/done/exitCode) foi separado para um `ThreadState` com ownership conjunto entre o handle (`WinThread`) e a lambda de entrada via `shared_ptr` (`winsync.h`). `CloseHandle` de thread em execução agora libera apenas o handle (detach do `std::thread`); o estado da entrada sobrevive até a thread concluir. A corrida de join múltiplo também foi corrigida: exatamente um waiter executa o `join` (flag `joined` sob o mutex do estado).
+
+**Comando/ambiente:** `cmake --build build/client153-{native,sanitize} && ctest --test-dir build/client153-{native,sanitize}` — GCC 16, ASan+UBSan no build sanitize.
+**Evidência:** teste novo `tests/client153/winsync_semantics.cpp` (close-while-running escreve num atomic após o close; 4 waiters concorrentes; exit code; suspended create). Native 31/31, wasm 26/26, sanitize 31/31 (ASan/UBSan) — sem use-after-free, leak ou acesso a objeto destruído.
 
 ## Evidência verificável
 `src/client153/platform/common/winsync.h`: a lambda de `_beginthreadex` usa `state->wrapped` depois de iniciar; em `CloseHandle` para thread executando há `detach()` seguido por `delete thread`.
