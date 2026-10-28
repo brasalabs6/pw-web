@@ -22,7 +22,8 @@ CDlgWikiTaskList::CDlgWikiTaskList()
 
 bool CDlgWikiTaskList::OnInitDialog()
 {
-	SetContentProvider(&WikiTaskDataProvider());
+	WikiTaskDataProvider contentProvider;
+	SetContentProvider(&contentProvider);
 	return CDlgWikiItemListBase::OnInitDialog();
 }
 
@@ -31,7 +32,13 @@ void CDlgWikiTaskList::SetSearchDataPtr(void* ptr)
 	// NOTICE: here for convenient we use
 	// WikiSearchTaskByItemID as default command
 	const WikiItemProp* pIP = (const WikiItemProp *)(ptr);
-	SetSearchCommand(!pIP ? NULL : &WikiSearchTaskByItemID(pIP->GetID()));
+	if (!pIP)
+		SetSearchCommand(NULL);
+	else
+	{
+		WikiSearchTaskByItemID searchCmd(pIP->GetID());
+		SetSearchCommand(&searchCmd);
+	}
 	CDlgWikiItemListBase::SetSearchDataPtr(ptr);
 }
 
@@ -49,8 +56,9 @@ bool CDlgWikiTaskList::OnModityItem(WikiEntityPtr p, PAUIOBJECT pObj, PAUIOBJECT
 	
 //	BindLinkCommand(dynamic_cast<PAUITEXTAREA>(pObj), NULL,
 //			&CDlgWikiTask::ShowSpecficLinkCommand(pTempl->GetID(), pTempl->GetName()));
+	CDlgWikiTask::ShowSpecficLinkCommand linkCmd(pTempl->GetID(), CDlgTask::GetTaskNameWithColor(pTempl));
 	BindLinkCommand(dynamic_cast<PAUITEXTAREA>(pObj), NULL,
-			&CDlgWikiTask::ShowSpecficLinkCommand(pTempl->GetID(), CDlgTask::GetTaskNameWithColor(pTempl)));
+			&linkCmd);
 
 	pName->SetText(GetStringFromTable(8663));
 	pName->Show(true);

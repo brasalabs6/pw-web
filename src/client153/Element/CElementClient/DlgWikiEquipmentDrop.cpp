@@ -21,6 +21,12 @@ CDlgWikiEquipmentDrop::CDlgWikiEquipmentDrop()
 void CDlgWikiEquipmentDrop::SetSearchDataPtr(void* ptr)
 {
 	const WikiEquipmentProp *pEP = (const WikiEquipmentProp *)(ptr);
-	SetSearchCommand(!pEP ? NULL : &WikiSearchMonsterDropByItemID(pEP->GetID()));
+	if (!pEP)
+		SetSearchCommand(NULL);
+	else
+	{
+		WikiSearchMonsterDropByItemID searchCmd(pEP->GetID());
+		SetSearchCommand(&searchCmd);
+	}
 	CDlgWikiItemListBase::SetSearchDataPtr(ptr);
 }

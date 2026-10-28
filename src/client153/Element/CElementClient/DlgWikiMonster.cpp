@@ -53,7 +53,8 @@ bool CDlgWikiMonster::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LINK
 		//	One-shot use: the setter clones the provider synchronously; a local is safe.
 		WikiElementDataProvider essenceProvider(ID_SPACE_ESSENCE);
 		pDlg->SetContentProvider(&essenceProvider);
-		pDlg->RefreshByNewCommand(&WikiSearchBySpecificID(m_MonsterID), true);
+		WikiSearchBySpecificID searchCmd(m_MonsterID);
+		pDlg->RefreshByNewCommand(&searchCmd, true);
 		return true;
 	}
 
@@ -64,7 +65,7 @@ ACString CDlgWikiMonster::ShowSpecficLinkCommand::GetLinkText() const
 {
 	ACString strLinkedName;
 	
-	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), m_Name);
+	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), (const wchar_t*)m_Name);
 	
 	return strLinkedName;
 }
@@ -128,7 +129,8 @@ void CDlgWikiMonster::ResetSearchCommand()
 	CDlgWikiByNameBase::ResetSearchCommand();
 	// default search command
 	SetContentProvider(&m_EssenceProvider);
-	SetSearchCommand(&WikiSearchMonsterByName());
+	WikiSearchMonsterByName searchCmd;
+	SetSearchCommand(&searchCmd);
 }
 
 void CDlgWikiMonster::OnBeginSearch()
@@ -203,8 +205,9 @@ void CDlgWikiMonster::OnEventLButtonDown_ListMonster(WPARAM wParam, LPARAM lPara
 	{
 		ACString szTxt;
 
+		CDlgNameLink::MoveToLinkCommand linkCmd(pEssence->id, pEssence->name);
 		BindLinkCommand(m_pTxt_Link_MonsterName, NULL,
-						&CDlgNameLink::MoveToLinkCommand(pEssence->id, pEssence->name));
+						&linkCmd);
 
 		m_pTxt_FiveProperties->SetText(GetStringFromTable(517 + a_atoi(pEssence->prop)));
 		m_pTxt_Level->SetText(szTxt.Format(_AL("%d"), pEssence->level));

@@ -34,7 +34,13 @@ void CDlgWikiMonsterList::SetSearchDataPtr(void* ptr)
 	// NOTICE: here for convenient we use
 	// WikiSearchMonsterDropByItemID as default command
 	const WikiItemProp* pIP = (const WikiItemProp *)(ptr);
-	SetSearchCommand(!pIP ? NULL : &WikiSearchMonsterDropByItemID(pIP->GetID()));
+	if (!pIP)
+		SetSearchCommand(NULL);
+	else
+	{
+		WikiSearchMonsterDropByItemID searchCmd(pIP->GetID());
+		SetSearchCommand(&searchCmd);
+	}
 	CDlgWikiItemListBase::SetSearchDataPtr(ptr);
 }
 
@@ -52,8 +58,9 @@ bool CDlgWikiMonsterList::OnModityItem(WikiEntityPtr p, PAUIOBJECT pObj, PAUIOBJ
 	// add to list
 	pObj->SetText(pEssence->name);
 	pObj->Show(true);
+	CDlgWikiMonster::ShowSpecficLinkCommand linkCmd(iCandidate, pEssence->name);
 	BindLinkCommand(dynamic_cast<PAUITEXTAREA>(pObj), NULL, 
-		&CDlgWikiMonster::ShowSpecficLinkCommand(iCandidate, pEssence->name));
+		&linkCmd);
 	
 	pName->SetText(GetStringFromTable(8664));
 	pName->Show(true);

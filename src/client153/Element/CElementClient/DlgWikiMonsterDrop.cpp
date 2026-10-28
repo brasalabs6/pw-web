@@ -31,7 +31,13 @@ void CDlgWikiMonsterDrop::SetSearchDataPtr(void* ptr)
 	//	One-shot use: the setter clones the provider synchronously; a local is safe.
 	WikiSerialDataProvider serialProvider(0, maxDrop);
 	SetContentProvider(!pEssence ? NULL : &serialProvider);
-	SetSearchCommand(!pEssence ? NULL : &WikiSearchDropItemOnMonster(pEssence));
+	if (!pEssence)
+		SetSearchCommand(NULL);
+	else
+	{
+		WikiSearchDropItemOnMonster searchCmd(pEssence);
+		SetSearchCommand(&searchCmd);
+	}
 	
 	CDlgWikiBase::SetSearchDataPtr(ptr);
 }
@@ -62,13 +68,15 @@ bool CDlgWikiMonsterDrop::OnModityItem(WikiEntityPtr p, PAUIOBJECT pObj, PAUIOBJ
 	pObj->Show(true);
 	if(pItem->IsEquipment())
 	{
+		CDlgWikiEquipment::ShowSpecficLinkCommand linkCmd(id, pItem->GetName());
 		BindLinkCommand(dynamic_cast<PAUITEXTAREA>(pObj), NULL,
-			&CDlgWikiEquipment::ShowSpecficLinkCommand(id, pItem->GetName()));
+			&linkCmd);
 	}
 	else
 	{
+		CDlgWikiItem::ShowSpecficLinkCommand linkCmd(id, pItem->GetName());
 		BindLinkCommand(dynamic_cast<PAUITEXTAREA>(pObj), NULL,
-			&CDlgWikiItem::ShowSpecficLinkCommand(id, pItem->GetName()));
+			&linkCmd);
 	}
 			
 	pName->SetText(GetStringFromTable(8662));

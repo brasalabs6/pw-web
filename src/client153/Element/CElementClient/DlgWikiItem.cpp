@@ -59,7 +59,8 @@ bool CDlgWikiItem::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LINK pL
 		//	One-shot use: the setter clones the provider synchronously; a local is safe.
 		WikiElementDataProvider essenceProvider(ID_SPACE_ESSENCE);
 		pDlg->SetContentProvider(&essenceProvider);
-		pDlg->RefreshByNewCommand(&WikiSearchBySpecificID(m_ItemID), true);
+		WikiSearchBySpecificID searchCmd(m_ItemID);
+		pDlg->RefreshByNewCommand(&searchCmd, true);
 		return true;
 	}
 
@@ -70,7 +71,7 @@ ACString CDlgWikiItem::ShowSpecficLinkCommand::GetLinkText() const
 {
 	ACString strLinkedName;
 	
-	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), m_Name);
+	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), (const wchar_t*)m_Name);
 
 	return strLinkedName;
 }
@@ -107,7 +108,8 @@ void CDlgWikiItem::ResetSearchCommand()
 {
 	CDlgWikiByNameBase::ResetSearchCommand();
 	SetContentProvider(&m_EssenceProvider);
-	SetSearchCommand(&WikiSearchItemByName(true));
+	WikiSearchItemByName searchCmd(true);
+	SetSearchCommand(&searchCmd);
 }
 
 void CDlgWikiItem::OnBeginSearch()
@@ -137,7 +139,7 @@ bool CDlgWikiItem::OnAddSearch(WikiEntityPtr p)
 	if (!pEP) return false;
 	
 	ACString strItem;	
-	strItem.Format(_AL("%s"), pEP->GetName());
+	strItem.Format(_AL("%s"), (const wchar_t*)pEP->GetName());
 	m_pList->AddString(strItem);
 	m_pList->SetItemData(m_pList->GetCount()-1, id);
 	

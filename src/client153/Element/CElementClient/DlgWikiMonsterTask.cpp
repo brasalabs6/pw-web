@@ -20,6 +20,12 @@ CDlgWikiMonsterTask::CDlgWikiMonsterTask()
 void CDlgWikiMonsterTask::SetSearchDataPtr(void* ptr)
 {
 	const MONSTER_ESSENCE *pEssence = (const MONSTER_ESSENCE *)(ptr);
-	SetSearchCommand(!pEssence ? NULL : &WikiSearchTaskByMonster(pEssence->id));
+	if (!pEssence)
+		SetSearchCommand(NULL);
+	else
+	{
+		WikiSearchTaskByMonster searchCmd(pEssence->id);
+		SetSearchCommand(&searchCmd);
+	}
 	CDlgWikiItemListBase::SetSearchDataPtr(ptr);
 }

@@ -26,7 +26,13 @@ void CDlgWikiRandomProperty::SetSearchDataPtr(void* ptr)
 	//	One-shot use: the setter clones the provider synchronously; a local is safe.
 	WikiSerialDataProvider serialProvider(0, pEP ? pEP->GetRandPropSize() : 0);
 	SetContentProvider(!pEP ? NULL : &serialProvider);
-	SetSearchCommand(!pEP ? NULL : &WikiSearchRandPropOnEquipment(pEP->GetID()));
+	if (!pEP)
+		SetSearchCommand(NULL);
+	else
+	{
+		WikiSearchRandPropOnEquipment searchCmd(pEP->GetID());
+		SetSearchCommand(&searchCmd);
+	}
 
 	CDlgWikiBase::SetSearchDataPtr(ptr);
 }

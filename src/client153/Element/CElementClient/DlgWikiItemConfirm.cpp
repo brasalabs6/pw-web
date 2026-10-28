@@ -34,7 +34,8 @@ void CDlgWikiItemConfirm::SetItemProvider(WikiItemProvider* pData)
 
 	if(pData)
 	{
-		SetSearchCommand(&WikiSearchItemByName(false));
+		WikiSearchItemByName searchCmd(false);
+		SetSearchCommand(&searchCmd);
 		// set pattern to name search command if existed
 		WikiSearchByName* pCommand = dynamic_cast<WikiSearchByName*>(GetSearchCommand());
 		pCommand->SetPattern(pData->GetName());

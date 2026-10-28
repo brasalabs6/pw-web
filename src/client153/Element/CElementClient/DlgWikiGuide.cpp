@@ -219,55 +219,68 @@ void CDlgWikiGuide::ConfirmSearch()
 
 	// search skill
 	m_pCurData = GetWikiData(m_pBtn_Skill);
-	SetContentProvider(&WikiSkillDataProvider());
+	WikiSkillDataProvider contentProvider;
+	SetContentProvider(&contentProvider);
 
 	// with a class filter
 	suite.Clear();
-	suite.Add(&WikiSearchSkillByClassLimit(1 << GetHostPlayer()->GetProfession()));
-	suite.Add(&WikiSearchSkillByLevelRequire(min, max));
+	WikiSearchSkillByClassLimit searchByClass(1 << GetHostPlayer()->GetProfession());
+	suite.Add(&searchByClass);
+	WikiSearchSkillByLevelRequire searchByLevel(min, max);
+	suite.Add(&searchByLevel);
 	Refresh(&suite);
 
 	pTxt_Skill->SetText( m_pCurData->Size() ? 
-		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : GetStringFromTable(8720) );
+		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : AWString(GetStringFromTable(8720)) );
 	m_pBtn_Skill->Enable( m_pCurData->Size() > 0);
 
 	// search task
 	m_pCurData = GetWikiData(m_pBtn_Task);
-	SetContentProvider(&WikiTaskDataProvider());
+	WikiTaskDataProvider taskContentProvider;
+	SetContentProvider(&taskContentProvider);
 
 	// with a class filter
 	suite.Clear();
-	suite.Add(&WikiSearchTaskByClassLimit(1 << GetHostPlayer()->GetProfession()));
-	suite.Add(&WikiSearchTaskByLevel(min, max));
-	suite.Add(&WikiSearchTaskForGuide());
+	WikiSearchTaskByClassLimit taskSearchByClass(1 << GetHostPlayer()->GetProfession());
+	suite.Add(&taskSearchByClass);
+	WikiSearchTaskByLevel taskSearchByLevel(min, max);
+	suite.Add(&taskSearchByLevel);
+	WikiSearchTaskForGuide taskSearchForGuide;
+	suite.Add(&taskSearchForGuide);
 	Refresh(&suite);
 
 	pTxt_Task->SetText( m_pCurData->Size() ? 
-		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : GetStringFromTable(8720) );
+		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : AWString(GetStringFromTable(8720)) );
 	m_pBtn_Task->Enable( m_pCurData->Size() > 0);
 
 	// search feature
 	m_pCurData = GetWikiData(m_pBtn_Feature);
-	SetContentProvider(&WikiSerialDataProvider(0, WikiGuideData().Feature().size()));
-	Refresh(&WikiSearchFeatureByLevel(min, max));
+	WikiSerialDataProvider serialContentProvider(0, WikiGuideData().Feature().size());
+	SetContentProvider(&serialContentProvider);
+	WikiSearchFeatureByLevel featureSearchByLevel(min, max);
+	Refresh(&featureSearchByLevel);
 	pTxt_Feature->SetText( m_pCurData->Size() ? 
-		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : GetStringFromTable(8720) );
+		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : AWString(GetStringFromTable(8720)) );
 	m_pBtn_Feature->Enable( m_pCurData->Size() > 0);
 
 	// search equipment
 	m_pCurData = GetWikiData(m_pBtn_Equ);
-	SetContentProvider(&WikiSerialDataProvider(0, WikiGuideData().Equ().size()));
-	Refresh(&WikiSearchEquipmentGuide(min, max, 1 << GetHostPlayer()->GetProfession()));
+	WikiSerialDataProvider equContentProvider(0, WikiGuideData().Equ().size());
+	SetContentProvider(&equContentProvider);
+	WikiSearchEquipmentGuide equSearchGuide(min, max, 1 << GetHostPlayer()->GetProfession());
+	Refresh(&equSearchGuide);
 	pTxt_Equ->SetText( m_pCurData->Size() ? 
-		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : GetStringFromTable(8720) );
+		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : AWString(GetStringFromTable(8720)) );
 	m_pBtn_Equ->Enable( m_pCurData->Size() > 0);
 
 	// search area
 	m_pCurData = GetWikiData(m_pBtn_Area);
-	SetContentProvider(&WikiSerialDataProvider(0, WikiGuideData().Area().size()));
-	Refresh(&WikiSearchAreaByLevel(min, max));
+	WikiSerialDataProvider areaContentProvider(0, WikiGuideData().Area().size());
+	SetContentProvider(&areaContentProvider);
+	WikiSearchAreaByLevel areaSearchByLevel(min, max);
+	Refresh(&areaSearchByLevel);
 	pTxt_Area->SetText( m_pCurData->Size() ? 
-		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : GetStringFromTable(8720) );
+		szTxt.Format(GetStringFromTable(8723), m_pCurData->Size()) : AWString(GetStringFromTable(8720)) );
 	m_pBtn_Area->Enable( m_pCurData->Size() > 0);
 
 	m_pCurData = NULL;
@@ -304,7 +317,8 @@ void CDlgWikiGuide::OnCommand_DetailButton(const char* szCommand)
 	{
 		WikiEntityPtrProvider* ptr = GetWikiData(pBtn);
 		pDlg->SetContentProvider(ptr);
-		pDlg->RefreshByNewCommand(&WikiSearchAll(), true);
+		WikiSearchAll searchAll;
+		pDlg->RefreshByNewCommand(&searchAll, true);
 
 		// try to show hint if necessary
 		CDlgWikiByNameBase* pNameDlg = dynamic_cast<CDlgWikiByNameBase*>(pDlg);

@@ -51,12 +51,14 @@ void CDlgWikiFeature::ResetSearchCommand()
 	int max, min;
 	if(a_sscanf(szTxt, _AL("%d-%d"), &min, &max) == 2)
 	{
-		SetSearchCommand(&WikiSearchFeatureByLevel(min, max));
+		WikiSearchFeatureByLevel searchCmd(min, max);
+		SetSearchCommand(&searchCmd);
 	}
 	else
 #endif
 	{
-		SetSearchCommand(&WikiSearchFeatureByName());
+		WikiSearchFeatureByName searchCmd;
+		SetSearchCommand(&searchCmd);
 	}
 }
 
@@ -81,7 +83,7 @@ bool CDlgWikiFeature::OnAddSearch(WikiEntityPtr p)
 	}
 
 	ACString strItem;	
-	strItem.Format(_AL("%s"), pData->Name);
+	strItem.Format(_AL("%s"), (const wchar_t*)pData->Name);
 	m_pList->AddString(strItem);
 	m_pList->SetItemData(m_pList->GetCount()-1, pEE->GetID());
 	

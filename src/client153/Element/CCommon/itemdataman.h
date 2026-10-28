@@ -797,7 +797,10 @@ protected:
 		int duplicate_static_item(unsigned int id, char ** list,  size_t& size);
 		
 	protected:
-		int	generate_equipment_addon(DATA_TYPE essencetype,char * header, size_t num_candidate, addon_data & data);
+		//	The third parameter is the addon id the definition and the
+		//	call sites use; the original declared it as size_t, which only
+		//	matched because Win32 size_t is unsigned int.
+		int	generate_equipment_addon(DATA_TYPE essencetype,char * header, unsigned int addon_id, addon_data & data);
 		size_t generate_equipment_addon_buffer(DATA_TYPE essencetype, const char * candidate_header, size_t candidate_num, char * addon_buffer,size_t & addon_num);
 		size_t generate_equipment_addon_buffer_2(DATA_TYPE essencetype, int * candidate_addon,size_t candidate_addon_size,size_t candidate_num, char * addon_buffer,size_t & addon_num);
 		size_t generate_spec_addon_buffer(DATA_TYPE essencetype, char * addon_buffer, size_t max_addon_size, size_t &addon_num,int * sa_list);	

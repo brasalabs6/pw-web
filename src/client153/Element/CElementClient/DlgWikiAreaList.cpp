@@ -40,8 +40,9 @@ bool CDlgWikiAreaList::OnModityItem(WikiEntityPtr p, PAUIOBJECT pObj, PAUIOBJECT
 	A3DVECTOR3 pos;
 	if(WikiGuideData().GetEntry(pData->ID, &pos))
 	{
+		CDlgNameLink::MoveToLinkCommand linkCmd(pData->ID, pos, pData->Name);
 		BindLinkCommand(dynamic_cast<PAUITEXTAREA>(pName), NULL, 
-			&CDlgNameLink::MoveToLinkCommand(pData->ID, pos, pData->Name));
+			&linkCmd);
 	}
 	else
 	{
