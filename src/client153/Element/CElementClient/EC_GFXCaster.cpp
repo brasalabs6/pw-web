@@ -628,7 +628,10 @@ FWTemplate * CECGFXCaster::LoadFWTemplate(const char * szFile)
 	if( !pTemplate->LoadFrom(&fileTemplate) )
 	{
 		delete pTemplate;
-		return false;
+		//	The original returned false where the declared return type is
+		//	a pointer (an MSVC-only acceptance); the null pointer carries
+		//	the same failure meaning.
+		return NULL;
 	}
 
 	fileTemplate.Close();
