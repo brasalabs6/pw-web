@@ -194,6 +194,13 @@ struct IDirect3DDevice8 : IUnknownD3D {
   //	User clip planes (the grass land render reads and rewrites them).
   virtual HRESULT GetClipPlane(DWORD index, float *pPlane) = 0;
   virtual HRESULT SetClipPlane(DWORD index, const float *pPlane) = 0;
+  //	Render-target surface creation (the portrait renderer builds its
+  //	lockable system-memory target; the WebGL backend owns the real
+  //	surface when it registers).
+  virtual HRESULT CreateRenderTarget(UINT width, UINT height, D3DFORMAT format,
+                                     D3DMULTISAMPLE_TYPE multiSample,
+                                     BOOL lockable,
+                                     IDirect3DSurface8 **surface) = 0;
 };
 
 //	The texture resource hierarchy (the documented d3d8 interfaces:
