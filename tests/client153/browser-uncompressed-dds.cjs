@@ -22,6 +22,15 @@ const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR, 'node_
   });
   try {
     const page = await browser.newPage({ viewport: { width: 1100, height: 900 } });
+    if (process.env.PW_DISABLE_S3TC === '1') {
+      await page.addInitScript(() => {
+        const original = WebGL2RenderingContext.prototype.getExtension;
+        WebGL2RenderingContext.prototype.getExtension = function(name) {
+          if (name.toLowerCase() === 'webgl_compressed_texture_s3tc') return null;
+          return original.call(this, name);
+        };
+      });
+    }
     await page.route('**/scene.json', async route => {
       const response = await route.fetch();
       const scene = await response.json();
@@ -53,6 +62,14 @@ const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR, 'node_
     assert.ok(result.colors > 100, 'expected textured pixels');
     assert.equal(result.glError, 0);
     console.log(JSON.stringify(result));
+    if (process.env.PW_DISABLE_S3TC === '1' && process.env.PW_EXPECT_COMPRESSED_SCENE === '1') {
+      await page.unroute('**/scene.json');
+      await page.unroute('**/test-uncompressed.dds');
+      await page.goto(process.env.PW_CLIENT153_URL || 'http://127.0.0.1:8497/');
+      await page.waitForFunction(() => window.__pw153?.status === 'FAIL', null, { timeout: 30000 });
+      const error = await page.evaluate(() => window.__pw153.error);
+      assert.match(error, /S3TC texture support is required for compressed DDS/);
+    }
   } finally {
     await browser.close();
   }

@@ -611,3 +611,12 @@ objetos e nove bibliotecas ainda falhou com 4.851 ocorrências de símbolos
 indefinidos; não houve prova de renderização ou boot. O compilador sinaliza
 `ZeroMemory` sobre `A3DMATERIALPARAM` não trivial no material original; a
 semântica deve ser revisada antes de tratar o código como validado em runtime.
+
+A capacidade WebGL2 mínima não exige mais S3TC; o runtime verifica a extensão
+quando carrega uma DDS comprimida e informa erro explícito se não disponível.
+Em Chromium/SwiftShader, com `getExtension` de S3TC desativado, o visualizador
+renderizou o modelo original usando uma DDS BGRA sintética (29.187 cores,
+GL_NO_ERROR) e rejeitou a DDS DXT3 original com a mensagem esperada. O teste
+`tests/client153/browser-uncompressed-dds.cjs` aceita `PW_DISABLE_S3TC=1` e
+`PW_EXPECT_COMPRESSED_SCENE=1` para repetir os dois caminhos. Esse resultado é
+do visualizador, não prova boot do jogo ou fallback para DDS comprimida.

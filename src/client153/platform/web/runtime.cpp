@@ -264,6 +264,8 @@ int client_texture(int index, const unsigned char *data, unsigned length) {
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &limit);
   if (dds.width > unsigned(limit) || dds.height > unsigned(limit))
     return fail("texture exceeds GPU size limit");
+  if (dds.encoding != pw153::DdsEncoding::bgra8 && !pw153_enable_s3tc())
+    return fail("S3TC texture support is required for compressed DDS");
   glBindTexture(GL_TEXTURE_2D, gpu[index].texture);
   for (unsigned level = 0; level < dds.levels.size(); level++) {
     const auto &l = dds.levels[level];

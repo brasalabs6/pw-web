@@ -16,7 +16,11 @@ bool pw153_check_webgl_capabilities(const char **error) {
   GLint textureUnits = 0;
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
   if (textureUnits < 2) return fail("At least two texture units are required");
-  if (!emscripten_webgl_enable_extension(context, "WEBGL_compressed_texture_s3tc"))
-    return fail("S3TC texture support is required");
   return true;
+}
+
+bool pw153_enable_s3tc() {
+  const auto context = emscripten_webgl_get_current_context();
+  return context > 0 &&
+         emscripten_webgl_enable_extension(context, "WEBGL_compressed_texture_s3tc");
 }

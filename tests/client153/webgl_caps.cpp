@@ -7,6 +7,13 @@ int main() {
   const char *error = nullptr;
   CHECK(!pw153_check_webgl_capabilities(&error));
   CHECK(error && *error);
+  EM_ASM({
+    const original = WebGL2RenderingContext.prototype.getExtension;
+    WebGL2RenderingContext.prototype.getExtension = function(name) {
+      if (name.toLowerCase() === 'webgl_compressed_texture_s3tc') return null;
+      return original.call(this, name);
+    };
+  });
   EmscriptenWebGLContextAttributes attrs;
   emscripten_webgl_init_context_attributes(&attrs);
   attrs.majorVersion = 2;
@@ -15,6 +22,7 @@ int main() {
   CHECK(emscripten_webgl_make_context_current(context) == EMSCRIPTEN_RESULT_SUCCESS);
   CHECK(pw153_check_webgl_capabilities(&error));
   CHECK(error == nullptr);
+  CHECK(!pw153_enable_s3tc());
   emscripten_webgl_destroy_context(context);
   EM_ASM({ window.__capsTestPassed = true; });
   return 0;
