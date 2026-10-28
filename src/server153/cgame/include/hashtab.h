@@ -480,6 +480,11 @@ template <class _Value, class _Key, class _HashFunc,class _Allocator>
 bool hashtab<_Value,_Key,_HashFunc,_Allocator>::
 	erase(const key_type &__key)
 {
+	// pw-web guard: an empty bucket vector made get_hash divide by zero
+	// (gs SIGFPE at process exit: libskill.so's ClassInfo destructors erase
+	// from the class registry after the registry was destroyed). Return
+	// false for an empty table instead.
+	if (_buckets.empty()) return false;
 	size_t __n = get_hash(__key);
 	_Node* __first = _buckets[__n];
 	_Node *__prev=NULL;

@@ -34,10 +34,12 @@ SRC="$REPO_ROOT/src/server153"
 RUN="$REPO_ROOT/dist/server153/runtime"
 LOGS="$RUN/logs"
 
-alive() { # alive <comm>
-  local p
+alive() { # alive <comm> — a process in state R/S/D (not a zombie)
+  local p st
   for p in /proc/[0-9]*/comm; do
-    [ "$(cat "$p" 2>/dev/null)" = "$1" ] && return 0
+    [ "$(cat "$p" 2>/dev/null)" = "$1" ] || continue
+    st=$(grep -m1 '^State:' "${p%/comm}/status" 2>/dev/null | awk '{print $2}')
+    [ "$st" != "Z" ] && return 0
   done
   return 1
 }
