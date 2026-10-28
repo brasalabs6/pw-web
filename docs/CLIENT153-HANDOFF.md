@@ -729,3 +729,24 @@ O compilador também reportou caminhos sem retorno no código original de
 ou operadores são inválidos. Esses caminhos permanecem sem validação de
 runtime: corrigir com testes do comportamento de falha antes de considerar
 as fórmulas prontas. A compilação dos objetos não comprova gameplay.
+
+### Diagnóstico com raiz na entrada original
+
+O link amplo usa `--no-gc-sections`, portanto exige até código sem caminho
+alcançável pela entrada. Para priorizar o bootstrap, o link diagnóstico
+agora aceita uma raiz explícita. No ambiente local, o símbolo observado por
+`llvm-nm` para a entrada original é `_Z8wWinMainPvS_Pwi`; executar:
+
+```sh
+python3 scripts/link-client153-full.py --error-limit 5000 \
+  --entry-symbol _Z8wWinMainPvS_Pwi --output /tmp/client153-entry-probe.js
+```
+
+Com 1140 objetos e 12 bibliotecas, esse link falhou com 40 ocorrências e
+22 símbolos distintos, principalmente contornos/malhas de texto e GLU.
+O diagnóstico com entrada é complementar ao link amplo: ele depende dos
+objetos locais e da eliminação de seções; não é um build reproduzível do
+jogo, não inicializa o browser e não comprova que `wWinMain` seja um loop
+compatível com o navegador. Os símbolos dependem das opções do compilador e
+devem ser verificados para cada toolchain. Não descartar o restante das
+funcionalidades do jogo com base nesse recorte.

@@ -21,6 +21,11 @@ wasm-ld: error: /tmp/c.o: undefined symbol: foo(int, double), referenced by z
             'foo(int, double)': {'c.o'},
         })
 
+    def test_entry_probe_keeps_explicit_root_without_forcing_unused_sections(self):
+        self.assertEqual(link.retention_flags("_Z8wWinMainPvS_Pwi"),
+                         ["-Wl,--export=_Z8wWinMainPvS_Pwi"])
+        self.assertEqual(link.retention_flags(None), ["-Wl,--no-gc-sections"])
+
     def test_unexpected_linker_failure_is_reported(self):
         self.assertIn('duplicate symbol', link.format_link_errors('wasm-ld: error: duplicate symbol: x\n'))
 

@@ -35,6 +35,10 @@ def format_link_errors(stderr: str) -> str:
                      if 'error:' in line and 'undefined symbol:' not in line)
 
 
+def retention_flags(entry_symbol: str | None) -> list[str]:
+    return [f'-Wl,--export={entry_symbol}'] if entry_symbol else ['-Wl,--no-gc-sections']
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--emxx', default=str(
@@ -56,6 +60,7 @@ def main() -> int:
     parser.add_argument('--output', default=str(
         ROOT / 'build/client153-full-link/client153-full-probe.js'))
     parser.add_argument('--error-limit', type=int, default=60)
+    parser.add_argument('--entry-symbol', help='retain this mangled symbol and its reachable sections')
     parser.add_argument('--list-only', action='store_true')
     args = parser.parse_args()
 
@@ -86,7 +91,7 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     command = [
         args.emxx, '--no-entry', '-fexceptions', '-sUSE_ZLIB=1',
-        '-Wl,--no-gc-sections', f'-Wl,--error-limit={args.error_limit}',
+        *retention_flags(args.entry_symbol), f'-Wl,--error-limit={args.error_limit}',
         *objects, *libraries, '-o', str(output),
     ]
     print('linking...')
