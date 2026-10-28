@@ -547,6 +547,13 @@ inline BOOL SetThreadPriority(HANDLE handle, int priority) {
   return FALSE;
 }
 
+//	The priority query rides on the same missing scheduler; it reports
+//	the documented normal priority (the callers compare against it).
+inline int GetThreadPriority(HANDLE handle) {
+  (void)handle;
+  return THREAD_PRIORITY_NORMAL;
+}
+
 //	The priority boost toggle rides on the scheduler priorities that do
 //	not exist on this target; it fails like SetThreadPriority above.
 inline BOOL SetThreadPriorityBoost(HANDLE handle, BOOL disable) {

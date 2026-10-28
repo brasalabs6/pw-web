@@ -25,5 +25,22 @@ inline _TCHAR *_tcscpy(_TCHAR *destination, const _TCHAR *source) {
 inline _TCHAR *_tcsncpy(_TCHAR *destination, const _TCHAR *source, int count) {
   return pw153::platform::wide_strncpy(destination, source, count);
 }
+inline int _tcscmp(const _TCHAR *a, const _TCHAR *b) {
+  return pw153::platform::wide_strcmp(a, b);
+}
+inline int _tcsncmp(const _TCHAR *a, const _TCHAR *b, int count) {
+  return pw153::platform::wide_strncmp(a, b, count);
+}
+inline int _tcslen(const _TCHAR *text) {
+  return pw153::platform::wide_strlen(text);
+}
+inline int _ttoi(const _TCHAR *text) {
+  return pw153::platform::wide_toi(text);
+}
+//	MS _sntprintf: the count-bounded generic-text formatter (tchar.h spells
+//	it as a macro over _snwprintf in a UNICODE build). wide_snprintf matches
+//	the CRT semantics (no terminator when truncated).
+#define _sntprintf(out, count, format, ...) \
+  pw153::platform::wide_snprintf((out), (count), (format), ##__VA_ARGS__)
 
 #endif // PW153_PLATFORM_TCHAR_H
