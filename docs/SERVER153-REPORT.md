@@ -45,8 +45,8 @@ dev-auth desta árvore; ver §4).
 | Framework `share/` (io, rpc, storage, threads, perf) | completo | storage embutido (estilo Berkeley DB); **nenhum daemon usa MySQL** |
 | `cnet/` — 8 daemons + ferramentas | completo | glinkd, gdeliveryd, gamedbd, gauthd, uniquenamed, gfaction, gacd, logservice; gclient (cliente virtual de teste) e dbtool |
 | `cgame/` — servidor de jogo (`gs`) | código completo | binário constrói e inicia; **falha sem os data files** |
-| `cskill/` — sistema de skills | completo | libskill.a/.so com 724 arquivos `.hrp` de dados de skill |
-| `PWSL/` — linguagem de script | presente | não integrado ao build dos daemons |
+| `cskill/` — sistema de skills | completo | libskill.a/.so com ~5.758 headers de skill gerados (`skills/skillXXXX.h`, skill editor Java em `cskill/gen/`) |
+| `PWSL/` — bibliotecas serverside | presente | "Perfect World Serverside Library" (io/log/rpc + rpcgen), não linguagem de script; não integrado ao build dos daemons |
 | RPC gerado (`rpcdata/`, 668 arquivos) | commitado e consistente | `rpcgen` (Perl) valida igual em CI |
 | Configs de runtime (`gamesys.conf`, `*.conf`) | presentes | com mistmatches entre vintages (ver §4) |
 | Ferramentas admin (java/php/iweb) | ausentes | o MySQL do readme é para essas ferramentas, não para os daemons |
