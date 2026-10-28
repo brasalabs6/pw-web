@@ -92,7 +92,7 @@ app.post('/v1/launcher/sessions',async c=>{
   const u=mustUser(c);if(!u)return fail(c,401,'Sign in required');
   const input=await json(c,launcherSessionInput);if(!input)return fail(c,422,'Invalid launcher request');
   const q=await db.query(
-    \`SELECT r.status,r.name,rc.pairing_id,p.status AS pair_status,p.protocol_profile,p.data_profile,
+    `SELECT r.status,r.name,rc.pairing_id,p.status AS pair_status,p.protocol_profile,p.data_profile,
       cr.version AS client_version,cr.digest AS client_digest,cr.artifact_url AS client_manifest_url,cr.status AS client_status,
       sr.version AS server_version,sr.digest AS server_digest,sr.status AS server_status,
       d.id AS deployment_id,d.gateway_url,d.asset_base_url,d.state AS deployment_state,d.health_checked_at
@@ -101,7 +101,7 @@ app.post('/v1/launcher/sessions',async c=>{
     JOIN client_releases cr ON cr.id=p.client_release_id
     JOIN server_releases sr ON sr.id=p.server_release_id
     JOIN deployments d ON d.realm_id=r.id AND d.server_release_id=sr.id
-    WHERE r.id=$1 ORDER BY d.updated_at DESC LIMIT 1\`,[input.realmId,input.channel]);
+    WHERE r.id=$1 ORDER BY d.updated_at DESC LIMIT 1`,[input.realmId,input.channel]);
   const x=q.rows[0];
   if(!x)return fail(c,409,'No compatible client has been published for this realm');
   if(x.status!=='online'||x.deployment_state!=='ready'||x.pair_status!=='supported'||
@@ -124,12 +124,12 @@ app.post('/v1/launcher/sessions',async c=>{
 app.post('/v1/internal/tickets/consume',async c=>{
   const header=c.req.header('Authorization');
   const expected=process.env.GATEWAY_CONTROL_TOKEN;
-  if(!expected||!header||header!==\`Bearer \${expected}\`)return fail(c,403,'Forbidden');
+  if(!expected||!header||header!==`Bearer ${expected}`)return fail(c,403,'Forbidden');
   const body=await json(c,z.object({ticket:z.string().min(32),deploymentId:z.string().uuid()}));
   if(!body)return fail(c,422,'Invalid ticket');
   const q=await db.query(
-    \`UPDATE game_tickets SET consumed_at=now() WHERE token_sha256=$1 AND deployment_id=$2
-       AND expires_at>now() AND consumed_at IS NULL RETURNING realm_id,pairing_id\`,
+    `UPDATE game_tickets SET consumed_at=now() WHERE token_sha256=$1 AND deployment_id=$2
+       AND expires_at>now() AND consumed_at IS NULL RETURNING realm_id,pairing_id`,
     [sha256(body.ticket),body.deploymentId]);
   if(!q.rowCount)return fail(c,401,'Ticket invalid, expired or already used');
   return c.json({ok:true,realmId:q.rows[0].realm_id,pairingId:q.rows[0].pairing_id});
@@ -166,14 +166,14 @@ app.patch('/v1/admin/realms/:id',async c=>{
   return c.json({realm:q.rows[0]});
 });
 for (const [kind,table] of [['clients','client_releases'],['servers','server_releases']] as const) {
-  app.post(\`/v1/admin/releases/\${kind}\`,async c=>{
+  app.post(`/v1/admin/releases/${kind}`,async c=>{
     const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
     const input=await json(c,releaseCreateInput);if(!input)return fail(c,422,'Invalid release input');
-    const q=await db.query(\`INSERT INTO \${table}(version,digest,artifact_url,protocol_profile,data_profile,status)
-      VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(digest) DO NOTHING RETURNING *\`,
+    const q=await db.query(`INSERT INTO ${table}(version,digest,artifact_url,protocol_profile,data_profile,status)
+      VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(digest) DO NOTHING RETURNING *`,
       [input.version,input.digest,input.artifactUrl,input.protocolProfile,input.dataProfile,'draft']);
     if(!q.rowCount)return fail(c,409,'Release digest already registered');
-    await audit(db,u.id,\`release.\${kind}.import\`,q.rows[0].id,{digest:input.digest});
+    await audit(db,u.id,`release.${kind}.import`,q.rows[0].id,{digest:input.digest});
     return c.json({release:q.rows[0]},201);
   });
 }
@@ -215,10 +215,10 @@ app.post('/v1/admin/previews',async c=>{
   const key=c.req.header('Idempotency-Key');
   if(!key||key.length<12||key.length>120)return fail(c,422,'Idempotency-Key required (12-120 chars)');
   const q=await db.query(
-    \`INSERT INTO operation_jobs(kind,payload,actor_id,idempotency_key)
+    `INSERT INTO operation_jobs(kind,payload,actor_id,idempotency_key)
       VALUES('preview.create',$1,$2,$3)
       ON CONFLICT(idempotency_key) DO UPDATE SET idempotency_key=EXCLUDED.idempotency_key
-      RETURNING id,kind,state,payload,created_at\`,[JSON.stringify(input),u.id,key]);
+      RETURNING id,kind,state,payload,created_at`,[JSON.stringify(input),u.id,key]);
   await audit(db,u.id,'preview.request',q.rows[0].id,input);
   return c.json({operation:q.rows[0]},202);
 });
