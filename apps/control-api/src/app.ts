@@ -283,9 +283,9 @@ app.post('/v1/admin/previews',async c=>{
       return c.json({operation:inserted.rows[0]},202);
     }
     const existing=await tx.query(
-      'SELECT id,kind,state,payload,created_at,actor_id FROM operation_jobs WHERE idempotency_key=$1',[key]);
+      'SELECT id,kind,state,payload,created_at,actor_id,payload=$2::jsonb AS payload_matches FROM operation_jobs WHERE idempotency_key=$1',[key,JSON.stringify(input)]);
     const x=existing.rows[0];
-    if(!x || x.actor_id!==u.id || JSON.stringify(x.payload)!==JSON.stringify(input)){
+    if(!x || x.actor_id!==u.id || !x.payload_matches){
       await tx.query('ROLLBACK');return fail(c,409,'Idempotency key already used for another operation');
     }
     await tx.query('COMMIT');

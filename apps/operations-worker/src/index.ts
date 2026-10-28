@@ -26,6 +26,9 @@ async function dispatch(job:{id:string;payload:unknown}){
 async function run(){
   const token=process.env.GITHUB_TOKEN;
   if(!token){console.warn('GITHUB_TOKEN not configured: preview queue remains waiting');return}
+  // Never redispatch after an uncertain worker crash: request manual reconciliation
+  // with GitHub run history so an accepted external side-effect is not duplicated.
+  await db.query("UPDATE operation_jobs SET state='blocked',reserved_until=NULL,updated_at=now(),result=jsonb_build_object('error','Worker crashed or dispatch timed out; reconcile GitHub before retry') WHERE state='dispatching' AND reserved_until < now()");
   const client=await db.connect();
   let job:{id:string;payload:unknown}|null=null;
   try{
@@ -34,19 +37,19 @@ async function run(){
       "SELECT id,payload FROM operation_jobs WHERE state='queued' AND kind='preview.create' ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED");
     if(r.rowCount){
       job=r.rows[0];
-      await client.query("UPDATE operation_jobs SET state='dispatching',updated_at=now() WHERE id=$1",[job!.id]);
+      await client.query("UPDATE operation_jobs SET state='dispatching',attempts=attempts+1,reserved_until=now()+interval '90 seconds',updated_at=now() WHERE id=$1",[job!.id]);
     }
     await client.query('COMMIT');
   }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
   if(!job)return;
   try{
     await dispatch(job);
-    await db.query("UPDATE operation_jobs SET state='dispatched',result=$2,updated_at=now() WHERE id=$1",
+    await db.query("UPDATE operation_jobs SET state='dispatched',reserved_until=NULL,result=$2,updated_at=now() WHERE id=$1",
       [job.id,JSON.stringify({message:'GitHub workflow dispatched. Preview readiness NOT proven.'})]);
     console.log('Preview dispatched',job.id);
   }catch(e){
     console.error('Preview dispatch blocked',job.id,e instanceof Error?e.message:'unknown');
-    await db.query("UPDATE operation_jobs SET state='blocked',result=$2,updated_at=now() WHERE id=$1",
+    await db.query("UPDATE operation_jobs SET state='blocked',reserved_until=NULL,result=$2,updated_at=now() WHERE id=$1",
       [job.id,JSON.stringify({error:e instanceof Error?e.message:'dispatch error'})]);
   }
 }

@@ -28,6 +28,8 @@ jobs:
       API_PUBLIC_URL: http://127.0.0.1:8787
       API_PORT: '8787'
       APP_ORIGINS: http://localhost:5173,http://localhost:5174,http://localhost:5175
+      AGENT_SHARED_TOKEN: test-only-agent-token-0123456789abcdef012345
+      GATEWAY_CONTROL_TOKEN: test-only-gateway-token-0123456789abcdef01234
     steps:
       - uses: actions/checkout@v4
         with: {persist-credentials: false, submodules: false}
@@ -39,6 +41,17 @@ jobs:
       - run: npm run test:platform
       - run: npm run test:updater
       - run: npm run db:migrate
+      - name: Ephemeral Ed25519 health attestation key for synthetic fixture
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const crypto=require('node:crypto'),fs=require('node:fs');
+          const {privateKey,publicKey}=crypto.generateKeyPairSync('ed25519');
+          const pub=publicKey.export({format:'der',type:'spki'}).toString('base64');
+          const priv=privateKey.export({format:'der',type:'pkcs8'}).toString('base64');
+          fs.appendFileSync(process.env.GITHUB_ENV,'HEALTH_PROOF_PUBLIC_KEY_SPKI_B64='+pub+'\n');
+          fs.appendFileSync(process.env.GITHUB_ENV,'HEALTH_PROOF_PRIVATE_KEY_PKCS8_B64='+priv+'\n');
+          NODE
       - name: PostgreSQL + HTTP smoke
         shell: bash
         run: |
