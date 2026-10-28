@@ -940,6 +940,14 @@ inline HANDLE CreateFileW(const wchar_t *name, DWORD access, DWORD share,
                      flags, templateFile);
 }
 
+// DeleteFileA accepts the Windows path separators used by the client.
+inline BOOL DeleteFileA(const char *path) {
+  if (!path || !*path) return FALSE;
+  std::string normalized(path);
+  std::replace(normalized.begin(), normalized.end(), '\\', '/');
+  return ::unlink(normalized.c_str()) == 0 ? TRUE : FALSE;
+}
+
 //	Directory creation: the real POSIX mkdir with the Win32 return contract.
 #include <sys/stat.h>
 inline BOOL CreateDirectoryA(const char *path, void *attributes) {
