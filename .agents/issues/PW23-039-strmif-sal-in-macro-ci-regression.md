@@ -2,10 +2,12 @@
 id: PW23-039
 title: "Regressão CI: macros SAL __in e __out do DirectShow contaminam headers C++"
 priority: P1
-status: open
+status: resolved
 kind: reproduced-ci-regression
 first_observed: 2026-10-28
-verified_against: 97dfe0d423494ee35178c082c518a66659cfd0d2
+verified_against: b728eb7860774ecdd681f2eaec57218be27e2e9d
+resolved_at: 2026-10-28
+resolution_commit: 7eb3f4ddfeee7c9fd330d5dcf342576d92697fd5
 epic: e03-platform-portability-v1
 scope: pr-23
 validation: github-actions-ci-log
@@ -43,3 +45,9 @@ Confinar todas as macros SAL legadas, especialmente __in e __out, ao escopo dos 
 [PW23-038](PW23-038-ddraw-struct-layout-ci-regression.md) é uma falha anterior de layout DDS resolvida; [PW23-006](PW23-006-winapi-false-success-and-pointer-state.md) trata comportamento de shims WinAPI; [PW23-013](PW23-013-test-gates-not-browser-game.md) trata cobertura. Nenhum cobre esta contaminação do namespace C++ pelos identificadores `__in`/`__out` de `strmif.h`. A falha transitória de `CompareStringW` no [run 40742474498](https://github.com/brasalabs6/pw-web/actions/runs/40742474498) já recebeu `(void)flags` no SHA atual e não é confundida com o erro novo.
 
 Sem alteração de código-fonte, PR adicional, merge ou modificação do servidor #17.
+
+## Resolução confirmada — 2026-10-28
+
+O commit [7eb3f4d](https://github.com/brasalabs6/pw-web/commit/7eb3f4ddfeee7c9fd330d5dcf342576d92697fd5) removeu o `#include "dshow.h"` do header genérico [Windows.h](https://github.com/brasalabs6/pw-web/blob/7eb3f4ddfeee7c9fd330d5dcf342576d92697fd5/src/client153/platform/common/Windows.h), mantendo as anotações SAL específicas em `strmif.h`. O novo teste [win_sal_scope.cpp:1-12](https://github.com/brasalabs6/pw-web/blob/7eb3f4ddfeee7c9fd330d5dcf342576d92697fd5/tests/client153/win_sal_scope.cpp#L1-L12) falha se `Windows.h` exportar `__in` ou `__out` e inclui `<iostream>` após esse header.
+
+No HEAD auditado `b728eb7860774ecdd681f2eaec57218be27e2e9d`, o [CI Client 1.5.3 port build #40773786307](https://github.com/brasalabs6/pw-web/actions/runs/40773786307) concluiu com sucesso o job `native-and-wasm`, incluindo as etapas de testes nativos e regressões WASM. **A regressão específica de compilação foi resolvida**; a presença das macros dentro de `strmif.h` continua intencional e não é, por si, falha reproduzida. O CI não prova inicialização do jogo no Chrome, gameplay, WebGL2 real ou funcionamento mobile. Nenhum código-fonte foi modificado por esta auditoria.
