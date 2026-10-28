@@ -127,3 +127,11 @@ Baseline de inspeção: `4bd108b30650647d1c510db252442de764b27dd1`. Candidato es
 | [OPT-040](OPT-040-sprite-buffer-batch-capacity-and-flush.md) | P2 | A2D SpriteBuffer / UI WebGL2 | Medir limite de lote de sprites, custo de lock/cópia/draw e validar possível excedente de quads em um slot; inspeção estática, não bug reproduzido |
 
 Inspeção no SHA `c86bb95a0cb37d45d31b81a6c7a27d3afe1f6a24`. Distinto de PW23-026 (viewer WebGL2), OPT-023 (placas em multidões) e OPT-001 (cache de texturas). Sem benchmark, teste mobile ou alteração de código. Port funcional continua prioritário.
+
+## Auditoria incremental — A3DVertexCollector (2026-10-28; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-041](OPT-041-vertex-collector-single-batch-capacity-bounds.md) | P1 | Angelica / buffers de geometria | Verificar capacidade de um push individual antes de copiar vértices e índices; hardening estático sem reprodução |
+
+Inspeção no SHA `d3ebee66b6a1de165a0f5eba28f62cbbe81d24f8`. Distinto de OPT-040 e OPT-015; somente pós-port, sem benchmark, testes mobile ou alteração de código.
