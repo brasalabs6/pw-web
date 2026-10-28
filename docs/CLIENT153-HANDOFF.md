@@ -486,3 +486,47 @@ Na comparação local de 2026-10-27, o cliente produziu 60 bytes e o servidor
 59; os 59 primeiros coincidem, e o cliente acrescenta o `rank` vazio. Esse
 teste é um diagnóstico de um registro padrão: não comprova compatibilidade do
 restante do protocolo nem criação de personagem ou conexão com o servidor.
+
+---
+
+## Rodada 5 (2026-10-28, Grok → Codex): m-link em andamento
+
+Head `eae4ce02`. Compilação 726/833 (680/787 jogo + 46/46 AUI, probe
+cycle45 limpo). Regressões: native 31/31, wasm 26/26, sanitize 31/31,
+python 21/21. O comentário de handoff completo com o worklist do link
+(58 símbolos decompostos), os comandos de reprodução e os 10
+armadilhas conhecidas está no PR #23 (issuecomment-6466418369).
+
+Estado novo nesta rodada que o Codex precisa saber:
+
+1. **O `references/` DESTE worktree é placeholder vazio** — as fontes
+   upstream reais estão em
+   `/home/nonexphere/workspace/pw/pw-web/references/client-153`. Toda a
+   camada GfxCommon (EC_Model 6709 linhas + 7 TUs) e o LuaWrapper
+   (ScriptValue.cpp) foram portados de lá nesta sessão; nada é
+   binário-only.
+2. **Novos targets CMake**: `client153_gfx_original` (9 objetos: os TUs
+   Gfx + ScriptValue) e o `client153_engine_original` ampliado (20
+   objetos: +A3DGeometry, A3DTerrain2, A3DTerrain2Trace — o
+   GetPosHeight mora AQUI, não no A3DTerrain2.cpp —, A3DTerrainWater,
+   A3DEngine). O target gfx PRECISA do prelude de widgets completo
+   (dedupe das cópias bugadas de AString.h/AArray.h do acsdk).
+3. **O link de fecho completo** roda com
+   `python3 scripts/link-client153-full.py --error-limit 300` (depois
+   de buildar os dois targets). Faltam 58 símbolos: ~20 são objetos
+   stale das 4 TUs fechadas após o probe cycle45 (EC_Utility,
+   defence/defence, EC_CustomizeMgr, EC_IvtrItem — um re-probe resolve);
+   o resto são as próximas TUs (Wiki, Skills, MCDownload, OfflineShop,
+   LuaState/LuaUtil — o LuaBind::Call foi adiado de propósito no
+   ScriptValue.cpp —, A3DGFXElement.cpp para o trio g_Gfx*, e os bits
+   A3DDevice::SetFaceCull/A3DWireCollector::Add3DLine/g_vAxisY).
+4. **Armadilhas novas**: a ordem interna do Windows.h mordeu 4× nesta
+   sessão (HIMC, ERROR_CALL_NOT_IMPLEMENTED, GUID, LARGE_INTEGER);
+   LARGE_INTEGER/ULARGE_INTEGER/SYSTEM_INFO agora usam o layout union
+   documentado (struct anônima — pragma pedantic waivado com a
+   justificativa no lugar); min/max com tipos mistos é ambíguo com os
+   novos overloads (cast explícito); o template swap global legado em
+   A3DGFXKeyPoint.h colide via ADL (shim TU-local no A3DGFXExMan.cpp;
+   remover no header é o fix de dono).
+5. PW23-001/002 (winsync thread lifetime + WinMutex ownership)
+   RESOLVIDAS com o teste novo `winsync_semantics` (commit a2a9c251).
