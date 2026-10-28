@@ -34,7 +34,7 @@
 #include <A3DTerrainWater.h>
 #include <A3DCamera.h>
 
-#include "A3DGfxExMan.h"
+#include "A3DGFXExMan.h"
 #include "A3DGFXElement.h"
 
 #define new A_DEBUG_NEW

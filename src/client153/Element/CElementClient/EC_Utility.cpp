@@ -29,7 +29,7 @@
 #include "EC_UIManager.h"
 #include "EC_WinAPI.h"
 
-#include "A3DGfxExMan.h"
+#include "A3DGFXExMan.h"
 #include "A3DMacros.h"
 #include "A3DLight.h"
 #include "A3DFuncs.h"

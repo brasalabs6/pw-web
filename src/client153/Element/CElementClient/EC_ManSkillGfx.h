@@ -3,7 +3,7 @@
 
 #include "AList2.h"
 #include "A3DGfxEx.h"
-#include "A3DGfxExMan.h"
+#include "A3DGFXExMan.h"
 #include "A3DSkillGfxEvent2.h"
 #include "EC_Manager.h"
 #include "EC_Game.h"

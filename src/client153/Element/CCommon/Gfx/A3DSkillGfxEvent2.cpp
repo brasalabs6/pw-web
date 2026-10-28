@@ -1,4 +1,4 @@
-#include "A3DGfxExMan.h"
+#include "A3DGFXExMan.h"
 #include "A3DSkillGfxEvent2.h"
 #include "A3DSkillGfxComposer2.h"
 #include "A3DGFXKeyPoint.h"

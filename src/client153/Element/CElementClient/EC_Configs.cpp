@@ -52,7 +52,7 @@
 #include "A3DViewport.h"
 #include "A3DCameraBase.h"
 #include "A3DCamera.h"
-#include "A3DGfxExMan.h"
+#include "A3DGFXExMan.h"
 #include "A3DConfig.h"
 #include "AMConfig.h"
 #include "AMEngine.h"

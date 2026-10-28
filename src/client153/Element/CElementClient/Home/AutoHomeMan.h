@@ -16,7 +16,7 @@
 #include "AutoSceneFunc.h"
 #include "AutoHomeAction.h"
 #include <ABaseDef.h>
-#include <Arect.h>
+#include <ARect.h>
 
 class CAutoScene;
 class CAutoSceneConfig;
