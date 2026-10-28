@@ -7,6 +7,14 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/Mesh.cpp",
+      "sha256": "ac314c6261d27ed0ce9a1d07456c5a046ec3d87b63d966a97fe714dc6e21dad0"
+    },
+    {
+      "path": "Element/CFWEditorLib/Triangle.cpp",
+      "sha256": "465deb274432b904af843f8272bf0fab832055adeced12acc0e1d460c6de961c"
+    },
+    {
       "path": "Element/CFWEditorLib/CharContour.cpp",
       "sha256": "7c01b4496547c48245c96348807a2764d6e1bfb488119be9aa4d7f43e2ceb19a"
     },
@@ -9571,6 +9579,12 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/Mesh.cpp",
+      "upstream": "Element/CFWEditorLib/Mesh.cpp",
+      "functions": ["CMesh::ShrinkVertices"],
+      "notes": "Replace disallowed array assignment with explicit clear and copy; verified with a WASM sanitizer behavior test. GB18030 comments transcoded to UTF-8."
+    },
     {
       "path": "src/client153/Element/CFWEditorLib/CharContour.cpp",
       "upstream": "Element/CFWEditorLib/CharContour.cpp",

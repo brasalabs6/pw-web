@@ -15,6 +15,21 @@ endif()
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   if(EMSCRIPTEN)
+    add_executable(client153_mesh_shrink_test
+      tests/client153/mesh_shrink.cpp
+      src/client153/Element/CFWEditorLib/Mesh.cpp
+      src/client153/Element/CFWEditorLib/Triangle.cpp)
+    target_include_directories(client153_mesh_shrink_test PRIVATE
+      src/client153/Element/CFWEditorLib $<TARGET_PROPERTY:client153_game_original,INCLUDE_DIRECTORIES>)
+    target_compile_definitions(client153_mesh_shrink_test PRIVATE
+      $<TARGET_PROPERTY:client153_game_original,COMPILE_DEFINITIONS>)
+    target_compile_options(client153_mesh_shrink_test PRIVATE
+      $<TARGET_PROPERTY:client153_game_original,COMPILE_OPTIONS>
+      -fsanitize=undefined -fno-sanitize-recover=undefined)
+    target_link_options(client153_mesh_shrink_test PRIVATE
+      -fexceptions -fsanitize=undefined -fno-sanitize-recover=undefined "-sENVIRONMENT=node")
+    target_link_libraries(client153_mesh_shrink_test PRIVATE client153_skeleton client153_file)
+    add_test(NAME client153_mesh_shrink COMMAND client153_mesh_shrink_test)
     add_executable(client153_contour_simplify_test
       tests/client153/contour_simplify.cpp
       src/client153/Element/CFWEditorLib/CharContour.cpp

@@ -763,3 +763,13 @@ client153_contour_simplify_test` e `ctest --test-dir build/client153-wasm-tests
 configuração de testes). O `GetGlyphOutline` da plataforma ainda retorna
 `GDI_ERROR`; este teste não demonstra carregamento de fontes do sistema nem
 renderização de texto no navegador.
+
+### Malha original
+
+A malha e triângulos originais compilam para WASM. `CMesh::ShrinkVertices`
+substitui a atribuição indisponível de AArray por limpeza seguida de cópia;
+`client153_mesh_shrink` valida vértices e índices sob UBSan no Node. O teste
+não valida a geração completa de malhas de caracteres. O link com raiz na
+entrada original, após incluir os objetos de malha, reportou 10 símbolos
+indefinidos (9 funções GLU e `FillMeshParam`); continua sendo diagnóstico,
+não execução do jogo. A extração de fontes GDI permanece indisponível.

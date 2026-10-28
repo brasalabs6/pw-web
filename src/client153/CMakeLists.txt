@@ -366,6 +366,8 @@ if(EMSCRIPTEN)
   # They compile with the game-project environment (the same include set and
   # definitions the probe uses for the game project).
   add_library(client153_game_original OBJECT EXCLUDE_FROM_ALL
+    Element/CFWEditorLib/Mesh.cpp
+    Element/CFWEditorLib/Triangle.cpp
     Element/CFWEditorLib/CharContour.cpp
     Element/CFWEditorLib/CharCurve.cpp
     Element/CFWEditorLib/CharOutline.cpp
