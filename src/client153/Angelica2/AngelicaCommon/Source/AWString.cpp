@@ -598,7 +598,7 @@ AWString& AWString::Format(const wchar_t* szFormat, ...)
 	//	exhaust the caller's list, so the sizing pass walks a copy.
 	va_list sizing;
 	va_copy(sizing, argList);
-	int iMaxLen = GetFormatLen(szFormat, sizing) + 1;
+	int iNumWritten, iMaxLen = GetFormatLen(szFormat, sizing) + 1;
 	va_end(sizing);
 
 	s_STRINGDATA* pData = GetData();
@@ -607,8 +607,8 @@ AWString& AWString::Format(const wchar_t* szFormat, ...)
 		pData->iRefs--;
 	else if (iMaxLen <= pData->iMaxLen)
 	{
-		pw153::platform::wide_vformat(m_pStr, szFormat, argList);	//	MSVC vswprintf.
-		pData->iDataLen = SafeStrLen(m_pStr);
+		iNumWritten = pw153::platform::wide_vformat(m_pStr, szFormat, argList);	//	MSVC vswprintf.
+		pData->iDataLen = iNumWritten >= 0 ? iNumWritten : SafeStrLen(m_pStr);
 		goto End;
 	}
 	else	//	iMaxLen > pData->iMaxLen
@@ -617,7 +617,7 @@ AWString& AWString::Format(const wchar_t* szFormat, ...)
 	m_pStr = AllocBuffer(iMaxLen);
 	iNumWritten = pw153::platform::wide_vformat(m_pStr, szFormat, argList);	//	MSVC vswprintf.
 	ASSERT(iNumWritten < iMaxLen);
-	GetData()->iDataLen = SafeStrLen(m_pStr);
+	GetData()->iDataLen = iNumWritten >= 0 ? iNumWritten : SafeStrLen(m_pStr);
 
 End:
 
