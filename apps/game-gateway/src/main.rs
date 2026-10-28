@@ -14,6 +14,22 @@ struct Config {
 }
 #[derive(Deserialize)]
 struct FirstMessage{ticket:String}
+fn validate_ticket_frame(frame:&str)->Option<String>{
+    if frame.len()>256{return None}
+    let parsed:FirstMessage=serde_json::from_str(frame).ok()?;
+    // API issues a cryptographically random 32-byte base64url token: 43 chars, no padding.
+    let ticket=parsed.ticket;
+    if ticket.len()!=43 || !ticket.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_'){
+        return None
+    }
+    Some(ticket)
+}
+fn valid_deployment_id(id:&str)->bool{
+    if id.len()!=36{return false}
+    id.bytes().enumerate().all(|(i,c)| {
+        if [8,13,18,23].contains(&i){c==b'-'}else{c.is_ascii_hexdigit()}
+    })
+}
 #[derive(Serialize)]
 struct TicketConsume<'a>{ticket:&'a str,#[serde(rename="deploymentId")]deployment_id:&'a str}
 #[derive(Deserialize)]
@@ -37,9 +53,9 @@ async fn bridge(mut ws:WebSocket,cfg:Arc<Config>){
         Ok(Some(Ok(Message::Text(value))))=>value,
         _=>{let _=ws.close().await;return}
     };
-    let ticket=match serde_json::from_str::<FirstMessage>(&first) {
-        Ok(x) if x.ticket.len()>=32 && x.ticket.len()<=256 =>x.ticket,
-        _=>{let _=ws.close().await;return}
+    let ticket=match validate_ticket_frame(&first){
+        Some(token)=>token,
+        None=>{let _=ws.close().await;return}
     };
     let endpoint=format!("{}/v1/internal/tickets/consume",cfg.control_api.trim_end_matches('/'));
     let response=cfg.http.post(endpoint).bearer_auth(&cfg.control_token)
@@ -85,7 +101,7 @@ async fn main()->Result<(),Box<dyn std::error::Error>>{
     let token=std::env::var("GATEWAY_CONTROL_TOKEN").expect("GATEWAY_CONTROL_TOKEN required");
     let deployment_id=std::env::var("GATEWAY_DEPLOYMENT_ID").expect("GATEWAY_DEPLOYMENT_ID required");
     if token.len()<32{panic!("Gateway token must have at least 32 characters")}
-    if !deployment_id.chars().all(|c|c.is_ascii_hexdigit()||c=='-'){panic!("Invalid deployment id")}
+    if !valid_deployment_id(&deployment_id){panic!("Invalid deployment id")}
     let config=Arc::new(Config{
         control_api:std::env::var("CONTROL_API_URL").unwrap_or("http://127.0.0.1:8787".into()),
         control_token:token,
@@ -101,4 +117,26 @@ async fn main()->Result<(),Box<dyn std::error::Error>>{
     let listener=TcpListener::bind(addr).await?;
     axum::serve(listener,app).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn accepts_only_opaque_random_base64url_tickets(){
+        let token="a".repeat(43);
+        assert_eq!(validate_ticket_frame(&format!(r#"{{"ticket":"{}"}}"#,token)),Some(token.clone()));
+        assert_eq!(validate_ticket_frame(&format!(r#"{{"ticket":"{}"}}"#,"a".repeat(42))),None);
+        assert_eq!(validate_ticket_frame(&format!(r#"{{"ticket":"{}"}}"#,"a".repeat(42)+"!")),None);
+        assert_eq!(validate_ticket_frame(r#"{"url":"127.0.0.1:22"}"#),None);
+        assert_eq!(validate_ticket_frame("not json"),None);
+        assert_eq!(validate_ticket_frame(&"x".repeat(1024)),None);
+    }
+    #[test]
+    fn deployment_id_must_be_uuid_shaped(){
+        assert!(valid_deployment_id("00000000-0000-4000-8000-0123456789ab"));
+        assert!(!valid_deployment_id("a"));
+        assert!(!valid_deployment_id("00000000-0000-4000-8000-0123456789ab-other"));
+        assert!(!valid_deployment_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+    }
 }

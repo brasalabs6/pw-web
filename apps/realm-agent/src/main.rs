@@ -10,6 +10,10 @@ struct Config{token:String,units:BTreeSet<String>,systemctl:String}
 struct ServiceStatus{name:String,systemd_status:String}
 #[derive(Deserialize)]
 struct ActionRequest{reason:String}
+fn valid_unit(unit:&str)->bool{
+    unit.starts_with("pw-") && unit.ends_with(".service")
+      && unit.chars().all(|c|c.is_ascii_alphanumeric() || ".-_".contains(c))
+}
 fn authorized(headers:&HeaderMap,cfg:&Config)->bool{
     let actual=headers.get("authorization").and_then(|v|v.to_str().ok()).unwrap_or("");
     let expected=format!("Bearer {}",cfg.token);
@@ -57,8 +61,7 @@ async fn main()->Result<(),Box<dyn std::error::Error>>{
     let units:BTreeSet<String>=raw.split(',').filter(|s|!s.trim().is_empty())
       .map(|s|s.trim().to_string()).collect();
     if units.is_empty(){tracing::warn!("No systemd units enabled, agent is read-only");}
-    if units.iter().any(|s|!s.starts_with("pw-") || !s.ends_with(".service")||
-       !s.chars().all(|c|c.is_ascii_alphanumeric()||".-_".contains(c))){
+    if units.iter().any(|s|!valid_unit(s)){
        panic!("Only explicit pw-*.service unit names are allowed")
     }
     let cfg=Arc::new(Config{token,units,
@@ -71,4 +74,28 @@ async fn main()->Result<(),Box<dyn std::error::Error>>{
     tracing::info!("Realm agent on {}",addr);
     axum::serve(listener,app).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  fn config()->Config{Config{token:"a".repeat(40),units:BTreeSet::new(),systemctl:"/usr/bin/systemctl".into()}}
+  #[test]
+  fn rejects_non_allowlisted_unit_names(){
+    for name in ["ssh.service","pw-../../etc/passwd.service","pw-map;rm.service","pw-map.service/../ssh","pw-map.service\n"] {
+      assert!(!valid_unit(name),"unsafe systemd unit accepted: {:?}",name);
+    }
+    assert!(valid_unit("pw-gs01.service"));
+    assert!(valid_unit("pw-glinkd.service"));
+  }
+  #[test]
+  fn requires_exact_bearer_secret(){
+    let c=config();
+    let mut headers=HeaderMap::new();
+    assert!(!authorized(&headers,&c));
+    headers.insert("authorization",("Bearer ".to_owned()+&c.token).parse().unwrap());
+    assert!(authorized(&headers,&c));
+    headers.insert("authorization","Bearer wrong".parse().unwrap());
+    assert!(!authorized(&headers,&c));
+  }
 }
