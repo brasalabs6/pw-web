@@ -7,6 +7,46 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWGlyphGraphBase.cpp",
+      "sha256": "9f1bfb38ebceb9e90baf59d66b9a1775d5c95bb09af16ed219b54a7121c30784"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphPolygon.cpp",
+      "sha256": "a183c4a8bd87c3a4791f9c7e98cc7ff160321806f119eb05f3149da16ae70f27"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphPolygon.h",
+      "sha256": "4f54987653b15e4b9a3771cba7fd190068630a039f80f3ff48bb2d7d82c83f4e"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphBezier.cpp",
+      "sha256": "d913edef28b1f536ffac3671970771286b9948a4c6ba4cba084e802df98e8a14"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWPlayer.cpp",
+      "sha256": "272500529ebb27dae3da6a1ee9ab436a84b24c861e02bd081508778cc74fb499"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWState.cpp",
+      "sha256": "db82f1e9b8299a04b5ac5300237122645c1e319ce7254ece26048ebb27b72a01"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogBase.cpp",
+      "sha256": "0a6261a3b083c56d7da955a901d902e6b54263a244e475d10d15c0bcefb9a3fc"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWOutterProperty.cpp",
+      "sha256": "bf3165958ea4afef583e7db84cc9e357256b35ebabead2cb23e15cb2dc1547b8"
+    },
+    {
+      "path": "Element/CFWEditorLib/CharCurve.h",
+      "sha256": "c81f3e579e11c7e443c1b8d70b32f458758fb29a7f209536b1747375b41fe679"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogPolygonMenu.h",
+      "sha256": "8304a9762914f2f262cf51c7602f2d56b5dd85683d82e18603b90ba09c645145"
+    },
+    {
       "path": "Element/CFWEditorLib/FWRuntimeClass.cpp",
       "sha256": "956b5c5e5ba57e090f69ce29061feb38751c9b9b647fdefeca4bc3cfbc4e65e5"
     },
@@ -9199,6 +9239,30 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWGlyphPolygon.cpp",
+      "upstream": "Element/CFWEditorLib/FWGlyphPolygon.cpp",
+      "functions": [],
+      "notes": "Fix case-sensitive include, remove unused ocidl.h, and pass a named point to InsertAt. GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWGlyphBezier.cpp",
+      "upstream": "Element/CFWEditorLib/FWGlyphBezier.cpp",
+      "functions": [],
+      "notes": "Remove unused ocidl.h and pass named points to InsertAt in the original insertion order. GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWState.cpp",
+      "upstream": "Element/CFWEditorLib/FWState.cpp",
+      "functions": [],
+      "notes": "Remove duplicate mis-cased include. GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWOutterProperty.cpp",
+      "upstream": "Element/CFWEditorLib/FWOutterProperty.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility. GB18030 comments transcoded to UTF-8."
+    },
     {
       "path": "src/client153/Element/CFWEditorLib/FWAlgorithm.cpp",
       "upstream": "Element/CFWEditorLib/FWAlgorithm.cpp",
