@@ -46,6 +46,20 @@ assert.equal(first.data.operation.id,retry.data.operation.id);
 const conflict=await json('/v1/admin/previews','POST',{...previewBody,ttlHours:2},cookie,{'Idempotency-Key':jobKey});
 assert.equal(conflict.status,409,'idempotency key cannot be reused with changed input');
 
+// Concurrent approval must be serialized. Only one draft→validated transition succeeds.
+const imported=await json('/v1/admin/releases/clients','POST',{
+  version:'qa-approval',digest:'c'.repeat(64),artifactUrl:'https://example.invalid/client/approval.json',
+  protocolProfile:'qa-profile',dataProfile:'qa-data'
+},cookie);
+assert.equal(imported.status,201,JSON.stringify(imported.data));
+const releasePath='/v1/admin/releases/client/'+imported.data.release.id+'/status';
+const approvals=await Promise.all([
+  json(releasePath,'POST',{status:'validated',evidenceUrl:'https://example.invalid/evidence'},cookie),
+  json(releasePath,'POST',{status:'validated',evidenceUrl:'https://example.invalid/evidence'},cookie)
+]);
+assert.deepEqual(approvals.map(x=>x.status).sort(),[200,409],
+  'SELECT FOR UPDATE must prevent repeated release approval');
+
 // This is a SYNTHETIC contract fixture, NOT proof of a running PW server.
 // Record matching releases and a deployment, then assert a signed health attestation
 // is required before the API releases any playable-looking bootstrap.
@@ -62,6 +76,13 @@ try{
   const d=await fixtureDb.query("INSERT INTO deployments(realm_id,server_release_id,gateway_url,asset_base_url,state) VALUES($1,$2,'wss://example.invalid/connect','https://example.invalid/assets/','pending') RETURNING id",[realmId,server.rows[0].id]);
   deploymentId=d.rows[0].id;
 }finally{await fixtureDb.end()}
+// CAS of realm channel revision must prevent lost updates under concurrent pin.
+const pins=await Promise.all([
+  json('/v1/admin/realms/'+realmId+'/channels/stable/pin','POST',{pairingId,expectedRevision:1},cookie),
+  json('/v1/admin/realms/'+realmId+'/channels/stable/pin','POST',{pairingId,expectedRevision:1},cookie)
+]);
+assert.deepEqual(pins.map(x=>x.status).sort(),[200,409],
+  'channel pin must have exactly one winning revision');
 r=await json('/v1/launcher/releases','POST',{realmId},cookie);
 assert.equal(r.status,409,'Pending fixture deployment cannot be launched');
 const checkedAt=new Date().toISOString();
