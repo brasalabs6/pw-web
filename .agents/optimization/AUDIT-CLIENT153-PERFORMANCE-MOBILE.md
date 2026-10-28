@@ -78,3 +78,14 @@ Inspeções adicionais de A3DTerrainWater, A3DSkinModel, A3DTextureMan e AFilePa
 
 ### Limites da revisão
 Sem compilação, teste em Android/iOS, profiling ou captura GPU nesta rodada; nenhum subagente foi lançado aqui. A equipe mantém prioridade no port WebAssembly funcional.
+
+
+## Rodada incremental — 2026-10-28, baseline 07b8e843acd4a019d2fda991bf14c2f5b63433f1
+
+O PR #23 avançou 38 commits desde o baseline anterior `d7848d3`: foram integradas/compiladas unidades originais adicionais (terreno, água, A3DTexture, A3DStream, A3DLitModel, sombras, Lua 5.1.5 e componentes GNET). Isso é progresso de fechamento de compilation/link, **não prova de jogo funcional no navegador**. O script `scripts/link-client153-full.py` ainda é um diagnóstico de símbolos sem entry point de jogo; não confundir com boot/login/render/gameplay completos.
+
+**Gate CI real:** [run 40699845272](https://github.com/brasalabs6/pw-web/actions/runs/40699845272) no SHA auditado falhou no teste nativo `test_ddraw_header`: `DDSURFACEDESC2` tem 136 bytes em vez de 124 e offset `ddpfPixelFormat` 80 em vez de 72; 31 CTest passaram, teste Python falhou e etapa WASM foi pulada. Registrado em [PW23-038](../issues/PW23-038-ddraw-struct-layout-ci-regression.md). Não se trata de tuning nem de benchmark.
+
+**Novas hipóteses preventivas (somente pós-port):** [OPT-013](OPT-013-water-area-load-dimension-wave-budgets.md) documenta dimensões/ondas sem limite no loader de água; [OPT-014](OPT-014-dds-mipmap-repacking-allocation-bounds.md) documenta parsing/offsets e new[]/delete no repacker DDS legado; [OPT-015](OPT-015-terrain-render-slot-lookup-reuse.md) documenta loops de busca/transferência de render slots. Todos são achados estáticos sem execução, FPS ou testes em celular. Não duplicam OPT-001…012 nem PW23-021…037.
+
+**Sem código-fonte modificado**; a prioridade continua o port WebAssembly jogável no desktop e mobile.

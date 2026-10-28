@@ -35,7 +35,7 @@
 
 Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file:line, separar hipótese de benchmark e deduplicar com os 17 registros históricos.
 
-## Candidatos estáticos (12)
+## Candidatos estáticos (15)
 
 | ID | Prioridade pós-port | Hipótese |
 |---|---|---|
@@ -56,6 +56,14 @@ Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file
 | [OPT-010](OPT-010-child-skinmodel-hanger-lookup.md) | P2 | Animação / vínculos de modelo | Evitar pesquisa repetida do hanger em modelos-filho |
 | [OPT-011](OPT-011-texture-precache-bounded-scheduling.md) | P2 | Texturas / cold start e GPU | Substituir precache de todas as texturas por aquecimento incremental medido |
 | [OPT-012](OPT-012-pck-path-routing-bounds-and-prefix.md) | P1 | PCK / lookup e hardening preventivo | Auditar limites de caminho e roteamento por prefixo no AFilePackMan |
+
+## Rodada incremental — 2026-10-28 (3 novos)
+
+| ID | Prioridade pós-port | Área | Hipótese |
+|---|---|---|---|
+| [OPT-013](OPT-013-water-area-load-dimension-wave-budgets.md) | P1 | Water area binary deserialization | Validar dimensões, contagem de ondas e orçamento de alocação de A3DWaterArea |
+| [OPT-014](OPT-014-dds-mipmap-repacking-allocation-bounds.md) | P1 | Legacy Angelica DDS loading | Auditar repacking de mipmaps DDS e ownership de buffer temporário |
+| [OPT-015](OPT-015-terrain-render-slot-lookup-reuse.md) | P2 | Terrain render-slot CPU work | Medir buscas lineares e sincronização quadrática dos render slots do terreno |
 
 ## Protocolo
 
