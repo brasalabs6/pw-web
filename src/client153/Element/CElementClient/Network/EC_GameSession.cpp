@@ -869,10 +869,10 @@ static bool OnCountryChatMessage(ChatMessage* p)
 		//strMsg.Format(pGameUI->GetStringFromTable(9985), pDomain->name, strCountryName);
 		break;
 	case 48:
-		strMsg.Format(pGameUI->GetStringFromTable(9986), strCountryName, pDomain->name);
+		strMsg.Format(pGameUI->GetStringFromTable(9986), (const ACHAR*)strCountryName, pDomain->name);
 		break;
 	case 49:
-		strMsg.Format(pGameUI->GetStringFromTable(9987), strCountryName, pDomain->name);
+		strMsg.Format(pGameUI->GetStringFromTable(9987), (const ACHAR*)strCountryName, pDomain->name);
 		break;
 		
 	default:
@@ -1012,7 +1012,7 @@ static bool OnKingChatMessage(ChatMessage* p, bool bGetPlayerName=true)
 					if( candidates.size() )
 					{
 						strNames.CutRight(2);
-						strMsg.Format(pGameUI->GetStringFromTable(10354), strNames);
+						strMsg.Format(pGameUI->GetStringFromTable(10354), (const ACHAR*)strNames);
 					}
 					else
 						strMsg = pGameUI->GetStringFromTable(10320);
@@ -1192,10 +1192,10 @@ static bool OnBattleChatMessage(ChatMessage* p, AArray<int, int>* pPendingFactio
 						
 						if( strDefender == _AL(""))
 							strAnnounce.Format(	pGameUI->GetStringFromTable(4511),
-							strAttacker, (*info)[i].name );
+							(const ACHAR*)strAttacker, (*info)[i].name );
 						else
 							strAnnounce.Format(	pGameUI->GetStringFromTable(4512), 
-							strAttacker, strDefender, (*info)[i].name);
+							(const ACHAR*)strAttacker, (const ACHAR*)strDefender, (*info)[i].name);
 						
 						if(!pPendingFactions || pPendingFactions->GetSize() == 0)
 						{
@@ -1369,7 +1369,7 @@ static bool OnBattleChatMessage(WorldChat* p, AArray<int, int>* pPendingFactions
 			if( (int)fid == idFaction )
 				strAttacker = pGameUI->GetStringFromTable(4500);
 			else
-				strAttacker.Format(pGameUI->GetStringFromTable(4499), strName);
+				strAttacker.Format(pGameUI->GetStringFromTable(4499), (const ACHAR*)strName);
 			
 			for(DWORD i = 0; i < info->size(); i++ )
 				if((*info)[i].id == id )
@@ -1394,14 +1394,14 @@ static bool OnBattleChatMessage(WorldChat* p, AArray<int, int>* pPendingFactions
 						}
 						if( strDefender == _AL(""))
 							strMsg.Format(pGameUI->GetStringFromTable(4501), 
-							strAttacker, (*info)[i].name );
+							(const ACHAR*)strAttacker, (*info)[i].name );
 						else if( idFaction != 0 && 
 							((*info)[i].id_owner == idFaction || (int)fid == idFaction) )
 							strMsg.Format(pGameUI->GetStringFromTable(4502), 
-							strAttacker, strDefender, (*info)[i].name );
+							(const ACHAR*)strAttacker, (const ACHAR*)strDefender, (*info)[i].name );
 						else
 							strMsg.Format(pGameUI->GetStringFromTable(4503), 
-							(*info)[i].name, strAttacker, strDefender);
+							(*info)[i].name, (const ACHAR*)strAttacker, (const ACHAR*)strDefender);
 						break;
 					}
 			break;
@@ -1424,7 +1424,7 @@ static bool OnBattleChatMessage(WorldChat* p, AArray<int, int>* pPendingFactions
 			if( (int)fid == idFaction )
 				strAttacker = pGameUI->GetStringFromTable(4500);
 			else
-				strAttacker.Format(pGameUI->GetStringFromTable(4499), strName);
+				strAttacker.Format(pGameUI->GetStringFromTable(4499), (const ACHAR*)strName);
 			
 			for(DWORD i = 0; i < info->size(); i++ )
 			{
@@ -1449,19 +1449,19 @@ static bool OnBattleChatMessage(WorldChat* p, AArray<int, int>* pPendingFactions
 					{
 						if( result == 1 )
 							strMsg.Format(pGameUI->GetStringFromTable(4504), 
-							strAttacker, (*info)[i].name );
+							(const ACHAR*)strAttacker, (*info)[i].name );
 						else
 							strMsg.Format(pGameUI->GetStringFromTable(4505), 
-							strAttacker, (*info)[i].name );
+							(const ACHAR*)strAttacker, (*info)[i].name );
 					}
 					else
 					{
 						if( result == 1 )
 							strMsg.Format(pGameUI->GetStringFromTable(4506), 
-							strAttacker, strDefender, (*info)[i].name, strAttacker );
+							(const ACHAR*)strAttacker, (const ACHAR*)strDefender, (*info)[i].name, (const ACHAR*)strAttacker );
 						else
 							strMsg.Format(pGameUI->GetStringFromTable(4506), 
-							strAttacker, strDefender, (*info)[i].name, strDefender );
+							(const ACHAR*)strAttacker, (const ACHAR*)strDefender, (*info)[i].name, (const ACHAR*)strDefender );
 					}
 					if( result == 1 )
 					{
@@ -1533,10 +1533,10 @@ static bool OnBattleChatMessage(WorldChat* p, AArray<int, int>* pPendingFactions
 
 					if( strDefender == _AL(""))
 						strMsg.Format(pGameUI->GetStringFromTable(4508), 
-							strAttacker, (*info)[i].name );
+							(const ACHAR*)strAttacker, (*info)[i].name );
 					else
 						strMsg.Format(pGameUI->GetStringFromTable(4509), 
-							strAttacker, strDefender, (*info)[i].name);
+							(const ACHAR*)strAttacker, (const ACHAR*)strDefender, (*info)[i].name);
 					break;
 				}
 			}
@@ -1617,7 +1617,7 @@ static bool OnFactionDiplomacyMessage(WorldChat *pProtocol)
 	case 25:		//	CMSG_FACTION_BECAME_ALLIANCE
 		{
 			//	建立帮派同盟
-			strMsg.Format(pGameUI->GetStringFromTable(9210), strName1, strName2);
+			strMsg.Format(pGameUI->GetStringFromTable(9210), (const ACHAR*)strName1, (const ACHAR*)strName2);
 			strMsg = _AL("^00FF00") + strMsg;
 		}
 		break;
@@ -1636,14 +1636,14 @@ static bool OnFactionDiplomacyMessage(WorldChat *pProtocol)
 				return true;
 			}
 			int idString =  force ? 9212 : 9211;
-			strMsg.Format(pGameUI->GetStringFromTable(idString), strName1, strName2);
+			strMsg.Format(pGameUI->GetStringFromTable(idString), (const ACHAR*)strName1, (const ACHAR*)strName2);
 		}
 		break;
 
 	case 27:		//	CMSG_FACTION_BECAME_HOSTILE
 		{
 			//	建立帮派敌对
-			strMsg.Format(pGameUI->GetStringFromTable(9213), strName1, strName2);
+			strMsg.Format(pGameUI->GetStringFromTable(9213), (const ACHAR*)strName1, (const ACHAR*)strName2);
 		}
 		break;
 
@@ -1661,7 +1661,7 @@ static bool OnFactionDiplomacyMessage(WorldChat *pProtocol)
 				return true;
 			}
 			int idString =  force ? 9215 : 9214;
-			strMsg.Format(pGameUI->GetStringFromTable(idString), strName1, strName2);
+			strMsg.Format(pGameUI->GetStringFromTable(idString), (const ACHAR*)strName1, (const ACHAR*)strName2);
 			strMsg = _AL("^00FF00") + strMsg;
 		}
 		break;
@@ -1733,7 +1733,7 @@ static void OnFactionRenameMessage(const ACString &strNewName, const ACString &s
 	CECGameUIMan *pGameUIMan = pGameRun->GetUIManager()->GetInGameUIMan();
 	if (pGameUIMan){
 		ACString strMsg;
-		strMsg.Format(pGameUIMan->GetStringFromTable(11435), strOldName, strNewName);
+		strMsg.Format(pGameUIMan->GetStringFromTable(11435), (const ACHAR*)strOldName, (const ACHAR*)strNewName);
 		pGameRun->AddChatMessage(strMsg, GP_CHAT_BROADCAST);
 	}
 }
@@ -4261,7 +4261,7 @@ void CECGameSession::OnPrtcPlayerNameUpdate(GNET::Protocol* pProtocol)
 		// 配偶
 		bAddHint = false;
 		ACString str;
-		str.Format(pGameUI->GetStringFromTable(10154), strOldName, strNewName);
+		str.Format(pGameUI->GetStringFromTable(10154), (const ACHAR*)strOldName, (const ACHAR*)strNewName);
 		g_pGame->GetGameRun()->AddChatMessage(str, GP_CHAT_MISC);
 	}
 
@@ -4274,7 +4274,7 @@ void CECGameSession::OnPrtcPlayerNameUpdate(GNET::Protocol* pProtocol)
 			// 好友
 			bAddHint = false;
 			ACString str;
-			str.Format(pGameUI->GetStringFromTable(10155), strOldName, strNewName);
+			str.Format(pGameUI->GetStringFromTable(10155), (const ACHAR*)strOldName, (const ACHAR*)strNewName);
 			g_pGame->GetGameRun()->AddChatMessage(str, GP_CHAT_MISC);
 		}
 
@@ -4305,7 +4305,7 @@ void CECGameSession::OnPrtcPlayerNameUpdate(GNET::Protocol* pProtocol)
 			// 帮派成员
 			bAddHint = false;
 			ACString str;
-			str.Format(pGameUI->GetStringFromTable(10156), strOldName, strNewName);
+			str.Format(pGameUI->GetStringFromTable(10156), (const ACHAR*)strOldName, (const ACHAR*)strNewName);
 			g_pGame->GetGameRun()->AddChatMessage(str, GP_CHAT_MISC);
 		}
 		// 帮派界面需要刷新一下
@@ -4328,7 +4328,7 @@ void CECGameSession::OnPrtcPlayerNameUpdate(GNET::Protocol* pProtocol)
 		// 其他人
 		bAddHint = false;
 		ACString str;
-		str.Format(pGameUI->GetStringFromTable(10157), strOldName, strNewName);
+		str.Format(pGameUI->GetStringFromTable(10157), (const ACHAR*)strOldName, (const ACHAR*)strNewName);
 		g_pGame->GetGameRun()->AddChatMessage(str, GP_CHAT_MISC);
 	}
 
@@ -4462,7 +4462,7 @@ void CECGameSession::OnPrtcResetPosition(GNET::Protocol *pProtocol)
 	//	显示提示框
 	PAUIDIALOG pMsgBox = NULL;
 	ACString strMsg;
-	strMsg.Format(pUIMan->GetStringFromTable(235), strName, strLast, strReason, strNew);
+	strMsg.Format(pUIMan->GetStringFromTable(235), (const ACHAR*)strName, (const ACHAR*)strLast, (const ACHAR*)strReason, (const ACHAR*)strNew);
 	pUIMan->MessageBox("Redirect_LoginPos", strMsg, MB_OKCANCEL, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 	pMsgBox->SetData(GetTickCount());
 	pMsgBox->SetDataPtr(p);
@@ -4850,7 +4850,7 @@ bool CECGameSession::OnPrtcChatMessage(GNET::Protocol* pProtocol, bool bCalledag
 					Marshal::OctetsStream(p->msg)>>id1>>id2>>name1>>name2;
                     strName1 = ACString((const ACHAR*)name1.begin(), name1.size() / sizeof(ACHAR));
                     strName2 = ACString((const ACHAR*)name2.begin(), name2.size() / sizeof(ACHAR));
-					strMsg.Format(pGameUI->GetStringFromTable(4000 + p->srcroleid), strName1, strName2);
+					strMsg.Format(pGameUI->GetStringFromTable(4000 + p->srcroleid), (const ACHAR*)strName1, (const ACHAR*)strName2);
                     g_pGame->GetGameRun()->AddPlayerName(id1, strName1);
                     g_pGame->GetGameRun()->AddPlayerName(id2, strName2);
 				}catch(...) {}
@@ -5078,14 +5078,14 @@ bool CECGameSession::OnPrtcWorldChat(GNET::Protocol* pProtocol, bool bCallagain)
 								strMsg = pGameUI->GetStringFromTable((iterMap->second).iTextID);
 								break;
 							case 1:
-								strMsg.Format(pGameUI->GetStringFromTable((iterMap->second).iTextID),itemName);
+								strMsg.Format(pGameUI->GetStringFromTable((iterMap->second).iTextID),(const ACHAR*)itemName);
 								break;
 							case 2:
-								strMsg.Format(pGameUI->GetStringFromTable((iterMap->second).iTextID),itemName,itemLinkString);
+								strMsg.Format(pGameUI->GetStringFromTable((iterMap->second).iTextID),(const ACHAR*)itemName,(const ACHAR*)itemLinkString);
 								bShowItem = true;
 								break;
 							case 3:
-								strMsg.Format(pGameUI->GetStringFromTable((iterMap->second).iTextID),itemLinkString,itemName);
+								strMsg.Format(pGameUI->GetStringFromTable((iterMap->second).iTextID),(const ACHAR*)itemLinkString,(const ACHAR*)itemName);
 								bShowItem = true;
 								break;
 							default:
@@ -5094,7 +5094,7 @@ bool CECGameSession::OnPrtcWorldChat(GNET::Protocol* pProtocol, bool bCallagain)
 						}
 						else
 						{
-							strMsg.Format(pGameUI->GetStringFromTable(4520), itemName, itemLinkString);
+							strMsg.Format(pGameUI->GetStringFromTable(4520), (const ACHAR*)itemName, (const ACHAR*)itemLinkString);
 							bShowItem = true;
 						}
 						//修改strMsg，替换特殊字符：物品名称						
@@ -5248,8 +5248,8 @@ bool CECGameSession::OnPrtcWorldChat(GNET::Protocol* pProtocol, bool bCallagain)
 						pGameUIMan->GetStringFromTable(8570),
 						szText,
 						pGameUIMan->GetStringFromTable(8540+nEmotion),
-						strColor,
-						strTemp);
+						(const ACHAR*)strColor,
+						(const ACHAR*)strTemp);
 
 					ok = true;
 					break;
@@ -5650,7 +5650,7 @@ void CECGameSession::OnPrtcGetPlayerBriefInfoRe(GNET::Protocol* pProtocol)
 						{
 							ACString strNickName;
 							_cp_str(strNickName, p->new_name.begin(), p->new_name.size());
-							g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_FC_RENAME, szOperator, szOperant, strNickName);
+							g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_FC_RENAME, szOperator, szOperant, (const ACHAR*)strNickName);
 							bProcessed = true;
 						}
 
@@ -5947,7 +5947,7 @@ void CECGameSession::OnPrtcAnnounceForbidInfo(GNET::Protocol* pProtocol)
 	if (rf.reason.size())
 	{
 		str = ACString((const ACHAR*)rf.reason.begin(), rf.reason.size() / sizeof (ACHAR));
-		str2.Format(pStrTab->GetWideString(FIXMSG_FORBIDREASON), str);
+		str2.Format(pStrTab->GetWideString(FIXMSG_FORBIDREASON), (const ACHAR*)str);
 	}
 	else
 		str2 = pStrTab->GetWideString(FIXMSG_FORBIDREASON);
