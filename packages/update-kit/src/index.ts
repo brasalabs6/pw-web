@@ -1,0 +1,83 @@
+import {updateManifest, type UpdateManifest} from '@pw/contracts';
+
+const enc=new TextEncoder();
+const hex=(bytes:Uint8Array)=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+export async function digest(bytes:Uint8Array):Promise<string>{
+  return hex(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes as BufferSource)));
+}
+const fromHex=(h:string)=>new Uint8Array(h.match(/../g)!.map(x=>parseInt(x,16)));
+const fromBase64=(b64:string)=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+// Strict deterministic JSON representation for all manifest signers and consumers.
+// Rejects numeric edge cases and ambiguous object keys; producer must use same algorithm.
+export function canonicalJson(value:any):string{
+  if(value===null)return 'null';
+  if(typeof value==='string'||typeof value==='boolean')return JSON.stringify(value);
+  if(typeof value==='number'){if(!Number.isSafeInteger(value))throw new Error('Noninteger manifest field');return JSON.stringify(value)}
+  if(Array.isArray(value))return '['+value.map(canonicalJson).join(',')+']';
+  if(typeof value!=='object')throw new Error('Invalid manifest value');
+  const keys=Object.keys(value).sort();
+  return '{'+keys.map(k=>JSON.stringify(k)+':'+canonicalJson(value[k])).join(',')+'}';
+}
+export type TrustedKeys=Record<string,string>;
+export async function verifyManifest(raw:unknown, expectedDigest:string, keys:TrustedKeys):Promise<UpdateManifest>{
+  const manifest=updateManifest.parse(raw);
+  const {signature,releaseDigest,...signedContent}=manifest;
+  const hash=await digest(enc.encode(canonicalJson(signedContent)));
+  if(hash!==releaseDigest || hash!==expectedDigest)throw new Error('Client release digest mismatch');
+  const publicKeyB64=keys[signature.keyId];
+  if(!publicKeyB64)throw new Error('Untrusted signing key: '+signature.keyId);
+  const key=await crypto.subtle.importKey('raw',fromBase64(publicKeyB64) as BufferSource,{name:'Ed25519'},false,['verify']);
+  const ok=await crypto.subtle.verify('Ed25519',key,fromBase64(signature.value) as BufferSource,
+    enc.encode('pw-client-release-v2\n'+hash) as BufferSource);
+  if(!ok)throw new Error('Invalid client release signature');
+  return manifest;
+}
+type Asset={url:string;sha256:string;bytes:number};
+const shaRegex=/^[a-f0-9]{64}$/;
+const cacheKey=(sha:string)=>new Request(new URL('/__pw_hash_cache__/'+sha,location.origin).toString());
+async function verifiedBytes(entry:Asset,base:string,signal?:AbortSignal):Promise<Uint8Array>{
+  if(!shaRegex.test(entry.sha256)||entry.bytes>256*1024*1024||entry.bytes<0)throw new Error('Invalid asset metadata');
+  const u=new URL(entry.url,base);
+  if(u.protocol!=='https:' && !(location.hostname==='localhost' && u.protocol==='http:'))
+    throw new Error('Asset origin requires HTTPS');
+  const store=await caches.open('pw-assets-sha256-v1');
+  const cached=await store.match(cacheKey(entry.sha256));
+  if(cached){
+    const content=new Uint8Array(await cached.arrayBuffer());
+    if(content.length===entry.bytes && await digest(content)===entry.sha256)return content;
+    await store.delete(cacheKey(entry.sha256));
+  }
+  const response=await fetch(u,{signal,credentials:'omit',mode:'cors',cache:'no-store'});
+  if(!response.ok)throw new Error('Download failed '+response.status);
+  if(Number(response.headers.get('Content-Length')||0)>entry.bytes && response.headers.get('Content-Encoding')===null)
+    throw new Error('Declared content exceeds manifest');
+  const bytes=new Uint8Array(await response.arrayBuffer());
+  if(bytes.length!==entry.bytes || await digest(bytes)!==entry.sha256)throw new Error('Asset SHA-256 mismatch');
+  await store.put(cacheKey(entry.sha256),new Response(bytes as BodyInit,{headers:{'Content-Type':'application/octet-stream'}}));
+  return bytes;
+}
+export async function prepareClient(opts:{
+  manifestUrl:string;expectedDigest:string;trustedKeys:TrustedKeys;
+  onProgress?:(s:{completed:number;total:number;downloaded:number;phase:string})=>void;
+  signal?:AbortSignal;
+}):Promise<{manifest:UpdateManifest;wasm:Uint8Array;js:Uint8Array}>{
+  const res=await fetch(opts.manifestUrl,{credentials:'omit',cache:'no-store',signal:opts.signal});
+  if(!res.ok)throw new Error('Manifest fetch failed: '+res.status);
+  const text=await res.text();
+  if(text.length>2*1024*1024)throw new Error('Manifest too large');
+  const raw=JSON.parse(text);
+  const manifest=await verifyManifest(raw,opts.expectedDigest,opts.trustedKeys);
+  const files=[manifest.entry.js,manifest.entry.wasm,...manifest.files];
+  let completed=0,downloaded=0;
+  const values=new Map<string,Uint8Array>();
+  for(const file of files){
+    opts.onProgress?.({completed,total:files.length,downloaded,phase:'Verificando / atualizando arquivos'});
+    const bytes=await verifiedBytes(file,opts.manifestUrl,opts.signal);
+    values.set(file.sha256,bytes);
+    downloaded+=bytes.length;completed++;
+    opts.onProgress?.({completed,total:files.length,downloaded,phase:'Arquivos verificados'});
+  }
+  return {manifest,wasm:values.get(manifest.entry.wasm.sha256)!,js:values.get(manifest.entry.js.sha256)!};
+}
+// Browser execution remains disabled until original-client entry ABI is hooked into this contract.
+export function canLaunchOriginalClient():boolean {return false}
