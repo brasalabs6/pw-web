@@ -489,6 +489,11 @@ restante do protocolo nem criação de personagem ou conexão com o servidor.
 
 ---
 
+## Verificação rápida de TU (referência)
+
+- **TU do projeto do jogo (ElementClient.vcproj)**: `--entry` é RELATIVO AO DIRETÓRIO DO .vcproj, não à raiz da source. Ex.: `--entry EC_Faction.cpp` (não `Element/CElementClient/EC_Faction.cpp` — esse formato dobra o caminho e falha com "no such file or directory"). O default é `ElementClient.cpp`. RC do probe: 0 = compila, 1 = falha.
+- **TU de engine/AngelicaFile/LuaWrapper (fora do vcproj do jogo)**: compilar standalone com as flags do target CMake correspondente (ver `client153_engine_original` / `client153_gfx_original` em `src/client153/CMakeLists.txt`): `em++ -c -o /tmp/x.o -fms-extensions -fshort-wchar -fexceptions -std=c++17 -sUSE_ZLIB=1 -DWIN32 -DNDEBUG -D_LIB -DUNICODE -D_CRT_SECURE_NO_WARNINGS -include .../Windows.h -include .../sdk_forward.h -include .../AChar.h -include .../ATime.h -I<dirs do target> <tu.cpp>`.
+
 ## Rodada 5 (2026-10-28, Grok → Codex): m-link em andamento
 
 Head `eae4ce02`. Compilação 726/833 (680/787 jogo + 46/46 AUI, probe
