@@ -742,13 +742,13 @@ CECOrnament* CECOrnamentMan::LoadOrnament(DWORD dwID, CECScene* pScene, const ch
 	if (!pOrnament)
 	{
 		glb_ErrorOutput(ECERR_NOTENOUGHMEMORY, "CECOrnament::LoadOrnament", __LINE__);
-		return false;
+		return NULL;
 	}
 
 	if (!pOrnament->Load(pScene, szMapPath, fOffX, fOffZ))
 	{
 		a_LogOutput(1, "CECOrnament::LoadOrnament, failed to load ornament");
-		return false;
+		return NULL;
 	}
 
 	if (pScene->GetSceneFileVersion() >= 4)
@@ -802,13 +802,13 @@ CECHomeOrnament* CECOrnamentMan::LoadHomeOrnament(DWORD dwID, CAutoScene* pScene
 	if (!pHomeOrnament)
 	{
 		glb_ErrorOutput(ECERR_NOTENOUGHMEMORY, "CECOrnament::LoadHomeOrnament", __LINE__);
-		return false;
+		return NULL;
 	}
 
 	if (!pHomeOrnament->Load(pScene, szMoxFile, szCHFFile, matTM))
 	{
 		a_LogOutput(1, "CECOrnament::LoadHomeOrnament, failed to load home ornament");
-		return false;
+		return NULL;
 	}
 
 	pHomeOrnament->SetOrnamentID(dwID);
@@ -1250,7 +1250,7 @@ bool CECOrnamentMan::LoadSoundFromFile(SOUNDNODE* pNode)
 	AM3DSoundBuffer* pSound = g_pGame->GetAMSoundBufferMan()->Load3DSound(pNode->strFile, false);
 	if (!pSound)
 	{
-		a_LogOutput(1, "CECOrnamentMan::LoadSoundFromFile, Failed to load sound %s", pNode->strFile);
+		a_LogOutput(1, "CECOrnamentMan::LoadSoundFromFile, Failed to load sound %s", (const char*)pNode->strFile);
 		return 0;
 	}
 
