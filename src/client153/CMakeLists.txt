@@ -46,6 +46,8 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DCamera.cpp
     Angelica2/Angelica3D/Source/A3DCameraBase.cpp
     Angelica2/Angelica3D/Source/A3DOrthoCamera.cpp
+    Angelica2/Angelica3D/Source/A3DMaterial.cpp
+    Angelica2/Angelica3D/Source/A3DMathUtility.cpp
     Angelica2/Angelica3D/Source/A3DLightMan.cpp
     Angelica2/Angelica3D/Source/A3DFrustum.cpp
     Angelica2/Angelica3D/Source/A3DViewport.cpp

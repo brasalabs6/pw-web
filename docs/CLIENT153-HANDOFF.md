@@ -603,3 +603,11 @@ Microsoft (https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixo
 Os testes `client153_math` em nativo e WASM verificam os cantos e a faixa de
 profundidade da projeção. O link diagnóstico com a câmera ainda falhou; essa
 compilação não prova renderização ou inicialização do jogo no navegador.
+
+`A3DMaterial.cpp` e `A3DMathUtility.cpp` originais foram adicionados ao
+alvo `client153_engine_original`, com hashes de origem no manifesto. O alvo
+compilou em WASM e a suíte nativa passou 31/31. O link diagnóstico com 771
+objetos e nove bibliotecas ainda falhou com 4.851 ocorrências de símbolos
+indefinidos; não houve prova de renderização ou boot. O compilador sinaliza
+`ZeroMemory` sobre `A3DMATERIALPARAM` não trivial no material original; a
+semântica deve ser revisada antes de tratar o código como validado em runtime.

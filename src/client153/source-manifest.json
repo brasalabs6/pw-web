@@ -8985,6 +8985,14 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DOrthoCamera.cpp",
       "sha256": "92ef639034544b069f5968c98b8286c334bb737c2b5adff790c87798e83058db"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMathUtility.cpp",
+      "sha256": "58d43ed1e214d5b7c7b215e00d6fe68f975c2feb3bb6fab7e99b7cecb7651163"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMaterial.cpp",
+      "sha256": "29e4bec5b2bbb0e9f8681433277556e9a8db88d8dda002f720c1c5253bdb0734"
     }
   ],
   "adaptations": [
