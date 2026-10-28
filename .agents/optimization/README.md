@@ -93,3 +93,21 @@ Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file
 | [OPT-026](OPT-026-per-projectile-target-bone-hook-lookup.md) | P1 | Skills — follow target | Cache de posição/hook por entidade e frame para projéteis de skill |
 | [OPT-027](OPT-027-multisection-skill-composer-linear-find.md) | P2 | Skills — lookup de compositor | Indexar compositores de skills multietapa por (skill,section) |
 | [OPT-028](OPT-028-crowd-target-picking-raytrace-linear-scan.md) | P2 | Interação — alvo/ray tracing | Acelerar seleção de alvo em guerras com índice espacial de jogadores |
+
+
+## Rodada incremental — loading, PCK/PKX, compressão e tamanho de assets (2026-10-28; 10 candidatos)
+
+[Relatório dedicado: AUDIT-ASSET-LOADING-COMPRESSION-2026-10-28.md](AUDIT-ASSET-LOADING-COMPRESSION-2026-10-28.md). Os itens abaixo são candidatos documentais **pós-port**, não bloqueios comprovados.
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-029](OPT-029-pck-entry-size-compression-inventory.md) | P1 | Inventory / bytes / codecs | Medir peso e compressibilidade de cada asset dentro dos PCK/PKX |
+| [OPT-030](OPT-030-viewer-scene-stage-select-only-used-dds.md) | P1 | Staging / tamanho de bundle de demonstração | Evitar extração de DDS irmãs não referenciadas pela cena MOX |
+| [OPT-031](OPT-031-pck-catalog-open-many-small-reads.md) | P1 | PCK catalog / load latency | Reduzir custo de abertura do índice PCK com milhares de entradas |
+| [OPT-032](OPT-032-game-pck-shared-open-redecode-lifetime.md) | P2 | PCK / repetição de IO e decompression | Avaliar reabertura e descompressão repetida de arquivos compartilhados no AFilePackGame |
+| [OPT-033](OPT-033-browser-dependency-fetch-priority-pipelining.md) | P1 | Browser / network waterfall / first frame | Pipelinar dependências da cena Web com concorrência e prioridades limitadas |
+| [OPT-034](OPT-034-pck-codec-policy-by-content-type.md) | P2 | Compression / CDN cooker | Comparar compressão seletiva por tipo de asset sem alterar assets originais |
+| [OPT-035](OPT-035-scene-block-loading-byte-time-budget.md) | P1 | World/scene / hitch / loading progress | Substituir política de loading de cena baseada só em número de blocos |
+| [OPT-036](OPT-036-pck-read-short-read-integrity-contract.md) | P1 | PCK / hardening preventivo | Verificar leitura completa e limites de payload no leitor PCK legado |
+| [OPT-037](OPT-037-pck-replacement-append-fragmentation.md) | P2 | PCK / tamanho de release | Evitar crescimento histórico de PCK por substituições append-only no pipeline de build |
+| [OPT-038](OPT-038-asset-inventory-non-pck-coverage.md) | P2 | Inventory / scope/coverage | Incluir assets fora de element/*.pck na análise de peso e prioridades de download |
