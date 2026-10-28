@@ -68,8 +68,19 @@ app.get('/v1/auth/me',c=>{
 });
 app.get('/v1/catalog/realms',async c=>{
   const q=await db.query(
-    'SELECT id,slug,name,description,status,population,default_channel AS "defaultChannel" FROM realms ORDER BY name ASC LIMIT 200');
-  return c.json({realms:q.rows.map((r:any)=>({...r,status:r.status==='online'?'starting':r.status}))});
+    `SELECT r.id,r.slug,r.name,r.description,r.population,
+      r.default_channel AS "defaultChannel",
+      CASE WHEN r.status='online' AND EXISTS (
+        SELECT 1 FROM deployments d JOIN realm_channels ch ON ch.realm_id=r.id AND ch.name=r.default_channel
+        JOIN pairings p ON ch.pairing_id=p.id
+        WHERE d.realm_id=r.id AND d.server_release_id=p.server_release_id
+          AND d.state='ready' AND d.health_checked_at > now()-interval '30 seconds'
+          AND p.status='supported'
+      ) THEN 'online'
+      WHEN r.status='online' THEN 'starting'
+      ELSE r.status END AS status
+      FROM realms r ORDER BY r.name LIMIT 200`);
+  return c.json({realms:q.rows});
 });
 // Never claim a realm online solely based on a database flag: return starting until heartbeat route is verified.
 app.get('/v1/catalog/realms/:id',async c=>{
@@ -160,7 +171,7 @@ for (const [kind,table] of [['clients','client_releases'],['servers','server_rel
     const input=await json(c,releaseCreateInput);if(!input)return fail(c,422,'Invalid release input');
     const q=await db.query(\`INSERT INTO \${table}(version,digest,artifact_url,protocol_profile,data_profile,status)
       VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(digest) DO NOTHING RETURNING *\`,
-      [input.version,input.digest,input.artifactUrl,input.protocolProfile,input.dataProfile,input.status]);
+      [input.version,input.digest,input.artifactUrl,input.protocolProfile,input.dataProfile,'draft']);
     if(!q.rowCount)return fail(c,409,'Release digest already registered');
     await audit(db,u.id,\`release.\${kind}.import\`,q.rows[0].id,{digest:input.digest});
     return c.json({release:q.rows[0]},201);
@@ -216,4 +227,57 @@ app.get('/v1/admin/jobs',async c=>{
   const q=await db.query('SELECT id,kind,state,payload,result,created_at,updated_at FROM operation_jobs ORDER BY created_at DESC LIMIT 100');
   return c.json({jobs:q.rows});
 });
+
+// Deployment enrollment is administrative; readiness can only be asserted by a trusted probe.
+app.get('/v1/admin/deployments',async c=>{
+  if(!mustAdmin(c))return fail(c,403,'Operator required');
+  const q=await db.query('SELECT * FROM deployments ORDER BY updated_at DESC LIMIT 200');
+  return c.json({deployments:q.rows});
+});
+app.post('/v1/admin/deployments',async c=>{
+  const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
+  const input=await json(c,z.object({
+    realmId:z.string().uuid(),serverReleaseId:z.string().uuid(),
+    gatewayUrl:z.url().startsWith('wss://'),assetBaseUrl:z.url().startsWith('https://')
+  }));if(!input)return fail(c,422,'Invalid deployment');
+  const rel=await db.query('SELECT status FROM server_releases WHERE id=$1',[input.serverReleaseId]);
+  if(rel.rows[0]?.status!=='published')return fail(c,409,'Server release must be published');
+  const q=await db.query(
+    "INSERT INTO deployments(realm_id,server_release_id,gateway_url,asset_base_url,state) VALUES($1,$2,$3,$4,'pending') RETURNING *",
+    [input.realmId,input.serverReleaseId,input.gatewayUrl,input.assetBaseUrl]);
+  await audit(db,u.id,'deployment.register',q.rows[0].id,{realmId:input.realmId});
+  return c.json({deployment:q.rows[0]},201);
+});
+app.post('/v1/admin/releases/:kind/:id/status',async c=>{
+  const u=mustUser(c);if(!u||u.role!=='admin')return fail(c,403,'Admin approval required');
+  const kind=c.req.param('kind');
+  const table=kind==='client'?'client_releases':kind==='server'?'server_releases':null;
+  if(!table)return fail(c,404,'Unknown release kind');
+  const input=await json(c,z.object({status:z.enum(['validated','published','revoked']),evidenceUrl:z.url()}));
+  if(!input)return fail(c,422,'Evidence URL and status required');
+  const previous=await db.query('SELECT status FROM '+table+' WHERE id=$1',[c.req.param('id')]);
+  if(!previous.rowCount)return fail(c,404,'Release not found');
+  const allowed:Record<string,string[]>={draft:['validated','revoked'],validated:['published','revoked'],published:['revoked'],revoked:[]};
+  if(!allowed[previous.rows[0].status]?.includes(input.status))return fail(c,409,'Invalid release state transition');
+  const q=await db.query('UPDATE '+table+' SET status=$2 WHERE id=$1 RETURNING *',[c.req.param('id'),input.status]);
+  await audit(db,u.id,'release.'+kind+'.'+input.status,q.rows[0].id,{evidenceUrl:input.evidenceUrl});
+  return c.json({release:q.rows[0]});
+});
+// Only trusted probes can update readiness. TCP reachability alone never implies gameplay ready.
+// An external probe MUST verify login, role and entry world before sending gameplayReady=true.
+app.post('/v1/internal/deployments/:id/health',async c=>{
+  const expected=process.env.AGENT_SHARED_TOKEN;
+  if(!expected||expected.length<32||c.req.header('Authorization')!=='Bearer '+expected)return fail(c,403,'Forbidden');
+  const input=await json(c,z.object({
+    daemonsReady:z.boolean(),gsReady:z.boolean(),loginAndEnterWorldPassed:z.boolean(),
+    evidenceUrl:z.url()
+  }));if(!input)return fail(c,422,'Invalid health proof');
+  const ready=input.daemonsReady&&input.gsReady&&input.loginAndEnterWorldPassed;
+  const q=await db.query(
+    "UPDATE deployments SET state=$2,health_checked_at=now(),updated_at=now() WHERE id=$1 RETURNING realm_id",
+    [c.req.param('id'),ready?'ready':'degraded']);
+  if(!q.rowCount)return fail(c,404,'Unknown deployment');
+  return c.json({ready,gameplayProof:ready,evidenceUrl:input.evidenceUrl});
+});
+
 export {app};
