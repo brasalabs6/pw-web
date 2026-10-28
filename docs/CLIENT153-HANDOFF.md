@@ -846,6 +846,15 @@ A extração de caminho relativo agora remove separadores `/` e `\\` após o
 prefixo, incluindo o caso da raiz `/`. Uma regressão em `client153_file_family`
 falhou antes e passou após a correção, em nativo e WASM. No probe Node com os
 pacotes disponíveis, o bootstrap passou da leitura `Configs\\element_client.cfg`
-e falhou na configuração seguinte, pois `userdata\\SystemSettings.ini` não
-estava disponibilizado no filesystem virtual. O probe usa objetos de builds
-locais; uma recompilação completa é necessária antes de conclusões mais amplas.
+e não encontrou `userdata\\SystemSettings.ini`, usando os valores padrão. A
+falha fatal ocorreu depois, na tentativa de criar um dispositivo Direct3D
+para a resolução em tela cheia (linha 198 de `EC_Configs.cpp`). O probe usa
+objetos de builds locais; uma recompilação completa é necessária antes de
+conclusões mais amplas.
+
+Com uma cópia temporária das configurações locais em memória, configurada para
+modo janela, a mesma entrada avançou até a verificação de capacidades gráficas
+e retornou `WebGL2 context is not current`. Isso é esperado no Node, que não
+fornece um contexto WebGL2, e não demonstra falha nem sucesso no Chrome. Não
+houve prova de tela de login ou de jogo. Os pacotes foram acessados somente em
+leitura e não foram adicionados ao repositório.
