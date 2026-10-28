@@ -3,6 +3,18 @@
 > **Componente:** `packages/contracts` · **Especificação canônica:** [SPECS.md](SPECS.md) · **Branch:** `feat/multi-realm-platform-shell-mvp`.
 > **Legenda:** `[x]` código visto no repositório; `[ ]` requisito pendente. Prioridade P0 = bloqueante; P1 = hardening/integracão; P2 = evolução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — CONTRACT-02: esquemas do launcher, usuário e catálogo com validação no SDK; não cobre todas as rotas.
+- **Parcial** — CONTRACT-03: pairing e digest pinados; falta assinatura do bootstrap.
+- **Parcial** — CONTRACT-05: path traversal/collision, tamanho e URL de origem restritos, testes de manifesto; revisar NFC e asset DAG.
+
+**Itens concluídos neste corte:** CONTRACT-01 (validação pelo pipeline automatizado; ver docs/P0-IMPLEMENTATION-REPORT.md).
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Baseline existente
 
 - [x] realmStatus = offline | maintenance | starting | online; releaseStatus = draft | validated | published | revoked.
@@ -17,7 +29,7 @@
 
 ### P0 — Fundação/bloqueantes
 
-- [ ] **CONTRACT-01 — Alinhar operationStatus com dispatching e state machine persistida**
+- [x] **CONTRACT-01 — Alinhar operationStatus com dispatching e state machine persistida**
   - **Depende de:** operations-worker, database.
   - **Aceite verificável:** Nenhum estado SQL sem variante no schema; teste de transições.
   - **Evidência requerida:** teste positivo/negativo, revisão de contrato, log de CI reproduzível, commit SHA e reviewer.

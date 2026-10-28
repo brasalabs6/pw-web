@@ -3,6 +3,18 @@
 > **Componente:** `packages/database` · **Especificação canônica:** [SPECS.md](SPECS.md) · **Branch:** `feat/multi-realm-platform-shell-mvp`.
 > **Legenda:** `[x]` código visto no repositório; `[ ]` requisito pendente. Prioridade P0 = bloqueante; P1 = hardening/integracão; P2 = evolução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — DB-01: migrations por checksum e advisory lock + CI re-apply; falta rollback automatizado e migrações de WDB.
+- **Parcial** — DB-02: realm+channel+audit e preview+audit em transações; outras operações ainda não são atômicas.
+- **Parcial** — DB-06: operação periódica remove buckets/session/tickets expirados; falta política completa de retenção/auditoria.
+
+**Itens concluídos neste corte:** DB-03, DB-04 (validação pelo pipeline automatizado; ver docs/P0-IMPLEMENTATION-REPORT.md).
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Baseline existente
 
 - [x] connectDb(): pg.Pool; DATABASE_URL obrigatório; max connections 10/idle 10s; PG_SSL=require ativa SSL com rejectUnauthorized.
@@ -28,13 +40,13 @@
   - **Evidência requerida:** teste positivo/negativo, revisão de contrato, log de CI reproduzível, commit SHA e reviewer.
   - **Concluído?** Não.
 
-- [ ] **DB-03 — Fortalecer operações de idempotência com payload hash e conflitos**
+- [x] **DB-03 — Fortalecer operações de idempotência com payload hash e conflitos**
   - **Depende de:** operations-worker.
   - **Aceite verificável:** Mesmo key+payload devolve mesmo job; payload distinto 409.
   - **Evidência requerida:** teste positivo/negativo, revisão de contrato, log de CI reproduzível, commit SHA e reviewer.
   - **Concluído?** Não.
 
-- [ ] **DB-04 — Formalizar state machines CHECK e indexes/constraints de uso**
+- [x] **DB-04 — Formalizar state machines CHECK e indexes/constraints de uso**
   - **Depende de:** contracts, worker.
   - **Aceite verificável:** Dispatched/dispatching sem valores fora do contrato.
   - **Evidência requerida:** teste positivo/negativo, revisão de contrato, log de CI reproduzível, commit SHA e reviewer.

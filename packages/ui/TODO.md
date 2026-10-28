@@ -3,6 +3,14 @@
 > **Componente:** `packages/ui` · **Especificação canônica:** [SPECS.md](SPECS.md) · **Branch:** `feat/multi-realm-platform-shell-mvp`.
 > **Legenda:** `[x]` código visto no repositório; `[ ]` requisito pendente. Prioridade P0 = bloqueante; P1 = hardening/integracão; P2 = evolução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — UI-02: catálogo retorna status derivado de health, mas o componente Status ainda aceita string livre; contrato visual permanece aberto.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Baseline existente
 
 - [x] Layout({title,subtitle,children,actions}) -> topbar, main e footer; mensagem padronizada de ambiente em desenvolvimento.

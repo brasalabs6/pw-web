@@ -3,6 +3,15 @@
 > **Escopo:** `apps/admin-console` · **Fonte de arquitetura:** [SPECS.md](SPECS.md) · **Data base:** 2026-10-28.
 > **Convenção:** `[x]` = implementado no código analisado (não significa produção); `[ ]` = pendente. `P0` bloqueia MVP; `P1` operacionalização; `P2` evolução. Não marcar checklist concluída sem evidência de execução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — ADMIN-02: UI existente administra releases/pairing/canais com revisão; assinatura de prova de release/CI ainda ausente.
+- **Parcial** — ADMIN-03: UI de deployments e prova assinada backend; provider de host/observabilidade real ausente.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Estado atual de referência
 
 - [x] Estrutura/escopo presente: telas Realms, Releases, Compatibility Matrix, Deployments e Previews/Jobs

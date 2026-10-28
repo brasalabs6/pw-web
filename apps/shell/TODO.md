@@ -3,6 +3,16 @@
 > **Escopo:** `apps/shell` · **Fonte de arquitetura:** [SPECS.md](SPECS.md) · **Data base:** 2026-10-28.
 > **Convenção:** `[x]` = implementado no código analisado (não significa produção); `[ ]` = pendente. `P0` bloqueia MVP; `P1` operacionalização; `P2` evolução. Não marcar checklist concluída sem evidência de execução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — SHELL-01: seleção só do realm, versão do cliente automática via pairing; falta cenário E2E com 2 clientes reais.
+- **Parcial** — SHELL-02: faz preflight e update sem criar ticket; endpoint de sessão posterior exige digest/pairing; jogo ainda não inicia.
+- **Parcial** — SHELL-06: abort de requisição/download no switch realm; falta quota, OPFS, leases e retries.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Estado atual de referência
 
 - [x] Estrutura/escopo presente: estado efêmero da UI: lista de realms, selected realm, usuário web, progresso, mensagens de erro

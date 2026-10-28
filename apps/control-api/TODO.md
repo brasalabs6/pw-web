@@ -3,6 +3,17 @@
 > **Escopo:** `apps/control-api` · **Fonte de arquitetura:** [SPECS.md](SPECS.md) · **Data base:** 2026-10-28.
 > **Convenção:** `[x]` = implementado no código analisado (não significa produção); `[ ]` = pendente. `P0` bloqueia MVP; `P1` operacionalização; `P2` evolução. Não marcar checklist concluída sem evidência de execução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — API-02: rate-limit SQL e allowlist de origem/CORS; faltam email verification, MFA e proteções CSRF completas.
+- **Parcial** — API-04: preflight de release e emissão de ticket vinculada ao digest esperado; bootstrap não assinado ainda.
+- **Parcial** — API-05: prova de health Ed25519 com janela de 20 s e audit; sonda GNET real ainda não implementada.
+- **Parcial** — API-06: transações realm+channel e preview+audit, CAS do channel e constraints SQL; falta RLS/scoping completo.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Estado atual de referência
 
 - [x] Estrutura/escopo presente: transações e políticas de negócio para CRUD de realms, releases, deployments, channels e pairings

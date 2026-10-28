@@ -3,6 +3,15 @@
 > **Escopo:** `apps/realm-agent` · **Fonte de arquitetura:** [SPECS.md](SPECS.md) · **Data base:** 2026-10-28.
 > **Convenção:** `[x]` = implementado no código analisado (não significa produção); `[ ]` = pendente. `P0` bloqueia MVP; `P1` operacionalização; `P2` evolução. Não marcar checklist concluída sem evidência de execução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — AGENT-03: unit allowlist e bearer autorizados, agora com testes Rust; plan/apply transacional ainda ausente.
+- **Parcial** — AGENT-04: validação de unidade/param e comparador auth testados; investigação real de fork/watchdog ainda bloqueada.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Estado atual de referência
 
 - [x] Estrutura/escopo presente: HTTP GET /healthz (liveness, gameplayReady false), GET /v1/services (is-active das unidades), POST /v1/services/:name/:action {reason}

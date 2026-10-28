@@ -3,6 +3,16 @@
 > **Componente:** `packages/update-kit` · **Especificação canônica:** [SPECS.md](SPECS.md) · **Branch:** `feat/multi-realm-platform-shell-mvp`.
 > **Legenda:** `[x]` código visto no repositório; `[ ]` requisito pendente. Prioridade P0 = bloqueante; P1 = hardening/integracão; P2 = evolução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — UPDATE-02: manifesto JSON canônico, assinatura Ed25519, URL mesma origem, caminhos e objetos limitados, testes de cache e duplicidade; ainda falta NFC e testes completos de redirect real.
+- **Parcial** — UPDATE-03: endpoint de release/preflight separado de emissão do ticket; iniciar WASM e reemitir ticket após patch fica para PR #23.
+- **Parcial** — UPDATE-08: cache por SHA com revalidação e cancelamento por AbortController; faltam retries, prioridades e DAG.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Baseline existente
 
 - [x] digest(Uint8Array)->SHA-256 hex; canonicalJson(value) ordena keys lexicograficamente, proíbe floats não seguros e serializa arrays/objetos.

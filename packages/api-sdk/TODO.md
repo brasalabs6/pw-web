@@ -3,6 +3,16 @@
 > **Componente:** `packages/api-sdk` · **Especificação canônica:** [SPECS.md](SPECS.md) · **Branch:** `feat/multi-realm-platform-shell-mvp`.
 > **Legenda:** `[x]` código visto no repositório; `[ ]` requisito pendente. Prioridade P0 = bloqueante; P1 = hardening/integracão; P2 = evolução.
 
+## Avanço verificado em 2026-10-28
+
+**Escopo:** alterações na branch `feat/multi-realm-platform-shell-mvp` com jobs de TypeScript, PostgreSQL, update-kit, SDK e Rust. `[x]` significa aceite local de workorder específico, não certificação de produção.
+
+- **Parcial** — SDK-02: validação runtime de catálogo, usuário e bootstrap; falta demais responses/admin.
+- **Parcial** — SDK-03: AbortSignal + timeout de 15 s; sem retry automático perigoso, falta polling e backoff idempotente.
+- **Parcial** — SDK-04: configuração VITE_API_BASE_URL e CORS restrito; falta infraestrutura real de domínios compartilhados e testes CSRF completos.
+
+**Bloqueio transversal:** gameplay real depende do cliente Angelica WASM PR #23 e do servidor com `gs`, WDB e login→mundo comprovados; previews de servidor continuam apenas diagnósticos.
+
 ## Baseline existente
 
 - [x] PwApi(base=''): request<T>(url,options); usa fetch(base+url, credentials:'include'), Content-Type JSON somente se body, parse JSON e lança ApiError(status,message) em !ok.
