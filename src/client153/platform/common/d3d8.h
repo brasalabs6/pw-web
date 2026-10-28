@@ -428,6 +428,11 @@ struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT CreateTexture(UINT width, UINT height, UINT levels,
                                 DWORD usage, D3DFORMAT format, D3DPOOL pool,
                                 IDirect3DTexture8 **texture) = 0;
+  //	System-memory image surface creation (the documented d3d8.h
+  //	signature; the WebGL2 renderer adapter implements it in the
+  //	renderer cycle).
+  virtual HRESULT CreateImageSurface(UINT width, UINT height, D3DFORMAT format,
+                                     IDirect3DSurface8 **surface) = 0;
   //	The scene/frame and state surface the device core drives (the
   //	documented d3d8.h signatures; the WebGL2 renderer adapter
   //	implements them in the renderer cycle).
