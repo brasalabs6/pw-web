@@ -7,6 +7,26 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Angelica2/Angelica3D/Source/A3DESPMove.cpp",
+      "sha256": "e7e7979ffac70152fdff55260201d9de1ac3d17f75c4c8ab2a851cb57fdae91f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2Loader.cpp",
+      "sha256": "ddbf74561a6d206002891527146a6e655819b0fb3fa3e27c3cf0d4bf2dd767c1"
+    },
+    {
+      "path": "Common/GfxCommon/A3DAreaEmitter.cpp",
+      "sha256": "5711a301e274ec69356519a432ddcc166576e4f949c6368d39b209797916118d"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXFloatValueTrans.cpp",
+      "sha256": "b3028f85d42a24efb8216f61bb30f855f82c33e411e14b825490f80a6f5049ab"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWObject.cpp",
+      "sha256": "aa8913b3f2b4a3290e5f205c23498de7acd68aee4c64c206883519d9c828da0c"
+    },
+    {
       "path": "Element/CFWEditorLib/FWAUIManager.cpp",
       "sha256": "321ad7b9ebf15dfc14d9bcd00f2aa0c8c3c7ed7841a04d21df2f0dc43bc13386"
     },

@@ -43,6 +43,8 @@ endif()
 # Original engine compilation target; linking the complete renderer is still pending.
 if(EMSCRIPTEN)
   add_library(client153_engine_original OBJECT EXCLUDE_FROM_ALL
+    Angelica2/Angelica3D/Source/A3DESPMove.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2Loader.cpp
     Angelica2/Angelica3D/Source/A3DHermiteSpline.cpp
     Angelica2/Angelica3D/Source/A3DHorizonCull.cpp
     Angelica2/Angelica3D/Source/A3DImgModel.cpp
@@ -207,6 +209,8 @@ endif()
 # links; the sources live under Common/Output/source/Gfx).
 if(EMSCRIPTEN)
   add_library(client153_gfx_original OBJECT EXCLUDE_FROM_ALL
+    Common/Output/source/Gfx/A3DAreaEmitter.cpp
+    Common/Output/source/Gfx/A3DGFXFloatValueTrans.cpp
     Common/Output/source/Gfx/A3DBoxEmitter.cpp
     Common/Output/source/Gfx/A3DCurveEmitter.cpp
     Common/Output/source/Gfx/A3DCylinderEmitter.cpp
@@ -362,6 +366,7 @@ if(EMSCRIPTEN)
   # They compile with the game-project environment (the same include set and
   # definitions the probe uses for the game project).
   add_library(client153_game_original OBJECT EXCLUDE_FROM_ALL
+    Element/CFWEditorLib/FWObject.cpp
     Element/CElementSkill/ElementSkill.cpp
     Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp
     Common/CHBasedCD/ConvexHullData.cpp
