@@ -646,3 +646,11 @@ referência foi excluído somente da compilação Emscripten. Reproduzir com o
 probe individual `--entry EC_Global.cpp --object-dir ...`; o link diagnóstico
 local com 773 objetos ainda falhou com 4.486 referências indefinidas. O probe
 passou 11 testes; a compilação não valida login ou funcionamento do jogo.
+
+`EC_GameUIManDlgs.cpp` agora compila para WASM: a concatenação de dois
+literais na chave de diálogo `version01` usa justaposição C++ em vez do
+`##` inválido para literais. A compilação do alvo `client153_gfx_original`
+foi adicionada ao workflow `client153-port.yml`; isso verifica objetos, não
+fecha o link nem executa AUI. Probe individual com
+`--entry EC_GameUIManDlgs.cpp --object-dir ...` passou; link diagnóstico
+com 774 objetos segue falhando. Os 11 testes do probe passaram.

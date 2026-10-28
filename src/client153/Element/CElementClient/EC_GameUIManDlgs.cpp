@@ -332,7 +332,7 @@ void CECGameUIMan::InitDialogs()
 namespace
 {	
 #define DEFINE_DIALOG_CREATOR(dialogclass) static PAUIDIALOG wmgj_new_##dialogclass(void){ return new dialogclass; }
-#define MAP_FILE_TO_CREATOR(file, dialogclass) s_mDialogCreator[file] = &wmgj_new_##dialogclass;  s_mDialogCreator["version01\\"##file] = &wmgj_new_##dialogclass;
+#define MAP_FILE_TO_CREATOR(file, dialogclass) s_mDialogCreator[file] = &wmgj_new_##dialogclass;  s_mDialogCreator["version01\\" file] = &wmgj_new_##dialogclass;
 
 	//	定义各对话框创建函数
 	DEFINE_DIALOG_CREATOR(CDlgActivity)
