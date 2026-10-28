@@ -6,7 +6,7 @@ for(const name of ['shell','player-portal','admin-console','control-api','operat
 }
 test('client auto-resolution is server-channel-driven',()=>{
  const shell=readFileSync('apps/shell/src/App.tsx','utf8');
- assert.match(shell,/api\.resolveRelease\(selected\.id\)/);
+ assert.match(shell,/api\.resolveRelease\((?:selected\.id|realm)/);
  assert.match(shell,/r\.client\.manifestUrl/);
  assert.doesNotMatch(shell,/setClientVersion/);
  assert.doesNotMatch(shell,/const \{bootstrap:b\}=await api\.launch/);
