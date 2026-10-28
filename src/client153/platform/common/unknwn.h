@@ -28,4 +28,15 @@
 #define __stdcall
 #define STDMETHODCALLTYPE
 
+//	The MIDL interface declaration forms the SDK headers use (the
+//	DirectShow base classes declare INonDelegatingUnknown with them).
+#ifndef DECLARE_INTERFACE
+#define DECLARE_INTERFACE(iface) struct iface
+#define DECLARE_INTERFACE_(iface, base) struct iface : base
+#endif
+#ifndef THIS
+#define THIS void
+#define THIS_
+#endif
+
 #endif // PW153_PLATFORM_UNKNWN_H

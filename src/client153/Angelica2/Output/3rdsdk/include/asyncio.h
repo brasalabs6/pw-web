@@ -269,7 +269,11 @@ public:
 
 #ifndef _WIN64
     BOOL IsAligned(LONGLONG ll) {
-        return IsAligned( (LONG) (ll & 0xffffffff));
+        //	the port adaptation: the explicit LONG_PTR cast keeps the
+        //	original overload pick (MSVC's LONG argument hit the LONG_PTR
+        //	form exactly; the port's int argument is ambiguous between the
+        //	LONG_PTR/LONGLONG overloads).
+        return IsAligned( (LONG_PTR) (ll & 0xffffffff));
     };
 #endif
 

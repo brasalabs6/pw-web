@@ -17,6 +17,13 @@
 
 #define TIMERR_NOERROR 0
 
+//	Multimedia timer types (the documented MMRESULT and callback form;
+//	the base-class helper declares its compatible timer entry through
+//	them).
+typedef UINT MMRESULT;
+typedef void (*LPTIMECALLBACK)(UINT uID, UINT uMsg, DWORD_PTR dwUser,
+                               DWORD_PTR dw1, DWORD_PTR dw2);
+
 #ifndef PW153_TIMEGETTIME_IN_WINDOWS
 inline DWORD timeGetTime() { return GetTickCount(); }
 #endif

@@ -717,7 +717,7 @@ public:
     };
 
     REFIID GetIID() {
-        return *m_iid;
+        return m_iid;	//	the seam's REFIID is the ABI identifier pointer (the original returned the GUID reference MSVC's REFIID carries).
     };
 
     long GetMethod() {

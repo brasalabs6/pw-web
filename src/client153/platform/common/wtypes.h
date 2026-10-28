@@ -112,6 +112,22 @@ struct FORMATETC {
   TYMED medium;
 };
 
+//	The exception record the automation Invoke contract fills (the
+//	documented EXCEPINFO layout).
+typedef struct tagEXCEPINFO {
+  WORD wCode;
+  WORD wReserved1;
+  WORD wReserved2;
+  WORD wReserved3;
+  BSTR bstrSource;
+  BSTR bstrDescription;
+  BSTR bstrHelpFile;
+  DWORD dwHelpContext;
+  void *pvReserved;
+  void (*pfnDeferredFillIn)(tagEXCEPINFO *);
+  DWORD scode;
+} EXCEPINFO;
+
 struct STGMEDIUM {
   TYMED type;
   void *unionPointer;

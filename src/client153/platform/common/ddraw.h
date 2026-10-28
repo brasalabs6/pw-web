@@ -185,6 +185,74 @@ typedef HRESULT (*LPDDENUMMODESCALLBACK)(LPDDSURFACEDESC, void *);
 //	The DirectDraw caps record pointer (the struct is defined above).
 typedef DDSCAPS *LPDDSCAPS;
 
+//	The ROP capability-array length (the documented ddraw.h constant;
+//	the DDCAPS record below carries the arrays).
+#define DD_ROP_SPACE 8
+
+//	The DirectDraw driver-caps record (the documented DDCAPS DirectX 7
+//	layout; videoctl.h's aggregated DirectDraw passes the pointers only —
+//	the browser has no DirectDraw, so nothing dereferences the fields).
+struct DDCAPS {
+  DWORD dwSize;
+  DWORD dwCaps;
+  DWORD dwCaps2;
+  DWORD dwCKeyCaps;
+  DWORD dwFXCaps;
+  DWORD dwFXAlphaCaps;
+  DWORD dwPalCaps;
+  DWORD dwSVCaps;
+  DWORD dwAlphaBltConstBitDepths;
+  DWORD dwAlphaBltPixelBitDepths;
+  DWORD dwAlphaBltSurfaceBitDepths;
+  DWORD dwAlphaOverlayConstBitDepths;
+  DWORD dwAlphaOverlayPixelBitDepths;
+  DWORD dwAlphaOverlaySurfaceBitDepths;
+  DWORD dwZBufferBitDepths;
+  DWORD dwVidMemTotal;
+  DWORD dwVidMemFree;
+  DWORD dwMaxVisibleOverlays;
+  DWORD dwCurrVisibleOverlays;
+  DWORD dwNumFourCCCodes;
+  DWORD dwAlignBoundarySrc;
+  DWORD dwAlignSizeSrc;
+  DWORD dwAlignBoundaryDest;
+  DWORD dwAlignSizeDest;
+  DWORD dwAlignStrideAlign;
+  DWORD dwRops[DD_ROP_SPACE];
+  DDSCAPS ddsOldCaps;
+  DWORD dwMinOverlayStretch;
+  DWORD dwMaxOverlayStretch;
+  DWORD dwMinLiveVideoStretch;
+  DWORD dwMaxLiveVideoStretch;
+  DWORD dwMinHwCodecStretch;
+  DWORD dwMaxHwCodecStretch;
+  DWORD dwReserved1;
+  DWORD dwReserved2;
+  DWORD dwReserved3;
+  DWORD dwSVBCaps;
+  DWORD dwSVBCKeyCaps;
+  DWORD dwSVBFXCaps;
+  DWORD dwSVBRops[DD_ROP_SPACE];
+  DWORD dwVSBCaps;
+  DWORD dwVSBCKeyCaps;
+  DWORD dwVSBFXCaps;
+  DWORD dwVSBRops[DD_ROP_SPACE];
+  DWORD dwSSBCaps;
+  DWORD dwSSBCKeyCaps;
+  DWORD dwSSBFXCaps;
+  DWORD dwSSBRops[DD_ROP_SPACE];
+  DWORD dwMaxVideoPorts;
+  DWORD dwCurrVideoPorts;
+  DWORD dwSVBCaps2;
+  DWORD dwNLVBCaps;
+  DWORD dwNLVBCaps2;
+  DWORD dwNLVBCKeyCaps;
+  DWORD dwNLVBFXCaps;
+  DWORD dwNLVBRops[DD_ROP_SPACE];
+  DDSCAPS2 ddsCaps;
+};
+typedef DDCAPS *LPDDCAPS;
+
 //	The blit-effects record (the documented DDBLTFX layout).
 struct DDBLTFX {
   DWORD dwSize;
@@ -212,6 +280,30 @@ struct DDBLTFX {
   DDCOLORKEY ddckSrcColorkey;
 };
 typedef DDBLTFX *LPDDBLTFX;
+
+//	The overlay-effects record (the documented DDOVERLAYFX layout; the
+//	constant/surface slots are the documented unions).
+struct DDOVERLAYFX {
+  DWORD dwSize;
+  DWORD dwAlphaEdgeBlendBitDepth;
+  DWORD dwAlphaEdgeBlend;
+  DWORD dwReserved;
+  DWORD dwAlphaDestConstBitDepth;
+  union {
+    DWORD dwAlphaDestConst;
+    IDirectDrawSurface *lpDDSAlphaDest;
+  };
+  DWORD dwAlphaSrcConstBitDepth;
+  union {
+    DWORD dwAlphaSrcConst;
+    IDirectDrawSurface *lpDDSAlphaSrc;
+  };
+  DDCOLORKEY dckDestColorkey;
+  DDCOLORKEY dckSrcColorkey;
+  DWORD dwDDFX;
+  DWORD dwFlags;
+};
+typedef DDOVERLAYFX *LPDDOVERLAYFX;
 
 //	The blit-batch record (the documented DDBLTBATCH layout).
 struct DDBLTBATCH {

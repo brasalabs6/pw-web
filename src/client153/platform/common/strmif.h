@@ -88,6 +88,35 @@
 #ifndef __deref_inout_opt
 #define __deref_inout_opt
 #endif
+//	The remaining annotation forms the vendored DirectShow SDK headers
+//	annotate with (the byte-count/ecount/range set; this seam owns the
+//	whole SAL surface because the Windows.h umbrella is included before
+//	the C++ standard headers and GCC 16's libstdc++ uses the __in/__out
+//	identifiers as structured-binding names).
+#ifndef __in_bcount
+#define __in_bcount(x)
+#endif
+#ifndef __out_bcount
+#define __out_bcount(x)
+#endif
+#ifndef __out_bcount_part
+#define __out_bcount_part(x, y)
+#endif
+#ifndef __in_ecount_opt
+#define __in_ecount_opt(x)
+#endif
+#ifndef __out_ecount_opt
+#define __out_ecount_opt(x)
+#endif
+#ifndef __inout_ecount_full
+#define __inout_ecount_full(x)
+#endif
+#ifndef __inout_ecount_part
+#define __inout_ecount_part(x, y)
+#endif
+#ifndef __range
+#define __range(min, max)
+#endif
 
 //	The MSVC novtable optimization marker (the base-class aggregate's
 //	AM_NOVTABLE; a plain marker on this target).
@@ -212,7 +241,9 @@ struct IPin : IUnknown {
   virtual HRESULT QueryId(LPWSTR *pId) = 0;
   virtual HRESULT QueryAccept(const AM_MEDIA_TYPE *pmt) = 0;
   virtual HRESULT EnumMediaTypes(IEnumMediaTypes **ppEnum) = 0;
-  virtual HRESULT QueryInternalConnections(IPin *apPin, ULONG *nPin) = 0;
+  //	The documented form carries the internal-connection array (the
+  //	vendored amfilter.h's CBasePin implements the IPin** slots form).
+  virtual HRESULT QueryInternalConnections(IPin **apPin, ULONG *nPin) = 0;
   virtual HRESULT EndOfStream() = 0;
   virtual HRESULT NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop,
                              double dRate) = 0;
@@ -450,20 +481,77 @@ struct IMediaSeeking : IUnknown {
   virtual HRESULT GetPreroll(LONGLONG *pllPreroll) = 0;
 };
 
-//	Persist stream (the documented IPersistStream extension).
+//	The OLE structured-storage stream (the documented IStream of
+//	objidl.h; the vendored pstream.h persists over it and the OLE seam has
+//	no objidl.h, so the interface lives beside its IPersistStream consumer
+//	here — the media adapter owns the runtime).
+typedef struct tagSTATSTG {
+  LPOLESTR pwcsName;
+  DWORD type;
+  ULARGE_INTEGER cbSize;
+  FILETIME mtime;
+  FILETIME ctime;
+  FILETIME atime;
+  DWORD grfMode;
+  DWORD grfLocksSupported;
+  CLSID clsid;
+  DWORD grfStateBits;
+  DWORD reserved;
+} STATSTG;
+
+struct IStream : IUnknown {
+  virtual HRESULT Read(void *pv, ULONG cb, ULONG *pcbRead) = 0;
+  virtual HRESULT Write(const void *pv, ULONG cb, ULONG *pcbWritten) = 0;
+  virtual HRESULT Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin,
+                       ULARGE_INTEGER *plibNewPosition) = 0;
+  virtual HRESULT SetSize(ULARGE_INTEGER libNewSize) = 0;
+  virtual HRESULT CopyTo(IStream *pstm, ULARGE_INTEGER cb,
+                         ULARGE_INTEGER *pcbRead,
+                         ULARGE_INTEGER *pcbWritten) = 0;
+  virtual HRESULT Commit(DWORD grfCommitFlags) = 0;
+  virtual HRESULT Revert() = 0;
+  virtual HRESULT LockRegion(ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+                             DWORD dwLockType) = 0;
+  virtual HRESULT UnlockRegion(ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+                               DWORD dwLockType) = 0;
+  virtual HRESULT Stat(STATSTG *pstatstg, DWORD grfStatFlag) = 0;
+  virtual HRESULT Clone(IStream **ppstm) = 0;
+};
+typedef IStream *LPSTREAM;
+
+//	Persist stream (the documented IPersistStream extension; the
+//	documented signatures carry the OLE stream above and the byte-count
+//	record, which the vendored pstream.h overrides).
 struct IPersistStream : IPersist {
   virtual HRESULT IsDirty() = 0;
-  virtual HRESULT Load(void *pStm) = 0;
-  virtual HRESULT Save(void *pStm, BOOL fClearDirty) = 0;
-  virtual HRESULT GetSizeMax(unsigned long long *pcbSize) = 0;
+  virtual HRESULT Load(IStream *pStm) = 0;
+  virtual HRESULT Save(IStream *pStm, BOOL fClearDirty) = 0;
+  virtual HRESULT GetSizeMax(ULARGE_INTEGER *pcbSize) = 0;
 };
 
-//	Stream control (the documented IAMStreamControl surface the pins use).
+//	Stream control (the documented IAMStreamControl surface the pins use;
+//	the info record and flag values are the documented strmif forms the
+//	vendored strmctl.h declares against).
+typedef struct _AM_STREAM_INFO {
+  REFERENCE_TIME tStart;
+  REFERENCE_TIME tStop;
+  DWORD dwStartCookie;
+  DWORD dwStopCookie;
+  DWORD dwFlags;
+} AM_STREAM_INFO;
+
+#define AM_STREAM_INFO_START_DEFINED 0x00000001
+#define AM_STREAM_INFO_STOP_DEFINED 0x00000002
+#define AM_STREAM_INFO_DISCARDING 0x00000004
+#define AM_STREAM_INFO_STOP_SEND_EXTRA 0x00000010
+
 struct IAMStreamControl : IUnknown {
-  virtual HRESULT StartAt(REFERENCE_TIME *ptStart, DWORD dwStartCookie) = 0;
-  virtual HRESULT StopAt(REFERENCE_TIME *ptStop, BOOL bSendExtra,
-                         DWORD dwStopCookie) = 0;
-  virtual HRESULT GetInfo(void *pInfo) = 0;
+  virtual HRESULT StartAt(const REFERENCE_TIME *ptStart = NULL,
+                          DWORD dwStartCookie = 0) = 0;
+  virtual HRESULT StopAt(const REFERENCE_TIME *ptStop = NULL,
+                         BOOL bSendExtra = FALSE,
+                         DWORD dwStopCookie = 0) = 0;
+  virtual HRESULT GetInfo(AM_STREAM_INFO *pInfo) = 0;
 };
 
 //	Clock adjustment (the documented IAMClockAdjust pair).
@@ -476,20 +564,43 @@ struct ISeekingPassThru : IUnknown {
   virtual HRESULT Init(BOOL bSupportRendering, IPin *pPin) = 0;
 };
 
+//	Property-page site (the documented IPropertyPageSite of ocidl.h; the
+//	vendored cprop.h carries the site pointer the page notifies).
+struct IPropertyPageSite : IUnknown {
+  virtual HRESULT OnStatusChange(DWORD dwFlags) = 0;
+  virtual HRESULT GetLocaleID(LCID *pLocaleID) = 0;
+  virtual HRESULT GetPageContainer(IUnknown **ppUnk) = 0;
+  virtual HRESULT GetObjects(IUnknown **ppUnk) = 0;
+  virtual HRESULT GetTranslation(LONG *plTranslateIndex) = 0;
+};
+typedef IPropertyPageSite *LPPROPERTYPAGESITE;
+
+//	Property-page info (the documented PROPPAGEINFO record of ocidl.h;
+//	GetPageInfo fills it for the frame).
+typedef struct tagPROPPAGEINFO {
+  ULONG cb;
+  LPOLESTR pszTitle;
+  SIZE size;
+  LPOLESTR pszDocString;
+  LPOLESTR pszHelpFile;
+  DWORD dwHelpContext;
+} PROPPAGEINFO;
+typedef PROPPAGEINFO *LPPROPPAGEINFO;
+
 //	Property page (the documented IPropertyPage surface the base property
 //	page implements).
 struct IPropertyPage : IUnknown {
-  virtual HRESULT SetPageSite(void *pPageSite) = 0;
-  virtual HRESULT Activate(HWND hwndParent, void *pRect, BOOL bModal) = 0;
+  virtual HRESULT SetPageSite(IPropertyPageSite *pPageSite) = 0;
+  virtual HRESULT Activate(HWND hwndParent, LPCRECT pRect, BOOL bModal) = 0;
   virtual HRESULT Deactivate() = 0;
-  virtual HRESULT GetPageInfo(void *pPageInfo) = 0;
+  virtual HRESULT GetPageInfo(PROPPAGEINFO *pPageInfo) = 0;
   virtual HRESULT SetObjects(ULONG cObjects, IUnknown **ppUnk) = 0;
   virtual HRESULT Show(UINT nCmdShow) = 0;
-  virtual HRESULT Move(void *pRect) = 0;
+  virtual HRESULT Move(LPCRECT pRect) = 0;
   virtual HRESULT IsPageDirty() = 0;
   virtual HRESULT Apply() = 0;
   virtual HRESULT Help(LPCOLESTR pszHelpDir) = 0;
-  virtual HRESULT TranslateAccelerator(void *pMsg) = 0;
+  virtual HRESULT TranslateAccelerator(LPMSG pMsg) = 0;
 };
 
 //	Running object table (the documented ROT surfaces; the debug-only
