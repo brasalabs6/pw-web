@@ -23,5 +23,5 @@ const privateKey=createPrivateKey(process.env.RELEASE_ED25519_PRIVATE_KEY_PEM.re
 const signature=sign(null,Buffer.from('pw-client-release-v2\n'+digest),privateKey).toString('base64');
 const der=createPublicKey(privateKey).export({type:'spki',format:'der'});
 const key=Buffer.from(der).subarray(-32).toString('base64');
-writeFileSync(output,JSON.stringify({...raw,releaseDigest:digest,signature:{keyId:process.env.RELEASE_KEY_ID,value:signature}},null,2)+'\n',{flag:'wx',mode:0o600});
+writeFileSync(output,canonical({...raw,releaseDigest:digest,signature:{keyId:process.env.RELEASE_KEY_ID,value:signature}})+'\n',{flag:'wx',mode:0o600});
 console.log(JSON.stringify({releaseDigest:digest,publicKeyBase64:key,keyId:process.env.RELEASE_KEY_ID}));

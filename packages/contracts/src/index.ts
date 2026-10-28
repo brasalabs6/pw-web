@@ -104,6 +104,12 @@ export type LaunchBootstrap = {
   assetBaseUrl: string;
 };
 export const sha256Hex = z.string().regex(/^[0-9a-f]{64}$/);
+// Logical asset names are relative normalized VFS paths, never URL/path traversal.
+export const logicalAssetPath=z.string().min(1).max(240).refine(path=>{
+  if(path.startsWith('/')||path.includes('\\')||path.includes('%')||/[\u0000-\u001f\u007f]/.test(path))return false;
+  const segments=path.split('/');
+  return segments.every(s=>s.length>0&&s!=='.'&&s!=='..'&&s.length<=120);
+},'Unsafe asset path');
 export const updateManifest = z.object({
   schema: z.literal(2),
   clientVersion: z.string(),
@@ -111,7 +117,7 @@ export const updateManifest = z.object({
   assetSetDigest: sha256Hex,
   entry: z.object({js: z.object({url: z.url(), sha256: sha256Hex, bytes: z.number().int().positive()}),
     wasm: z.object({url: z.url(), sha256: sha256Hex, bytes: z.number().int().positive()})}),
-  files: z.array(z.object({path: z.string(), url: z.url(), sha256: sha256Hex, bytes: z.number().int().nonnegative()})).max(100000),
+  files: z.array(z.object({path: logicalAssetPath, url: z.url(), sha256: sha256Hex, bytes: z.number().int().nonnegative()})).max(10000),
   signature: z.object({keyId: z.string(), value: z.string()})
 }).strict();
 export type UpdateManifest = z.infer<typeof updateManifest>;

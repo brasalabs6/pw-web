@@ -27,3 +27,17 @@ test('wrong public signing key is rejected',async()=>{
 test('missing trusted key is rejected fail-closed',async()=>{
  await assert.rejects(()=>verifyManifest(signed,hash,{}),/Untrusted signing key/);
 });
+
+test('logical asset paths reject traversal, encoded slashes and backslashes',async()=>{
+  const original=signed.files[0];
+  for(const path of ['../secrets','a/../b','/root','a//b','a\\b','a%2fb','a/./c']){
+    await assert.rejects(()=>verifyManifest({...signed,files:[{...original,path}]},hash,{'test-public':pub}));
+  }
+});
+test('case-colliding file paths are rejected',async()=>{
+ const entry={...signed.files[0]};
+ const raw2={...raw,files:[{...entry,path:'Maps/001.bin'},{...entry,path:'maps/001.bin'}]};
+ const digest2=createHash('sha256').update(canonicalJson(raw2)).digest('hex');
+ const signature2=sign(null,Buffer.from('pw-client-release-v2\n'+digest2),privateKey).toString('base64');
+ await assert.rejects(()=>verifyManifest({...raw2,releaseDigest:digest2,signature:{keyId:'test-public',value:signature2}},digest2,{'test-public':pub}),/Duplicate/);
+});
