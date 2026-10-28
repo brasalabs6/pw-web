@@ -1,0 +1,27 @@
+{
+  "name": "pw-web-platform",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:api": "npm run dev -w @pw/control-api",
+    "dev:shell": "npm run dev -w @pw/shell",
+    "dev:admin": "npm run dev -w @pw/admin-console",
+    "dev:portal": "npm run dev -w @pw/player-portal",
+    "dev:operations": "npm run dev -w @pw/operations-worker",
+    "db:migrate": "npm run migrate -w @pw/database",
+    "build:web": "npm run build -w @pw/shell && npm run build -w @pw/player-portal && npm run build -w @pw/admin-console",
+    "typecheck": "tsc -p tsconfig.platform.json --noEmit",
+    "test:platform": "node --test tests/platform/*.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsx": "^4.20.6",
+    "vite": "^7.1.11",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@types/node": "^22.16.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2"
+  }
+}
