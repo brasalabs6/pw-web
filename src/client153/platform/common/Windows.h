@@ -96,6 +96,10 @@ typedef void *HDC;
 typedef void *HINSTANCE;
 typedef void *HMODULE;
 typedef std::int32_t HRESULT;
+#ifndef E_FAIL
+#define E_FAIL 0x80004005
+#endif
+typedef struct _CONTEXT *PCONTEXT;
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
 #define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
 typedef std::size_t SIZE_T;
