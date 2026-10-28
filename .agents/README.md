@@ -45,3 +45,11 @@ Use `python3 .agents/automation/epic_check.py` para validar contratos/dependênc
 [Plano de entrega Cloudflare](../docs/CLOUDFLARE-DELIVERY.md), ADR-0005 e tarefas
 CF-01–24 detalham e15/e17 com contratos novos. Planejado, não implantado; não altera
 catálogo nem conclui workorders. Source portada será mantida em src/client153.
+
+
+## Separação entre port e otimização
+
+- [`issues/README.md`](issues/README.md): correções e lacunas que impedem ou comprometem o cliente WebAssembly funcional no navegador desktop/mobile.
+- [`optimization/README.md`](optimization/README.md): candidatos de performance/Angelica/mobile/hardening para depois do baseline jogável, sem desviar a equipe do port.
+
+Vulnerabilidades ou crashes efetivamente comprovados devem ser classificados como issues do port mesmo se descobertos em auditoria de performance.

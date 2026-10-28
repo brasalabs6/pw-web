@@ -50,13 +50,17 @@ Cada auditor pode inspecionar código **em paralelo**, mas publication deve ser 
 
 ## Ordem executável dos próximos ciclos
 - Fase 0 (agora): registro estático dos achados 021–037 e deduplicação contra 001–020; atualizar índice.
-- Fase 1: estabilizar correção P0 de ownership/shims + link do cliente completo (001–009/014/019/034). **Não confundir com otimização de FPS**.
+- Fase 1: estabilizar port funcional (001–009/014/019); PW23-034 permanece como proposta arquitetural pós-port.
 - Fase 2: perf harness e dataset autorizados, hardware Android real, baseline (031), orçamento memory/asset (024/025/032/033).
 - Fase 3: resolver custos de risco alto e ganho provável: 021, 022, 023, 027, 028, 029, 030, 035; benchmark por hipótese.
 - Fase 4: render queue e arquitetura backend, culling hierárquico, streaming e perf policies; port de WebGPU apenas se profile e uso justificar.
 - Fase 5: soak, comparações golden, CI de regressão, stress de rede, 30/60 FPS tier policy e envio de reports por SHA.
 
 ## Protocolo de auditoria contínua no GitHub Actions
-O repositório já contém `agent-backlog.yml` (schedule 07:13/19:13 UTC, condicionado a `AGENT_BACKLOG_ENABLED`) e `agent-review.yml` (2 modelos, restrição a PR agent/* ou dispatch validado). **Esses workflows não fazem automaticamente esta auditoria cliente 24/7**. Para fazê-lo: criar workflow dedicado em `main` quando aprovado, com `schedule` e `workflow_dispatch`; matriz de seis roles, checkout do SHA da branch de cliente, `permissions: contents:read` para auditoria, GITHUB_TOKEN mínimo, artifact JSON estruturado por subagente, integrador separado deduplica e publica apenas em .agents/issues na branch do PR #23 via commit com lease; nunca publicar patches executáveis do PR sem validação; retries bounded e cron contínuo. Evitar conflitos com o agente que já codifica no PR, deploy/cert secrets e limites financeiros de execução. Registrar resultado/erros por run e permitir pausar com variable (ex.: `PW_CLIENT_AUDIT_ENABLED`).
+O repositório já contém `agent-backlog.yml` (schedule 07:13/19:13 UTC, condicionado a `AGENT_BACKLOG_ENABLED`) e `agent-review.yml` (2 modelos, restrição a PR agent/* ou dispatch validado). **Esses workflows não fazem automaticamente esta auditoria cliente 24/7**. Para fazê-lo: criar workflow dedicado em `main` quando aprovado, com `schedule` e `workflow_dispatch`; matriz de seis roles, checkout do SHA da branch de cliente, `permissions: contents:read` para auditoria, GITHUB_TOKEN mínimo, artifact JSON estruturado por subagente, integrador separado deduplica e publica apenas em .agents/optimization na branch do PR #23 via commit com lease; nunca publicar patches executáveis do PR sem validação; retries bounded e cron contínuo. Evitar conflitos com o agente que já codifica no PR, deploy/cert secrets e limites financeiros de execução. Registrar resultado/erros por run e permitir pausar com variable (ex.: `PW_CLIENT_AUDIT_ENABLED`).
 - O setup acima **é especificação proposta**; não implica workflow instalado ou execução contínua.
 - Respeitar `AGENTS.md`: NÃO abrir terceiro PR, não fazer merge automático, não tocar PR do servidor #17.
+
+
+## Atualização da classificação (2026-10-28)
+Documento migrado para `.agents/optimization`; candidatos PW23-021…037 e OPT-001…006 são **adiados** até funcionar o browser game, não bloqueios de port. Se houver segurança comprometida comprovadamente ou crash funcional, reclassificar em `.agents/issues` com evidência.
