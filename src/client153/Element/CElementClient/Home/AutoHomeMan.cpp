@@ -1153,7 +1153,7 @@ bool CAutoHomeMan::DeleteAction(int nActionType, int nIndex)
 void* CAutoHomeMan::GetAction(int nActionType, int nIndex)
 {
 	if (NULL == m_pAutoHome)
-		return false;
+		return nullptr;
 
 	CAutoHomeAction* pAutoHomeAction = m_pAutoHome->GetAutoHomeAction();
 

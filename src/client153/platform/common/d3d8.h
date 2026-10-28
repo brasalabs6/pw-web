@@ -24,6 +24,8 @@
 #define D3DFVF_SPECULAR 0x0080
 #define D3DFVF_TEX1 0x0100
 #define D3DFVF_TEX2 0x0200
+#define D3DFVF_TEX3 0x0300
+#define D3DFVF_TEX5 0x0500
 #define D3DTSS_BORDERCOLOR 15
 
 #include "Windows.h"
