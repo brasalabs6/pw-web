@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <unistd.h>	//	getcwd/chdir/mkdir.
 #include <sys/stat.h>	//	stat/mkdir.
+#include <sys/statvfs.h>	//	statvfs (GetDiskFreeSpaceA).
 #include <atomic>
 #include <cerrno>
 #include <chrono>
@@ -545,6 +546,9 @@ struct ULARGE_INTEGER {
   std::uint64_t QuadPart;
 };
 
+typedef ULARGE_INTEGER *PULARGE_INTEGER;
+typedef LARGE_INTEGER *PLARGE_INTEGER;
+
 #define WINAPI
 #define CALLBACK
 #define APIENTRY
@@ -704,6 +708,13 @@ inline int _access(const char *path, int mode) {
 // The browser host supplies screen coordinates from pointer events.
 extern "C" void pw153_set_cursor_position(LONG x, LONG y);
 BOOL GetCursorPos(POINT *point);
+//	SetCursorPos: the browser cursor itself is user-owned; the warp
+//	updates the adapter's recorded position (the game-visible cursor
+//	state GetCursorPos reports) and reports success.
+inline BOOL SetCursorPos(int x, int y) {
+  pw153_set_cursor_position(x, y);
+  return TRUE;
+}
 // Coordinates refer to the browser host's single canvas, in CSS pixels.
 extern "C" void pw153_set_canvas_origin(LONG x, LONG y);
 BOOL ScreenToClient(HWND hWnd, POINT *point);
@@ -1670,10 +1681,11 @@ inline DWORD GetFileAttributesW(const wchar_t *name) {
 
 #define SW_HIDE 0
 #define SW_SHOWNORMAL 1
-#define SW_SHOW 5
-#define SW_SHOWMAXIMIZED 3
-#define SW_MINIMIZE 6
 #define SW_SHOWMINIMIZED 2
+#define SW_SHOWMAXIMIZED 3
+#define SW_SHOWNOACTIVATE 4
+#define SW_SHOW 5
+#define SW_MINIMIZE 6
 #define SW_MAXIMIZE 3
 #define SW_RESTORE 9
 
@@ -1703,6 +1715,12 @@ inline BOOL SetWindowPos(HWND hWnd, HWND after, int x, int y, int width,
 
 #ifndef MAKELPARAM
 #define MAKELPARAM(low, high) ((LPARAM)(static_cast<DWORD>(static_cast<WORD>(low)) | (static_cast<DWORD>(static_cast<WORD>(high)) << 16)))
+#endif
+#ifndef MAKEWPARAM
+#define MAKEWPARAM(low, high) ((WPARAM)(static_cast<DWORD>(static_cast<WORD>(low)) | (static_cast<DWORD>(static_cast<WORD>(high)) << 16)))
+#endif
+#ifndef MAKELRESULT
+#define MAKELRESULT(low, high) ((LRESULT)(static_cast<DWORD>(static_cast<WORD>(low)) | (static_cast<DWORD>(static_cast<WORD>(high)) << 16)))
 #endif
 
 inline BOOL GetClientRect(HWND hWnd, RECT *rect) {
@@ -2064,6 +2082,7 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define WM_NCDESTROY 0x0082
 #define WM_STYLECHANGE 0x007D
 #define WM_INPUTLANGCHANGE 0x0051
+#define WM_INPUTLANGCHANGEREQUEST 0x00FF
 #define WM_IME_STARTCOMPOSITION 0x010D
 #define WM_IME_ENDCOMPOSITION 0x010E
 #define WM_IME_COMPOSITION 0x010F
@@ -2237,6 +2256,19 @@ inline LRESULT DispatchMessage(const MSG *message) {
 #define VK_ACCEPT 0x1E
 #define VK_MODECHANGE 0x1F
 #define VK_PROCESSKEY 0xE5
+#define VK_OEM_1 0xBA
+#define VK_OEM_PLUS 0xBB
+#define VK_OEM_COMMA 0xBC
+#define VK_OEM_MINUS 0xBD
+#define VK_OEM_PERIOD 0xBE
+#define VK_OEM_2 0xBF
+#define VK_OEM_3 0xC0
+#define VK_OEM_4 0xDC
+#define VK_OEM_5 0xDE
+#define VK_OEM_6 0xDF
+#define VK_OEM_7 0xE2
+#define VK_OEM_8 0xE3
+#define VK_F24 0x87
 #define VK_PAUSE 0x13
 #define VK_CAPITAL 0x14
 #define VK_ESCAPE 0x1B
@@ -2922,6 +2954,126 @@ inline int GetLocaleInfoA(DWORD locale, DWORD type, char *buffer, int size) {
   if (buffer && size > 0)
     buffer[0] = '\0';
   return 0;
+}
+
+//	The shell launch: the browser target opens URLs through the JS host
+//	bridge (the network/JS-bridge cycle wires window.open); until it
+//	registers, the launch fails explicitly (the callers' error paths
+//	handle it).
+inline HINSTANCE ShellExecuteA(HWND window, const char *operation,
+                               const char *file, const char *parameters,
+                               const char *directory, int show) {
+  (void)window;
+  (void)operation;
+  (void)file;
+  (void)parameters;
+  (void)directory;
+  (void)show;
+  return reinterpret_cast<HINSTANCE>(0);	//	the documented failure (<32).
+}
+inline HINSTANCE ShellExecuteW(HWND window, const wchar_t *operation,
+                               const wchar_t *file, const wchar_t *parameters,
+                               const wchar_t *directory, int show) {
+  (void)operation;
+  (void)file;
+  (void)parameters;
+  (void)directory;
+  return ShellExecuteA(window, nullptr, nullptr, nullptr, nullptr, show);
+}
+inline HINSTANCE ShellExecute(HWND window, const wchar_t *operation,
+                              const wchar_t *file, const wchar_t *parameters,
+                              const wchar_t *directory, int show) {
+  return ShellExecuteW(window, operation, file, parameters, directory, show);
+}
+
+//	The legacy local-memory handle (the documented Win32 alias).
+typedef HANDLE HLOCAL;
+typedef HANDLE HGLOBAL;
+#define LMEM_ZEROINIT 0x0040
+
+//	The volume information: no native volume exists on the browser
+//	target; the query fails (the hardware-id code's fallbacks handle
+//	it).
+inline BOOL GetVolumeInformationA(const char *root, char *name,
+                                   DWORD nameSize, DWORD *serial,
+                                   DWORD *maxLength, DWORD *flags,
+                                   char *fsName, DWORD fsNameSize) {
+  (void)root;
+  (void)name;
+  (void)nameSize;
+  if (serial)
+    *serial = 0;
+  if (maxLength)
+    *maxLength = 0;
+  if (flags)
+    *flags = 0;
+  (void)fsName;
+  (void)fsNameSize;
+  return FALSE;
+}
+
+//	The legacy OpenFile existence probe (the documented OF_* semantics:
+//	OF_EXIST opens and closes, reporting existence through the handle).
+typedef int HFILE;
+#define HFILE_ERROR ((HFILE)-1)
+#define OF_READ 0x0000
+#define OF_SHARE_EXCLUSIVE 0x0010
+#define OF_EXIST 0x4000
+typedef struct _OFSTRUCT {
+  BYTE cBytes;
+  BYTE fFixedDisc;
+  WORD nErrCode;
+  WORD Reserved1;
+  WORD Reserved2;
+  char szPathName[128];
+} OFSTRUCT, *LPOFSTRUCT;
+
+inline HFILE OpenFile(const char *name, OFSTRUCT *info, UINT action) {
+  if (!name)
+    return HFILE_ERROR;
+  std::string normalized(name);
+  std::replace(normalized.begin(), normalized.end(), '\\', '/');
+  std::FILE *probe = std::fopen(normalized.c_str(), "rb");
+  if (!probe)
+    return HFILE_ERROR;
+  std::fclose(probe);
+  if (info) {
+    std::memset(info, 0, sizeof(*info));
+    info->cBytes = sizeof(*info);
+    std::strncpy(info->szPathName, normalized.c_str(),
+                 sizeof(info->szPathName) - 1);
+  }
+  //	OF_EXIST closes the handle after probing (the documented
+  //	behavior); a real read handle is not needed by the callers.
+  if (action & OF_EXIST)
+    return 1;
+  return HFILE_ERROR;
+}
+
+//	No more find matches (the documented WinBase value).
+#define ERROR_NO_MORE_FILES 18
+
+//	The disk free space: the real statvfs numbers over the adapter's
+//	filesystem (the documented Win32 out-parameters).
+inline BOOL GetDiskFreeSpaceA(const char *root, DWORD *sectorsPerCluster,
+                               DWORD *bytesPerSector, DWORD *freeClusters,
+                               DWORD *totalClusters) {
+  if (!root || !*root)
+    return FALSE;
+  std::string normalized(root);
+  std::replace(normalized.begin(), normalized.end(), '\\', '/');
+  struct statvfs disk {};
+  if (statvfs(normalized.c_str(), &disk) != 0)
+    return FALSE;
+  if (sectorsPerCluster)
+    *sectorsPerCluster = static_cast<DWORD>(disk.f_frsize ? disk.f_bsize / disk.f_frsize : 1);
+  if (bytesPerSector)
+    *bytesPerSector = static_cast<DWORD>(disk.f_frsize ? disk.f_frsize : disk.f_bsize);
+  if (freeClusters)
+    *freeClusters = static_cast<DWORD>(disk.f_bavail);
+  if (totalClusters)
+    *totalClusters = static_cast<DWORD>(disk.f_blocks);
+  return TRUE;
 }
 inline BOOL ImmReleaseContext(HWND hWnd, HIMC hIMC) { (void)hWnd; (void)hIMC; return TRUE; }
 inline BOOL ImmIsIME(HKL hKL) { (void)hKL; return FALSE; }

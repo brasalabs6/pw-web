@@ -44,13 +44,8 @@ typedef struct _PW153_IMAGE_EXPORT_DIRECTORY {
 	DWORD AddressOfNameOrdinals;
 } PW153_IMAGE_EXPORT_DIRECTORY, * PW153_PIMAGE_EXPORT_DIRECTORY;
 #define PIMAGE_EXPORT_DIRECTORY PW153_PIMAGE_EXPORT_DIRECTORY
-inline BOOL VirtualProtect(LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, LPDWORD lpflOldProtect)
-{
-	//	WASM has no page protection; like the real API, failure leaves
-	//	*lpflOldProtect untouched. Unreachable: the module handles are NULL.
-	(void)lpAddress; (void)dwSize; (void)flNewProtect; (void)lpflOldProtect;
-	return FALSE;
-}
+//	VirtualProtect/PAGE_* live in the platform umbrella (Windows.h) - the
+//	contract owner; the same explicit failure semantics.
 
 DWORD ReplaceAPI(LPCTSTR dllName, LPCSTR apiName, DWORD newEntry)
 {

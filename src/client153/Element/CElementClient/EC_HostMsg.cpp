@@ -52,7 +52,7 @@
 #include "EC_ComboSkill.h"
 #include "ECScriptMan.h"
 #include "ECScriptContext.h"
-#include "ECSCriptCheckState.h"
+#include "ECScriptCheckState.h"
 #include "EC_ShortcutSet.h"
 #include "EC_PetWords.h"
 #include "EC_ForceMgr.h"
@@ -135,16 +135,16 @@
 #include "auto_delete.h"
 
 #include "gnetdef.h"
-#include "TradeStart_Re.hpp"
-#include "TradeStartRqst.hrp"
-#include "TradeMoveObj_Re.hpp"
-#include "TradeDiscard_Re.hpp"
-#include "TradeConfirm_Re.hpp"
-#include "TradeAddGoods_Re.hpp"
-#include "TradeRemoveGoods_Re.hpp"
-#include "TradeSubmit_Re.hpp"
-#include "TradeEnd.hpp"
-#include "PlayerBaseInfo_Re.hpp"
+#include "tradestart_re.hpp"
+#include "tradestartrqst.hrp"
+#include "trademoveobj_re.hpp"
+#include "tradediscard_re.hpp"
+#include "tradeconfirm_re.hpp"
+#include "tradeaddgoods_re.hpp"
+#include "traderemovegoods_re.hpp"
+#include "tradesubmit_re.hpp"
+#include "tradeend.hpp"
+#include "playerbaseinfo_re.hpp"
 #include "addfriend_re.hpp"
 #include "addfriendremarks_re.hpp"
 #include "getfriends_re.hpp"
@@ -4612,7 +4612,7 @@ void CECHostPlayer::OnMsgHstWayPoint(const ECMSG& Msg)
 		CECMapDlgsMgr::PointMap::const_iterator itr = aWayPoints.find(pCmd->waypoint);
 		if(itr != aWayPoints.end())
 		{
-			g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_NEWWAYPOINT, (itr->second).strName);
+			g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_NEWWAYPOINT, (const wchar_t*)itr->second.strName);	//	explicit conversion in varargs.
 
 			bool bCanPopUITips = true;
 			int count = CECUIConfig::Instance().GetGameUI().GetTaskIDDisableWayPointsUITipsCount();
@@ -7464,7 +7464,7 @@ void CECHostPlayer::OnMsgForce(const ECMSG &Msg)
 			CECGameUIMan* pGameUI = g_pGame->GetGameRun()->GetUIManager()->GetInGameUIMan();
 			const FORCE_CONFIG* pConfig = m_pForceMgr->GetForceData(pCmd->force_id);
 			ACString strForce = pConfig ? pConfig->name : _AL("");
-			pGameUI->AddChatMessage(strMsg.Format(pGameUI->GetStringFromTable(9432), strForce, limit), GP_CHAT_MISC);
+			pGameUI->AddChatMessage(strMsg.Format(pGameUI->GetStringFromTable(9432), (const wchar_t*)strForce, limit), GP_CHAT_MISC);	//	explicit conversion in varargs.
 		}
 
 		CECHostPlayer::FORCE_INFO info;
@@ -7629,8 +7629,8 @@ void CECHostPlayer::OnMsgProfitTime(const ECMSG& Msg)
 			else
 			{
 				strHint.Format(ACString(_AL("%s")) + pGameUI->GetStringFromTable(9665), 
-					strColor,
-					pGameUI->GetFormatTime(pCmd->profit_time));
+					(const wchar_t*)strColor,
+					(const wchar_t*)pGameUI->GetFormatTime(pCmd->profit_time));	//	explicit conversions in varargs.
 			}
 			break;
 		}
@@ -7865,7 +7865,7 @@ void CECHostPlayer::OnMsgCountry(const ECMSG &Msg)
 	case COUNTRYBATTLE_STRONGHOND_STATE_NOTIFY:
 		{
 			const cmd_stronghold_state_notify *pCmd = (cmd_stronghold_state_notify*)Msg.dwParam1;
-			int count = min(pCmd->count, ARRAY_SIZE(m_BattleInfo.iStrongHoldState));
+			int count = min(pCmd->count, (int)ARRAY_SIZE(m_BattleInfo.iStrongHoldState));	//	MSVC's min macro accepted mixed types; the overloads need one type.
 
 			//	检查当前状态并做出比较，弹出喊话
 			if (m_BattleInfo.iStrongHoldCount > 0 && pCmd->count > 0){

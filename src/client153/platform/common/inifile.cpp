@@ -208,3 +208,114 @@ unsigned GetPrivateProfileIntW(const wchar_t *section, const wchar_t *key,
                                key ? narrowKey.c_str() : nullptr, defaultValue,
                                file ? narrowFile.c_str() : nullptr);
 }
+
+//	The INI writer's file serialization.
+namespace {
+bool WriteLines(const char *file, const std::vector<std::string> &lines) {
+  std::FILE *out = std::fopen(file, "wb");
+  if (!out)
+    return false;
+  for (const std::string &line : lines) {
+    std::fputs(line.c_str(), out);
+    std::fputc('\n', out);
+  }
+  std::fclose(out);
+  return true;
+}
+} // namespace
+
+unsigned WritePrivateProfileStringA(const char *section, const char *key,
+                                    const char *value, const char *file) {
+  if (!section || !file)
+    return 0;
+  //	Read the existing lines (an absent file starts empty).
+  std::vector<std::string> lines;
+  if (std::FILE *in = std::fopen(file, "rb")) {
+    char raw[2048];
+    while (std::fgets(raw, sizeof(raw), in)) {
+      std::string line(raw);
+      while (!line.empty() && (line.back() == '\n' || line.back() == '\r'))
+        line.pop_back();
+      lines.push_back(line);
+    }
+    std::fclose(in);
+  }
+  //	Locate the section's line bounds [start, end).
+  std::size_t start = lines.size(), end = lines.size();
+  bool found = false;
+  for (std::size_t i = 0; i < lines.size(); ++i) {
+    const std::string text = Trim(lines[i]);
+    if (text.size() >= 2 && text.front() == '[' && text.back() == ']') {
+      if (found) {
+        end = i;
+        break;
+      }
+      if (IEquals(Trim(text.substr(1, text.size() - 2)), section)) {
+        found = true;
+        start = i;
+        end = i + 1;
+      }
+    } else if (found && !text.empty() && text[0] != ';') {
+      end = i + 1;
+    }
+  }
+  //	The delete-section form (a null key removes the whole section).
+  if (!key) {
+    if (!found)
+      return 1;	//	nothing to delete: the documented success.
+    lines.erase(lines.begin() + static_cast<long>(start),
+                lines.begin() + static_cast<long>(end));
+    return WriteLines(file, lines) ? 1 : 0;
+  }
+  //	Locate the key's line within the section.
+  std::size_t keyLine = lines.size();
+  for (std::size_t i = start + 1; i < end; ++i) {
+    const std::string text = Trim(lines[i]);
+    const std::size_t eq = text.find('=');
+    if (eq != std::string::npos && IEquals(Trim(text.substr(0, eq)), key)) {
+      keyLine = i;
+      break;
+    }
+  }
+  //	The delete-key form (a null value removes the key).
+  if (!value) {
+    if (keyLine == lines.size())
+      return 1;	//	nothing to delete.
+    lines.erase(lines.begin() + static_cast<long>(keyLine));
+    return WriteLines(file, lines) ? 1 : 0;
+  }
+  const std::string entry = std::string(key) + "=" + value;
+  if (keyLine != lines.size()) {
+    //	Replace the existing entry in place.
+    lines[keyLine] = entry;
+  } else if (found) {
+    //	A new key appends inside its section.
+    lines.insert(lines.begin() + static_cast<long>(end), entry);
+  } else {
+    //	A new section appends with its first entry.
+    if (!lines.empty() && !lines.back().empty())
+      lines.push_back("");
+    lines.push_back("[" + std::string(section) + "]");
+    lines.push_back(entry);
+  }
+  return WriteLines(file, lines) ? 1 : 0;
+}
+
+unsigned WritePrivateProfileStringW(const wchar_t *section,
+                                     const wchar_t *key,
+                                     const wchar_t *value,
+                                     const wchar_t *file) {
+  std::string narrowSection, narrowKey, narrowValue, narrowFile;
+  bool ok = true;
+  ok = ok && (!section || pw153::platform::utf16_to_utf8(section, narrowSection));
+  ok = ok && (!key || pw153::platform::utf16_to_utf8(key, narrowKey));
+  ok = ok && (!value || pw153::platform::utf16_to_utf8(value, narrowValue));
+  ok = ok && (!file || pw153::platform::utf16_to_utf8(file, narrowFile));
+  if (!ok)
+    return 0;
+  return WritePrivateProfileStringA(
+      section ? narrowSection.c_str() : nullptr,
+      key ? narrowKey.c_str() : nullptr,
+      value ? narrowValue.c_str() : nullptr,
+      file ? narrowFile.c_str() : nullptr);
+}

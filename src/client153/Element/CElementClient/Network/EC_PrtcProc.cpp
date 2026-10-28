@@ -932,28 +932,32 @@ void CECGameSession::OnStockProtocols(GNET::Protocol* pProtocol)
 void CECGameSession::stock_account()
 {
 	GNET::StockAccount p(m_iCharID);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevStockOperation(GNET::PROTOCOL_STOCKACCOUNT, o.begin(), o.size());
 }
 
 void CECGameSession::stock_bill()
 {
 	GNET::StockBill p(m_iCharID);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevStockOperation(GNET::PROTOCOL_STOCKBILL, o.begin(), o.size());
 }
 
 void CECGameSession::stock_commission(char bBuy, int iPrice, int iVolume)
 {
 	GNET::StockCommission p(m_iCharID, bBuy, iPrice, iVolume);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevStockOperation(GNET::PROTOCOL_STOCKCOMMISSION, o.begin(), o.size());
 }
 
 void CECGameSession::stock_cancel(int tid, int price)
 {
 	GNET::StockCancel p(m_iCharID, tid, price);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevStockOperation(GNET::PROTOCOL_STOCKCANCEL, o.begin(), o.size());
 }
 
@@ -1834,7 +1838,8 @@ void CECGameSession::mail_GetList()
 	GNET::GetMailList p;
 	p.roleid = m_iCharID;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevMail(GNET::PROTOCOL_GETMAILLIST, o.begin(), o.size());
 }
 
@@ -1844,7 +1849,8 @@ void CECGameSession::mail_Get(int idMail)
 	p.roleid = m_iCharID;
 	p.mail_id = (BYTE)idMail;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevMail(GNET::PROTOCOL_GETMAIL, o.begin(), o.size());
 }
 
@@ -1855,7 +1861,8 @@ void CECGameSession::mail_GetAttachment(int idMail, int iType)
 	p.mail_id = (BYTE)idMail;
 	p.obj_type = (BYTE)iType;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevMail(GNET::PROTOCOL_GETMAILATTACHOBJ, o.begin(), o.size());
 }
 
@@ -1865,7 +1872,8 @@ void CECGameSession::mail_Delete(int idMail)
 	p.roleid = m_iCharID;
 	p.mail_id = (BYTE)idMail;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevMail(GNET::PROTOCOL_DELETEMAIL, o.begin(), o.size());
 }
 
@@ -1876,7 +1884,8 @@ void CECGameSession::mail_Preserve(int idMail, bool bPreserve)
 	p.mail_id = (BYTE)idMail;
 	p.blPreserve = bPreserve ? 1 : 0;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevMail(GNET::PROTOCOL_PRESERVEMAIL, o.begin(), o.size());
 }
 
@@ -1905,7 +1914,8 @@ void CECGameSession::mail_Send(int idReceiver, const ACHAR* szTitle, const ACHAR
 		int iLen = a_strlen(szContext) * sizeof (ACHAR);
 		p.context.replace(szContext, iLen);
 	}
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevMail(GNET::PROTOCOL_PLAYERSENDMAIL, o.begin(), o.size());
 }
 
@@ -1933,7 +1943,8 @@ void CECGameSession::auction_Open(int iCategory, int tid, int iItemPos, int iIte
 	p.binprice = iBinPrice;
 	p.elapse_time = iTime;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONOPEN, o.begin(), o.size());
 }
 
@@ -1945,7 +1956,8 @@ void CECGameSession::auction_Bid(int idAuction, int iBidPrice, bool bBin)
 	p.bidprice = iBidPrice;
 	p.bin = bBin ? 1 : 0;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONBID, o.begin(), o.size());
 }
 
@@ -1958,7 +1970,8 @@ void CECGameSession::auction_List(int iCategory, int iBegin, bool bReverse, int 
 	p.reverse = bReverse ? 1 : 0;
 	p.item_id = iItemID;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONLIST, o.begin(), o.size());
 }
 
@@ -1969,7 +1982,8 @@ void CECGameSession::auction_Close(int idAuction, int iReason)
 	p.auctionid = idAuction;
 	p.reason = (BYTE)iReason;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONCLOSE, o.begin(), o.size());
 }
 
@@ -1979,7 +1993,8 @@ void CECGameSession::auction_Get(int idAuction)
 	p.roleid = m_iCharID;
 	p.auctionid = idAuction;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONGET, o.begin(), o.size());
 }
 
@@ -1988,7 +2003,8 @@ void CECGameSession::auction_AttendList()
 	GNET::AuctionAttendList p;
 	p.roleid = m_iCharID;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONATTENDLIST, o.begin(), o.size());
 }
 
@@ -1998,7 +2014,8 @@ void CECGameSession::auction_ExitBid(int idAuction)
 	p.roleid = m_iCharID;
 	p.auctionid = idAuction;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONEXITBID, o.begin(), o.size());
 }
 
@@ -2013,7 +2030,8 @@ void CECGameSession::auction_GetItems(int iNumItem, int* aAuctionIDs)
 	for (int i=0; i < iNumItem; i++)
 		p.ids.push_back(aAuctionIDs[i]);
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONGETITEM, o.begin(), o.size());
 }
 
@@ -2028,7 +2046,8 @@ void CECGameSession::auction_ListUpdate(int iNumItem, int *aAuctionIDs)
 	for (int i=0; i < iNumItem; i++)
 		p.ids.push_back(aAuctionIDs[i]);
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevVendue(GNET::PROTOCOL_AUCTIONLISTUPDATE, o.begin(), o.size());
 }
 
@@ -2060,7 +2079,8 @@ void CECGameSession::webTrade_List(int iCategory, int iBegin, bool bReverse)
 	p.begin = iBegin;
 	p.reverse = bReverse;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADELIST, o.begin(), o.size());
 }
 
@@ -2076,7 +2096,8 @@ void CECGameSession::webTrade_AttendList(int iBegin, bool bSell)
 	p.getsell = bSell;
 	p.begin = iBegin;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEATTENDLIST, o.begin(), o.size());
 }
 
@@ -2100,7 +2121,8 @@ void CECGameSession::webTrade_GetItems(int iNumItem, const __int64 *aTradeIDs)
 		for (int i=0; i<count; ++i)
 			p.sns.push_back(aTradeIDs[i]);
 		
-		Octets o = p.marshal(Marshal::OctetsStream());
+		Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 		c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEGETITEM, o.begin(), o.size());
 
 		iNumItem -= count;
@@ -2118,7 +2140,8 @@ void CECGameSession::webTrade_GetItemDetail(__int64 idTrade)
 	p.roleid = m_iCharID;
 	p.sn = idTrade;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEGETDETAIL, o.begin(), o.size());
 }
 
@@ -2140,7 +2163,8 @@ void CECGameSession::webTrade_PrePostMoney(int nMoney, int nPrice, int nSellPeri
 	p.sellperiod = nSellPeriod;
 	p.buyer_roleid = nBuyerRoleID;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEPREPOST, o.begin(), o.size());
 }
 
@@ -2162,7 +2186,8 @@ void CECGameSession::webTrade_PrePostItem(int idItem, int nSlot, int nCount, int
 	p.sellperiod = nSellPeriod;
 	p.buyer_roleid = nBuyerRoleID;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEPREPOST, o.begin(), o.size());
 }
 
@@ -2194,7 +2219,8 @@ void CECGameSession::webTrade_PreCancel(__int64 idTrade)
 	p.roleid = m_iCharID;
 	p.sn = idTrade;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEPRECANCELPOST, o.begin(), o.size());
 }
 
@@ -2223,7 +2249,8 @@ void CECGameSession::webTrade_Update(__int64 idTrade)
 	p.roleid = m_iCharID;
 	p.sn = idTrade;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevWebTrade(GNET::PROTOCOL_WEBTRADEUPDATE, o.begin(), o.size());
 }
 
@@ -2257,7 +2284,8 @@ void CECGameSession::factionFortress_Create()
 	CECHostPlayer* pHost = g_pGame->GetGameRun()->GetHostPlayer();
 	p.factionid = pHost->GetFactionID();
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevFactionFortressService1(GNET::PROTOCOL_CREATEFACTIONFORTRESS, o.begin(), o.size());
 }
 
@@ -2273,7 +2301,8 @@ void CECGameSession::factionFortress_Enter(int idTarget)
 
 	p.dst_factionid = idTarget;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevFactionFortressService1(GNET::PROTOCOL_FACTIONFORTRESSENTER, o.begin(), o.size());
 }
 
@@ -2285,7 +2314,8 @@ void CECGameSession::factionFortress_List(int begin)
 	p.roleid = m_iCharID;
 	p.begin = (unsigned int)begin;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevFactionFortressService1(GNET::PROTOCOL_FACTIONFORTRESSLIST, o.begin(), o.size());
 }
 
@@ -2301,7 +2331,8 @@ void CECGameSession::factionFortress_Challenge(int idTarget)
 
 	p.target_factionid = idTarget;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevFactionFortressService1(GNET::PROTOCOL_FACTIONFORTRESSCHALLENGE, o.begin(), o.size());
 }
 
@@ -2312,7 +2343,8 @@ void CECGameSession::factionFortress_BattleList()
 
 	p.roleid = m_iCharID;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevFactionFortressService1(GNET::PROTOCOL_FACTIONFORTRESSBATTLELIST, o.begin(), o.size());
 }
 
@@ -2324,7 +2356,8 @@ void CECGameSession::factionFortress_Get(int idTarget)
 	p.roleid = m_iCharID;
 	p.factionid = idTarget;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevFactionFortressService1(GNET::PROTOCOL_FACTIONFORTRESSGET, o.begin(), o.size());
 }
 
@@ -2339,7 +2372,8 @@ void CECGameSession::factionFortress_Get(int idTarget)
 void CECGameSession::sysAuction_Account()
 {
 	SysAuctionAccount p(m_iCharID, 0);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdSysAuction(GNET::PROTOCOL_SYSAUCTIONACCOUNT, o.begin(), o.size());
 }
 
@@ -2351,7 +2385,8 @@ void CECGameSession::sysAuction_Bid(unsigned int sa_id, int bid_price)
 		return;
 
 	SysAuctionBid p(m_iCharID, sa_id, bid_price, 0);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdSysAuction(GNET::PROTOCOL_SYSAUCTIONBID, o.begin(), o.size());
 }
 
@@ -2366,7 +2401,8 @@ void CECGameSession::sysAuction_CashTransfer(bool bWithdraw, int nCash)
 	p.cash = nCash;
 	p.localsid = 0;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdSysAuction(GNET::PROTOCOL_SYSAUCTIONCASHTRANSFER, o.begin(), o.size());
 }
 
@@ -2388,7 +2424,8 @@ void CECGameSession::sysAuction_GetItem(unsigned int *sa_ids, int count)
 	{
 		int size = min(count, nMaxItem);
 		p.ids.assign(sa_ids, sa_ids+size);
-		Octets o = p.marshal(Marshal::OctetsStream());
+		Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 		c2s_SendCmdSysAuction(GNET::PROTOCOL_SYSAUCTIONGETITEM, o.begin(), o.size());
 
 		count -= size;
@@ -2401,7 +2438,8 @@ void CECGameSession::sysAuction_GetItem(unsigned int *sa_ids, int count)
 void CECGameSession::sysAuction_List()
 {
 	SysAuctionList p(m_iCharID, 0);
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdSysAuction(GNET::PROTOCOL_SYSAUCTIONLIST, o.begin(), o.size());
 }
 
@@ -2440,7 +2478,8 @@ void CECGameSession::battle_Challenge(int idDomain, int idFaction, int iDeposit)
 	//	3.计算验证值
 	p.authentication = (rand_num ^ ((t_base >> 8) & 0xFFFF) ^ p.id);
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevBattle(GNET::PROTOCOL_BATTLECHALLENGE, o.begin(), o.size());
 }
 
@@ -2451,7 +2490,8 @@ void CECGameSession::battle_ChallengeMap()
 	CECHostPlayer* pHost = g_pGame->GetGameRun()->GetHostPlayer();
 	p.factionid = pHost->GetFactionID();
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevBattle(GNET::PROTOCOL_BATTLECHALLENGEMAP, o.begin(), o.size());
 }
 
@@ -2468,7 +2508,8 @@ void CECGameSession::battle_Enter(int idBattle)
 	p.roleid = m_iCharID;
 	p.battle_id = idBattle;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevBattle(GNET::PROTOCOL_BATTLEENTER, o.begin(), o.size());
 }
 
@@ -2495,7 +2536,8 @@ void CECGameSession::account_GetSelfSellList()
 	GNET::GetSellList p;
 	p.roleid = m_iCharID;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevAccountPoint(GNET::PROTOCOL_GETSELLLIST, o.begin(), o.size());
 }
 
@@ -2514,7 +2556,8 @@ void CECGameSession::account_SellPoint(int iPoint, DWORD dwPrice)
 	p.point = iPoint;
 	p.price = (int)dwPrice;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevAccountPoint(GNET::PROTOCOL_SELLPOINT, o.begin(), o.size());
 }
 
@@ -2524,7 +2567,8 @@ void CECGameSession::account_CancelSellPoint(int idSell)
 	p.roleid = m_iCharID;
 	p.sellid = idSell;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevAccountPoint(GNET::PROTOCOL_SELLCANCEL, o.begin(), o.size());
 }
 
@@ -2535,7 +2579,8 @@ void CECGameSession::account_BuyPoint(int idSell, int idSeller)
 	p.sellid = idSell;
 	p.seller = idSeller;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevAccountPoint(GNET::PROTOCOL_BUYPOINT, o.begin(), o.size());
 }
 
@@ -2800,7 +2845,8 @@ void CECGameSession::king_CandidateAuction(int tid, int num)
 	p.item_id = tid;
 	p.item_num = num;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevKing(GNET::PROTOCOL_KECANDIDATEAPPLY, o.begin(), o.size());
 }
 
@@ -2813,7 +2859,8 @@ void CECGameSession::king_CandidateVote(int candidate_id, int tid, int item_slot
 	p.item_pos = item_slot;
 	p.item_num = num;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevKing(GNET::PROTOCOL_KEVOTING, o.begin(), o.size());
 }
 
@@ -2822,7 +2869,8 @@ void CECGameSession::king_GetCandidateStatus()
 	KEGetStatus p;
 	p.roleid = GetCharacterID();
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_CmdNPCSevKing(GNET::PROTOCOL_KEGETSTATUS, o.begin(), o.size());
 }
 
@@ -2914,7 +2962,8 @@ void CECGameSession::OffShop_CreateMyShop(int shop_type,int item_id,int item_pos
 	p.item_pos = item_pos;
 	p.item_num = item_num;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPCREATE, o.begin(), o.size());
 }
@@ -2928,7 +2977,8 @@ void CECGameSession::OffShop_AddItemToMySellInv(int tid,int shop_pos,unsigned in
 	p.item_price = price;
 	p.inv_pos = inv_pos;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPSELL, o.begin(), o.size());
 }
@@ -2942,7 +2992,8 @@ void CECGameSession::OffShop_AddItemToMyBuyInv(int tid,int shop_pos,unsigned int
 	p.item_count = count;
 	p.item_price = price;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPBUY, o.begin(), o.size());
 }
@@ -2953,7 +3004,8 @@ void CECGameSession::OffShop_CancelItemFromMyShop(bool bSell,int pos)
 	p.canceltype = bSell ? 0:1;
 	p.pos = pos;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPCANCELGOODS,o.begin(),o.size());
 }
@@ -2963,7 +3015,8 @@ void CECGameSession::OffShop_SetMyShopType(int iType)
 	p.roleid = GetCharacterID();
 	p.newtype = iType;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPSETTYPE,o.begin(),o.size());
 }
@@ -2975,7 +3028,8 @@ void CECGameSession::OffShop_ActiveMyShop(int tid,int pos,int count) // 激活�
 	p.item_pos = pos;
 	p.item_num = count;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPACTIVE,o.begin(),o.size());
 }
 void CECGameSession::OffShop_ClearMyShop()	// 情况商店的收购栏和出售栏
@@ -2983,7 +3037,8 @@ void CECGameSession::OffShop_ClearMyShop()	// 情况商店的收购栏和出售�
 	PShopClearGoods p;
 	p.roleid = GetCharacterID();
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPCLEARGOODS,o.begin(),o.size());
 }
 void CECGameSession::OffShop_GetMyShopInfo()
@@ -2991,7 +3046,8 @@ void CECGameSession::OffShop_GetMyShopInfo()
 	PShopSelfGet p;
 	p.roleid = GetCharacterID();
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPSELFGET,o.begin(),o.size());
 }	
 void CECGameSession::OffShop_TakeItemFromStore(int idx) // 从仓库取物品
@@ -3000,7 +3056,8 @@ void CECGameSession::OffShop_TakeItemFromStore(int idx) // 从仓库取物品
 	p.roleid = GetCharacterID();
 	p.item_pos = idx;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPDRAWITEM,o.begin(),o.size());
 }
 void CECGameSession::OffShop_OptMoneyStore(bool bSave,int m,int yinpiao) // bSave: true 存钱，false 取钱
@@ -3011,7 +3068,8 @@ void CECGameSession::OffShop_OptMoneyStore(bool bSave,int m,int yinpiao) // bSav
 	p.money = m;
 	p.yinpiao = yinpiao;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPMANAGEFUND,o.begin(),o.size());
 }
 void CECGameSession::OffShop_GetELShopInfo(int otherID)// 进入其他玩家店铺，获取该店铺信息
@@ -3033,7 +3091,8 @@ void CECGameSession::OffShop_BuyItemFrom(int otherID,int tid,int pos,int count, 
 	p.money_cost = money;
 	p.yp_cost = yinpiao;
 
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPPLAYERBUY,o.begin(),o.size());
 }
@@ -3048,7 +3107,8 @@ void CECGameSession::OffShop_SellItemTo(int otherID,int tid,int pos,int count, u
 	p.item_price = price;
 	p.inv_pos = my_inv_pos;
 	
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	
 	c2s_SendCmdNPCSevOfflineShop(GNET::PROTOCOL_PSHOPPLAYERSELL,o.begin(),o.size());	
 }

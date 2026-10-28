@@ -114,7 +114,8 @@ int CDlgWebTradeBase::ItemInfo::GetTimeValue() const
 	}
 	else if(STATE_SELL == tradeItem.state)
 	{
-		return tradeItem.sell_endtime - mktime(&g_pGame->GetServerLocalTime());
+		struct tm serverLocalTime = g_pGame->GetServerLocalTime();	//	MSVC allowed the address of this temporary.
+		return tradeItem.sell_endtime - mktime(&serverLocalTime);
 	}
 	else
 	{
@@ -143,7 +144,8 @@ ACString CDlgWebTradeBase::ItemInfo::GetTime() const
 	}
 	else if(STATE_SELL == tradeItem.state)
 	{
-		nRestTime = tradeItem.sell_endtime - mktime(&g_pGame->GetServerLocalTime());
+		struct tm serverLocalTime = g_pGame->GetServerLocalTime();	//	MSVC allowed the address of this temporary.
+		nRestTime = tradeItem.sell_endtime - mktime(&serverLocalTime);
 	}
 	
 	// check the time value
@@ -180,7 +182,7 @@ CDlgWebTradeBase::ItemInfo::~ItemInfo()
 const ACHAR* CDlgWebTradeBase::ItemInfo::GetSellerName() const
 {
 	const ACHAR* ret = m_szSellerName.IsEmpty() ?
-		g_pGame->GetGameRun()->GetPlayerName(m_pBasicInfo->seller_roleid, false):		m_szSellerName;
+		g_pGame->GetGameRun()->GetPlayerName(m_pBasicInfo->seller_roleid, false):		(const ACHAR*)m_szSellerName;	//	MSVC resolved the conditional to the assignment type.
 
 	return ret != NULL ? ret:INVALID_TAG;
 }
@@ -189,7 +191,7 @@ const ACHAR* CDlgWebTradeBase::ItemInfo::GetBuyerName() const
 {
 	const ACHAR* ret = m_szBuyerName.IsEmpty() ?
 		g_pGame->GetGameRun()->GetPlayerName(m_pBasicInfo->buyer_roleid, false):
-		m_szBuyerName;
+		(const ACHAR*)m_szBuyerName;	//	MSVC resolved the conditional to the assignment type.
 
 	return ret != NULL ? ret:INVALID_TAG;
 }

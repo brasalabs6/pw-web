@@ -476,10 +476,14 @@ void CDlgBShop::OnSysAuctionAccount(void* pData)
 	if(ERR_SUCCESS == p->retcode)
 	{
 		m_Account.Cash = p->cash;
-		if (p->bid_ids.empty())
-			m_Account.Items.swap(abase::vector<unsigned int>());
-		else
-			m_Account.Items.swap(abase::vector<unsigned int>(&p->bid_ids[0], &p->bid_ids[0] + p->bid_ids.size()));
+		if (p->bid_ids.empty()) {
+			abase::vector<unsigned int> emptyItems;	//	MSVC bound this temporary to the non-const reference.
+			m_Account.Items.swap(emptyItems);
+		}
+		else {
+			abase::vector<unsigned int> bidIds(&p->bid_ids[0], &p->bid_ids[0] + p->bid_ids.size());	//	MSVC bound this temporary to the non-const reference.
+			m_Account.Items.swap(bidIds);
+		}
 		SetDirty(true);
 	}
 }
@@ -673,7 +677,7 @@ void CDlgBShop::ShowAuctionItem(const GNET::GSysAuctionItem* pItem)
 			freezeTime = pItem->bid_freezetime - GetGame()->GetServerGMTTime();
 		}
 		pTxt_FreezeTime->SetText( freezeTime <= 0 ? 
-			GetStringFromTable(ASTATE_END == pItem->state ? 5601:5600) : GetGameUIMan()->GetFormatTime(freezeTime));
+			GetStringFromTable(ASTATE_END == pItem->state ? 5601:5600) : (const ACHAR*)GetGameUIMan()->GetFormatTime(freezeTime));	//	MSVC resolved the conditional to the SetText parameter type.
 
 		// show the bid left time
 		int leftTime = 0;
@@ -682,7 +686,7 @@ void CDlgBShop::ShowAuctionItem(const GNET::GSysAuctionItem* pItem)
 			leftTime = pItem->auction_endtime - GetGame()->GetServerGMTTime();
 		}
 		pTxt_LeftTime->SetText( leftTime <= 0 ? 
-			GetStringFromTable(ASTATE_END == pItem->state ? 5601:5600) : GetGameUIMan()->GetFormatTime(leftTime));
+			GetStringFromTable(ASTATE_END == pItem->state ? 5601:5600) : (const ACHAR*)GetGameUIMan()->GetFormatTime(leftTime));	//	MSVC resolved the conditional to the SetText parameter type.
 
 		// check bidder name
 		int bidder = pItem->bidder_roleid;
@@ -712,13 +716,13 @@ bool CDlgBShop::LoadItemIcon(AuctionItemInfo* pInfo)
 	af_GetFileTitle(pInfo->pItem->GetIconFile(), szFile);
 
 	AString szBigIconFile;
-	szBigIconFile.Format("surfaces\\竞拍品\\%s", szFile);
+	szBigIconFile.Format("surfaces\\竞拍品\\%s", (const char*)szFile);	//	explicit conversion in varargs.
 	if(!af_IsFileExist(szBigIconFile))
 	{
 		return false;
 	}
 	
-	szBigIconFile.Format("竞拍品\\%s", szFile);
+	szBigIconFile.Format("竞拍品\\%s", (const char*)szFile);	//	explicit conversion in varargs.
 	pInfo->pCover = new A2DSprite();
 	bool bval = pInfo->pCover->Init(m_pA3DDevice, szBigIconFile, 0);
 	if(!bval)
@@ -876,7 +880,7 @@ void CDlgBShop::OnCommand_BidItem(const char *szCommand)
 	if(price >= SYSAUCTION_MAX_CASH)
 	{
 		ACString szTxt;
-		szTxt.Format(GetStringFromTable(5618), GetCashText(SYSAUCTION_MAX_CASH, false));
+		szTxt.Format(GetStringFromTable(5618), (const wchar_t*)GetCashText(SYSAUCTION_MAX_CASH, false));	//	explicit conversion in varargs.
 		BSHOP_MSGBOX(szTxt);
 		return;
 	}
@@ -914,7 +918,7 @@ void CDlgBShop::OnCommand_BidItem(const char *szCommand)
 	}
 	else
 	{
-		strText.Format(GetStringFromTable(5609),m_strLastSelectedItem,GetSelectedItem()->pItem->GetName());
+		strText.Format(GetStringFromTable(5609),(const wchar_t*)m_strLastSelectedItem,GetSelectedItem()->pItem->GetName());	//	explicit conversion in varargs.
 	}
 
 	PAUIDIALOG pMsgBox;
@@ -967,7 +971,7 @@ void CDlgBShop::OnCommand_StartAuto(const char *szCommand)
 	{
 		// over limitation
 		ACString szTxt;
-		szTxt.Format(GetStringFromTable(5618), GetCashText(SYSAUCTION_MAX_CASH, false));
+		szTxt.Format(GetStringFromTable(5618), (const wchar_t*)GetCashText(SYSAUCTION_MAX_CASH, false));	//	explicit conversion in varargs.
 		BSHOP_MSGBOX(szTxt);
 		return;
 	}
@@ -1095,7 +1099,7 @@ bool CDlgBShop::OnSysAuctionMessage(int idType, const void* pBuf, size_t sz, boo
 			Marshal::OctetsStream(Octets(pBuf, sz)) >> sa_id >> item_id >> base_price;
 			
 			ACString strMsg;
-			strMsg.Format( GetStringFromTable(5603), GetItemName(sa_id, item_id), base_price/100 );
+			strMsg.Format( GetStringFromTable(5603), (const wchar_t*)GetItemName(sa_id, item_id), base_price/100 );	//	explicit conversion in varargs.
 			GetGame()->GetGameRun()->AddChatMessage(strMsg, GP_CHAT_BROADCAST, idType);
 		}
 		else
@@ -1125,7 +1129,7 @@ bool CDlgBShop::OnSysAuctionMessage(int idType, const void* pBuf, size_t sz, boo
 			
 			// add to SysAuction GUI
 			ACString strMsg;
-			strMsg.Format(GetStringFromTable(5604), szName, GetItemName(sa_id, item_id), bid_price/100);
+			strMsg.Format(GetStringFromTable(5604), szName, (const wchar_t*)GetItemName(sa_id, item_id), bid_price/100);	//	explicit conversion in varargs.
 			m_pTxt_Details->AppendText(strMsg);
 			m_pTxt_Details->AppendText(_AL("\r"));
 			m_pTxt_Details->ScrollToBottom();
@@ -1162,18 +1166,18 @@ bool CDlgBShop::OnSysAuctionMessage(int idType, const void* pBuf, size_t sz, boo
 			float ratio = (float)left_time / (float)freeze_time;
 			if(ratio > (1.f/3.f)) // [0~0.333) period
 			{
-				strMsg.Format( GetStringFromTable(5606), GetItemName(sa_id, item_id), szName, bid_price / 100,
-					freeze_time / 60, szName);
+				strMsg.Format( GetStringFromTable(5606), (const wchar_t*)GetItemName(sa_id, item_id), szName, bid_price / 100,
+					freeze_time / 60, szName);	//	explicit conversion in varargs.
 			}
 			else if(left_time == 0) // auction end
 			{
-				strMsg.Format( GetStringFromTable(5608), GetItemName(sa_id, item_id), szName, bid_price / 100,
-					freeze_time / 60, szName);
+				strMsg.Format( GetStringFromTable(5608), (const wchar_t*)GetItemName(sa_id, item_id), szName, bid_price / 100,
+					freeze_time / 60, szName);	//	explicit conversion in varargs.
 			}
 			else // [0.3333~1) period
 			{
-				strMsg.Format( GetStringFromTable(5607), GetItemName(sa_id, item_id), szName, bid_price / 100,
-					(freeze_time - left_time) / 60);
+				strMsg.Format( GetStringFromTable(5607), (const wchar_t*)GetItemName(sa_id, item_id), szName, bid_price / 100,
+					(freeze_time - left_time) / 60);	//	explicit conversion in varargs.
 			}
 			
 			GetGame()->GetGameRun()->AddChatMessage(strMsg, GP_CHAT_BROADCAST, idType);
@@ -1205,7 +1209,7 @@ bool CDlgBShop::OnSysAuctionMessage(int idType, const void* pBuf, size_t sz, boo
 			
 			// show world broadcast
 			ACString strMsg;
-			strMsg.Format( GetStringFromTable(5605), GetItemName(sa_id, item_id), szName, bid_price / 100 );
+			strMsg.Format( GetStringFromTable(5605), (const wchar_t*)GetItemName(sa_id, item_id), szName, bid_price / 100 );	//	explicit conversion in varargs.
 			GetGame()->GetGameRun()->AddChatMessage(strMsg, GP_CHAT_BROADCAST, idType);
 		}
 		else

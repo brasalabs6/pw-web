@@ -71,7 +71,7 @@ static int GetTransmitTargetsNum(const NPC_TRANSMIT_SERVICE *pService)
 	if (pService)
 	{
 		num_targets = max(0, pService->num_targets);
-		num_targets = min(num_targets, sizeof(pService->targets)/sizeof(pService->targets[0]));
+		num_targets = min(num_targets, (int)(sizeof(pService->targets)/sizeof(pService->targets[0])));	//	MSVC's min macro accepted mixed types; the overloads need one type.
 	}
 	return num_targets;
 }
@@ -1232,7 +1232,7 @@ void CDlgWorldMap::OnEventMouseMove_Travel(WPARAM wParam, LPARAM lParam, AUIObje
 			if (transWay.mode == CECMapDlgsMgr::TransWay::TM_NPC_TRANSMIT_NORMAL ||
 				transWay.mode == CECMapDlgsMgr::TransWay::TM_NPC_TRANSMIT_DIRECT)
 			{
-				strHint.Format(GetStringFromTable(546), tp.strName, transWay.nCost, transWay.nLevel);
+				strHint.Format(GetStringFromTable(546), (const wchar_t*)tp.strName, transWay.nCost, transWay.nLevel);	//	explicit conversion in varargs.
 			}
 			else strHint = tp.strName;
 		}
@@ -2572,7 +2572,7 @@ bool CECMapDlgsMgr::LoadMapTexture(A3DDevice* pDevice, PAUIIMAGEPICTURE pImage, 
 
 	if (strFile.IsEmpty() || !pA2DSprite->Init(pDevice, strFile, 0)){
 		if (!strFile.IsEmpty()){
-			AUI_ReportError(__LINE__, 1, "Failed to load map texture(%s) for idInstance=%d", strFile, idInstance);
+			AUI_ReportError(__LINE__, 1, "Failed to load map texture(%s) for idInstance=%d", (const char*)strFile, idInstance);	//	explicit conversion in varargs.
 		}
 		// use empty map to try again
 		if (!pA2DSprite->Init(pDevice, "InGame\\map_bg.dds", 0)){
@@ -2609,7 +2609,7 @@ bool CECMapDlgsMgr::LoadMapTexture2(A3DDevice* pDevice, PAUIIMAGEPICTURE pImage,
 
 	if (strFile.IsEmpty() || !pA2DSprite->Init(pDevice, strFile, 0)){
 		if (!strFile.IsEmpty()){
-			AUI_ReportError(__LINE__, 1, "Failed to load map texture(%s) for idInstance=%d", strFile, idInstance);
+			AUI_ReportError(__LINE__, 1, "Failed to load map texture(%s) for idInstance=%d", (const char*)strFile, idInstance);	//	explicit conversion in varargs.
 		}
 		// use empty map to try again
 		if (!pA2DSprite->Init(pDevice, "InGame\\map_bg.dds", 0)){

@@ -1,7 +1,7 @@
 #include "DlgFortunePallete.h"
 
 #include "EC_GameUIMan.h"
-#include "a3dgfxex.h"
+#include "A3DGFXEx.h"
 #include "EC_HostPlayer.h"
 #include "EC_Inventory.h"
 #include "EC_IvtrItem.h"
@@ -28,7 +28,7 @@ void CDlgFortunePallete::OnShowDialog()
 		m_Progress[i] = (PAUIPROGRESS)GetDlgItem(szItem);
 	}
 
-	for( i = 1; i <= 30; i++ )
+	for( int i = 1; i <= 30; i++ )	//	original relied on MSVC for-scoping leakage.
 	{
 		sprintf(szItem, "Item_%d", i);
 		m_pImgItem[i] = (PAUIIMAGEPICTURE)GetDlgItem(szItem);

@@ -2473,7 +2473,7 @@ bool CECGameUIMan::OnMessageBox(int iRetVal, AUIDialog* pDlg)
 		if (!strUpdater.IsEmpty())
 		{
 			ShellExecuteA(NULL, "open", strUpdater, NULL, NULL, SW_SHOWNOACTIVATE);
-			a_LogOutput(1, "%s started", strUpdater);
+			a_LogOutput(1, "%s started", (const char*)strUpdater);	//	explicit conversion in varargs.
 			s_GTUpdaterRunned = true;		
 			ShowErrorMsg(10065);
 		}
@@ -2624,11 +2624,12 @@ bool CECGameUIMan::Tick(DWORD dwDeltaTime)
 
 	if(m_WorldLifeTimeBase > 0 && m_WorldLifeTime > 0)
 	{
-		int nTime = m_WorldLifeTimeBase - mktime(&g_pGame->GetServerLocalTime());
+		struct tm serverLocalTime = g_pGame->GetServerLocalTime();	//	MSVC allowed the address of this temporary.
+		int nTime = m_WorldLifeTimeBase - mktime(&serverLocalTime);
 		if(nTime >=0 && nTime <= m_WorldLifeTime)
 		{
 			ACString szTxt;
-			szTxt.Format(GetStringFromTable(888), GetFormatTime(nTime));
+			szTxt.Format(GetStringFromTable(888), (const wchar_t*)GetFormatTime(nTime));	//	explicit conversion in varargs.
 			AddChatMessage(szTxt, GP_CHAT_MISC);
 			m_WorldLifeTime = MakeNextCountTime(nTime);
 		}
@@ -2772,7 +2773,7 @@ bool CECGameUIMan::Tick(DWORD dwDeltaTime)
 			//	悬浮提示
 			ACString strTime, strText;
 			strTime.Format(GetStringFromTable(1611), nTime / 3600, ((nTime % 3600) / 600) * 10);
-			strText.Format(GetStringFromTable(893), strTime);
+			strText.Format(GetStringFromTable(893), (const wchar_t*)strTime);	//	explicit conversion in varargs.
 			pImage->SetHint(strText);
 
 			//	防沉迷图标
@@ -3785,9 +3786,10 @@ void CECGameUIMan::PopupWorldCountDown(int nTime)
 		m_WorldLifeTimeBase = 0;
 	} else {
 		ACString szTxt;
-		szTxt.Format(GetStringFromTable(888), GetFormatTime(nTime));
+		szTxt.Format(GetStringFromTable(888), (const wchar_t*)GetFormatTime(nTime));	//	explicit conversion in varargs.
 		AddChatMessage(szTxt, GP_CHAT_MISC);
-		m_WorldLifeTimeBase = nTime + mktime(&g_pGame->GetServerLocalTime());
+		struct tm serverLocalTime = g_pGame->GetServerLocalTime();	//	MSVC allowed the address of this temporary.
+		m_WorldLifeTimeBase = nTime + mktime(&serverLocalTime);
 
 		// only send notification more than 5 mins
 		m_WorldLifeTime = MakeNextCountTime(nTime);
@@ -5236,7 +5238,7 @@ void CECGameUIMan::AddTaskHint(int idTask, int idEvent, const ACHAR *pszHint)
 	ACString strHint;
 	PAUIDIALOG pDlg = GetDialog("Win_Hint");
 
-	strHint.Format(GetStringFromTable(275 + idEvent), CDlgTask::GetTaskNameWithColor(pTemp));
+	strHint.Format(GetStringFromTable(275 + idEvent), (const wchar_t*)CDlgTask::GetTaskNameWithColor(pTemp));	//	explicit conversion in varargs.
 	th.strHint = strHint;
 	th.dwTime = GetTickCount();
 
@@ -6137,7 +6139,7 @@ ACString CECGameUIMan::GetItemDescHint(CECIvtrItem *pItem, bool bShowFashionColo
 					ACString newDesc;
 					ACString strHint = A3DCOLOR_TO_STRING(pItem->GetNameColor());
 					strHint += pItem->GetName();
-					newDesc.Format(_AL("^00ff00%s - Lista de Drops:^ffffff\r\r"), strHint);
+					newDesc.Format(_AL("^00ff00%s - Lista de Drops:^ffffff\r\r"), (const wchar_t*)strHint);	//	explicit conversion in varargs.
 					ACString temp;
 					try
 					{
@@ -6156,7 +6158,7 @@ ACString CECGameUIMan::GetItemDescHint(CECIvtrItem *pItem, bool bShowFashionColo
 										continue;
 									ACString strHint2 = A3DCOLOR_TO_STRING(pItem2->GetNameColor());
 									strHint2 += pItem2->GetName();
-									newDesc += temp.Format(_AL("^03a9fc[%.4f%%] ^fc6703%lu - ^ffffff%s ^ffffff\n\r"), prob, itemNum, strHint2);
+									newDesc += temp.Format(_AL("^03a9fc[%.4f%%] ^fc6703%lu - ^ffffff%s ^ffffff\n\r"), prob, itemNum, (const wchar_t*)strHint2);	//	explicit conversion in varargs.
 									delete pItem2;
 								}
 							}
@@ -6734,7 +6736,7 @@ bool CECGameUIMan::LinkItem(int nPack, int nSlot)
 
 						//	加入ID信息，通过消息传递供GT显示用
 						ACString strInfo;
-						strInfo.Format(_AL("%s%s"), A3DCOLOR_TO_STRING(clrName), strName);
+						strInfo.Format(_AL("%s%s"), (const wchar_t*)A3DCOLOR_TO_STRING(clrName), (const wchar_t*)strName);	//	explicit conversions in varargs.
 
 						if (pEdit->AppendItem(enumEIIvtrlItem, clrName, strName, strInfo))
 						{
@@ -6937,7 +6939,7 @@ ACString CECGameUIMan::GetFormatClass(unsigned int class_masks, bool reverse)
 	{
 		ACString strTxt;
 	
-		return strTxt.Format(GetStringFromTable(8724), strCls);
+		return strTxt.Format(GetStringFromTable(8724), (const wchar_t*)strCls);	//	explicit conversion in varargs.
 	}
 	
 	return strCls;
@@ -7145,7 +7147,7 @@ void CECGameUIMan::RefreshItemNotify()
 			if(timeLeft < 0 || timeLeft > timeLimit) continue;
 
 			ACString strMsg;
-			strMsg.Format(strTmpl, pItem->GetName(), GetFormatTime(timeLeft));
+			strMsg.Format(strTmpl, pItem->GetName(), (const wchar_t*)GetFormatTime(timeLeft));	//	explicit conversion in varargs.
 			AddChatMessage(strMsg, GP_CHAT_MISC);
 		}
 	}
@@ -7255,9 +7257,9 @@ bool CECGameUIMan::SSOOpenLink(const AString& strFormat, const AString& strTicke
 		AString strAccount = g_pGame->GetGameSession()->GetTicketAccount();
 		AString strURL;
 		if (bTicketFirst)
-			strURL.Format(strFormat, strTicket, strAccount);
+			strURL.Format(strFormat, (const char*)strTicket, (const char*)strAccount);	//	explicit conversions in varargs.
 		else
-			strURL.Format(strFormat, strAccount, strTicket);
+			strURL.Format(strFormat, (const char*)strAccount, (const char*)strTicket);	//	explicit conversions in varargs.
 		NavigateURL(strURL);
 		ret = true;
 		break;
@@ -7285,7 +7287,7 @@ void CECGameUIMan::HandleRequest(const CECSSOTicketHandler::Request *p)
 			}
 			else
 			{
-				a_LogOutput(1, "CECGameUIMan::OnSSOGetTicket_Re, GT ticket(%s) ignored because already login", strTicket);
+				a_LogOutput(1, "CECGameUIMan::OnSSOGetTicket_Re, GT ticket(%s) ignored because already login", (const char*)strTicket);	//	explicit conversion in varargs.
 			}
 			m_pDlgHost->ProcessGTEnter();
 			m_pDlgGuildMan->ProcessGTEnter();
@@ -7298,9 +7300,9 @@ void CECGameUIMan::HandleRequest(const CECSSOTicketHandler::Request *p)
 			AString strURL;
 			strURL.Format(
 				strText,
-				g_pGame->GetGameSession()->GetTicketAccount(),
-				strTicket,
-				g_pGame->GetGameSession()->GetZoneID());
+				(const char*)g_pGame->GetGameSession()->GetTicketAccount(),
+				(const char*)strTicket,
+				g_pGame->GetGameSession()->GetZoneID());	//	explicit conversions in varargs.
 			NavigateURL(strURL, NULL);
 			return;
 		}
@@ -7509,7 +7511,7 @@ bool CECGameUIMan::NewMessageBox(const char *szContext, const ACHAR *szMsg, DWOR
 	if (m_pDlgMessageBox->IsShow())
 	{
 		a_LogOutput(1, "CECGameUIMan::NewMessageBox(szContent=%s, szMsg=%s), already used with (szContent=%s, szMsg=%s)",
-			szContext ? szContext : "", szMsg ? AC2AS(szMsg) : "",
+			szContext ? szContext : "", szMsg ? (const char*)AC2AS(szMsg) : "",	//	MSVC resolved the conditional to the log argument type.
 			m_pDlgMessageBox->GetContext(), m_pDlgMessageBox->GetMessage());
 		ASSERT(false);
 		return false;
@@ -7729,10 +7731,10 @@ void CECGameUIMan::RefreshFriendChatPlayerName(int roleid)
 			{
 				ACHAR szLevel[10];
 				a_sprintf(szLevel, _AL("%d"), nLevel);
-				strText.Format(GetStringFromTable(548), strName, szLevel);
+				strText.Format(GetStringFromTable(548), (const wchar_t*)strName, szLevel);	//	explicit conversion in varargs.
 			}
 			else
-				strText.Format(GetStringFromTable(548), strName, GetStringFromTable(574));
+				strText.Format(GetStringFromTable(548), (const wchar_t*)strName, GetStringFromTable(574));	//	explicit conversion in varargs.
 			
 			PAUIOBJECT pName = pDlg->GetDlgItem("Txt_ToWho");
 			pName->SetText(strText);

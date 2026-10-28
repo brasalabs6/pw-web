@@ -546,8 +546,9 @@ void CDlgHost::RefreshHostStats()
 		m_pImg_Leader->Show(false);
 	
 	CECIconStateMgr* pMgr = GetGameUIMan()->GetIconStateMgr();
+	IconLayoutBig layoutBig(m_vecImgState.size() / 2);	//	MSVC bound this temporary to the non-const reference.
 	pMgr->RefreshStateIcon( m_vecImgState.begin(), m_vecImgState.size(), &GetHostPlayer()->GetIconStates(),
-							IconLayoutBig(m_vecImgState.size() / 2), false );
+							layoutBig, false );
 	
 	((PAUICHECKBOX)GetDlgItem("Chk_AutoLock"))->Check(GetGameUIMan()->m_pDlgAutoLock->IsLocked());
 	GetDlgItem("Chk_AutoLock")->SetFlash(GetGameUIMan()->m_pDlgAutoLock->IsLocked());
@@ -744,7 +745,7 @@ bool CDlgHost::RefreshGatherBar(bool bActive)
 	if( pHost->IsGathering() )
 	{
 		int nCur = counter.GetCounter();
-		int nMax = max(counter.GetPeriod(), 1);
+		int nMax = max(counter.GetPeriod(), 1u);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 		
 		if( !pDlg->IsShow() )
 			pDlg->Show(true, false, bActive);
@@ -862,7 +863,7 @@ bool CDlgHost::RefreshIncantBar(bool bOtherShown, bool bActive)
 		{
 			bShow = true;
 			nCur = pHost->GetPetOptTime().GetCounter();
-			nMax = max(pHost->GetPetOptTime().GetPeriod(), 1);
+			nMax = max(pHost->GetPetOptTime().GetPeriod(), 1u);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 			switch(pHost->IsOperatingPet())
 			{
 			case 1:
@@ -884,7 +885,7 @@ bool CDlgHost::RefreshIncantBar(bool bOtherShown, bool bActive)
 			bShow = true;
 			CECCounter counter = pHost->GetIncantCnt();
 			nCur = counter.GetCounter();
-			nMax = max(counter.GetPeriod(), 1);
+			nMax = max(counter.GetPeriod(), 1u);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 			pDlg->GetDlgItem("Txt")->SetText(g_pGame->GetSkillDesc()->GetWideString(pCurSkill->GetSkillID() * 10));
 		}
 		else if( pHost->IsCongregating() )
@@ -892,7 +893,7 @@ bool CDlgHost::RefreshIncantBar(bool bOtherShown, bool bActive)
 			bShow = true;
 			CECCounter counter = pHost->GetCongregateCnt();
 			nCur = counter.GetCounter();
-			nMax = max(counter.GetPeriod(), 1);
+			nMax = max(counter.GetPeriod(), 1u);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 
 			int conType = pHost->IsCongregating() - 1;
 			pDlg->GetDlgItem("Txt")->SetText(GetStringFromTable(5700+conType));
@@ -1166,13 +1167,13 @@ public:
 		ACString szHint;
 		szHint += g_pGame->GetBuffDesc(pTS->GetID());
 		if (time > 0)
-			szHint.Format(_AL("%s\n%s"), szHint, pGameUI->GetFormatTimeMS(time));
+			szHint.Format(_AL("%s\n%s"), (const wchar_t*)szHint, (const wchar_t*)pGameUI->GetFormatTimeMS(time));	//	explicit conversions in varargs.
 		pIcon->SetHint(szHint);
 		pIcon->Show(true);
 		if(pObj)
 		{					
 			ACString str;
-			str.Format(_AL("%s"), pGameUI->GetFormatCooldown(time));
+			str.Format(_AL("%s"), (const wchar_t*)pGameUI->GetFormatCooldown(time));	//	explicit conversion in varargs.
 			pObj->SetText(str);
 
 			if (time > 10)			

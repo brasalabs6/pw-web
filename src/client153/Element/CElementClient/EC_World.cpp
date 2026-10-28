@@ -512,9 +512,9 @@ bool CECWorld::LoadWorld(const char* szFile, const A3DVECTOR3& vInitLoadPos)
 			return false;
 		}
 		
-		strResFile.Format("temp\\maps\\%s\\%s.trn2",randMap->GetMapName(),mapName);
+		strResFile.Format("temp\\maps\\%s\\%s.trn2",(const char*)randMap->GetMapName(),mapName);	//	explicit conversion in varargs.
 
-		sprintf(szRandomMap,"temp\\maps\\%s\\%s.ecwld",randMap->GetMapName(),mapName);
+		sprintf(szRandomMap,"temp\\maps\\%s\\%s.ecwld",(const char*)randMap->GetMapName(),mapName);	//	explicit conversion in varargs.
 
 		szFile = szRandomMap;
 		if (!glb_FileExist(strResFile) || !glb_FileExist(szFile)){
@@ -576,7 +576,7 @@ bool CECWorld::LoadWorld(const char* szFile, const A3DVECTOR3& vInitLoadPos)
 		return false;
 	}
 	char navigateFile[MAX_PATH];
-	sprintf(navigateFile,"%s\\navigate.dat",m_strMapPath);
+	sprintf(navigateFile,"%s\\navigate.dat",(const char*)m_strMapPath);	//	explicit conversion in varargs.
 	if (!m_pScene->LoadBezierNavigate(navigateFile, 0.0f, 0.0f))	
 		a_LogOutput(1, "CECWorld::LoadSceneObjects, Failed to load scene file %s", navigateFile);
 	

@@ -223,7 +223,7 @@ void CDlgAutoTask::OnTick()
 		int curTime = GetGame()->GetServerAbsTime();
 		if(m_LastTime > 0)
 		{
-			int eclipse = min(m_RemainTime, max(0, curTime - m_LastTime));
+			int eclipse = min(m_RemainTime, max(0ul, curTime - m_LastTime));	//	MSVC's min/max macros accepted mixed types; the overloads need one type.
 			m_RemainTime -= eclipse;
 		}
 		m_LastTime = curTime;

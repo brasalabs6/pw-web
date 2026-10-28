@@ -65,7 +65,7 @@ void CDlgTaskList::RefreshTaskList()
 			if(idTask > 0 && 0 == pTaskInterface->CanDeliverTask(idTask))
 			{
 				ATaskTempl* pTmpl = pMan->GetTaskTemplByID(idTask);
-				P_AUITREEVIEW_ITEM pItem = pTree->InsertItem( pTmpl ? pTmpl->GetName() : strName.Format(_AL("%d"), idTask)  );
+				P_AUITREEVIEW_ITEM pItem = pTree->InsertItem( pTmpl ? pTmpl->GetName() : (const ACHAR*)strName.Format(_AL("%d"), idTask)  );	//	MSVC resolved the conditional to the InsertItem parameter type.
 				pTree->Expand(pItem, AUITREEVIEW_EXPAND_EXPAND);
 				pTree->SetItemData(pItem, idTask);
 			}

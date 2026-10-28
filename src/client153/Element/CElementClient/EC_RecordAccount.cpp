@@ -80,7 +80,7 @@ AString CECRecordAccount::Record::Serialize()const
 	if (server >= 0){
 		const CECServerList::ServerInfo & s = CECServerList::Instance().GetServer(server);
 		ACString strServer;
-		strServer.Format(_AL("%d:%s,%s,%d"), s.port_min, AS2AC(s.address), s.server_name, s.line);
+		strServer.Format(_AL("%d:%s,%s,%d"), s.port_min, (const wchar_t*)AS2AC(s.address), (const wchar_t*)s.server_name, s.line);	//	explicit conversions in varargs.
 		str += " ";
 		str += Encode(strServer);
 	}
@@ -225,7 +225,7 @@ void CECRecordAccount::Load()
 	}
 	AScriptFile file;
 	if (!file.Open(strFile)){
-		a_LogOutput(1, "CECRecordAccount::Load, Failed to open %s", strFile);
+		a_LogOutput(1, "CECRecordAccount::Load, Failed to open %s", (const char*)strFile);	//	explicit conversion in varargs.
 		return;
 	}
 	if (file.GetNextToken(true)){
@@ -265,7 +265,7 @@ void CECRecordAccount::Save()
 	strFile.Format("%s\\userdata\\accounts.txt", af_GetBaseDir());
 	FILE *file = fopen(strFile, "w");
 	if (!file){
-		a_LogOutput(1, "CECRecordAccount::Save, Failed to open %s", strFile);
+		a_LogOutput(1, "CECRecordAccount::Save, Failed to open %s", (const char*)strFile);	//	explicit conversion in varargs.
 		return;
 	}
 

@@ -724,8 +724,9 @@ bool CDlgQuickBar::Render()
 		return false;
 
 	// render the cover for quickbar
+	ItemDataExtractorQuickbar extractor;	//	MSVC allowed the address of this temporary; the callee only reads it.
 	GetGameUIMan()->RenderItemCover((PAUIOBJECT*)m_vecImgCell.begin(), 
 									m_vecImgCell.size(), 
-									&ItemDataExtractorQuickbar());
+									&extractor);
 	return true;
 }

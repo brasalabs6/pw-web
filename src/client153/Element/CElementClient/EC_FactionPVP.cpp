@@ -419,26 +419,26 @@ void CECFactionPVPModel::SetSortMethod(ReportItemSortIndex sortIndex, ReportItem
 	{
 	case RISI_KILL_COUNT:
 		{
-			SortByKillCount sortMethod(sortMethod == RISM_ASCENT);
-			std::sort(m_reportList.begin(), m_reportList.end(), sortMethod);
+			SortByKillCount itemSort(sortMethod == RISM_ASCENT);	//	renamed from sortMethod: MSVC resolved the initializer's name to the parameter.
+			std::sort(m_reportList.begin(), m_reportList.end(), itemSort);
 		}
 		break;
 	case RISI_DEATH_COUNT:
 		{
-			SortByDeathCount sortMethod(sortMethod == RISM_ASCENT);
-			std::sort(m_reportList.begin(), m_reportList.end(), sortMethod);
+			SortByDeathCount itemSort(sortMethod == RISM_ASCENT);	//	renamed from sortMethod: MSVC resolved the initializer's name to the parameter.
+			std::sort(m_reportList.begin(), m_reportList.end(), itemSort);
 		}
 		break;
 	case RISI_USE_TOOL_COUNT:
 		{
-			SortByUseToolCount sortMethod(sortMethod == RISM_ASCENT);
-			std::sort(m_reportList.begin(), m_reportList.end(), sortMethod);
+			SortByUseToolCount itemSort(sortMethod == RISM_ASCENT);	//	renamed from sortMethod: MSVC resolved the initializer's name to the parameter.
+			std::sort(m_reportList.begin(), m_reportList.end(), itemSort);
 		}
 		break;
 	case RISI_SCORE:
 		{
-			SortByScore sortMethod(sortMethod == RISM_ASCENT);
-			std::sort(m_reportList.begin(), m_reportList.end(), sortMethod);
+			SortByScore itemSort(sortMethod == RISM_ASCENT);	//	renamed from sortMethod: MSVC resolved the initializer's name to the parameter.
+			std::sort(m_reportList.begin(), m_reportList.end(), itemSort);
 		}
 		break;
 	}
@@ -512,7 +512,7 @@ void CECFactionPVPModel::OnPrtcFactionPVPGetMapRe(const GNET::FactionResourceBat
 			}
 			strResourceIDs += AString().Format("%d", p->domains[u]);
 		}
-		a_LogOutput(1, AString().Format("CECFactionPVPModel::OnPrtcFactionPVPGetMapRe, retcode=%d, resource=%s!", p->retcode, strResourceIDs));
+		a_LogOutput(1, AString().Format("CECFactionPVPModel::OnPrtcFactionPVPGetMapRe, retcode=%d, resource=%s!", p->retcode, (const char*)strResourceIDs));	//	explicit conversion in varargs.
 	}
 	
 	CECFactionPVPModelChange change(CECFactionPVPModelChange::MAP_CHANGE);

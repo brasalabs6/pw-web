@@ -227,7 +227,7 @@ bool CECTerrainPreprocessor::LoadFile(const char* szMapName){
 		
 		textureFile.reserve(fileHeader.iNumTexture);
 		
-		for (i=0;i<fileHeader.iNumTexture;i++)	{
+		for (int i=0;i<fileHeader.iNumTexture;i++)	{
 			int len = 0;
 			char path[MAX_PATH] = {0};
 			fread(&len,1,sizeof(int),fpTerrain);
@@ -242,7 +242,7 @@ bool CECTerrainPreprocessor::LoadFile(const char* szMapName){
 				
 		subTernName.reserve(fileHeader.iNumSubTrn);
 		
-		for (i=0;i<fileHeader.iNumSubTrn;i++){
+		for (int i=0;i<fileHeader.iNumSubTrn;i++){
 			int len = 0;
 			char path[MAX_PATH] = {0};
 			fread(&len,1,sizeof(int),fpTerrain);
@@ -290,7 +290,7 @@ void CECTerrainPreprocessor::SaveFile(const char* szMapName){
 	//Create terrain description file
 	char szFileTemp[MAX_PATH] = {0};
 
-	sprintf(szFileTemp, "temp\\maps\\%s\\%s.trn2",m_pAsset->GetMapName(), szMapName);
+	sprintf(szFileTemp, "temp\\maps\\%s\\%s.trn2",(const char*)m_pAsset->GetMapName(), szMapName);
 	
 	FILE* fpTerrain = NULL;
 	
@@ -306,12 +306,12 @@ void CECTerrainPreprocessor::SaveFile(const char* szMapName){
 		fwrite(&subTernInfo[m_pAsset->GetOldSubTernIndexByNewIndex(i)],1,sizeof(TRN2FILESUBTRN),fpTerrain);
 	}
 	
-	for (i=0;i<fileHeader.iNumTexture;i++)	{
+	for (int i=0;i<fileHeader.iNumTexture;i++)	{
 		WriteStringLine(fpTerrain,textureFile[i]);
 	}
 	fwrite(&loaderInfo,1,sizeof(A3DTRN2LOADERB::TRN2FILELOADERINFO),fpTerrain);
 	
-	for (i=0;i<fileHeader.iNumSubTrn;i++){
+	for (int i=0;i<fileHeader.iNumSubTrn;i++){
 		WriteStringLine(fpTerrain,subTernName[m_pAsset->GetOldSubTernIndexByNewIndex(i)]);
 		//	WriteStringLine(fpTerrain,subTernName[i]);
 	}
@@ -347,7 +347,7 @@ bool CECTernBlockPreprocessor::ProcessFile(const char* szMapName,int fileIndex){
 	//	char szSrcFile[MAX_PATH] = {0};
 	char szFile[MAX_PATH] = {0};
 	//sprintf(szSrcFile, "maps\\%s\\%s_%d.t2bk", szMapName,szMapName,fileIndex);
-	sprintf(szFile, "temp\\maps\\%s\\%s_%d.t2bk", m_pAsset->GetMapName(),szMapName,fileIndex+1);	
+	sprintf(szFile, "temp\\maps\\%s\\%s_%d.t2bk", (const char*)m_pAsset->GetMapName(),szMapName,fileIndex+1);	
 	
 	FILE* fpBlock = NULL;
 	
@@ -376,7 +376,7 @@ bool CECTernBlockPreprocessor::ProcessFile(const char* szMapName,int fileIndex){
 		//	Calculate index of the mask area which this block belongs to
 		int iMaskPitch = m_pAsset->GetTrn2Info().iTrnBlkCol * m_pAsset->GetTrn2Info().iBlockGrid / m_pAsset->GetTrn2Info().iMaskGrid;
 
-		for (i=0;i<fileHeader.iNumBlock;i++){
+		for (int i=0;i<fileHeader.iNumBlock;i++){
 			fseek(fpBlock, blockOffset[i], SEEK_SET);
 			A3DTRN2LOADERB::T2BKFILEBLOCK6 bk;
 			if(fread(&bk,1,sizeof(bk),fpBlock)!= sizeof(bk))
@@ -416,7 +416,7 @@ void CECTernBlockPreprocessor::DoProcess(const char* szMapName){
 		ProcessFile(szMapName,i);
 	}
 	
-	for (i=0;i<m_pAsset->GetSubTernCount();i++)	{
+	for (int i=0;i<m_pAsset->GetSubTernCount();i++)	{
 		CECStichSubTern sticher(m_pAsset,i);
 		sticher.Stich();
 	}	
@@ -584,7 +584,7 @@ void BlockHeightDataCompress(T& FileBlock,BYTE blockCompFlag,int iNumVert,const 
 void CECBlockSticher::SaveFile(){
 	char szFile[MAX_PATH] = {0};
 
-	sprintf(szFile, "temp\\maps\\%s\\%s_%d.t2bk", m_pAsset->GetMapName(),m_strMapName,m_iFileIndex+1);
+	sprintf(szFile, "temp\\maps\\%s\\%s_%d.t2bk", (const char*)m_pAsset->GetMapName(),(const char*)m_strMapName,m_iFileIndex+1);
 	
 	FILE* fpBlock = NULL;
 	if (!(fpBlock = fopen(szFile, "rb+"))){
@@ -797,7 +797,7 @@ bool CECBlockSticher::LoadFile(const char* szMapName,int fileIndex){
 	Release();
 	
 	char szFile[MAX_PATH] = {0};
-	sprintf(szFile, "temp\\maps\\%s\\%s_%d.t2bk", m_pAsset->GetMapName(),szMapName,fileIndex+1);
+	sprintf(szFile, "temp\\maps\\%s\\%s_%d.t2bk", (const char*)m_pAsset->GetMapName(),szMapName,fileIndex+1);
 	
 	m_iFileIndex = fileIndex;
 	m_strMapName = szMapName;
@@ -856,7 +856,7 @@ bool CECBlockSticher::LoadFile(const char* szMapName,int fileIndex){
 
 		int iNumVert = (m_pAsset->GetTrn2Info().iBlockGrid + 1) * (m_pAsset->GetTrn2Info().iBlockGrid + 1);
 
-		for (i=0;i<fileHeader.iNumBlock;i++){
+		for (int i=0;i<fileHeader.iNumBlock;i++){
 			fseek(fpBlock, blockOffset[i], SEEK_SET);
 
 			float* pOut;
@@ -1169,7 +1169,7 @@ void CECStichSubTern::Stich(){
 	}
 	LoadHeightMap(pNewNeigbor);
 	ConnectHeightMap();
-	for (i=0;i<9;i++){
+	for (int i=0;i<9;i++){
 		if(m_pNeighbourMap[i])
 			m_pNeighbourMap[i]->SaveFile();
 	}
@@ -1268,8 +1268,8 @@ void CECRandomMapProcess::DoProcess(const char* szMap){
 	m_strMapName = szMap;
 
 	AString src,des;
-	src.Format("maps\\%s\\",m_strMapName);
-	des.Format("temp\\maps\\%s\\",GetMapName());
+	src.Format("maps\\%s\\",(const char*)m_strMapName);
+	des.Format("temp\\maps\\%s\\",(const char*)GetMapName());
 	glb_DeleteDir(des.GetBuffer(des.GetLength()));
 	
 	glb_MakeDir(des.GetBuffer(des.GetLength()),des.GetLength());	
@@ -1291,7 +1291,7 @@ void CECRandomMapProcess::DoProcess(const char* szMap){
 	AString cltFile = "Maps\\" + m_strMapName + "\\map_desp.clt";
 	m_pMapProp = new CRandMapProp;
 	if(!m_pMapProp->LoadClt(cltFile))
-		a_LogOutput(1,"CECRandomMapProcess::DoProcess, fail to load %s",cltFile);
+		a_LogOutput(1,"CECRandomMapProcess::DoProcess, fail to load %s",(const char*)cltFile);
 
 	Release(true);
 }
@@ -1325,7 +1325,7 @@ void CECRandomMapProcess::ProcessRepeatSubTern(){
 	}
 
 	abase::vector<RepeatSubTrn> newSub; // 随机后重复的序号：从第二次出现开始记录信息
-	for (i=1;i<c;i++){
+	for (int i=1;i<c;i++){
 		for (j=0;j<i;j++){
 			if (newSubTernOrder[i] == newSubTernOrder[j]){
 				RepeatSubTrn s;
@@ -1338,28 +1338,28 @@ void CECRandomMapProcess::ProcessRepeatSubTern(){
 	}
 	ASSERT(newSub.size() == oldSub.size());
 
-	for (i=0;i<(int)newSub.size();i++){
+	for (int i=0;i<(int)newSub.size();i++){
 		char src[MAX_PATH],des[MAX_PATH];
 		int  from = newSub[i].trn+1;
 		int to = oldSub[i]+1;
-		sprintf(src,"maps\\%s\\%s_%d.t2bk",GetRealMapName(),GetRealMapName(),from);
-		sprintf(des,"temp\\maps\\%s\\%s_%d.t2bk",GetMapName(),GetRealMapName(),to);
+		sprintf(src,"maps\\%s\\%s_%d.t2bk",(const char*)GetRealMapName(),(const char*)GetRealMapName(),from);
+		sprintf(des,"temp\\maps\\%s\\%s_%d.t2bk",(const char*)GetMapName(),(const char*)GetRealMapName(),to);
 		CopyFileA(src,des,FALSE);
 
-		sprintf(src,"maps\\%s\\%s_%d.t2mk",GetRealMapName(),GetRealMapName(),from);
-		sprintf(des,"temp\\maps\\%s\\%s_%d.t2mk",GetMapName(),GetRealMapName(),to);
+		sprintf(src,"maps\\%s\\%s_%d.t2mk",(const char*)GetRealMapName(),(const char*)GetRealMapName(),from);
+		sprintf(des,"temp\\maps\\%s\\%s_%d.t2mk",(const char*)GetMapName(),(const char*)GetRealMapName(),to);
 		CopyFileA(src,des,FALSE);
 
-		sprintf(src,"maps\\%s\\%s_%d.t2lm",GetRealMapName(),GetRealMapName(),from);
-		sprintf(des,"temp\\maps\\%s\\%s_%d.t2lm",GetMapName(),GetRealMapName(),to);
+		sprintf(src,"maps\\%s\\%s_%d.t2lm",(const char*)GetRealMapName(),(const char*)GetRealMapName(),from);
+		sprintf(des,"temp\\maps\\%s\\%s_%d.t2lm",(const char*)GetMapName(),(const char*)GetRealMapName(),to);
 		CopyFileA(src,des,FALSE);
 
-		sprintf(src,"maps\\%s\\%s_%d.t2lm1",GetRealMapName(),GetRealMapName(),from);
-		sprintf(des,"temp\\maps\\%s\\%s_%d.t2lm1",GetMapName(),GetRealMapName(),to);
+		sprintf(src,"maps\\%s\\%s_%d.t2lm1",(const char*)GetRealMapName(),(const char*)GetRealMapName(),from);
+		sprintf(des,"temp\\maps\\%s\\%s_%d.t2lm1",(const char*)GetMapName(),(const char*)GetRealMapName(),to);
 		CopyFileA(src,des,FALSE);
 
-		sprintf(src,"maps\\%s\\bsdata\\%d.dat",GetRealMapName(),from);
-		sprintf(des,"temp\\maps\\%s\\bsdata\\%d.dat",GetMapName(),to);
+		sprintf(src,"maps\\%s\\bsdata\\%d.dat",(const char*)GetRealMapName(),from);
+		sprintf(des,"temp\\maps\\%s\\bsdata\\%d.dat",(const char*)GetMapName(),to);
 		CopyFileA(src,des,FALSE);
 
 		newSubTernOrder[newSub[i].index] = oldSub[i];
@@ -1393,7 +1393,7 @@ void CECRandomMapProcess::GenerateMiniMap(){
 					int index = r * miniMapWCount*imgWCount + c;
 
 					AString fileName;
-					fileName.Format("minimaps\\%s\\%02d.dds",m_strMapName,sevOrder[index]);
+					fileName.Format("minimaps\\%s\\%02d.dds",(const char*)m_strMapName,sevOrder[index]);
 					bool bval = pMan->LoadSurfaceFromFile(fileName, 0, &pA3DSurface);
 					if (bval)					
 						vecSrcImg.push_back(pA3DSurface);					
@@ -1449,7 +1449,7 @@ void CECRandomMapProcess::GenerateImage(abase::vector<A3DSurface*>& srcImgVec, c
 	
 	char szFile[256];
 	
-	sprintf(szFile, "%s\\%s",path,fileName);
+	sprintf(szFile, "%s\\%s",(const char*)path,(const char*)fileName);
 	glb_MakeDir(szFile,strlen(szFile));
 	
 	if( nFormat == A3DFMT_A8R8G8B8 || nFormat == A3DFMT_R8G8B8 ){
@@ -1542,7 +1542,7 @@ void CECRandomMapProcess::GenerateWorldMapBorder(const AString& srcpath,const AS
 	for (int i=0;i<4;i++)
 	{
 		AString border;
-		border.Format("%s\\border_%d.dds",srcpath,i); // 0: left, 1: top,2:right, 3:bottom
+		border.Format("%s\\border_%d.dds",(const char*)srcpath,i); // 0: left, 1: top,2:right, 3:bottom
 
 		bval = pMan->LoadSurfaceFromFile(border,0,&pBorder[i]);
 		ASSERT(bval);
@@ -1599,7 +1599,7 @@ void CECRandomMapProcess::GenerateWorldMapBorder(const AString& srcpath,const AS
 
 	char szFile[256];
 	
-	sprintf(szFile, "%s\\%s",path,fileName);
+	sprintf(szFile, "%s\\%s",(const char*)path,(const char*)fileName);
 	glb_MakeDir(szFile,strlen(szFile));
 	
 	if( nFormat == A3DFMT_A8R8G8B8 || nFormat == A3DFMT_R8G8B8 ){
@@ -1614,7 +1614,7 @@ void CECRandomMapProcess::GenerateWorldMapBorder(const AString& srcpath,const AS
 	
 	A3DRELEASE(pDestSurface);
 
-	for (i=0;i<4;i++)
+	for (int i=0;i<4;i++)
 		A3DRELEASE(pBorder[i]);
 
 	pData = NULL;
@@ -1634,7 +1634,7 @@ void CECRandomMapProcess::GenerateWorldMap(){
  
 	for (unsigned int c=0;c<sevOrder.size();c++){
 		AString fileName;
-		fileName.Format("ingame\\%s\\%02d.dds",m_strMapName,sevOrder[c]);
+		fileName.Format("ingame\\%s\\%02d.dds",(const char*)m_strMapName,sevOrder[c]);
 		bool bval = pMan->LoadSurfaceFromFile(fileName, 0, &pA3DSurface);
 		if (bval)		
 			vecA3DSurface.push_back(pA3DSurface);		
@@ -1680,18 +1680,18 @@ void CECRandomMapProcess::DeleteAllRandomMapDataForSingleUser(){
 }
 void CECRandomMapProcess::DeleteRandomMapData(const char* szMap){
 	AString des;
-	des.Format("temp\\maps\\%s\\",GetRandomMapName(szMap));
+	des.Format("temp\\maps\\%s\\",(const char*)GetRandomMapName(szMap));
 	glb_DeleteDir(des.GetBuffer(des.GetLength()));
 
-	des.Format("temp\\surfaces\\minimaps\\%s\\",GetRandomMapName(szMap));
+	des.Format("temp\\surfaces\\minimaps\\%s\\",(const char*)GetRandomMapName(szMap));
 	glb_DeleteDir(des.GetBuffer(des.GetLength()));
 
-	des.Format("temp\\surfaces\\ingame\\%s.dds",GetRandomMapName(szMap));
+	des.Format("temp\\surfaces\\ingame\\%s.dds",(const char*)GetRandomMapName(szMap));
 	remove(des.GetBuffer(des.GetLength())); // remove file
 }
 AString CECRandomMapProcess::GetRandomMapName(const AString& strMap){
 	AString ret;
-	ret.Format("%s_%d_%d",strMap,g_pGame->GetGameSession()->GetZoneID(),g_pGame->GetGameSession()->GetCharacterID());
+	ret.Format("%s_%d_%d",(const char*)strMap,g_pGame->GetGameSession()->GetZoneID(),g_pGame->GetGameSession()->GetCharacterID());
 	
 	return ret;
 }

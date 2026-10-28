@@ -1117,7 +1117,8 @@ void CDlgTask::UpdateItemAward(const Task_Award_Preview& award)
 			}
 			else
 			{
-				SetTaskText(m_pTxt_BaseAward, &ACString(GetStringFromTable(3204)));
+				ACString strBaseAward(GetStringFromTable(3204));	//	MSVC allowed the address of this temporary; the callee only reads it.
+				SetTaskText(m_pTxt_BaseAward, &strBaseAward);
 				m_pTxt_BaseAward->Show(true);
 			}
 		}
@@ -1207,7 +1208,7 @@ void CDlgTask::UpdateTaskBaseDesc(ACString& strText, const Task_State_info& tsi)
 		nSec = tsi.m_ulTimeLimit;
 		strText += FormatTime(nSec, GetStringFromTable(245), 0);
 
-		nSec = max(0, int(tsi.m_ulTimeLimit) - tsi.m_ulTimePassed);
+		nSec = max(0ul, int(tsi.m_ulTimeLimit) - tsi.m_ulTimePassed);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 		strText += FormatTime(nSec, GetStringFromTable(246), 0);
 	}
 
@@ -1234,7 +1235,7 @@ void CDlgTask::UpdateTaskBaseDesc(ACString& strText, const Task_State_info& tsi)
 		nSec = tsi.m_ulProtectTime;
 		strText += FormatTime(nSec, GetStringFromTable(258), 0);
 
-		nSec = max(0, tsi.m_ulProtectTime - tsi.m_ulTimePassed);
+		nSec = max(0ul, tsi.m_ulProtectTime - tsi.m_ulTimePassed);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 		strText += FormatTime(nSec, GetStringFromTable(259), 0);
 	}
 }
@@ -1268,7 +1269,7 @@ void CDlgTask::UpdateDeliverNPC(ACString& strText, int nDNPC)
 		item.SetInfo(szPos);
 		item.SetColor(A3DCOLORRGB(0, 255, 0));
 		A3DPOINT2 p = CECUIHelper::GetShowPos(vPos.x, vPos.z);
-		strName.Format(_AL("%s (%d, %d)"), (ACHAR)AUICOMMON_ITEM_CODE_START + item.Serialize(), p.x, p.y);
+		strName.Format(_AL("%s (%d, %d)"), (const wchar_t*)((ACHAR)AUICOMMON_ITEM_CODE_START + item.Serialize()), p.x, p.y);	//	explicit conversion in varargs.
 	} else strName = pNPC->name;
 
 	strText += GetStringFromTable(7620);
@@ -1309,7 +1310,7 @@ A3DVECTOR3 CDlgTask::UpdateAwardNPC(ACString& strText, int nANPC)
 		item.SetInfo(szPos);
 		item.SetColor(A3DCOLORRGB(0, 255, 0));
 		A3DPOINT2 p = CECUIHelper::GetShowPos(vPos.x, vPos.z);
-		strName.Format(_AL("%s (%d, %d)"), (ACHAR)AUICOMMON_ITEM_CODE_START + item.Serialize(), p.x, p.y);
+		strName.Format(_AL("%s (%d, %d)"), (const wchar_t*)((ACHAR)AUICOMMON_ITEM_CODE_START + item.Serialize()), p.x, p.y);	//	explicit conversion in varargs.
 	} else strName = pNPC->name;
 
 	strText += GetStringFromTable(7621);
@@ -1362,8 +1363,8 @@ void CDlgTask::UpdateCompleteCondition(ACString& strText, ACString& strHint, con
 
 			if( tsi.m_MonsterWanted[i].m_ulMonstersToKill > 0 )
 			{
-				strTemp.Format(GetStringFromTable(7624), strName,
-					tsi.m_MonsterWanted[i].m_ulMonstersKilled, tsi.m_MonsterWanted[i].m_ulMonstersToKill);
+				strTemp.Format(GetStringFromTable(7624), (const wchar_t*)strName,
+					tsi.m_MonsterWanted[i].m_ulMonstersKilled, tsi.m_MonsterWanted[i].m_ulMonstersToKill);	//	explicit conversion in varargs.
 			}
 			else
 			{
@@ -1427,10 +1428,10 @@ void CDlgTask::UpdateCompleteCondition(ACString& strText, ACString& strHint, con
 		iLevel = pHost->GetRealmLevel();
 		if (iLevel < (int)tsi.m_ulReachRealm) {
 			strColor =  _AL("^ff0000");
-			strTemp.Format(GetStringFromTable(11145), GetGameUIMan()->GetRealmName(iLevel));
+			strTemp.Format(GetStringFromTable(11145), (const wchar_t*)GetGameUIMan()->GetRealmName(iLevel));	//	explicit conversion in varargs.
 			strHint += strTemp;
 		} else strColor = _AL("^00ff00");
-		strTemp.Format(GetStringFromTable(11142), GetGameUIMan()->GetRealmName(tsi.m_ulReachRealm));
+		strTemp.Format(GetStringFromTable(11142), (const wchar_t*)GetGameUIMan()->GetRealmName(tsi.m_ulReachRealm));	//	explicit conversion in varargs.
 		strText += strColor;
 		strText += strTemp;
 	}
@@ -1484,9 +1485,9 @@ void CDlgTask::UpdateItemWanted(ACString& strText, const Task_State_info& tsi, i
 			}
 
 			ACString strTemp;
-			strTemp.Format(GetStringFromTable(7625), strName,
+			strTemp.Format(GetStringFromTable(7625), (const wchar_t*)strName,
 				tsi.m_ItemsWanted[i].m_ulItemsGained,
-				tsi.m_ItemsWanted[i].m_ulItemsToGet);
+				tsi.m_ItemsWanted[i].m_ulItemsToGet);	//	explicit conversion in varargs.
 			if (i == 0)
 			{
 				strText += GetStringFromTable(7623);

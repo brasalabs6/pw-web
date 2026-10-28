@@ -5,7 +5,7 @@
 #include "DlgBag.h"
 #include "DlgInventory.h"
 #include "DlgInputNO.h"
-#include "Ec_Game.h"
+#include "EC_Game.h"
 #include "EC_IvtrItem.h"
 #include "EC_GameUIMan.h"
 #include "EC_Viewport.h"

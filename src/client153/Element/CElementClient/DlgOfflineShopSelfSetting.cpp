@@ -259,7 +259,7 @@ void CDlgOfflineShopSelfSetting::UpdateShop()
 	ACString strTime;
 	int left_time = pCtrl->GetMyShopExpiretime() - g_pGame->GetServerGMTTime();
 	if(left_time < 0) left_time = 0;
-	strTime = pCtrl->IsNormalMyShop() ? GetGameUIMan()->GetFormatTime(left_time):GetGameUIMan()->GetStringFromTable(10504);
+	strTime = pCtrl->IsNormalMyShop() ? GetGameUIMan()->GetFormatTime(left_time):ACString(GetGameUIMan()->GetStringFromTable(10504));	//	MSVC resolved the conditional to the assignment type.
 	if (!pCtrl->IsNormalMyShop() || left_time ==0)
 		GetDlgItem("Lbl_Time")->SetColor(A3DCOLORRGB(255,0,0));
 	else
@@ -284,7 +284,7 @@ void CDlgOfflineShopSelfSetting::OnItemDragDrop(CECIvtrItem* pIvtrSrc, int iSrc,
 			AString strPrefix = bSell ? "SellItem_" : "BuyItem_";
 			AString strName;
 
-			pObjOver = GetDlgItem(strName.Format("%s%02d", strPrefix, iSlot+1));
+			pObjOver = GetDlgItem(strName.Format("%s%02d", (const char*)strPrefix, iSlot+1));	//	explicit conversion in varargs.
 		}
 	}
 	

@@ -173,7 +173,8 @@ public:
 		// create dir if not exists
 		::CreateDirectoryA(folderPath_, NULL);
 
-		VL::ForEachConst(tablesValueList_, DatabasePrivate::DatabaseSaveHelperFunc(folderPath_));
+		DatabasePrivate::DatabaseSaveHelperFunc saveHelper(folderPath_);	//	MSVC bound this temporary to the non-const reference.
+		VL::ForEachConst(tablesValueList_, saveHelper);
 	}
 
 	void Load(bool createIfNotExists = true)
@@ -183,7 +184,8 @@ public:
 		// create dir if not exists
 		::CreateDirectoryA(folderPath_, NULL);
 
-		VL::ForEach(tablesValueList_, DatabasePrivate::DatabaseLoadHelperFunc(folderPath_, createIfNotExists));
+		DatabasePrivate::DatabaseLoadHelperFunc loadHelper(folderPath_, createIfNotExists);	//	MSVC bound this temporary to the non-const reference.
+		VL::ForEach(tablesValueList_, loadHelper);
 	}
 public:
 	void AppendDatabase(const ThisType & src)

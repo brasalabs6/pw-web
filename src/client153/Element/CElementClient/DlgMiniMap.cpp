@@ -2361,7 +2361,7 @@ void CDlgMiniMap::UpdateProfitUI()
 	if (pFatigue == NULL) return;
 	const CECHostPlayer::PROFIT_TIME_INFO* pProfitInfo = GetHostPlayer()->GetProfitTimeInfo();
 	strProfitTime.Format(GetGameUIMan()->GetStringFromTable(9665),
-		GetGameUIMan()->GetFormatTime(pProfitInfo->profit_time));
+		(const wchar_t*)GetGameUIMan()->GetFormatTime(pProfitInfo->profit_time));	//	explicit conversion in varargs.
 	
 	bool bProfitNormal = pProfitInfo->profit_level != PROFIT_LEVEL_NONE;
 	strTimeColor = pProfitInfo->profit_time ? _AL("^00ff00") : _AL("^ff0000");

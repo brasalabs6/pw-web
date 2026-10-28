@@ -98,7 +98,7 @@ bool CDlgWebTradeOption::CopyToClipboard(const ACString& str)
 		return false;
 	}
 	
-	HLOCAL hLocal = GlobalAlloc(LMEM_ZEROINIT, str.GetLength() * 2 + 2);
+	HGLOBAL hLocal = GlobalAlloc(GMEM_ZEROINIT, str.GetLength() * 2 + 2);	//	original spelled it HLOCAL/LMEM_ZEROINIT; in Win32 both handles are HANDLE and LMEM_ZEROINIT == GMEM_ZEROINIT (0x40).
 	if( hLocal )
 	{
 		ACHAR *pszName = (ACHAR *)GlobalLock(hLocal);

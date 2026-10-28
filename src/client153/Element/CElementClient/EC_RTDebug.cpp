@@ -10,7 +10,7 @@
  * Copyright (c) 2004 Archosaur Studio, All Rights Reserved.
  */
 
-#include "EC_Global.H"
+#include "EC_Global.h"
 #include "EC_RTDebug.h"
 #include "EC_Game.h"
 #include "EC_Configs.h"
@@ -1411,7 +1411,7 @@ AString CECRTDebug::GetProtocolName(int iCmd)
 	if (it == mProtocol.end())
 		str.Format("PROTOCOL_%d", iCmd);
 	else
-		str.Format("%s(%d)", it->second, iCmd);
+		str.Format("%s(%d)", (const char*)it->second, iCmd);	//	explicit conversion in varargs.
 
 	return str;
 }
@@ -1426,7 +1426,7 @@ AString CECRTDebug::GetGamedataSendName(int iCmd, bool bFromServer)
 	if (it == nm.end())
 		str.Format("GAMEDATA_%d", iCmd);
 	else
-		str.Format("%s(%d)", it->second, iCmd);
+		str.Format("%s(%d)", (const char*)it->second, iCmd);	//	explicit conversion in varargs.
 
 	return str;
 }

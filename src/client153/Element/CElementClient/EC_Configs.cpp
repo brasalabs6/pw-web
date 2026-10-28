@@ -12,6 +12,7 @@
 
 #include "EC_Global.h"
 #include "EC_Configs.h"
+#include <d3d8.h>	//	D3D_SDK_VERSION (the seam's Direct3D surface).
 #include "EC_World.h"
 #include "EC_Game.h"
 #include "EC_GameRun.h"
@@ -484,10 +485,10 @@ bool CECConfigs::SaveSystemSettings()
 	IniFile.WriteStringValue(strSect, "card", idAdapter.Description);
 	IniFile.WriteStringValue(strSect, "driver", idAdapter.Driver);
 
-	WORD Product = HIWORD(idAdapter.DriverVersion.HighPart);
-	WORD Version = LOWORD(idAdapter.DriverVersion.HighPart);
-	WORD SubVersion = HIWORD(idAdapter.DriverVersion.LowPart);
-	WORD Build = LOWORD(idAdapter.DriverVersion.LowPart);
+	WORD Product = HIWORD(idAdapter.DriverVersionHighPart);	//	the seam's documented D3DADAPTER_IDENTIFIER8 layout splits the 64-bit driver version into two DWORDs.
+	WORD Version = LOWORD(idAdapter.DriverVersionHighPart);	//	same split layout as above.
+	WORD SubVersion = HIWORD(idAdapter.DriverVersionLowPart);	//	same split layout as above.
+	WORD Build = LOWORD(idAdapter.DriverVersionLowPart);	//	same split layout as above.
 	sprintf(szInfo, "%d.%d.%04d.%04d", Product, Version, SubVersion, Build);
 	IniFile.WriteStringValue(strSect, "version", szInfo);
 
@@ -1158,11 +1159,11 @@ void CECConfigs::SaveBlockedID()
 	CreateDirectoryA(strDir, NULL);
 
 	AString strFile;
-	strFile.Format("%s\\%d.dat", strDir, g_pGame->GetGameRun()->GetHostPlayer()->GetCharacterID());
+	strFile.Format("%s\\%d.dat", (const char*)strDir, g_pGame->GetGameRun()->GetHostPlayer()->GetCharacterID());	//	explicit conversion in varargs.
 	FILE *file = fopen(strFile, "wb");
 	if( !file )
 	{
-		a_LogOutput(1, "Cannot save the blacklist to %s", strFile);
+		a_LogOutput(1, "Cannot save the blacklist to %s", (const char*)strFile);	//	explicit conversion in varargs.
 		return;
 	}
 	
@@ -1196,7 +1197,7 @@ void CECConfigs::SaveBlockedID()
 	}
 	
 	fclose(file);
-	a_LogOutput(1, "Blacklist saved to %s", strFile);
+	a_LogOutput(1, "Blacklist saved to %s", (const char*)strFile);	//	explicit conversion in varargs.
 }
 
 int CECConfigs::LoadBlockedList()

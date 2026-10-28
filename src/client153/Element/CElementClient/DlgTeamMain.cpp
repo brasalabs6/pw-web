@@ -251,9 +251,10 @@ bool CDlgTeamMain::UpdateTeamInfo()
 			}
 
 			CECIconStateMgr* pMgr = GetGameUIMan()->GetIconStateMgr();
+			IconLayoutVertical layoutVertical(2);	//	MSVC bound this temporary to a non-const reference.
 			pMgr->RefreshStateIcon(	pDlgMate->m_pImgSt, CDLGTEAMMATE_ST_MAX, 
 									m_bShowBuff ? &pMember->GetIconStates() : NULL,
-									IconLayoutVertical(2), true );
+									layoutVertical, true );
 
 			pDlgLast = pDlgMate;
 		}

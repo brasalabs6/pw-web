@@ -164,7 +164,7 @@ void CECCrossServer::OnPrtcPlayerChangeDS_Re(GNET::Protocol *pProtocol)
 	a_LogOutput(1, "PlayerChangeDS_Re:retcode=%d,roleid=%d,remote_roleid=%d,userid=%d,flag=%d,dst_zoneid=%d,localsid=%u,random=%s",
 		p->retcode, p->roleid, p->remote_roleid, p->userid,
 		p->flag, p->dst_zoneid, p->localsid,
-		glb_FormatOctets(p->random));
+		(const char*)glb_FormatOctets(p->random));	//	explicit conversion in varargs.
 
 	RoleInfo new_info;
 	try

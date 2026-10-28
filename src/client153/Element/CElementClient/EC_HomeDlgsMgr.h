@@ -21,6 +21,46 @@
 
 #include "ALog.h"
 
+//	Forward declarations: the home dialog classes are only used through
+//	pointers here; the original MSVC build resolved them from the project's
+//	include order, which the port does not reproduce.
+class CDlgAutoAllRes;
+class CDlgAutoBaseLocalTex;
+class CDlgAutoBaseMountain;
+class CDlgAutoBaseMountain2;
+class CDlgAutoBaseRoad;
+class CDlgAutoBaseTerrain;
+class CDlgAutoBaseWater;
+class CDlgAutoCamera;
+class CDlgAutoChooseColor;
+class CDlgAutoChooseLight;
+class CDlgAutoChooseSky;
+class CDlgAutoChooseTexture;
+class CDlgAutoCtrl;
+class CDlgAutoCtrlEditArea;
+class CDlgAutoGenLightMapProgress;
+class CDlgAutoIndoorFurniture;
+class CDlgAutoIndoorPlant;
+class CDlgAutoIndoorToy;
+class CDlgAutoIndoorVirtu;
+class CDlgAutoLevelOff;
+class CDlgAutoLight;
+class CDlgAutoLocalTexture;
+class CDlgAutoMountain;
+class CDlgAutoMountain2;
+class CDlgAutoNote;
+class CDlgAutoNote2;
+class CDlgAutoOutdoorBuilding;
+class CDlgAutoOutdoorGrass;
+class CDlgAutoOutdoorOtherObject;
+class CDlgAutoOutdoorTree;
+class CDlgAutoRoad;
+class CDlgAutoSwitchDlg;
+class CDlgAutoTerrain;
+class CDlgAutoTools;
+class CDlgAutoWater;
+class CDlgCurve;
+
 inline void AutoHomeAssert() 
 {
 #ifdef _DEBUG

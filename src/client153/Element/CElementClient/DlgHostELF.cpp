@@ -22,7 +22,7 @@
 #include "DlgELFRefine.h"
 #include "DlgELFToPill.h"
 #include "DlgELFRetrain.h"
-#include "DlgELFXidian.h"
+#include "DlgELFXiDian.h"
 #include "EC_Skill.h"
 #include "EC_Utility.h"
 #include "AUICheckBox.h"

@@ -3121,7 +3121,7 @@ CECPlayer * CECNPC::GetMaster()const{
 }
 
 const ACHAR* CECNPC::GetNameToShow()const{
-	return m_pNPCModelPolicy ? m_pNPCModelPolicy->GetNameToShow() : m_strName;
+	return m_pNPCModelPolicy ? m_pNPCModelPolicy->GetNameToShow() : (const ACHAR*)m_strName;	//	MSVC resolved the conditional to the return type.
 }
 
 CECPlayer * CECNPC::GetClonedMaster(){

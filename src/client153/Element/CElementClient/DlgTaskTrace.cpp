@@ -883,7 +883,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 		}
 		if (tsi.m_ulTimeLimit > 0)
 		{
-			int nSec = bActiveTask ? max(0, tsi.m_ulTimeLimit - tsi.m_ulTimePassed) : tsi.m_ulTimeLimit;
+			int nSec = bActiveTask ? max(0ul, tsi.m_ulTimeLimit - tsi.m_ulTimePassed) : tsi.m_ulTimeLimit;	//	MSVC's max macro accepted mixed types; the overloads need one type.
 
 			ACString strPrefix = strIndent;
 			strPrefix += CDlgTask::FormatTime(nSec, pUIMan->GetStringFromTable(bActiveTask ? 246 : 245), tsi.m_ulTimeLimit);
@@ -917,7 +917,7 @@ void CDlgTaskTrace::FormatTaskTraceDesc(int idTask, bool withName, const ACStrin
 			}
 
 			// update protected time
-			int nSec = max(0, tsi.m_ulProtectTime - tsi.m_ulTimePassed);
+			int nSec = max(0ul, tsi.m_ulProtectTime - tsi.m_ulTimePassed);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 			ACString strTime = CDlgTask::FormatTime(nSec, pUIMan->GetStringFromTable(259), tsi.m_ulProtectTime);
 			this->AppendText(strTime);
 		}
@@ -1324,7 +1324,7 @@ void CDlgTaskTrace::OnCommand_Chat(const char *szCommand)
 			}
 			if (tsi.m_ulTimeLimit > 0)
 			{
-				int nSec = bActiveTask ? max(0, tsi.m_ulTimeLimit - tsi.m_ulTimePassed) : tsi.m_ulTimeLimit;
+				int nSec = bActiveTask ? max(0ul, tsi.m_ulTimeLimit - tsi.m_ulTimePassed) : tsi.m_ulTimeLimit;	//	MSVC's max macro accepted mixed types; the overloads need one type.
 
 				ACString strPrefix = strIndent;
 				strPrefix += CDlgTask::FormatTime(nSec, pUIMan->GetStringFromTable(bActiveTask ? 246 : 245), tsi.m_ulTimeLimit);
@@ -1355,7 +1355,7 @@ void CDlgTaskTrace::OnCommand_Chat(const char *szCommand)
 					strText += pMonster->name;
 					strText += _AL("\r");
 				}
-				int nSec = max(0, tsi.m_ulProtectTime - tsi.m_ulTimePassed);
+				int nSec = max(0ul, tsi.m_ulProtectTime - tsi.m_ulTimePassed);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 				ACString strTime = CDlgTask::FormatTime(nSec, pUIMan->GetStringFromTable(259), tsi.m_ulProtectTime);
 				strText += strTime;
 			}

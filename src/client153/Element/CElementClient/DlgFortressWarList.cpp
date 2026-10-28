@@ -5,7 +5,7 @@
 #include "EC_Game.h"
 #include "EC_HostPlayer.h"
 #include "CSplit.h"
-#include "NetWork\\factionfortressbattlelist_re.hpp"
+#include "Network/factionfortressbattlelist_re.hpp"	//	MSVC accepted the backslash separator; the port uses the real case and a forward slash.
 #include "Network\\rpcdata\\gfactionfortressbattleinfo"
 
 #define new A_DEBUG_NEW
@@ -128,7 +128,7 @@ void CDlgFortressWarList::OnPrtcFactionFortressBattleList_Re(const GNET::Faction
 		bool bName1OK = GetFactionName(info.factionid, strName1, true);
 		bool bName2OK = GetFactionName(info.offense_faction, strName2, true);
 
-		strText.Format(_AL("%s\t%s"), strName1, strName2);
+		strText.Format(_AL("%s\t%s"), (const wchar_t*)strName1, (const wchar_t*)strName2);	//	explicit conversions in varargs.
 		m_pLst_GvG->AddString(strText);
 
 		//	记录数据用于进入战场
@@ -212,7 +212,7 @@ void CDlgFortressWarList::OnTick()
 		//	更新显示
 		CSplit s(m_pLst_GvG->GetText(i));
 		CSplit::VectorAWString vec = s.Split(_AL("\t"));
-		strText.Format(_AL("%s\t%s"), strName1, strName2);
+		strText.Format(_AL("%s\t%s"), (const wchar_t*)strName1, (const wchar_t*)strName2);	//	explicit conversions in varargs.
 		m_pLst_GvG->SetText(i, strText);
 	}
 }

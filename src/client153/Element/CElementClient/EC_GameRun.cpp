@@ -3149,7 +3149,8 @@ bool CECGameRun::CaptureScreen(int N)
 #ifdef ANGELICA_2_2
 	bExportJPG = (N <= 1);
 #endif
-	char *szFileFormat = bExportJPG ? "%04d-%02d-%02d %02d-%02d-%02d.jpg" : "%04d-%02d-%02d %02d-%02d-%02d.bmp";
+	//	MSVC bound the string literal to char*; the standard form.
+	const char *szFileFormat = bExportJPG ? "%04d-%02d-%02d %02d-%02d-%02d.jpg" : "%04d-%02d-%02d %02d-%02d-%02d.bmp";
 	sprintf(szTitle, szFileFormat,	st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 	sprintf(szFile, "%s\\Screenshots\\", af_GetBaseDir());
 	glb_CreateDirectory(szFile);
@@ -3418,21 +3419,21 @@ void CECGameRun::ShowAccountLoginInfo()
 					t.tm_mday,
 					t.tm_hour,
 					t.tm_min );
-				strText.Format(pGameUIMan->GetStringFromTable(9343), strTemp);
+				strText.Format(pGameUIMan->GetStringFromTable(9343), (const wchar_t*)strTemp);	//	MSVC passed the AWString object through varargs; the callee reads a wide string pointer.
 				pGameUIMan->AddChatMessage(strText, GP_CHAT_SYSTEM);
 				
 				//	上次登录IP
 				in_addr ip;
 				ip.s_addr = m_AccountLoginInfo.login_ip;
 				strTemp = AS2AC(inet_ntoa(ip));
-				strText.Format(pGameUIMan->GetStringFromTable(9344), strTemp);
+				strText.Format(pGameUIMan->GetStringFromTable(9344), (const wchar_t*)strTemp);	//	MSVC passed the AWString object through varargs; the callee reads a wide string pointer.
 				pGameUIMan->AddChatMessage(strText, GP_CHAT_SYSTEM);
 				
 				//	当前登录IP
 				in_addr cur_ip;
 				cur_ip.s_addr = m_AccountLoginInfo.current_ip;
 				strTemp = AS2AC(inet_ntoa(cur_ip));
-				strText.Format(pGameUIMan->GetStringFromTable(9345), strTemp);
+				strText.Format(pGameUIMan->GetStringFromTable(9345), (const wchar_t*)strTemp);	//	MSVC passed the AWString object through varargs; the callee reads a wide string pointer.
 				pGameUIMan->AddChatMessage(strText, GP_CHAT_SYSTEM);
 			}
 		}

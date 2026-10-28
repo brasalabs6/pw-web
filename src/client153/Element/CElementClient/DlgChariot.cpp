@@ -544,7 +544,7 @@ void CDlgChariotInfo::SelectChariot(int tid)
 
 	// set other ui info
 
-	int skill_cnt = min(sizeof(pChariot->skill)/sizeof(pChariot->skill[0]),(int)m_pImg_Skill.size());
+	int skill_cnt = min((int)(sizeof(pChariot->skill)/sizeof(pChariot->skill[0])),(int)m_pImg_Skill.size());	//	MSVC's min macro accepted mixed types; the overloads need one type.
 	
 	for (int j=0;j<skill_cnt;j++)
 	{

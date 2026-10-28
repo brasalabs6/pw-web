@@ -130,7 +130,7 @@ void CDlgBackOthers::UpdateText()
 	}
 	
 	const ROLEBASICPROP &prop = GetHostPlayer()->GetBasicProps();
-	m_pTxt_ID->SetText(CanBeReferral() ? m_referralCode : GetStringFromTable(7973));
+	m_pTxt_ID->SetText(CanBeReferral() ? (const ACHAR*)m_referralCode : GetStringFromTable(7973));	//	MSVC resolved the conditional to the SetText parameter type.
 
 	ACString strMoney = GetCashText(GetHostPlayer()->GetDividend());
 	m_pTxt_Have->SetText(strMoney);
@@ -188,9 +188,9 @@ void CDlgBackOthers::OnCommand_Link(const char *szCommand)
 	AString strURL;
 	strURL.Format(
 		strFormat,
-		GetUTF8URLFrom(m_referralCode),
-		GetUTF8URLFrom(GetHostPlayer()->GetName()),
-		GetGameSession()->GetZoneID());
+		(const char*)GetUTF8URLFrom(m_referralCode),
+		(const char*)GetUTF8URLFrom(GetHostPlayer()->GetName()),
+		GetGameSession()->GetZoneID());	//	explicit conversions in varargs.
 
 	GetBaseUIMan()->NavigateURL(strURL);
 }
@@ -306,7 +306,7 @@ void CDlgBackOthers::OnCommand_Copy(const char *szCommand)
 	if (szName &&
 		OpenClipboard(m_pA3DDevice->GetDeviceWnd()) )
 	{
-		HLOCAL hLocal = GlobalAlloc(LMEM_ZEROINIT, a_strlen(szName) * 2 + 2);
+		HGLOBAL hLocal = GlobalAlloc(GMEM_ZEROINIT, a_strlen(szName) * 2 + 2);	//	original spelled it HLOCAL/LMEM_ZEROINIT; in Win32 both handles are HANDLE and LMEM_ZEROINIT == GMEM_ZEROINIT (0x40).
 		if( hLocal )
 		{
 			ACHAR *pszName = (ACHAR *)GlobalLock(hLocal);
@@ -370,12 +370,12 @@ void CDlgBackOthers::OnPrtcRefListReferralsRe(GNET::RefListReferrals_Re *p)
 		// Generate content
 		strTemp = ACString((const ACHAR *)temp.rolenames[0].begin(), temp.rolenames[0].size()/sizeof(ACHAR));
 		strText.Format(GetStringFromTable(temp.rolenames.size()<=1 ? 7961 : 7962),
-			strTemp,
+			(const wchar_t*)strTemp,
 			temp.max_level,
 			temp.bonus_avail,
 			temp.bonus_left,
 			temp.bonus_total1,
-			temp.bonus_total2);
+			temp.bonus_total2);	//	explicit conversion in varargs.
 
 		// Generate hint
 		if (temp.rolenames.size() == 1)

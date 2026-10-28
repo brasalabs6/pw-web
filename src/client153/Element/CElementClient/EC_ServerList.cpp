@@ -11,7 +11,7 @@
 #include "EC_TimeSafeChecker.h"
 
 #include <AUICommon.h>
-#include <achar.h>
+#include <AChar.h>
 #include <AIniFile.h>
 
 #include <ctime>
@@ -34,9 +34,11 @@ void CECServerList::Clear()
 	delete [] m_pingInfo;
 	m_pingInfo = NULL;
 	
-	m_serverVec.swap(ServerInfoVec());
+	ServerInfoVec emptyServerVec;	//	MSVC bound this temporary to the non-const reference.
+	m_serverVec.swap(emptyServerVec);
 	m_iSelected = -1;
-	m_groupVec.swap(GroupInfoVec());
+	GroupInfoVec emptyGroupVec;	//	MSVC bound this temporary to the non-const reference.
+	m_groupVec.swap(emptyGroupVec);
 	
 	m_strServerList.Empty();
 }
@@ -196,7 +198,7 @@ void CECServerList::Export()
 	FILE * fp = fopen(strSaveFile, "wb");
 	if (!fp)
 	{
-		a_LogOutput(1, "CECServerList::Export,Failed to open for save %s", strSaveFile);
+		a_LogOutput(1, "CECServerList::Export,Failed to open for save %s", (const char*)strSaveFile);	//	explicit conversion in varargs.
 		return;
 	}
 
@@ -214,7 +216,7 @@ void CECServerList::Export()
 		if (server.zone_id <= 0 ||
 			zoneids.find(server.zone_id) != zoneids.end())
 		{
-			a_LogOutput(1, "CECServerList::Export,%s ignored for invalid/duplicated zoneid(%d)", AC2AS(server.server_name), server.zone_id);
+			a_LogOutput(1, "CECServerList::Export,%s ignored for invalid/duplicated zoneid(%d)", (const char*)AC2AS(server.server_name), server.zone_id);	//	explicit conversion in varargs.
 			continue;
 		}
 
@@ -235,7 +237,7 @@ void CECServerList::Export()
 		if (strExportName.IsEmpty() ||
 			names.find(strExportName) != names.end())
 		{
-			a_LogOutput(1, "CECServerList::Export,%s ignored for empty/duplicated name %s(after processed)", AC2AS(server.server_name), AC2AS(strExportName));
+			a_LogOutput(1, "CECServerList::Export,%s ignored for empty/duplicated name %s(after processed)", (const char*)AC2AS(server.server_name), (const char*)AC2AS(strExportName));	//	explicit conversions in varargs.
 			continue;
 		}
 
@@ -258,7 +260,7 @@ void CECServerList::Export()
 	fp = fopen(strSaveFile, "rb");
 	if (!fp)
 	{
-		a_LogOutput(1, "CECServerList::Export,Failed to read %s", strSaveFile);
+		a_LogOutput(1, "CECServerList::Export,Failed to read %s", (const char*)strSaveFile);	//	explicit conversion in varargs.
 		return;
 	}
 	int zoneid(0), namelen(0);
@@ -282,7 +284,7 @@ void CECServerList::Export()
 			break;
 		}
 		pBuf[namelen] = _AL('\0');
-		a_LogOutput(1, "CECServerList::Export,zoneid=%d, name=%s", zoneid, AC2AS(strName));
+		a_LogOutput(1, "CECServerList::Export,zoneid=%d, name=%s", zoneid, (const char*)AC2AS(strName));	//	explicit conversion in varargs.
 	}
 	fclose(fp);
 }

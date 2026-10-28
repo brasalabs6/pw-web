@@ -13,6 +13,7 @@
 #include "EC_Global.h"
 #include "EC_Game.h"
 #include "EC_Player.h"
+#include <ACSWrapper.h>	//	the critical-section wrapper (the original build pulled it in through the project's include order).
 #include "EC_Model.h"
 #include "EC_Face.h"
 #include "EC_IvtrTypes.h"
@@ -3803,7 +3804,7 @@ bool CECPlayer::PlayActionWithConfig(int iAction, const PLAYER_ACTION &actionCon
 				if (iAction == ACT_EXP_DANCE && InFashionMode())
 					strFashionAction = GetFashionActionName();
 				sprintf(szAct, "%s_%s"
-					, strFashionAction.IsEmpty() ? action.data->action_prefix : strFashionAction
+					, strFashionAction.IsEmpty() ? action.data->action_prefix : (const char*)strFashionAction	//	MSVC resolved the conditional to the sprintf argument type.
 					, action.data->action_weapon_suffix[weapon_type].suffix);
 				if( !bQueue ){
 					PlayNonSkillActionWithName(iAction, szAct, bRestart, iTransTime);
@@ -3820,7 +3821,7 @@ bool CECPlayer::PlayActionWithConfig(int iAction, const PLAYER_ACTION &actionCon
 					GetFashionActionNameByID(idEquipment,strAction);
 					if (!strAction.IsEmpty())
 					{
-						sprintf(szAct, "%s_%s", strAction, action.data->action_weapon_suffix[weapon_type].suffix);
+						sprintf(szAct, "%s_%s", (const char*)strAction, action.data->action_weapon_suffix[weapon_type].suffix);	//	explicit conversion in varargs.
 						if( !bQueue ){
 							PlayNonSkillActionWithName(iAction, szAct, bRestart, iTransTime);
 						}else{
@@ -10454,7 +10455,7 @@ bool CECPlayer::IsShapeModelReady() const
 	else
 	{
 		// whether the target model is set to current using model
-		return m_pPlayerModel == m_pModels[min(PLAYERMODEL_MAX-1, GetShapeType())];
+		return m_pPlayerModel == m_pModels[min((int)(PLAYERMODEL_MAX-1), GetShapeType())];	//	MSVC's min macro accepted mixed types; the overloads need one type.
 	}
 }
 
@@ -10773,8 +10774,8 @@ ACString CECPlayer::GetNameInCountryWar()
 	CECGameRun *pGameRun = g_pGame->GetGameRun();
 	strName.Format(
 		pGameRun->GetUIManager()->GetBaseUIMan()->GetStringFromTable(9924),
-		*CECCountryConfig::Instance().GetName(GetCountry()),
-		pGameRun->GetProfName(GetProfession()));
+		(const wchar_t*)*CECCountryConfig::Instance().GetName(GetCountry()),
+		pGameRun->GetProfName(GetProfession()));	//	explicit conversion in varargs.
 	return strName;
 }
 

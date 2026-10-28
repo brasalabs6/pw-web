@@ -1436,7 +1436,7 @@ void OnConsoleQueryService(ACString strPattern)
 				}
 				if (!strTemp.IsEmpty()){
 					//	找到某服务
-					strOutput.Format(_AL("%d%s"), pEssence->id, strTemp);
+					strOutput.Format(_AL("%d%s"), pEssence->id, (const wchar_t*)strTemp);	//	explicit conversion in varargs.
 					pGameUIMan->AddConsoleLine(strOutput, l_colRed);
 				}
 			}
@@ -1469,9 +1469,9 @@ void OnConsoleQuerySkill(AString str)
 		{
 			int requiredBook = GNET::ElementSkill::GetRequiredBook(idSkill, 1);
 			if (requiredBook)
-				strOutput.Format(_AL("%s: %d %d"), AS2AC(strName), idSkill, requiredBook);
+				strOutput.Format(_AL("%s: %d %d"), (const wchar_t*)AS2AC(strName), idSkill, requiredBook);	//	explicit conversion in varargs.
 			else
-				strOutput.Format(_AL("%s: %d"), AS2AC(strName), idSkill);
+				strOutput.Format(_AL("%s: %d"), (const wchar_t*)AS2AC(strName), idSkill);	//	explicit conversion in varargs.
 			pGameUIMan->AddConsoleLine(strOutput, l_colRed);
 		}
 	}

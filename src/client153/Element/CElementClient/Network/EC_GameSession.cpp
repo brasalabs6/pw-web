@@ -676,12 +676,12 @@ static bool OnFortressChatMessage(ChatMessage* p, AArray<int, int>* pPendingFact
 					ASSERT(false);
 					return true;
 				}
-				strMsg.Format(pGameUI->GetStringFromTable(9243), pEssence->name, GetBuildingMaterialCost(pEssence, pData->accelerate));
+				strMsg.Format(pGameUI->GetStringFromTable(9243), pEssence->name, (const wchar_t*)GetBuildingMaterialCost(pEssence, pData->accelerate));	//	explicit conversion in varargs.
 				const FACTION_BUILDING_ESSENCE *pEssenceOverlap = g_pGame->GetGameRun()->GetHostPlayer()->GetBuildingEssence(pData->overlap_id);
 				if (pEssenceOverlap)
 				{
 					ACString strMsg2;
-					strMsg2.Format(pGameUI->GetStringFromTable(9247), GetBuildingMaterialReturn(pEssenceOverlap));
+					strMsg2.Format(pGameUI->GetStringFromTable(9247), (const wchar_t*)GetBuildingMaterialReturn(pEssenceOverlap));	//	explicit conversion in varargs.
 					strMsg += strMsg2;
 				}
 			}
@@ -794,7 +794,7 @@ static bool OnFortressChatMessage(ChatMessage* p, AArray<int, int>* pPendingFact
 					return true;
 				}
 				if( pData->type == 1 )
-					strMsg.Format(pGameUI->GetStringFromTable(9248), pEssence->name, GetBuildingMaterialReturn(pEssence));
+					strMsg.Format(pGameUI->GetStringFromTable(9248), pEssence->name, (const wchar_t*)GetBuildingMaterialReturn(pEssence));	//	explicit conversion in varargs.
 				else if( pData->type == 2 )
 					strMsg.Format(pGameUI->GetStringFromTable(9258), pEssence->name);
 			}
@@ -2037,7 +2037,7 @@ bool CECGameSession::SendNetData(const GNET::Protocol& p, bool bUrg)
 	}
 	
 	if (CECProtocolDebug::Instance().IsClientProtocolIgnored(&p)){
-		g_pGame->RuntimeDebugInfo(RTDCOL_CHATLOCAL, _AL("CLIENT - %s ignored"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(p, false)));
+		g_pGame->RuntimeDebugInfo(RTDCOL_CHATLOCAL, _AL("CLIENT - %s ignored"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(p, false)));	//	explicit conversion in varargs.
 		return true;
 	}
 
@@ -2366,7 +2366,7 @@ static bool MayReconnectForLinkBrokenReason(CECGameSession::enumLinkBrokenReason
 }
 
 void CECGameSession::OnLinkBroken(){
-	a_LogOutput(1, "CECGameSession::OnLinkBroken(%s)", GetLinkBrokenReasonDescription(m_linkBrokenReason));
+	a_LogOutput(1, "CECGameSession::OnLinkBroken(%s)", (const char*)GetLinkBrokenReasonDescription(m_linkBrokenReason));	//	explicit conversion in varargs.
 	if (CECUIManager* pUIMan = g_pGame->GetGameRun()->GetUIManager()){
 		CECLoginQueue::Instance().ClearState();
 		if (CECReconnect::Instance().CanRequestReconnect() &&
@@ -3053,7 +3053,7 @@ bool CECGameSession::ProcessNewProtocols()
 			break;
 #endif
 		default:
-			g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("SERVER - Unknown %s"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)));
+			g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("SERVER - Unknown %s"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)));	//	explicit conversion in varargs.
 			break;
 		}
 
@@ -3306,7 +3306,7 @@ bool CECGameSession::FilterProtocols(GNET::Protocol* pProtocol)
 	}
 
 	if (bFilter)
-		g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("SERVER - %s filtered"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)));
+		g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("SERVER - %s filtered"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)));	//	explicit conversion in varargs.
 #ifdef LOG_PROTOCOL
 	else if (pProtocol->GetType() != PROTOCOL_GAMEDATASEND)
 	{
@@ -4376,7 +4376,7 @@ void CECGameSession::OnPrtcRoleListRe(GNET::Protocol* pProtocol)
 	RoleList_Re* p = (RoleList_Re*)pProtocol;
 	if (p->result != ERR_SUCCESS)
 	{
-		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);
+		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);	//	explicit conversion in varargs.
 
 		if (p->handle != _HANDLE_END)
 			SendNetData(RoleList(m_iUserID, _SID_INVALID, p->handle));
@@ -4516,7 +4516,7 @@ void CECGameSession::OnPrtcSelectRoleRe(GNET::Protocol* pProtocol)
 	if (p->result != ERR_SUCCESS)
 	{
 		OutputLinkSevError(p->result);
-		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);
+		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);	//	explicit conversion in varargs.
 		return;
 	}
 
@@ -4548,7 +4548,7 @@ void CECGameSession::OnPrtcCreateRoleRe(GNET::Protocol* pProtocol)
 	if (p->result != ERR_SUCCESS)
 	{
 		OutputLinkSevError(p->result);
-		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);
+		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);	//	explicit conversion in varargs.
 		return;
 	}
 	
@@ -4565,7 +4565,7 @@ void CECGameSession::OnPrtcDeleteRoleRe(GNET::Protocol* pProtocol)
 	if (p->result != ERR_SUCCESS)
 	{
 		OutputLinkSevError(p->result);
-		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);
+		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);	//	explicit conversion in varargs.
 		return;
 	}
 	
@@ -4582,7 +4582,7 @@ void CECGameSession::OnPtrcUndoDeleteRoleRe(GNET::Protocol* pProtocol)
 	if (p->result != ERR_SUCCESS)
 	{
 		OutputLinkSevError(p->result);
-		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);
+		g_pGame->RuntimeDebugInfo(RTDCOL_ERROR, _AL("SERVER - %s return error(%d)"), (const wchar_t*)AS2AC(g_pGame->GetRTDebug()->GetProtocolName(*pProtocol, true)), p->result);	//	explicit conversion in varargs.
 		return;
 	}
 	
@@ -6334,7 +6334,8 @@ void CECGameSession::c2s_CmdSendMassMail(int type, const ACHAR* szTitle, const A
 		int iLen = a_strlen(szContext) * sizeof (ACHAR);
 		p.context.replace(szContext, iLen);
 	}
-	Octets o = p.marshal(Marshal::OctetsStream());
+	Marshal::OctetsStream os;	//	MSVC bound this temporary to the non-const reference.
+	Octets o = p.marshal(os);
 	
 	using namespace C2S;
 	int iSize = sizeof(cmd_header) + sizeof(cmd_send_mass_mail)-sizeof(char)+o.size();

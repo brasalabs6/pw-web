@@ -71,6 +71,67 @@ inline HRESULT D3DXSaveTextureToFileA(const char *file, DWORD format,
   return D3DERR_INVALIDCALL;
 }
 
+//	The surface save: the same explicit failure (no real surfaces on
+//	the browser target yet).
+inline HRESULT D3DXSaveSurfaceToFileA(const char *file, DWORD format,
+                                      IDirect3DSurface8 *surface,
+                                      const PALETTEENTRY *palette,
+                                      const void *reserved = nullptr) {
+  (void)file;
+  (void)format;
+  (void)surface;
+  (void)palette;
+  (void)reserved;
+  return D3DERR_INVALIDCALL;
+}
+inline HRESULT D3DXSaveSurfaceToFileW(const wchar_t *file, DWORD format,
+                                      IDirect3DSurface8 *surface,
+                                      const PALETTEENTRY *palette,
+                                      const void *reserved = nullptr) {
+  (void)file;
+  (void)format;
+  (void)surface;
+  (void)palette;
+  (void)reserved;
+  return D3DERR_INVALIDCALL;
+}
+inline HRESULT D3DXSaveSurfaceToFile(const wchar_t *file, DWORD format,
+                                     IDirect3DSurface8 *surface,
+                                     const PALETTEENTRY *palette,
+                                     const void *reserved = nullptr) {
+  return D3DXSaveSurfaceToFileW(file, format, surface, palette, reserved);
+}
+
+//	The surface copy/filter: the same explicit failure (no real
+//	surfaces on the browser target yet).
+inline HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface8 *destination,
+                                          const PALETTEENTRY *destinationPalette,
+                                          const RECT *destinationRect,
+                                          IDirect3DSurface8 *source,
+                                          const PALETTEENTRY *sourcePalette,
+                                          const RECT *sourceRect,
+                                          DWORD filter, DWORD colorKey) {
+  (void)destination;
+  (void)destinationPalette;
+  (void)destinationRect;
+  (void)source;
+  (void)sourcePalette;
+  (void)sourceRect;
+  (void)filter;
+  (void)colorKey;
+  return D3DERR_INVALIDCALL;
+}
+
+//	The D3DX default sentinel (the documented d3dx8 value).
+#define D3DX_DEFAULT 0xFFFFFFFF
+
+//	The D3DX texture filters (the documented d3dx8tex values).
+#define D3DX_FILTER_NONE (1 << 0)
+#define D3DX_FILTER_POINT (2 << 0)
+#define D3DX_FILTER_LINEAR (3 << 0)
+#define D3DX_FILTER_TRIANGLE (4 << 0)
+#define D3DX_FILTER_BOX (5 << 0)
+
 //	The image header read: the BBS download path has no files on the
 //	browser target yet (the download seam fails explicitly), so the
 //	read fails with D3DERR_INVALIDCALL and the caller's documented
@@ -124,15 +185,15 @@ inline D3DXMATRIX *D3DXMatrixPerspectiveFovLH(D3DXMATRIX *out, float fovy,
 //	move a world-space plane into clip space).
 inline D3DXPLANE *D3DXPlaneTransform(D3DXPLANE *out, const D3DXPLANE *p,
                                      const D3DXMATRIX *m) {
-  const float a = p->vNormal.x;
-  const float b = p->vNormal.y;
-  const float c = p->vNormal.z;
-  const float d = p->fDist;
+  const float a = p->a;
+  const float b = p->b;
+  const float c = p->c;
+  const float d = p->d;
   D3DXPLANE r;
-  r.vNormal.x = m->_11 * a + m->_12 * b + m->_13 * c + m->_14 * d;
-  r.vNormal.y = m->_21 * a + m->_22 * b + m->_23 * c + m->_24 * d;
-  r.vNormal.z = m->_31 * a + m->_32 * b + m->_33 * c + m->_34 * d;
-  r.fDist = m->_41 * a + m->_42 * b + m->_43 * c + m->_44 * d;
+  r.a = m->_11 * a + m->_12 * b + m->_13 * c + m->_14 * d;
+  r.b = m->_21 * a + m->_22 * b + m->_23 * c + m->_24 * d;
+  r.c = m->_31 * a + m->_32 * b + m->_33 * c + m->_34 * d;
+  r.d = m->_41 * a + m->_42 * b + m->_43 * c + m->_44 * d;
   *out = r;
   return out;
 }

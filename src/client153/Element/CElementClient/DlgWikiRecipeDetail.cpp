@@ -113,8 +113,9 @@ void CDlgWikiRecipeDetail::OnShowDialog()
 		const NPC_ESSENCE* pNPC = info.pNPC;
 		const NPC_MAKE_SERVICE* pSrv = info.pSrv;
 
+		CDlgNameLink::MoveToLinkCommand moveToCmd(pNPC->id, pNPC->name);	//	one-shot use: BindLinkCommand clones the command synchronously.
 		BindLinkCommand(pTxt_NPC, NULL,
-						&CDlgNameLink::MoveToLinkCommand(pNPC->id, pNPC->name));
+						&moveToCmd);
 		
 		pTxt_ProdutionType->SetText(
 			GetStringFromTable( (pSrv->produce_type >= 0 && pSrv->produce_type <= 5) ? 

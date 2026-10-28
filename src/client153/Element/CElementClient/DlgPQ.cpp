@@ -353,7 +353,7 @@ void CDlgPQ::RefreshRankUI()
 				CECIvtrItem *pAwardItem = CECIvtrItem::CreateItem(award.m_ulAwardItemId, 0, 1);
 				if (pAwardItem)
 				{
-					strHint.Format(_AL("%s(%d)"), WC2AC(pAwardItem->GetName()), award.m_ulAwardItemNum);
+					strHint.Format(_AL("%s(%d)"), (const wchar_t*)WC2AC(pAwardItem->GetName()), award.m_ulAwardItemNum);	//	explicit conversion in varargs.
 					delete pAwardItem;
 				}
 			}
@@ -432,7 +432,7 @@ void CDlgPQ::RefreshRankUI()
 						CECIvtrItem *pAwardItem = CECIvtrItem::CreateItem(award.m_ulAwardItemId, 0, 1);
 						if (pAwardItem)
 						{
-							strHint.Format(_AL("%s(%d)"), WC2AC(pAwardItem->GetName()), award.m_ulAwardItemNum);
+							strHint.Format(_AL("%s(%d)"), (const wchar_t*)WC2AC(pAwardItem->GetName()), award.m_ulAwardItemNum);	//	explicit conversion in varargs.
 							delete pAwardItem;
 						}
 					}

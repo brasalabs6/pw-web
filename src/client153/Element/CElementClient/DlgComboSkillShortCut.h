@@ -14,6 +14,7 @@ class CECSkill;
 class AUIImagePicture;
 class AUIProgress;
 class AUILabel;
+class CDlgComboShortCutBar;	//	defined below; the original build saw a declaration first through the project's include order.
 
 class CECComboSkillShortCut {
 	

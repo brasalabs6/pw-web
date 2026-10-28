@@ -440,7 +440,7 @@ bool CECSceneCheck::CheckBlockOrnaments(int iNumOnmt)
 
 	//	Build ornament file path
 	char szMapPath[MAX_PATH];
-	sprintf(szMapPath, "LitModels\\%s", m_strMapName);
+	sprintf(szMapPath, "LitModels\\%s", (const char*)m_strMapName);	//	explicit conversion in varargs.
 	
 	if (m_iSceneVersion >= 4)
 	{
@@ -473,15 +473,15 @@ bool CECSceneCheck::CheckBlockOrnaments(int iNumOnmt)
 				{
 					//	Discard the first 'LitModels\' characters in strModelFile
 					const char* pTemp = strrchr(strModelFile, '\\');
-					pTemp = pTemp ? pTemp+1 : strModelFile;
+					pTemp = pTemp ? pTemp+1 : (const char*)strModelFile;	//	MSVC resolved the conditional to the assignment type.
 					strFile.Format("%s\\%s", szMapPath, pTemp);
 				}
 				else
-					strFile.Format("%s\\%s", szMapPath, strModelFile);
+					strFile.Format("%s\\%s", szMapPath, (const char*)strModelFile);	//	explicit conversion in varargs.
 			}
 			else	//	Scene file created by in-game home editor
 			{
-				strFile.Format("%s\\%s", szMapPath, strModelFile);
+				strFile.Format("%s\\%s", szMapPath, (const char*)strModelFile);	//	explicit conversion in varargs.
 			}
 
 			if (m_pOrnmList)
@@ -493,10 +493,10 @@ bool CECSceneCheck::CheckBlockOrnaments(int iNumOnmt)
 			{
 				//	Make complete file name
 				AString strFullFile;
-				strFullFile.Format("%s\\%s", g_szWorkDir, strFile);
+				strFullFile.Format("%s\\%s", g_szWorkDir, (const char*)strFile);	//	explicit conversion in varargs.
 
 				if (!glb_FileExist(strFullFile) && AddMissedRes(SrcInfo.dwExportID))
-					a_LogOutput(1, "[*] Building miss: %s", strFile);
+					a_LogOutput(1, "[*] Building miss: %s", (const char*)strFile);	//	explicit conversion in varargs.
 			}
 		}
 	}
@@ -516,7 +516,7 @@ bool CECSceneCheck::CheckBlockOrnaments(int iNumOnmt)
 
 			//	Load model from file
 			const char* pTemp = strrchr(strModelFile, '\\');
-			pTemp = pTemp ? pTemp+1 : strModelFile;
+			pTemp = pTemp ? pTemp+1 : (const char*)strModelFile;	//	MSVC resolved the conditional to the assignment type.
 			AString strFile;
 			strFile.Format("%s\\%s", szMapPath, pTemp);
 
@@ -529,10 +529,10 @@ bool CECSceneCheck::CheckBlockOrnaments(int iNumOnmt)
 			{
 				//	Make complete file name
 				AString strFullFile;
-				strFullFile.Format("%s\\%s", g_szWorkDir, strFile);
+				strFullFile.Format("%s\\%s", g_szWorkDir, (const char*)strFile);	//	explicit conversion in varargs.
 
 				if (!glb_FileExist(strFullFile) && AddMissedRes(Data.dwExportID))
-					a_LogOutput(1, "[*] Building miss: %s", strFile);
+					a_LogOutput(1, "[*] Building miss: %s", (const char*)strFile);	//	explicit conversion in varargs.
 			}
 		}
 	}

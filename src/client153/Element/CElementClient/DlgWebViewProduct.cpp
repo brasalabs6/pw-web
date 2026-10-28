@@ -340,7 +340,7 @@ void CDlgWebViewProduct::WebTradeAction(int idAction, void *pData)
 					}
 					else if(GetPageMode() == PAGE_END_FLAG)
 					{
-						m_PageBegin = max(0, pList->end - WEBTRADE_PAGE_SIZE);
+						m_PageBegin = max(0u, pList->end - WEBTRADE_PAGE_SIZE);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 					}
 					if(GetPageMode() == PAGE_DOWN_FLAG)
 					{
@@ -476,10 +476,10 @@ ACString CDlgWebViewProduct::GetRowString(const CDlgWebTradeBase::ItemInfo& trad
 	ACString szText;
 	
 	szText.Format( _AL("%s\t%s\t%s\t%s"),
-		tradeItem.GetItemName(),
-		tradeItem.GetTime(),
-		tradeItem.GetFormatedPrice(),
-		tradeItem.GetSellerName());
+		(const wchar_t*)tradeItem.GetItemName(),
+		(const wchar_t*)tradeItem.GetTime(),
+		(const wchar_t*)tradeItem.GetFormatedPrice(),
+		tradeItem.GetSellerName());	//	explicit conversions in varargs.
 	
 	return szText;
 }
@@ -602,11 +602,11 @@ void CDlgWebViewProduct::HandleRequest(const CECSSOTicketHandler::Request *p)
 		//	构造Loation参数
 		ACString strLocation;
 		if (m_strGroupClick.empty())
-			strLocation.Format(AS2AC(strLocationFormat), AS2AC(szSortType[m_nColumnClick][0]));
+			strLocation.Format(AS2AC(strLocationFormat), (const wchar_t*)AS2AC(szSortType[m_nColumnClick][0]));	//	explicit conversion in varargs.
 		else if (m_strGroupClick.size() == 1)
-			strLocation.Format(AS2AC(strLocationFormat), m_strGroupClick[0], AS2AC(szSortType[m_nColumnClick][0]));
+			strLocation.Format(AS2AC(strLocationFormat), (const wchar_t*)m_strGroupClick[0], (const wchar_t*)AS2AC(szSortType[m_nColumnClick][0]));	//	explicit conversions in varargs.
 		else
-			strLocation.Format(AS2AC(strLocationFormat), m_strGroupClick[0], m_strGroupClick[1], AS2AC(szSortType[m_nColumnClick][0]));
+			strLocation.Format(AS2AC(strLocationFormat), (const wchar_t*)m_strGroupClick[0], (const wchar_t*)m_strGroupClick[1], (const wchar_t*)AS2AC(szSortType[m_nColumnClick][0]));	//	explicit conversions in varargs.
 		AString strLocationUTF8 = glb_ConverToUTF8(strLocation);
 		AString strLocationUTF8Hex = glb_ConverToHex(strLocationUTF8);
 
@@ -615,7 +615,7 @@ void CDlgWebViewProduct::HandleRequest(const CECSSOTicketHandler::Request *p)
 		
 		//	构造完整链接
 		AString strURL;
-		strURL.Format(strURLFormat, strLocationUTF8Hex, strTicket, GetGameSession()->GetTicketAccount());
+		strURL.Format(strURLFormat, (const char*)strLocationUTF8Hex, (const char*)strTicket, (const char*)GetGameSession()->GetTicketAccount());	//	explicit conversions in varargs.
 		
 		//	使用外部链接打开
 		GetBaseUIMan()->NavigateURL(strURL, NULL);

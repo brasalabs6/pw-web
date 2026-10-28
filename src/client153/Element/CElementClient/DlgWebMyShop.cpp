@@ -317,7 +317,7 @@ void CDlgWebMyShop::WebTradeAction(int idAction, void *pData)
 				}
 				else if(GetPageMode() == PAGE_END_FLAG)
 				{
-					m_PageBegin = max(0, pList->end - WEBTRADE_PAGE_SIZE);
+					m_PageBegin = max(0u, pList->end - WEBTRADE_PAGE_SIZE);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 				}
 				if(GetPageMode() == PAGE_DOWN_FLAG)
 				{
@@ -427,10 +427,10 @@ ACString CDlgWebMyShop::GetRowString(const CDlgWebTradeBase::ItemInfo& tradeItem
 	ACString szText;
 	
 	szText.Format( _AL("%s\t%s\t%s\t%s"),
-					tradeItem.GetItemName(),
-					tradeItem.GetTime(),
-					tradeItem.GetFormatedPrice(),
-					tradeItem.GetBuyerName() );
+					(const wchar_t*)tradeItem.GetItemName(),
+					(const wchar_t*)tradeItem.GetTime(),
+					(const wchar_t*)tradeItem.GetFormatedPrice(),
+					tradeItem.GetBuyerName() );	//	explicit conversions in varargs.
 	
 	return szText;
 }
@@ -500,7 +500,7 @@ bool CDlgWebMyShop::ValidatePrepost(PrepostInfo& info)
 		{
 			ACString szPrice = CDlgWebTradeBase::ItemInfo::GetFormatedPrice(GetMinSellPrice());
 			ACString szRes;
-			szRes.Format( GetStringFromTable(5517), szPrice);
+			szRes.Format( GetStringFromTable(5517), (const wchar_t*)szPrice);	//	explicit conversion in varargs.
 			WEB_MYSHOP_MSGBOX(szRes);
 			return false;
 		}
@@ -508,7 +508,7 @@ bool CDlgWebMyShop::ValidatePrepost(PrepostInfo& info)
 		{
 			ACString szPrice = CDlgWebTradeBase::ItemInfo::GetFormatedPrice(MAX_SELL_PRICE);
 			ACString szRes;
-			szRes.Format( GetStringFromTable(5518), szPrice);
+			szRes.Format( GetStringFromTable(5518), (const wchar_t*)szPrice);	//	explicit conversion in varargs.
 			WEB_MYSHOP_MSGBOX(szRes);
 			return false;
 		}
@@ -526,7 +526,7 @@ bool CDlgWebMyShop::ValidatePrepost(PrepostInfo& info)
 		if(GetHostPlayer()->GetMoneyAmount() < DEFAULT_POST_DEPOSIT)
 		{
 			ACString szTxt;
-			szTxt.Format(GetStringFromTable(5522), ((CECBaseUIMan*)m_pAUIManager)->GetFormatNumber(DEFAULT_POST_DEPOSIT));
+			szTxt.Format(GetStringFromTable(5522), (const wchar_t*)((CECBaseUIMan*)m_pAUIManager)->GetFormatNumber(DEFAULT_POST_DEPOSIT));	//	explicit conversion in varargs.
 			WEB_MYSHOP_MSGBOX(szTxt);
 			return false;
 		}
@@ -547,7 +547,7 @@ bool CDlgWebMyShop::ValidatePrepost(PrepostInfo& info)
 		if(info.Money.Count < DEFAULT_MIN_POST_MONEY)
 		{
 			ACString szTxt;
-			szTxt.Format(GetStringFromTable(5521), ((CECBaseUIMan*)m_pAUIManager)->GetFormatNumber(DEFAULT_MIN_POST_MONEY));
+			szTxt.Format(GetStringFromTable(5521), (const wchar_t*)((CECBaseUIMan*)m_pAUIManager)->GetFormatNumber(DEFAULT_MIN_POST_MONEY));	//	explicit conversion in varargs.
 			WEB_MYSHOP_MSGBOX(szTxt);
 			return false;
 		}
@@ -618,7 +618,7 @@ void CDlgWebMyShop::CheckPrepostList()
 			// may cause multiple confirm box
 			PAUIDIALOG pMsgBox;
 			ACString szTxt;
-			szTxt.Format(GetStringFromTable(5525), GetGameUIMan()->GetFormatNumber(DEFAULT_POST_DEPOSIT));
+			szTxt.Format(GetStringFromTable(5525), (const wchar_t*)GetGameUIMan()->GetFormatNumber(DEFAULT_POST_DEPOSIT));	//	explicit conversion in varargs.
 			m_pAUIManager->MessageBox("Game_WebTrade_Confirm", szTxt, MB_YESNO, A3DCOLORRGBA(255, 255, 255, 160), &pMsgBox);
 			pMsgBox->SetDataPtr(&info);
 
@@ -665,7 +665,7 @@ void CDlgWebMyShop::NotifyInvalidName(const ACString& strName, bool bObsoleteNam
 		m_Infos.RemoveAt(m_Infos.GetTailPosition());
 		
 		ACString szTxt;
-		szTxt.Format(GetStringFromTable(bObsoleteName ? 10158 : 5516), strName);
+		szTxt.Format(GetStringFromTable(bObsoleteName ? 10158 : 5516), (const wchar_t*)strName);	//	explicit conversion in varargs.
 		WEB_MYSHOP_MSGBOX(szTxt);
 		
 		EnableObjectsForSell(true);
@@ -785,7 +785,7 @@ void CDlgWebMyShop::OnCommandPrepostRole(const char* szCommand)
 	else if(GetHostPlayer()->GetMoneyAmount() < DEFAULT_POST_DEPOSIT)
 	{
 		ACString szTxt;
-		szTxt.Format(GetStringFromTable(5558), ((CECBaseUIMan*)m_pAUIManager)->GetFormatNumber(DEFAULT_POST_DEPOSIT));
+		szTxt.Format(GetStringFromTable(5558), (const wchar_t*)((CECBaseUIMan*)m_pAUIManager)->GetFormatNumber(DEFAULT_POST_DEPOSIT));	//	explicit conversion in varargs.
 		WEB_MYSHOP_MSGBOX(szTxt);
 	}
 	else

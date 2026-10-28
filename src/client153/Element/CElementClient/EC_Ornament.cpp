@@ -120,15 +120,15 @@ bool CECOrnament::Load(CECScene* pScene, const char* szMapPath, float fOffX, flo
 			{
 				//	Discard the first 'LitModels\' characters in strModelFile
 				const char* pTemp = strrchr(strModelFile, '\\');
-				pTemp = pTemp ? pTemp+1 : strModelFile;
+				pTemp = pTemp ? pTemp+1 : (const char*)strModelFile;	//	MSVC resolved the conditional to the assignment type.
 				m_strFileToLoad.Format("%s\\%s", szMapPath, pTemp);
 			}
 			else
-				m_strFileToLoad.Format("%s\\%s", szMapPath, strModelFile);
+				m_strFileToLoad.Format("%s\\%s", szMapPath, (const char*)strModelFile);	//	explicit conversion in varargs.
 		}
 		else	//	Scene file created by in-game home editor
 		{
-			m_strFileToLoad.Format("%s\\%s", szMapPath, strModelFile);
+			m_strFileToLoad.Format("%s\\%s", szMapPath, (const char*)strModelFile);	//	explicit conversion in varargs.
 		}
 
 		m_vReservedPos.Set(Data.vPos[0]+fOffX, Data.vPos[1], Data.vPos[2]+fOffZ);
@@ -152,7 +152,7 @@ bool CECOrnament::Load(CECScene* pScene, const char* szMapPath, float fOffX, flo
 
 		//	Load model from file
 		const char* pTemp = strrchr(strModelFile, '\\');
-		pTemp = pTemp ? pTemp+1 : strModelFile;
+		pTemp = pTemp ? pTemp+1 : (const char*)strModelFile;	//	MSVC resolved the conditional to the assignment type.
 		AString strFile;
 		strFile.Format("%s\\%s", szMapPath, pTemp);
 		/*

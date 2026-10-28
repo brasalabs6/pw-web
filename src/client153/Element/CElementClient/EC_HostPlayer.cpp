@@ -1009,7 +1009,7 @@ bool CECHostPlayer::SaveFavorAucItems()
 		CreateDirectoryA(szFileName,NULL);
 	}
 
-	sprintf(szFileName, "userdata\\favorite_auction\\%s_%d.txt", AC2AS(szServerName), cid);
+	sprintf(szFileName, "userdata\\favorite_auction\\%s_%d.txt", (const char*)AC2AS(szServerName), cid);	//	explicit conversion in varargs.
 
  	//  Save to file 
 	if(!file.Open(szFileName, AFILE_TEXT | AFILE_CREATENEW))
@@ -1049,14 +1049,14 @@ bool CECHostPlayer::LoadFavorAucItems()
 	AFile file;
 
 	//  Get file name
-	sprintf(szFileName, "userdata\\favorite_auction\\%s_%d.txt", AC2AS(szServerName), cid);
+	sprintf(szFileName, "userdata\\favorite_auction\\%s_%d.txt", (const char*)AC2AS(szServerName), cid);	//	explicit conversion in varargs.
 
 	int iVersion;
 	int iLastServerTime;
 	if(file.Open(szFileName, AFILE_OPENEXIST))
 	{
 		char temp[255];
-		unsigned long iLength;
+		DWORD iLength;	//	original used unsigned long; MSVC's DWORD is unsigned long, the port's is unsigned int.
 
 		//  Get Version info
 		file.ReadLine(temp, 255, &iLength);
@@ -7311,7 +7311,7 @@ void CECHostPlayer::Killed(int idKiller)
 		if (pPlayer && pPlayer->GetShowNameInCountryWar())
 			strName = pPlayer->GetNameInCountryWar();
 
-		pGameRun->AddFixedMessage(FIXMSG_BEKILLED, strName);
+		pGameRun->AddFixedMessage(FIXMSG_BEKILLED, (const wchar_t*)strName);	//	explicit conversion in varargs.
 	}
 }
 

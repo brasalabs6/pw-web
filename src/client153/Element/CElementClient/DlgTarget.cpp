@@ -490,9 +490,10 @@ void CDlgTarget::RefreshAsPlayer(int idSelObj)
 	CECIconStateMgr *pMgr = GetGameUIMan()->GetIconStateMgr();
 	if (pTarget && pMgr)
 	{
+		IconLayoutBig layoutBig(pTarget->m_vecImgState.size() / 2);	//	MSVC bound this temporary to the non-const reference.
 		pMgr->RefreshStateIcon(pTarget->m_vecImgState.begin(), pTarget->m_vecImgState.size(), pShowPolicy->GetIconStates(),
 							   // two rows in Player target
-							   IconLayoutBig(pTarget->m_vecImgState.size() / 2), false);
+							   layoutBig, false);
 	}
 
 	PAUIIMAGEPICTURE pImagePic = (PAUIIMAGEPICTURE)pShow->GetDlgItem("Image_Prof");
@@ -668,9 +669,10 @@ void CDlgTarget::RefreshASNPC(int idSelObj)
 	CDlgTarget *pTarget = dynamic_cast<CDlgTarget *>(pShow);
 	if (pTarget && pMgr)
 	{
+		IconLayoutBig layoutBig(pTarget->m_vecImgState.size());	//	MSVC bound this temporary to the non-const reference.
 		pMgr->RefreshStateIcon(pTarget->m_vecImgState.begin(), pTarget->m_vecImgState.size(), &pNPC->GetIconStates(),
 							   // only one row in NPC target
-							   IconLayoutBig(pTarget->m_vecImgState.size()), false);
+							   layoutBig, false);
 	}
 
 	int j;
@@ -1181,11 +1183,11 @@ void CDlgTargetOfTarget::ShowNPC(CECNPC *pNPC)
 	}
 	else if (iLevel == 150)
 	{
-		m_pLblName->SetText(ACString().Format(_AL("[?] %s"), strName));
+		m_pLblName->SetText(ACString().Format(_AL("[?] %s"), (const wchar_t*)strName));	//	explicit conversion in varargs.
 	}
 	else
 	{
-		m_pLblName->SetText(ACString().Format(_AL("[%d] %s"), iLevel, strName));
+		m_pLblName->SetText(ACString().Format(_AL("[%d] %s"), iLevel, (const wchar_t*)strName));	//	explicit conversion in varargs.
 	}
 
 	// 隐藏选择主人按钮
@@ -1206,7 +1208,7 @@ void CDlgTargetOfTarget::ShowPet(CECNPC *pNPC)
 
 	// 设置名字
 	ACString strName = pNPC->GetNameToShow();
-	m_pLblName->SetText(ACString().Format(GetStringFromTable(11410), strName));
+	m_pLblName->SetText(ACString().Format(GetStringFromTable(11410), (const wchar_t*)strName));	//	explicit conversion in varargs.
 
 	// 显示选择主人按钮
 	AUIObject *pObj = GetDlgItem("Btn_Player");
@@ -1276,7 +1278,7 @@ void CDlgTarget::OnEventMouseHover(WPARAM wParam, LPARAM lParam, AUIObject *pObj
 							ACString imgItem = GetGameUIMan()->GetIconsImageString16(CECGameUIMan::ICONS_INVENTORY, pItem->GetIconFile());
 							ACString strHint = A3DCOLOR_TO_STRING(pItem->GetNameColor());
 							strHint += pItem->GetName();
-							temp.Format(_AL("%s [%.2f%%] %s\n\r^ffffff"), imgItem, prob * 100.f, strHint);
+							temp.Format(_AL("%s [%.2f%%] %s\n\r^ffffff"), (const wchar_t*)imgItem, prob * 100.f, (const wchar_t*)strHint);	//	explicit conversions in varargs.
 							szText += temp;
 							delete pItem;
 						}

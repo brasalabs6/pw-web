@@ -131,7 +131,7 @@ bool CECBaseUIMan::ChangeLayout(const char *pszFilename)
 				int idDialog = pTmpMgr->CreateDlg(m_pA3DEngine, m_pA3DDevice, filename);
 				if( idDialog < 0 )
 				{
-					AUI_ReportError(__LINE__, 1, "CECBaseUIMan::ChangeLayout(), failed to create dialog from %s", filename);
+					AUI_ReportError(__LINE__, 1, "CECBaseUIMan::ChangeLayout(), failed to create dialog from %s", (const char*)filename);	//	explicit conversion in varargs.
 				}
 				else
 				{
@@ -889,16 +889,17 @@ bool CECBaseUIMan::NavigateTWRechargeURL(){
 			strUserLower.MakeLower();
 			AString strGame = gameUI.strTWRechargeGame;
 			strGame.MakeLower();
-			strToken.Format("%s|%u|%s|%s|%d|%s", gameUI.strTWRechargeAppID, ts, strGame, strUserLower, zoneid, gameUI.strTWRechargeKey);
+			strToken.Format("%s|%u|%s|%s|%d|%s", (const char*)gameUI.strTWRechargeAppID, ts, (const char*)strGame, (const char*)strUserLower, zoneid, (const char*)gameUI.strTWRechargeKey);	//	explicit conversions in varargs.
 			GNET::MD5Hash md5;
-			md5.Update(Octets(strToken, strToken.GetLength()));
+			GNET::Octets tokenOctets(strToken, strToken.GetLength());	//	MSVC bound this temporary to the non-const reference.
+			md5.Update(tokenOctets);
 			GNET::Octets tokenMD5;
 			md5.Final(tokenMD5);
 			strToken = AString((const char *)tokenMD5.begin(), tokenMD5.size());
 			strToken = glb_ConverToHex(strToken);
 			
 			AString strURL;
-			strURL.Format(strFormat, gameUI.strTWRechargeAppID, strUser, gameUI.strTWRechargeGame, zoneid, ts, strToken);
+			strURL.Format(strFormat, (const char*)gameUI.strTWRechargeAppID, (const char*)strUser, (const char*)gameUI.strTWRechargeGame, zoneid, ts, (const char*)strToken);	//	explicit conversions in varargs.
 			NavigateURL(strURL, NULL);
 		}
 		result = true;

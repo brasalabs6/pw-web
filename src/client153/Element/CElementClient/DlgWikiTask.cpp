@@ -78,8 +78,10 @@ bool CDlgWikiTask::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LINK pL
 	if(pDlg)
 	{
 		// ensure the provider is correct
-		pDlg->SetContentProvider(&WikiTaskDataProvider());
-		pDlg->RefreshByNewCommand(&WikiSearchTaskBySpecificID(m_TaskID), true);
+		WikiTaskDataProvider provider;	//	one-shot use: the setter clones the provider synchronously.
+		pDlg->SetContentProvider(&provider);
+		WikiSearchTaskBySpecificID searchCmd(m_TaskID);	//	one-shot use: the setter clones the command synchronously.
+		pDlg->RefreshByNewCommand(&searchCmd, true);
 		return true;
 	}
 
@@ -89,7 +91,7 @@ bool CDlgWikiTask::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LINK pL
 ACString CDlgWikiTask::ShowSpecficLinkCommand::GetLinkText() const
 {
 	ACString strLinkedName;
-	strLinkedName.Format(_AL("%s&%s&^FFFFFF"), m_Color, m_Name);
+	strLinkedName.Format(_AL("%s&%s&^FFFFFF"), (const wchar_t*)m_Color, (const wchar_t*)m_Name);	//	explicit conversions in varargs.
 	return strLinkedName;
 }
 
@@ -115,8 +117,10 @@ bool CDlgWikiTask::OnInitDialog()
 void CDlgWikiTask::ResetSearchCommand()
 {
 	CDlgWikiByNameBase::ResetSearchCommand();
-	SetContentProvider(&WikiTaskDataProvider());
-	SetSearchCommand(&WikiSearchTaskByName());
+	WikiTaskDataProvider provider;	//	one-shot use: the setter clones the provider synchronously.
+	SetContentProvider(&provider);
+	WikiSearchTaskByName searchCmd;	//	one-shot use: the setter clones the command synchronously.
+	SetSearchCommand(&searchCmd);
 }
 
 void CDlgWikiTask::OnBeginSearch()
@@ -152,7 +156,7 @@ bool CDlgWikiTask::OnAddSearch(WikiEntityPtr p)
 	}
 
 	ACString strItem;
-	strItem.Format(_AL("%s"), szName);
+	strItem.Format(_AL("%s"), (const wchar_t*)szName);	//	explicit conversion in varargs.
 	m_pList->AddString(strItem);
 	m_pList->SetItemDataPtr(m_pList->GetCount()-1, pTempl);
 	m_pList->SetItemTextColor(m_pList->GetCount()-1, color);
@@ -336,11 +340,13 @@ void CDlgWikiTask::OnEventLButtonDown_List(WPARAM wParam, LPARAM lParam, AUIObje
 		pTxt_Repeat->SetText(pTempl->m_bCanRedo ? 
 			GetStringFromTable(7502) : GetStringFromTable(7501));
 
+		CDlgNameLink::MoveToLinkCommand beginNpcCmd(pTempl->GetDeliverNPC(), GetNPCName(pTempl->GetDeliverNPC(), szTxt));	//	one-shot use: BindLinkCommand clones the command synchronously.
 		BindLinkCommand(pTxt_BeginNpc, NULL,
-									  &CDlgNameLink::MoveToLinkCommand(pTempl->GetDeliverNPC(), GetNPCName(pTempl->GetDeliverNPC(), szTxt)));
+									  &beginNpcCmd);
 
+		CDlgNameLink::MoveToLinkCommand endNpcCmd(pTempl->GetAwardNPC(), GetNPCName(pTempl->GetAwardNPC(), szTxt));	//	one-shot use: BindLinkCommand clones the command synchronously.
 		BindLinkCommand(pTxt_EndNpc, NULL,
-									  &CDlgNameLink::MoveToLinkCommand(pTempl->GetAwardNPC(), GetNPCName(pTempl->GetAwardNPC(), szTxt)));
+									  &endNpcCmd);
 
 		CECTaskInterface *pTask = GetHostPlayer()->GetTaskInterface();
 		Task_Award_Preview award;

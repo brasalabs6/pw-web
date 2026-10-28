@@ -44,7 +44,7 @@ AString GMCDBMan::GetMainDBFolderPath(bool bMakeSureItExists)
 	}
 
 	AString dbMainFolderPath2;
-	dbMainFolderPath2.Format("%s\\%d", dbMainFolderPath1, gmID_);
+	dbMainFolderPath2.Format("%s\\%d", (const char*)dbMainFolderPath1, gmID_);	//	explicit conversion in varargs.
 	if (bMakeSureItExists)
 	{
 		::CreateDirectoryA(dbMainFolderPath2, NULL);
@@ -80,7 +80,7 @@ bool GMCDBMan::Load()
 	catch(SimpleDB::SimpleException & e)
 	{
 		AString err;
-		err.Format("GMCDBMan::Load(), failed to load database. detail : %s", e.msg_);
+		err.Format("GMCDBMan::Load(), failed to load database. detail : %s", (const char*)e.msg_);	//	explicit conversion in varargs.
 		a_LogOutput(1, err);
 		return false;
 	}
@@ -137,7 +137,7 @@ bool GMCDBMan::Save()
 	catch(SimpleDB::SimpleException & e)
 	{
 		AString err;
-		err.Format("GMCDBMan::Save(), failed to save database. detail : %s", e.msg_);
+		err.Format("GMCDBMan::Save(), failed to save database. detail : %s", (const char*)e.msg_);	//	explicit conversion in varargs.
 		a_LogOutput(1, err);
 		
 		return false;

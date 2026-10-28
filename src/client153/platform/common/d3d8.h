@@ -38,7 +38,25 @@
 #include "A3DQuaternion.h"
 #include "A3DGeometry.h"	//	A3DPLANE backs D3DXPLANE.
 typedef A3DVECTOR3 D3DXVECTOR3;
-typedef A3DPLANE D3DXPLANE;
+//	The D3DX plane (the documented d3dx8math.h layout with its
+//	constructors).
+typedef struct D3DXPLANE {
+#ifdef __cplusplus
+  D3DXPLANE() {}
+  D3DXPLANE(const float *pf) {
+    a = pf[0];
+    b = pf[1];
+    c = pf[2];
+    d = pf[3];
+  }
+  D3DXPLANE(float fa, float fb, float fc, float fd)
+      : a(fa), b(fb), c(fc), d(fd) {}
+  //	cast operators (the documented d3dx8math.h surface).
+  operator float *() { return &a; }
+  operator const float *() const { return &a; }
+#endif
+  float a, b, c, d;
+} D3DXPLANE;
 typedef A3DMATRIX4 D3DXMATRIX;
 typedef A3DQUATERNION D3DXQUATERNION;
 
@@ -281,6 +299,10 @@ struct IDirect3D8 : IUnknownD3D {
   virtual HRESULT CheckDeviceType(UINT adapter, DWORD checkType,
                                   DWORD displayFormat, DWORD backBufferFormat,
                                   BOOL windowed) = 0;
+  virtual HRESULT CheckDeviceFormat(UINT adapter, DWORD deviceType,
+                                    DWORD adapterFormat, DWORD usage,
+                                    DWORD resourceType,
+                                    DWORD checkFormat) = 0;
   virtual HRESULT CreateDevice(UINT adapter, DWORD deviceType, HWND focusWindow,
                                DWORD behaviorFlags,
                                D3DPRESENT_PARAMETERS *pPresentationParameters,
@@ -288,6 +310,18 @@ struct IDirect3D8 : IUnknownD3D {
   virtual HRESULT GetAdapterIdentifier(UINT adapter, DWORD flags,
                                        D3DADAPTER_IDENTIFIER8 *identifier) = 0;
 };
+
+//	The device and resource type constants (the documented d3d8types
+//	values).
+#define D3DDEVTYPE_HAL 1
+#define D3DDEVTYPE_REF 2
+#define D3DRTYPE_SURFACE 1
+#define D3DRTYPE_VOLUME 2
+#define D3DRTYPE_TEXTURE 3
+#define D3DRTYPE_VOLUMETEXTURE 4
+#define D3DRTYPE_CUBETEXTURE 5
+#define D3DRTYPE_VERTEXBUFFER 6
+#define D3DRTYPE_INDEXBUFFER 7
 
 //	The direct factory: returns none until the graphics backend
 //	registers (the callers' null-device paths handle it).

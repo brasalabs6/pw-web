@@ -55,8 +55,10 @@ bool CDlgWikiSkill::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LINK p
 	if(pDlg) 
 	{
 		// ensure the provider is correct
-		pDlg->SetContentProvider(&WikiSkillDataProvider());
-		pDlg->RefreshByNewCommand(&WikiSearchSkillBySpecificID(m_SkillID), true);
+		WikiSkillDataProvider provider;	//	one-shot use: the setter clones the provider synchronously.
+		pDlg->SetContentProvider(&provider);
+		WikiSearchSkillBySpecificID searchCmd(m_SkillID);	//	one-shot use: the setter clones the command synchronously.
+		pDlg->RefreshByNewCommand(&searchCmd, true);
 		return true;
 	}
 
@@ -78,7 +80,7 @@ ACString CDlgWikiSkill::ShowSpecficLinkCommand::GetLinkText() const
 {
 	ACString strLinkedName;
 	
-	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), m_Name);
+	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), (const wchar_t*)m_Name);	//	explicit conversion in varargs.
 
 	return strLinkedName;
 }
@@ -156,14 +158,16 @@ void CDlgWikiSkill::OnShowDialog()
 void CDlgWikiSkill::ResetSearchCommand()
 {
 	CDlgWikiByNameBase::ResetSearchCommand();
-	SetContentProvider(&WikiSkillDataProvider());
+	WikiSkillDataProvider provider;	//	one-shot use: the setter clones the provider synchronously.
+	SetContentProvider(&provider);
 
 	WikiSearchSuite suite;
 
 	if(m_pClassList && m_pClassList->GetCurSel() > 0)
 	{
 		int sel = m_pClassList->GetCurSel() - 1;
-		suite.Add(&WikiSearchSkillByClassLimit(1 << sel));
+		WikiSearchSkillByClassLimit searchCmd(1 << sel);	//	one-shot use: the suite clones the command synchronously.
+		suite.Add(&searchCmd);
 	}
 
 	ACString szTxt = m_pTxt_Search->GetText();
@@ -262,8 +266,9 @@ void CDlgWikiSkill::SetCurrentNPCLink(const NPC_ESSENCE* pNPC)
 
 	if(pTxt_Link_Npc)
 	{
+		CDlgNameLink::MoveToLinkCommand moveToCmd(pNPC->id, pNPC->name);	//	one-shot use: BindLinkCommand clones the command synchronously.
 		BindLinkCommand(pTxt_Link_Npc, NULL,
-			&CDlgNameLink::MoveToLinkCommand(pNPC->id, pNPC->name));
+			&moveToCmd);
 	}
 }
 
@@ -387,12 +392,12 @@ void CDlgWikiSkill::OnEventLButtonDown_List(WPARAM wParam, LPARAM lParam, AUIObj
 		pTxt_Weapon->SetText(GetWeaponLimit(skill));
 		
 		int level1 = skill.GetRequiredLevel();
-		pTxt_LevelRequire1->SetText(level1 > 0 ? strTxt.Format(GetStringFromTable(1899), level1) : GetStringFromTable(786));
+		pTxt_LevelRequire1->SetText(level1 > 0 ? (const ACHAR*)strTxt.Format(GetStringFromTable(1899), level1) : GetStringFromTable(786));	//	MSVC resolved the conditional to the SetText parameter type.
 		
 		pTxt_LevelRequire2->SetText( GetStringFromTable(1001 + min(300, skill.GetRank())) );
 
 		int firstLevel = GNET::ElementSkill::GetRequiredLevel(skill.GetSkillID(), 1);
-		pTxt_FirstLevel->SetText(firstLevel > 0 ? strTxt.Format(GetStringFromTable(1899), firstLevel) : GetStringFromTable(786));
+		pTxt_FirstLevel->SetText(firstLevel > 0 ? (const ACHAR*)strTxt.Format(GetStringFromTable(1899), firstLevel) : GetStringFromTable(786));	//	MSVC resolved the conditional to the SetText parameter type.
 
 		pTxt_MaxLevel->SetText(strTxt.Format(_AL("%d"), skill.GetMaxLevel()));
 
@@ -404,9 +409,10 @@ void CDlgWikiSkill::OnEventLButtonDown_List(WPARAM wParam, LPARAM lParam, AUIObj
 			for (size_t i(0); i < preSkills.Count(); ++ i)
 			{
 				strSkillName = WikiSearchSkillByName::GetLocalizedName(preSkills[i]);
+				CDlgWikiSkill::ShowSpecficLinkCommand showCmd(preSkills[i], strSkillName);	//	one-shot use: BindLinkCommand clones the command synchronously.
 				BindLinkCommand(pTxt_PreSkill,
 					&strSkillName,
-					&CDlgWikiSkill::ShowSpecficLinkCommand(preSkills[i], strSkillName));
+					&showCmd);
 			}
 		}
 		else
@@ -423,7 +429,8 @@ void CDlgWikiSkill::OnEventLButtonDown_List(WPARAM wParam, LPARAM lParam, AUIObj
 		CDlgWikiNPCList* pDlgNpc = dynamic_cast<CDlgWikiNPCList*>(GetGameUIMan()->GetDialog("Win_WikiNpcSelect"));
 		if(pDlgNpc)
 		{
-			pDlgNpc->SetNPCProvider(&WikiNPCSkillServiceProvider(m_pWikiNPCSkillCache, skill.GetSkillID()), true);
+			WikiNPCSkillServiceProvider provider(m_pWikiNPCSkillCache, skill.GetSkillID());	//	one-shot use: the setter clones the provider synchronously.
+			pDlgNpc->SetNPCProvider(&provider, true);
 			pDlgNpc->Show(!pDlgNpc->TestEmpty(), true);
 		}
 
@@ -497,8 +504,10 @@ bool CDlgWikiSkill::Release(void)
 // =======================================================================
 WikiNPCSkillCache::WikiNPCSkillCache()
 {
-	SetContentProvider(&WikiElementDataProvider(ID_SPACE_ESSENCE));
-	Refresh(&WikiSearchNPCByServiceSkill());
+	WikiElementDataProvider provider(ID_SPACE_ESSENCE);	//	one-shot use: the setter clones the provider synchronously.
+	SetContentProvider(&provider);
+	WikiSearchNPCByServiceSkill searchCmd;	//	one-shot use: the setter clones the command synchronously.
+	Refresh(&searchCmd);
 }
 
 int  WikiNPCSkillCache::GetPageSize() const

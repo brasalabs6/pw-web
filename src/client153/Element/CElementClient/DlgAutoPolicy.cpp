@@ -670,7 +670,7 @@ void CDlgAutoPolicy::SaveConfigData()
 			if (i == 0)
 				str.Format(_AL("%d"), list_monsters[i]);
 			else
-				str.Format(_AL("%s;%d"), str, list_monsters[i]);
+				str.Format(_AL("%s;%d"), (const wchar_t*)str, list_monsters[i]);	//	explicit conversion in varargs.
 		}
 		cfgData.ignoreMonsterName = AC2AS(str);
 	}
@@ -682,7 +682,7 @@ void CDlgAutoPolicy::SaveConfigData()
 			if (i == 0)
 				str.Format(_AL("%d"), list_matters[i]);
 			else
-				str.Format(_AL("%s;%d"), str, list_matters[i]);
+				str.Format(_AL("%s;%d"), (const wchar_t*)str, list_matters[i]);	//	explicit conversion in varargs.
 		}
 		cfgData.ignoreMatterName = AC2AS(str);
 	}

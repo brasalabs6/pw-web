@@ -7,6 +7,7 @@
 #include "hashmap.h"
 #include "DlgBase.h"
 #include "AUIImagePicture.h"
+#include <AList2.h>	//	APtrList (the original build pulled it in through the project's include order).
 
 
 // 世界

@@ -26,7 +26,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <amemory.h>
+#include <AMemory.h>
 #include <vector.h>
 #include "AVariant.h"
 
@@ -185,7 +185,7 @@ template <class TYPE> class ASetTemplate : public ASet
 public:
 
 	// 内建元素类
-	template <class TYPE> class ASetElement
+	template <class ELEM_TYPE> class ASetElement	//	renamed from TYPE: the nested parameter shadowed the outer template parameter (MSVC allowed it).
 	{
 	public:
 
@@ -194,7 +194,7 @@ public:
 			m_szName.Empty();
 		}
 
-		ASetElement(AString szName, TYPE data)
+		ASetElement(AString szName, ELEM_TYPE data)
 		{
 			m_szName	= szName;
 			m_data		= data;
@@ -207,12 +207,12 @@ public:
 		}
 
 		AString GetName() {return m_szName;}
-		TYPE GetData() {return m_data;}
+		ELEM_TYPE GetData() {return m_data;}
 
 	private:
 
 		AString m_szName;
-		TYPE		 m_data;
+		ELEM_TYPE	 m_data;
 	};
 
 protected:

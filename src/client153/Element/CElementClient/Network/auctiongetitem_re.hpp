@@ -5,7 +5,7 @@
 #include "rpcdefs.h"
 #include "callid.hxx"
 #include "state.hxx"
-#include "GRoleInventory"
+#include "groleinventory"
 
 namespace GNET
 {

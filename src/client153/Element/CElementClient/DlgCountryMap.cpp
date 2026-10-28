@@ -156,7 +156,7 @@ static void LogRoute(const char *title, const CECDomainCountryInfo::Route &r)
 		str += szBuf;
 	}
 
-	a_LogOutput(1, "%s=%s", title, str);
+	a_LogOutput(1, "%s=%s", title, (const char*)str);	//	explicit conversion in varargs.
 }
 
 void CDlgCountryMap::LogState()const
@@ -1431,7 +1431,7 @@ void CDlgCountryMove::OnTick()
 		return;
 	}
 	int nodeLeft = CDlgCountryMap::ConverToSeconds(pDlgCountryMap->GetNodeMoveTimeLeft());
-	strText.Format(GetStringFromTable(9883), pNode->name, GetGameUIMan()->GetFormatTime(nodeLeft));
+	strText.Format(GetStringFromTable(9883), pNode->name, (const wchar_t*)GetGameUIMan()->GetFormatTime(nodeLeft));	//	explicit conversion in varargs.
 
 	//	显示到达最终目标剩余时间
 	if (pDlgCountryMap->m_route.getDst() != pDlgCountryMap->m_domainNext)
@@ -1445,7 +1445,7 @@ void CDlgCountryMove::OnTick()
 		}
 		int allLeft = CDlgCountryMap::ConverToSeconds(pDlgCountryMap->GetRouteMoveTimeLeft());
 		ACString strTemp;
-		strTemp.Format(GetStringFromTable(9883), pTarget->name, GetGameUIMan()->GetFormatTime(allLeft));
+		strTemp.Format(GetStringFromTable(9883), pTarget->name, (const wchar_t*)GetGameUIMan()->GetFormatTime(allLeft));	//	explicit conversion in varargs.
 		strText += _AL("\r");
 		strText += strTemp;
 	}

@@ -3,7 +3,7 @@
 #include "EC_GameUIMan.h"
 #include "EC_HostPlayer.h"
 #include "EC_GameSession.h"
-#include "../../CElementData/ExpTypes.h"
+#include "ExpTypes.h"	//	CElementData was folded into the seam; the wrapper keeps the original ExpTypes.h spelling.
 #include "Network\\ids.hxx"
 
 

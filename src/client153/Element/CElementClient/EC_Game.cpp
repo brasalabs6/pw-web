@@ -1743,21 +1743,21 @@ A3DSkinModel* CECGame::LoadA3DSkinModel(const char* szFile, int iSkinFlag/* 0 */
 	if (!pModel)
 	{
 		glb_ErrorOutput(ECERR_NOTENOUGHMEMORY, "CECGame::LoadA3DSkinModel", __LINE__);
-		return false;
+		return NULL;	//	original returned false; MSVC converted it to the null pointer.
 	}
 
 	if (!pModel->Init(m_pA3DEngine))
 	{
 		delete pModel;
 		glb_ErrorOutput(ECERR_FAILEDTOCALL, "CECGame::LoadA3DSkinModel", __LINE__);
-		return false;
+		return NULL;	//	original returned false; MSVC converted it to the null pointer.
 	}
 
 	if (!pModel->Load(szFile, iSkinFlag))
 	{
 		delete pModel;
 		glb_ErrorOutput(ECERR_FAILEDTOCALL, "CECGame::LoadA3DSkinModel", __LINE__);
-		return false;
+		return NULL;	//	original returned false; MSVC converted it to the null pointer.
 	}
 
 	return pModel;
@@ -2402,15 +2402,15 @@ ACString CECGame::GetFormattedPrice(__int64 i)
 	if( i < 1000 )
 		szRes.Format(_AL("%d"), (int)i);
 	else if( i < 1000000 )
-		szRes.Format(_AL("%d%s%03d"), (int)i / 1000, strSeperator, (int)i % 1000);
+		szRes.Format(_AL("%d%s%03d"), (int)i / 1000, (const wchar_t*)strSeperator, (int)i % 1000);	//	explicit conversion in varargs.
 	else if( i < 1000000000 )
-		szRes.Format(_AL("%d%s%03d%s%03d"), (int)i / 1000000, strSeperator, (int)i / 1000 % 1000, strSeperator, (int)i % 1000);
+		szRes.Format(_AL("%d%s%03d%s%03d"), (int)i / 1000000, (const wchar_t*)strSeperator, (int)i / 1000 % 1000, (const wchar_t*)strSeperator, (int)i % 1000);	//	explicit conversions in varargs.
 	else
 	{
 		int nHigh = int(i / 1000000000);
 		int nLow = int(i % 1000000000);
 
-		szRes.Format(_AL("%d%s%03d%s%03d%s%03d"), nHigh, strSeperator, nLow / 1000000 % 1000, strSeperator, nLow / 1000 % 1000, strSeperator, nLow % 1000);
+		szRes.Format(_AL("%d%s%03d%s%03d%s%03d"), nHigh, (const wchar_t*)strSeperator, nLow / 1000000 % 1000, (const wchar_t*)strSeperator, nLow / 1000 % 1000, (const wchar_t*)strSeperator, nLow % 1000);	//	explicit conversions in varargs.
 	}
 	return szRes;
 }

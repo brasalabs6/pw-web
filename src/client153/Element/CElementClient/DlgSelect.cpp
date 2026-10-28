@@ -253,7 +253,7 @@ void CDlgSelect::RenderAccountTime()
 	
 	
 	DWORD nSec = DWORD(g_pGame->GetGameSession()->GetAccountTime() / 1000);
-	nSec = max(nSec, 0);
+	nSec = max(nSec, 0u);	//	MSVC's max macro accepted mixed types; the overloads need one type.
 	DWORD nMin = nSec / 60;
 	nSec -= nMin * 60;
 	DWORD nHour = nMin / 60;
@@ -601,7 +601,7 @@ void CDlgSelect::RefreshCharacterList()
 			ACString strLevel;
 			if (realmLevel > 0){
 				ACString strRealm = GetBaseUIMan()->GetRealmName(realmLevel);
-				strLevel.Format(_AL("%s %s%s %d"), g_pGame->GetGameRun()->GetProfName(info.occupation), strRealm, GetStringFromTable(323), info.level);
+				strLevel.Format(_AL("%s %s%s %d"), g_pGame->GetGameRun()->GetProfName(info.occupation), (const wchar_t*)strRealm, GetStringFromTable(323), info.level);	//	explicit conversion in varargs.
 			}else{
 				strLevel.Format(_AL("%s %s %d"),
 					g_pGame->GetGameRun()->GetProfName(info.occupation),

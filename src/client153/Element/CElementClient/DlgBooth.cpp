@@ -921,7 +921,7 @@ void CDlgBoothElse::UpdatePriceRemind()
 	if( !pObjSrc || !strstr(pObjSrc->GetParent()->GetName(), "Win_Inventory") ) RETURN_FAIL;
 
 	ACString strHint;
-	strHint.Format(GetStringFromTable(11250), GetGameUIMan()->GetFormatNumber(pItem->GetUnitPrice()));
+	strHint.Format(GetStringFromTable(11250), (const wchar_t*)GetGameUIMan()->GetFormatNumber(pItem->GetUnitPrice()));	//	explicit conversion in varargs.
 	pDragDrop->GetImgGood()->SetHint(strHint);
 }
 
@@ -1161,13 +1161,13 @@ void CDlgBoothSelf::AddBoothMessage(const ACHAR *pszMsg)
 				a_strncpy(szPlayer, pMsg + p1 , p2 - p1 + 1);
 				szPlayer[p2 - p1 + 1] = '\0';
 				PAUITEXTAREA pMsgList = dynamic_cast<PAUITEXTAREA>(GetDlgItem("Txt_MsgList"));
-				pMsg = a_strstr(pMsg + j, GetStringFromTable(200));
+				pMsg = const_cast<ACHAR*>(a_strstr(pMsg + j, GetStringFromTable(200)));	//	the site needs the mutable pointer (the scanner returns const).
 				if( pMsg != NULL)
 				{
 					ACString strBoothMsg;
 					ACString strMsg = pMsg+1;
 					GetGameRun()->GetUIManager()->FilterBadWords(strMsg);
-					strBoothMsg.Format(GetStringFromTable(778),szPlayer, strMsg);
+					strBoothMsg.Format(GetStringFromTable(778),szPlayer, (const wchar_t*)strMsg);	//	explicit conversion in varargs.
 					int nMsgLen = strBoothMsg.GetLength();
 					strBoothMsg[nMsgLen - 2] = '\r';
 					if( pMsgList )
@@ -1196,7 +1196,7 @@ void CDlgBoothSelf::OnItemDragDrop(CECIvtrItem* pIvtrSrc, int iSrc, PAUIOBJECT p
 		if(slot >= 0)
 		{
 			AString strName;
-			pObjOver = GetDlgItem(strName.Format("%s%02d", strPrefix, slot+1));
+			pObjOver = GetDlgItem(strName.Format("%s%02d", (const char*)strPrefix, slot+1));	//	explicit conversion in varargs.
 		}
 	}
 

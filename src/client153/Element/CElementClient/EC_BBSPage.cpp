@@ -3453,7 +3453,7 @@ DownloadedPagesManager::~DownloadedPagesManager()
 	bool bError = false;
 	while (!m_CSUsers.empty())
 	{
-		int nCount = min(m_CSUsers.size(), MAXIMUM_WAIT_OBJECTS);
+		int nCount = min(m_CSUsers.size(), (size_t)MAXIMUM_WAIT_OBJECTS);	//	MSVC's min macro accepted mixed types; the overloads need one type.
 		if (WAIT_OBJECT_0 != WaitForMultipleObjects(nCount, m_CSUsers.begin(), TRUE, INFINITE))
 		{
 			//	有错误发生

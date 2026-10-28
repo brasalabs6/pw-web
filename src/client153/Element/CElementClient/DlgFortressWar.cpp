@@ -6,7 +6,7 @@
 #include "EC_HostPlayer.h"
 #include "CSplit.h"
 #include "ExpTypes.h"
-#include "NetWork\\factionfortresslist_re.hpp"
+#include "Network/factionfortresslist_re.hpp"	//	MSVC accepted the backslash separator; the port uses the real case and a forward slash.
 #include "Network\\factionfortresschallenge_re.hpp"
 #include "Network\\rpcdata\\gfactionfortressbriefinfo"
 #include "Network\\factionfortressget_re.hpp"
@@ -169,11 +169,11 @@ void CDlgFortressWar::OnPrtcFactionFortressList_Re(const GNET::FactionFortressLi
 		strBuilding = GetBuildingString(info.building.begin(), info.building.size());
 		
 		strText.Format(_AL("%s\t%d\t%d\t%s\t%s")
-			, strName1
+			, (const wchar_t*)strName1
 			, info.level
 			, info.health
-			, strBuilding
-			, strName2);
+			, (const wchar_t*)strBuilding
+			, (const wchar_t*)strName2);	//	explicit conversions in varargs.
 		m_pLst_Fortress->AddString(strText);
 
 		//	记录数据用于宣战
@@ -225,11 +225,11 @@ void CDlgFortressWar::OnPrtcFactionFortressGet_Re(const GNET::FactionFortressGet
 		strBuilding = GetBuildingString(info.building.begin(), info.building.size());
 		
 		strText.Format(_AL("%s\t%d\t%d\t%s\t%s")
-			, strName1
+			, (const wchar_t*)strName1
 			, info.level
 			, info.health
-			, strBuilding
-			, strName2);
+			, (const wchar_t*)strBuilding
+			, (const wchar_t*)strName2);	//	explicit conversions in varargs.
 		m_pLst_Fortress->AddString(strText);
 
 		//	记录数据用于宣战
@@ -327,7 +327,7 @@ void CDlgFortressWar::OnTick()
 
 		CSplit s(m_pLst_Fortress->GetText(i));
 		CSplit::VectorAWString vec = s.Split(_AL("\t"));
-		strText.Format(_AL("%s\t%s\t%s\t%s\t%s"), strName1, vec[1], vec[2], vec[3], strName2);
+		strText.Format(_AL("%s\t%s\t%s\t%s\t%s"), (const wchar_t*)strName1, (const wchar_t*)vec[1], (const wchar_t*)vec[2], (const wchar_t*)vec[3], (const wchar_t*)strName2);	//	explicit conversions in varargs.
 		m_pLst_Fortress->SetText(i, strText);
 	}
 }

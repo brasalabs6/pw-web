@@ -58,7 +58,8 @@ bool CDlgWikiEquipment::ShowSpecficLinkCommand::operator()(P_AUITEXTAREA_NAME_LI
 		//	One-shot use: the setter clones the provider synchronously; a local is safe.
 		WikiElementDataProvider essenceProvider(ID_SPACE_ESSENCE);
 		pDlg->SetContentProvider(&essenceProvider);
-		pDlg->RefreshByNewCommand(&WikiSearchBySpecificID(m_ItemID), true);
+		WikiSearchBySpecificID searchCmd(m_ItemID);	//	one-shot use: the setter clones the command synchronously.
+		pDlg->RefreshByNewCommand(&searchCmd, true);
 		return true;
 	}
 	return false;
@@ -68,7 +69,7 @@ ACString CDlgWikiEquipment::ShowSpecficLinkCommand::GetLinkText() const
 {
 	ACString strLinkedName;
 	
-	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), m_Name);
+	strLinkedName.Format(_AL("^00FF00&%s&^FFFFFF"), (const wchar_t*)m_Name);	//	explicit conversion in varargs.
 
 	return strLinkedName;
 }
@@ -101,7 +102,8 @@ void CDlgWikiEquipment::ResetSearchCommand()
 	CDlgWikiByNameBase::ResetSearchCommand();
 
 	SetContentProvider(&m_EssenceProvider);
-	SetSearchCommand(&WikiSearchEquipmentByName());
+	WikiSearchEquipmentByName searchCmd;	//	one-shot use: the setter clones the command synchronously.
+	SetSearchCommand(&searchCmd);
 }
 
 void CDlgWikiEquipment::OnBeginSearch()
@@ -131,7 +133,7 @@ bool CDlgWikiEquipment::OnAddSearch(WikiEntityPtr p)
 	if (!pEP) return false;
 
 	ACString strItem;	
-	strItem.Format(_AL("%s\t%d"), pEP->GetName(), pEP->GetLevel());
+	strItem.Format(_AL("%s\t%d"), (const wchar_t*)pEP->GetName(), pEP->GetLevel());	//	explicit conversion in varargs.
 	m_pList->AddString(strItem);
 	m_pList->SetItemData(m_pList->GetCount()-1, id);
 	
@@ -240,13 +242,14 @@ void CDlgWikiEquipment::OnEventLButtonDown_List(WPARAM wParam, LPARAM lParam, AU
 			szTxt.Format(GetStringFromTable(8652), pEP->GetLevelRequire()));
 
 		pTxt_LevelupAddon->SetText(pEP->GetLevelupAddon() ? 
-			GetAddonName(pEP->GetID(), pEP->GetLevelupAddon(), szTxt) : GetStringFromTable(8653));
+			(const ACHAR*)GetAddonName(pEP->GetID(), pEP->GetLevelupAddon(), szTxt) : GetStringFromTable(8653));	//	MSVC resolved the conditional to the SetText parameter type.
 
 		// bind search command to recipe wiki
 		if(pEP->GetSplit())
 		{
+			CDlgWikiRecipe::ShowSpecficLinkCommand showSplitCmd(pEP->GetSplit(), GetItemName(pEP->GetSplit(), szTxt));	//	one-shot use: BindLinkCommand clones the command synchronously.
 			BindLinkCommand(pTxt_Split, NULL,
-				&CDlgWikiRecipe::ShowSpecficLinkCommand(pEP->GetSplit(), GetItemName(pEP->GetSplit(), szTxt)));
+				&showSplitCmd);
 		}
 		else
 		{
@@ -259,8 +262,9 @@ void CDlgWikiEquipment::OnEventLButtonDown_List(WPARAM wParam, LPARAM lParam, AU
 		// bind search command to recipe wiki
 		if(pEP->GetDamaged())
 		{
+			CDlgWikiRecipe::ShowSpecficLinkCommand showDamagedCmd(pEP->GetDamaged(), GetItemName(pEP->GetDamaged(), szTxt));	//	one-shot use: BindLinkCommand clones the command synchronously.
 			BindLinkCommand(pTxt_Damaged, NULL,
-				&CDlgWikiRecipe::ShowSpecficLinkCommand(pEP->GetDamaged(), GetItemName(pEP->GetDamaged(), szTxt)));
+				&showDamagedCmd);
 		}
 		else
 		{

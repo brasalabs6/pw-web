@@ -1,4 +1,4 @@
-#include "aproperty.h"
+#include "AProperty.h"
 #include <AString.h>
 #include <AScriptFile.h>
 

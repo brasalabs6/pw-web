@@ -27,7 +27,7 @@
 #include "EC_UIManager.h"
 #include "EC_GameUIMan.h"
 #include <windowsx.h>
-#include <winuser.h>
+#include <Windows.h>	//	the seam consolidates winuser.h; the WM_* surface lives in the adapted Windows.h.
 #include "EC_AutoPolicy.h"
 #include "EC_TimeSafeChecker.h"
 #include "EC_ComboSkillState.h"

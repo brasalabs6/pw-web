@@ -10,7 +10,7 @@
 #include "EC_Game.h"
 #include "EC_Global.h"
 #include <algorithm>
-#include <ITERATOR>
+#include <iterator>	//	original spelled the standard header <ITERATOR>; the Windows build resolved it case-insensitively.
 #include "AUIDef.h"
 #include "EC_GameUIMan.h"
 #include "EC_HostPlayer.h"
@@ -236,7 +236,7 @@ void CDlgGenCardCollection::OnHideDialog()
 		delete m_pItemsInCurPage[i];
 	}
 	m_pItemsInCurPage.clear();
-	for (i=0;i<m_pCardBorders.size();i++)
+	for (unsigned int i=0;i<m_pCardBorders.size();i++)	//	original relied on MSVC for-scoping leakage.
 	{
 		A3DRELEASE(m_pCardBorders[i]);
 	}
@@ -263,7 +263,7 @@ void CDlgGenCardCollection::OnCommandNext(const char * szCommand)
 
 void CDlgGenCardCollection::OnEventLButtonDown(WPARAM wParam, LPARAM lParam, AUIObject * pObj)
 {
-	if(AUI_PRESS(VK_SHIFT) && strstr(pObj->GetName(),"Img_CardFrame")>=0)
+	if(AUI_PRESS(VK_SHIFT) && (long)strstr(pObj->GetName(),"Img_CardFrame")>=0)	//	MSVC compared the pointer with 0 (always true); the cast keeps that meaning.
 	{
 		int i = atoi(pObj->GetName() + strlen("Img_CardFrame")) - 1;
 		if(i >= (int)search_ret_cards.size() || i<0) return;
@@ -327,7 +327,7 @@ bool CDlgGenCardCollection::PutCardToChatWin(const POKER_ESSENCE* card)
 				
 			//	加入ID信息，通过消息传递供GT显示用
 			ACString strInfo;
-			strInfo.Format(_AL("%s%s"), A3DCOLOR_TO_STRING(clrName), strName);
+			strInfo.Format(_AL("%s%s"), (const wchar_t*)A3DCOLOR_TO_STRING(clrName), (const wchar_t*)strName);	//	explicit conversions in varargs.
 				
 			if (pEdit->AppendItem(enumEIIvtrlItem, clrName, strName, strInfo))
 			{
@@ -483,7 +483,7 @@ void CDlgGenCardCollection::ShowPage(int index)
 	}
 
 	int has = 0;
-	for (i=0;i<(int)cards.size();i++)
+	for (int i=0;i<(int)cards.size();i++)	//	original relied on MSVC for-scoping leakage.
 	{
 		POKER_ESSENCE* card = cards[i];
 		bool bHas = GetHostPlayer()->GetGeneralCardData().HasCard(card->show_order);

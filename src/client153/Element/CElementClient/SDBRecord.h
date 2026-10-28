@@ -68,12 +68,14 @@ public:
 	// serialize
 	void Save(Archive &ar) const
 	{
-		VL::ForEachConst(*this, CommonPrivate::FuncSaveAnyTypeToArchive(ar));
+		CommonPrivate::FuncSaveAnyTypeToArchive saveHelper(ar);	//	MSVC bound this temporary to the non-const reference.
+		VL::ForEachConst(*this, saveHelper);
 	}
 	
 	void Load(Archive &ar)
 	{
-		VL::ForEach(*this, CommonPrivate::FuncLoadAnyTypeToArchive(ar));
+		CommonPrivate::FuncLoadAnyTypeToArchive loadHelper(ar);	//	MSVC bound this temporary to the non-const reference.
+		VL::ForEach(*this, loadHelper);
 	}
 	
 	// null related

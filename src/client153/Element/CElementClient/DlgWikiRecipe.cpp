@@ -134,7 +134,8 @@ CDlgWikiRecipe::MaterialSearcher::MaterialSearcher(CDlgWikiRecipe* pDlg)
 
 bool CDlgWikiRecipe::MaterialSearcher::ConfirmSearch(unsigned int id)
 {
-	return Refresh(&WikiSearchRecipeByProductID(id));
+	WikiSearchRecipeByProductID searchCmd(id);	//	one-shot use: the setter clones the command synchronously.
+	return Refresh(&searchCmd);
 }
 
 void CDlgWikiRecipe::MaterialSearcher::OnBeginSearch()
@@ -272,7 +273,8 @@ CDlgWikiRecipe::ProductSearcher::ProductSearcher(CDlgWikiRecipe* pDlg)
 
 bool CDlgWikiRecipe::ProductSearcher::ConfirmSearch(unsigned int id)
 {
-	return Refresh(&WikiSearchRecipeByMaterialID(id));
+	WikiSearchRecipeByMaterialID searchCmd(id);	//	one-shot use: the setter clones the command synchronously.
+	return Refresh(&searchCmd);
 }
 
 void CDlgWikiRecipe::ProductSearcher::OnBeginSearch()
@@ -487,7 +489,8 @@ void CDlgWikiRecipe::OnCommand_SearchByName(const char *szCommand)
 		m_pWikiNPCMakingCache = new WikiNPCMakingCache();
 	}
 	
-	m_pDlgConfirm->SetItemProvider(&WikiRecipeItemProvider(m_pWikiRecipeItemCache, szTxt));
+	WikiRecipeItemProvider provider(m_pWikiRecipeItemCache, szTxt);	//	one-shot use: the setter clones the provider synchronously.
+	m_pDlgConfirm->SetItemProvider(&provider);
 	m_pDlgConfirm->Show(!m_pDlgConfirm->TestEmpty(), true);
 }
 
@@ -513,7 +516,8 @@ void CDlgWikiRecipe::OnEventLButtonDBCLK_ListMaterial(WPARAM wParam, LPARAM lPar
 	const RECIPE_ESSENCE* pEssence = m_pMaterialSearcher->GetCurEssence();
 	if (pEssence)
 	{
-		m_pDlgNpc->SetNPCProvider(&WikiNPCMakeServiceProvider(m_pWikiNPCMakingCache, pEssence->id), true);
+		WikiNPCMakeServiceProvider provider(m_pWikiNPCMakingCache, pEssence->id);	//	one-shot use: the setter clones the provider synchronously.
+		m_pDlgNpc->SetNPCProvider(&provider, true);
 		m_pDlgNpc->Show(!m_pDlgNpc->TestEmpty(), true);
 	}
 }
@@ -523,7 +527,8 @@ void CDlgWikiRecipe::OnEventLButtonDBCLK_ListProduct(WPARAM wParam, LPARAM lPara
 	const RECIPE_ESSENCE* pEssence = m_pProductSearcher->GetCurEssence();
 	if (pEssence)
 	{
-		m_pDlgNpc->SetNPCProvider(&WikiNPCMakeServiceProvider(m_pWikiNPCMakingCache, pEssence->id), true);
+		WikiNPCMakeServiceProvider provider(m_pWikiNPCMakingCache, pEssence->id);	//	one-shot use: the setter clones the provider synchronously.
+		m_pDlgNpc->SetNPCProvider(&provider, true);
 		m_pDlgNpc->Show(!m_pDlgNpc->TestEmpty(), true);
 	}
 }
@@ -536,7 +541,8 @@ WikiNPCMakingCache::WikiNPCMakingCache()
 :m_EssenceProvider(ID_SPACE_ESSENCE)
 {
 	SetContentProvider(&m_EssenceProvider);
-	Refresh(&WikiSearchNPCByServiceMake());
+	WikiSearchNPCByServiceMake searchCmd;	//	one-shot use: the setter clones the command synchronously.
+	Refresh(&searchCmd);
 }
 
 int  WikiNPCMakingCache::GetPageSize() const
@@ -723,8 +729,10 @@ bool WikiRecipeItemCache::IsValid(unsigned int id)
 		else
 		{
 			// search onlive
-			isValid  = Refresh(&WikiSearchRecipeByProductID(id)) || 
-				Refresh(&WikiSearchRecipeByMaterialID(id));
+			WikiSearchRecipeByProductID searchByProduct(id);	//	one-shot use: the setter clones the command synchronously.
+			WikiSearchRecipeByMaterialID searchByMaterial(id);	//	one-shot use: the setter clones the command synchronously.
+			isValid  = Refresh(&searchByProduct) || 
+				Refresh(&searchByMaterial);
 			s_Cache.insert(CachePair(id, isValid));
 		}
 	}

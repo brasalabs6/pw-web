@@ -12,6 +12,7 @@
 
 #include "AFI.h"
 #include "AIniFile.h"
+#include <windowsx.h>	//	GET_X_LPARAM/GET_Y_LPARAM (the seam's windowsx.h).
 
 #include "EC_CDS.h"
 #include "EC_Global.h"
@@ -1562,7 +1563,7 @@ bool CECLoginUIMan::Init_Customize(bool bCallForCreate)
 namespace
 {
 #define DEFINE_DIALOG_CREATOR(dialogclass) static PAUIDIALOG wmgj_new_##dialogclass(void){ return new dialogclass; }
-#define MAP_FILE_TO_CREATOR(file, dialogclass) s_mDialogCreator[file] = &wmgj_new_##dialogclass; s_mDialogCreator["version01\\"##file] = &wmgj_new_##dialogclass;
+#define MAP_FILE_TO_CREATOR(file, dialogclass) s_mDialogCreator[file] = &wmgj_new_##dialogclass; s_mDialogCreator["version01\\" file] = &wmgj_new_##dialogclass;	//	MSVC pasted the literals with ##; the standard form concatenates them.
 
 	//	定义各对话框创建函数
 	DEFINE_DIALOG_CREATOR(CDlgAgreement)
@@ -1850,7 +1851,8 @@ bool CECLoginUIMan::LoadShowModel(int prof, int gender)
 			Info.gender = gender;
 			CECPlayer::PLAYER_CUSTOMIZEDATA custom_data;
 			if (CECPlayer::LoadDefaultCustomizeData(prof, gender, custom_data)){
-				Info.custom_data.swap(GNET::Octets((const void *)&custom_data, sizeof(custom_data)));
+				GNET::Octets customDataOctets((const void *)&custom_data, sizeof(custom_data));	//	MSVC bound this temporary to the non-const reference.
+				Info.custom_data.swap(customDataOctets);
 			}
 			if (!pPlayer->Load(Info)){
 				assert(false);
