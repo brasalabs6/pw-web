@@ -255,6 +255,12 @@ constexpr DWORD D3DRS_VERTEXBLEND = 151;
 constexpr DWORD D3DRS_SOFTWAREVERTEXPROCESSING = 153;
 constexpr DWORD D3DRS_POINTSIZE = 154;
 constexpr DWORD D3DRS_POINTSPRITEENABLE = 156;
+//	Point-scale render states (documented d3d8types.h values), used by the
+//	GFX point-sprite slot rendering.
+constexpr DWORD D3DRS_POINTSCALEENABLE = 157;
+constexpr DWORD D3DRS_POINTSCALE_A = 158;
+constexpr DWORD D3DRS_POINTSCALE_B = 159;
+constexpr DWORD D3DRS_POINTSCALE_C = 160;
 constexpr DWORD D3DRS_INDEXEDVERTEXBLENDENABLE = 167;
 
 //	The texture stage states (the documented d3d8types.h values;
