@@ -1,0 +1,83 @@
+
+#ifndef __GNET_MATRIXTOKEN_HPP
+#define __GNET_MATRIXTOKEN_HPP
+
+#include "rpcdefs.h"
+#include "callid.hxx"
+#include "state.hxx"
+#include "matrixtokenarg"
+#include "matrixtokenres"
+#include <string>
+
+namespace GNET
+{
+
+class MatrixToken : public ProxyRpc
+{
+#define	RPC_BASECLASS	ProxyRpc
+	#include "matrixtoken"
+#undef	RPC_BASECLASS
+
+	void Process(Manager *manager, Manager::Session::ID sid)
+	{
+		// pw-web: gauthd is the TERMINAL node for this ProxyRpc. OPTIONAL for
+		// the v145 flow: glinkd only issues RPC_MATRIXTOKEN when the client
+		// sends Response.use_token!=0, and gdeliveryd refuses to forward it
+		// unless gamesys.conf sets token_login_support=true (absent -> false).
+		if (!xid.IsRequest())
+			return;
+		xid.ClrRequest();
+		proxy_manager = manager;
+		proxy_sid     = sid;
+		proxy_xid     = xid;
+		xid.SetRequest();
+
+		MatrixTokenArg arg;
+		MatrixTokenRes res;
+		proxy_data >> arg;
+
+		// dev-auth: same numeric-account rule; the token value itself is NOT
+		// verified (no token backend exists in this tree). glinkd's token
+		// Client() checks only retcode and routes on algorithm&MASK_HIGH, so
+		// algorithm=0 continues straight to KeyExchange. SECURITY: with
+		// token_login_support=true this accepts any token for a valid numeric
+		// account; keep that config key unset until a real token source exists.
+		res.userid = std::atoi(std::string((char*)arg.account.begin(), arg.account.size()).c_str());
+		if (res.userid % 16 || 0 == res.userid)
+		{
+			res.retcode = ERR_INVALID_ACCOUNT;
+			SetResult(res);
+			SendToSponsor();
+			return;
+		}
+
+		res.algorithm = 0;
+		res.retcode = ERR_SUCCESS;
+		SetResult(res);
+		SendToSponsor();
+	}
+
+	bool Delivery(Manager::Session::ID proxy_sid, const OctetsStream& osArg)
+	{
+		// gauthd is the terminal server for this Rpc: no forward hop exists,
+		// so fail the delivery (sponsor receives ERR_DELIVER_SEND). Unreachable
+		// while Process() above answers every request.
+		SetResult(MatrixTokenRes(ERR_DELIVER_SEND));
+		SendToSponsor();
+		return false;
+	}
+
+	void PostProcess(Manager::Session::ID proxy_sid,const OctetsStream& osArg, const OctetsStream& osRes)
+	{
+		// TODO
+	}
+
+	void OnTimeout( )
+	{
+		// TODO Client Only
+	}
+
+};
+
+};
+#endif

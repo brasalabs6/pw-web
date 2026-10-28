@@ -16,4 +16,15 @@ if command -v c++ >/dev/null 2>&1; then
 else
   echo "SKIP: native compiler unavailable (CI has C++)"
 fi
+echo "== server153 CreateRole wire conformance (PWBR v145 client) =="
+set +e
+scripts/test-server153-wire.sh
+wire_rc=$?
+set -e
+if [ "$wire_rc" -eq 2 ]; then
+  echo "SKIP: 32-bit toolchain unavailable (server153 CI image has gcc-multilib)"
+elif [ "$wire_rc" -ne 0 ]; then
+  echo "wire conformance test FAILED (rc=$wire_rc)" >&2
+  exit 1
+fi
 echo "All available checks passed."

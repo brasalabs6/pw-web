@@ -10,3 +10,6 @@
 	path = references/server-rust
 	url = https://github.com/mur1ll0/pw-universal-server.git
 	branch = main
+[submodule "references/server-153-source"]
+	path = references/server-153-source
+	url = https://github.com/hrace009/PW-Source-1.5.3.git

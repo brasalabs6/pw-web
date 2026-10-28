@@ -1,0 +1,101 @@
+
+#ifndef __GNET_MATRIXPASSWD_HPP
+#define __GNET_MATRIXPASSWD_HPP
+
+#include "rpcdefs.h"
+#include "callid.hxx"
+#include "state.hxx"
+#include "matrixpasswdarg"
+#include "matrixpasswdres"
+#include "security.h"
+#include <string>
+
+namespace GNET
+{
+
+class MatrixPasswd : public ProxyRpc
+{
+#define	RPC_BASECLASS	ProxyRpc
+	#include "matrixpasswd"
+#undef	RPC_BASECLASS
+
+	void Process(Manager *manager, Manager::Session::ID sid)
+	{
+		// pw-web: gauthd is the TERMINAL node for this ProxyRpc. The ProxyRpc
+		// base Process() only forwards via Delivery(); upstream never
+		// implemented the terminal handler, so every request fell into the
+		// proxy fail path and clients got ERR_DELIVER_SEND (retcode 21).
+		// Mirror the base request bookkeeping, then answer directly.
+		if (!xid.IsRequest())
+			return;
+		xid.ClrRequest();
+		proxy_manager = manager;
+		proxy_sid     = sid;
+		proxy_xid     = xid;
+		xid.SetRequest();
+
+		MatrixPasswdArg arg;
+		MatrixPasswdRes res;
+		proxy_data >> arg;
+
+		// dev-auth (same scheme as GQueryPasswd in this tree): accounts are
+		// numeric multiples of 16 and the stored hash is MD5(account||account).
+		// The upstream billing/au backend this proxy used to forward to does
+		// not exist; a real account source is a separate milestone.
+		res.userid = std::atoi(std::string((char*)arg.account.begin(), arg.account.size()).c_str());
+		if (res.userid % 16 || 0 == res.userid)
+		{
+			res.retcode = ERR_INVALID_ACCOUNT;
+			SetResult(res);
+			SendToSponsor();
+			return;
+		}
+
+		MD5Hash md5;
+		Octets digest;
+		md5.Update(arg.account);
+		md5.Update(arg.account);
+		md5.Final(digest);
+
+		HMAC_MD5Hash hash;
+		hash.SetParameter(digest);
+		hash.Update(arg.challenge);
+		hash.Final(res.response);
+
+		res.retcode = ERR_SUCCESS;
+		SetResult(res);
+		SendToSponsor();
+	}
+
+	bool Delivery(Manager::Session::ID proxy_sid, const OctetsStream& osArg)
+	{
+		// TODO
+		// MatrixPasswdArg arg;
+		// osArg >> arg;
+		// gauthd is the terminal server for this Rpc: no forward hop exists,
+		// so fail the delivery (sponsor receives ERR_DELIVER_SEND).
+			SetResult(MatrixPasswdRes(ERR_DELIVER_SEND));
+			SendToSponsor();
+			return false;
+
+	}
+
+	void PostProcess(Manager::Session::ID proxy_sid,const OctetsStream& osArg, const OctetsStream& osRes)
+	{
+		// TODO
+		// MatrixPasswdArg arg;
+		// osArg >> arg;
+		// MatrixPasswdRes res;
+		// osRes >> res;
+		// SetResult( &res ); // if you modified res, do not forget to call this. 
+	}
+
+	void OnTimeout( )
+	{
+		// TODO Client Only
+	}
+
+};
+
+};
+#endif

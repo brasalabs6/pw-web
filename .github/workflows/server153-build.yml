@@ -1,0 +1,68 @@
+name: server153-build
+
+# Automatic build + package of the vendored PW 1.5.3 server (src/server153).
+# Provenance: src/server153/PROVENANCE.md; authorization: docs/LEGAL.md (2026-10-25).
+# The server is 32-bit (g++ -m32): the Debian 12 container needs multilib and
+# i386 flavors of libssl and libpcre for the final links.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/server153/**'
+      - 'scripts/build-server153.sh'
+      - '.github/workflows/server153-build.yml'
+  pull_request:
+    paths:
+      - 'src/server153/**'
+      - 'scripts/build-server153.sh'
+      - '.github/workflows/server153-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and package server153
+    runs-on: ubuntu-latest
+    container:
+      image: debian:12
+    steps:
+      - name: Install 32-bit toolchain
+        run: |
+          dpkg --add-architecture i386
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential gcc-multilib g++-multilib \
+            libssl-dev:i386 libpcre3-dev:i386 libxml2-dev:i386 \
+            perl ca-certificates git
+
+      - uses: actions/checkout@v4
+
+      - name: Build server
+        run: ./scripts/build-server153.sh --jobs 2
+
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-server153-report
+          path: dist/server153/BUILD-REPORT.txt
+          if-no-files-found: warn
+
+      - name: Upload stage logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-server153-logs
+          path: dist/server153/logs/
+          if-no-files-found: warn
+
+      - name: Upload package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-server153-package
+          path: dist/server153/pw-server153-*.tar.gz
+          if-no-files-found: warn
