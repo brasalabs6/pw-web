@@ -48,6 +48,7 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DLightMan.cpp
     Angelica2/Angelica3D/Source/A3DFrustum.cpp
     Angelica2/Angelica3D/Source/A3DViewport.cpp
+    Angelica2/Angelica3D/Source/A3DGeometry.cpp
     Angelica2/Angelica3D/Source/A2DSprite.cpp
     Angelica2/Angelica3D/Source/A3DSkinModel.cpp
     Angelica2/Angelica3D/Source/A3DSkin.cpp

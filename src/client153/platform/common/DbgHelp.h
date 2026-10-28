@@ -41,6 +41,24 @@ typedef struct _MINIDUMP_EXCEPTION_INFORMATION {
   BOOL ClientPointers;
 } MINIDUMP_EXCEPTION_INFORMATION, *PMINIDUMP_EXCEPTION_INFORMATION;
 
+//	The user-stream and callback records (the documented layouts; the
+//	crash writer passes null for both).
+typedef struct _MINIDUMP_USER_STREAM {
+  ULONG Type;
+  ULONG BufferSize;
+  const void *Buffer;
+} MINIDUMP_USER_STREAM;
+
+typedef struct _MINIDUMP_USER_STREAM_INFORMATION {
+  ULONG UserStreamCount;
+  MINIDUMP_USER_STREAM *UserStreamArray;
+} MINIDUMP_USER_STREAM_INFORMATION, *PMINIDUMP_USER_STREAM_INFORMATION;
+
+typedef struct _MINIDUMP_CALLBACK_INFORMATION {
+  void *CallbackRoutine;
+  void *CallbackParam;
+} MINIDUMP_CALLBACK_INFORMATION, *PMINIDUMP_CALLBACK_INFORMATION;
+
 //	The dynamic entry the crash writer resolves from dbghelp.dll (the
 //	documented signature; the load fails on the browser target so the
 //	pointer stays null and the writer reports failure).

@@ -9,7 +9,7 @@
  *
  * Copyright (c) 2004 Archosaur Studio, All Rights Reserved.
  */
-#ifndef _DLG_CUSTOMZIE_FACE_H_
+#ifndef _DLG_CUSTOMIZE_FACE_H_
 #define _DLG_CUSTOMIZE_FACE_H_
 
 #ifdef _WIN32

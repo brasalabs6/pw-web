@@ -2,6 +2,8 @@
 #include <windows.h>
 #include <winsock.h>
 #include <stdio.h>
+#include <algorithm>	//	std::shuffle
+#include <random>	//	std::mt19937
 
 #include "Mouse.h"
 #include "gnoctets.h"
@@ -30,7 +32,7 @@ int InfoCollection::GetNextType()
     if( send_queue.empty() )
     {
         std::copy(raw_queue, raw_queue+8, std::back_inserter(send_queue));
-        std::random_shuffle(send_queue.begin(), send_queue.end());
+        std::shuffle(send_queue.begin(), send_queue.end(), std::mt19937((unsigned)std::rand()));	//	random_shuffle was removed in C++17; the rand-seeded shuffle keeps the original behavior.
     }
     r = send_queue.front();
     send_queue.pop_front();

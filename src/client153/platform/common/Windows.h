@@ -223,14 +223,24 @@ struct FILETIME {
   DWORD dwHighDateTime;
 };
 //	The system information and version records (the documented layouts).
+//	The documented ABI layout (the anonymous struct in the union - see
+//	the 64-bit unions above; the pragma waives the pedantic diagnostic
+//	for the deliberate layout).
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpedantic"
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 struct SYSTEM_INFO {
   union {
     DWORD dwOemId;
     struct {
       WORD wProcessorArchitecture;
       WORD wReserved;
-    } processor;
-  } anonymous;
+    };
+  };
   DWORD dwPageSize;
   void *lpMinimumApplicationAddress;
   void *lpMaximumApplicationAddress;
@@ -241,6 +251,11 @@ struct SYSTEM_INFO {
   WORD wProcessorLevel;
   WORD wProcessorRevision;
 };
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma GCC diagnostic pop
+#endif
 
 //	The OS version records: the narrow A variant (ImeUi reads
 //	szCSDVersion with lstrlenA) and the wide default the UNICODE build
@@ -538,13 +553,42 @@ typedef unsigned short LANGID;
 #define IME_THOTKEY_SHAPE_TOGGLE 0x71
 #define IME_THOTKEY_SYMBOL_TOGGLE 0x72
 
+//	The Win32 64-bit unions carry the documented ABI layout: an
+//	anonymous struct in a union (the MS extension the real WinNT.h
+//	uses). The pedantic test builds need the diagnostic waived for
+//	this deliberate layout; the field access (LowPart/HighPart/
+//	QuadPart/wProcessorArchitecture) matches the original code.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpedantic"
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 struct LARGE_INTEGER {
-  std::int64_t QuadPart;
+  union {
+    struct {
+      DWORD LowPart;
+      DWORD HighPart;
+    };
+    std::int64_t QuadPart;
+  };
 };
 
 struct ULARGE_INTEGER {
-  std::uint64_t QuadPart;
+  union {
+    struct {
+      DWORD LowPart;
+      DWORD HighPart;
+    };
+    std::uint64_t QuadPart;
+  };
 };
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma GCC diagnostic pop
+#endif
 
 typedef ULARGE_INTEGER *PULARGE_INTEGER;
 typedef LARGE_INTEGER *PLARGE_INTEGER;
@@ -1422,6 +1466,111 @@ inline BOOL SystemTimeToFileTime(const SYSTEMTIME *systemTime,
   return TRUE;
 }
 
+//	The file time to local file time: the real conversion (the UTC
+//	FILETIME shifted by the host timezone's local bias).
+inline BOOL FileTimeToLocalFileTime(const FILETIME *fileTime,
+                                    FILETIME *localFileTime) {
+  if (!fileTime || !localFileTime)
+    return FALSE;
+  const std::uint64_t n = (static_cast<std::uint64_t>(fileTime->dwHighDateTime)
+                           << 32) |
+                          fileTime->dwLowDateTime;
+  const std::time_t unixTime =
+      static_cast<std::time_t>(n / 10000000ULL - 11644473600ULL);
+  std::tm local{};
+  if (!localtime_r(&unixTime, &local))
+    return FALSE;
+  const long bias = local.tm_gmtoff;	//	seconds east of UTC.
+  const std::int64_t shifted =
+      static_cast<std::int64_t>(n) + static_cast<std::int64_t>(bias) * 10000000LL;
+  const std::uint64_t result = static_cast<std::uint64_t>(shifted);
+  localFileTime->dwLowDateTime = static_cast<DWORD>(result);
+  localFileTime->dwHighDateTime = static_cast<DWORD>(result >> 32);
+  return TRUE;
+}
+
+//	The token privilege record (the documented WinNT layout).
+typedef struct _LUID {
+  DWORD LowPart;
+  LONG HighPart;
+} LUID, *PLUID;
+
+typedef struct _LUID_AND_ATTRIBUTES {
+  LUID Luid;
+  DWORD Attributes;
+} LUID_AND_ATTRIBUTES, *PLUID_AND_ATTRIBUTES;
+
+typedef struct _TOKEN_PRIVILEGES {
+  DWORD PrivilegeCount;
+  LUID_AND_ATTRIBUTES Privileges[1];
+} TOKEN_PRIVILEGES, *PTOKEN_PRIVILEGES;
+
+//	The critical section pointer (criticalsection.h owns the type).
+typedef CRITICAL_SECTION *LPCRITICAL_SECTION;
+
+//	wsprintf: the user32 formatter without the count (the MSVC
+//	contract: the caller guarantees the buffer; the port's wide
+//	formatter writes nul-terminated the same way).
+inline int wsprintfW(wchar_t *out, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int written = pw153::platform::wide_vsprintf(out, format, args);
+  va_end(args);
+  return written;
+}
+inline int wsprintf(wchar_t *out, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int written = pw153::platform::wide_vsprintf(out, format, args);
+  va_end(args);
+  return written;
+}
+
+//	The FILETIME to DOS date/time (the real conversion: the documented
+//	DOS packed fields from the local time).
+inline BOOL FileTimeToDosDateTime(const FILETIME *fileTime, WORD *dosDate,
+                                   WORD *dosTime) {
+  if (!fileTime || !dosDate || !dosTime)
+    return FALSE;
+  const std::uint64_t n = (static_cast<std::uint64_t>(fileTime->dwHighDateTime)
+                           << 32) |
+                          fileTime->dwLowDateTime;
+  const std::time_t unixTime =
+      static_cast<std::time_t>(n / 10000000ULL - 11644473600ULL);
+  std::tm local{};
+  if (!localtime_r(&unixTime, &local))
+    return FALSE;
+  const int year = local.tm_year + 1900;
+  if (year < 1980 || year > 2107)
+    return FALSE;
+  *dosDate = static_cast<WORD>(((year - 1980) << 9) |
+                               ((local.tm_mon + 1) << 5) |
+                               local.tm_mday);
+  *dosTime = static_cast<WORD>((local.tm_hour << 11) |
+                               (local.tm_min << 5) |
+                               (local.tm_sec / 2));
+  return TRUE;
+}
+
+//	The debugger presence: no native debugger attaches to a wasm
+//	module; the query reports none.
+inline BOOL IsDebuggerPresent() {
+  return FALSE;
+}
+
+//	The SEH continuation results (the documented values).
+#define EXCEPTION_CONTINUE_EXECUTION (-1)
+#define EXCEPTION_CONTINUE_SEARCH 0
+
+//	The NT native query types live in the defence's own headers
+//	(hardinfo.h declares its local UNICODE_STRING/OBJECT_ATTRIBUTES);
+//	the seam provides the pointer typedefs they reference.
+typedef SIZE_T *PSIZE_T;
+typedef wchar_t *PWSTR;
+typedef HANDLE *PHANDLE;
+typedef DWORD ACCESS_MASK;
+#define ERROR_BUFFER_OVERFLOW 111
+
 //	The virtual memory query: no foreign process address space exists;
 //	the query reports nothing (0).
 typedef struct _MEMORY_BASIC_INFORMATION {
@@ -1758,6 +1907,9 @@ inline DWORD GetModuleFileNameW(HMODULE module, wchar_t *name, DWORD size) {
   if (name && size)
     name[0] = L'\0';
   return 0;
+}
+inline DWORD GetModuleFileName(HMODULE module, wchar_t *name, DWORD size) {
+  return GetModuleFileNameW(module, name, size);
 }
 
 //	Dynamic library loading: the browser target has no DLLs; the calls
@@ -2985,6 +3137,72 @@ inline HINSTANCE ShellExecute(HWND window, const wchar_t *operation,
                               const wchar_t *directory, int show) {
   return ShellExecuteW(window, operation, file, parameters, directory, show);
 }
+
+//	The shell execute record (the documented shellapi layout) and the
+//	extended launcher (the same explicit failure as ShellExecute).
+typedef struct _SHELLEXECUTEINFOA {
+  DWORD cbSize;
+  ULONG fMask;
+  HWND hwnd;
+  LPCSTR lpVerb;
+  LPCSTR lpFile;
+  LPCSTR lpParameters;
+  LPCSTR lpDirectory;
+  int nShow;
+  HINSTANCE hInstApp;
+  void *lpIDList;
+  LPCSTR lpClass;
+  void *hkeyClass;
+  DWORD dwHotKey;
+  void *hIcon;
+  HANDLE hProcess;
+} SHELLEXECUTEINFOA, *LPSHELLEXECUTEINFOA;
+
+typedef struct _SHELLEXECUTEINFOW {
+  DWORD cbSize;
+  ULONG fMask;
+  HWND hwnd;
+  LPCWSTR lpVerb;
+  LPCWSTR lpFile;
+  LPCWSTR lpParameters;
+  LPCWSTR lpDirectory;
+  int nShow;
+  HINSTANCE hInstApp;
+  void *lpIDList;
+  LPCWSTR lpClass;
+  void *hkeyClass;
+  DWORD dwHotKey;
+  void *hIcon;
+  HANDLE hProcess;
+} SHELLEXECUTEINFOW, *LPSHELLEXECUTEINFOW;
+typedef SHELLEXECUTEINFOW SHELLEXECUTEINFO;
+typedef SHELLEXECUTEINFOW *LPSHELLEXECUTEINFO;
+
+inline BOOL ShellExecuteExA(SHELLEXECUTEINFOA *info) {
+  (void)info;
+  return FALSE;	//	the JS host bridge owns window.open.
+}
+inline BOOL ShellExecuteExW(SHELLEXECUTEINFOW *info) {
+  (void)info;
+  return FALSE;
+}
+inline BOOL ShellExecuteEx(SHELLEXECUTEINFOW *info) {
+  return ShellExecuteExW(info);
+}
+
+//	The shell folder selection: no shell exists on the browser target;
+//	the call fails explicitly.
+inline HRESULT SHOpenFolderAndSelectItems(void *itemList, UINT count,
+                                          void *items, DWORD flags) {
+  (void)itemList;
+  (void)count;
+  (void)items;
+  (void)flags;
+  return E_FAIL;
+}
+
+//	The startup info flag (the documented WinBase value).
+#define STARTF_USESHOWWINDOW 0x00000001
 
 //	The legacy local-memory handle (the documented Win32 alias).
 typedef HANDLE HLOCAL;

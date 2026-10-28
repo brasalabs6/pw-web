@@ -607,10 +607,10 @@ void CECIvtrItem::AddPriceDesc(int col, bool bRepair)
 		if (GetCount()>1)
 		{
 			s2 = g_pGame->GetFormattedPrice((unsigned int)m_iPrice * (__int64)GetCount());		
-			AddDescText(-1, false, _AL(" %s (%s)"), s1, s2);
+			AddDescText(-1, false, _AL(" %s (%s)"), (const wchar_t*)s1, (const wchar_t*)s2);
 		}
 		else
-			AddDescText(-1, false, _AL(" %s"), s1);		
+			AddDescText(-1, false, _AL(" %s"), (const wchar_t*)s1);		
 	}
 	else if (m_iScaleType == SCALE_BOOTH || m_tid == 21652) // 21651: yinpiao 
 	{
@@ -618,7 +618,7 @@ void CECIvtrItem::AddPriceDesc(int col, bool bRepair)
 		BuildPriceNumberStr(m_iPrice, s1);
 
 		AddDescText(col, false, pDescTab->GetWideString(ITEMDESC_UNITPRICE));
-		AddDescText(-1, false, _AL(" %s"), s1);
+		AddDescText(-1, false, _AL(" %s"), (const wchar_t*)s1);
 	}
 	else if (m_iScaleType == SCALE_SELL && m_iCount > 1 && m_tid != 21652)
 	{
@@ -627,7 +627,7 @@ void CECIvtrItem::AddPriceDesc(int col, bool bRepair)
 		BuildPriceNumberStr(GetScaledPrice(), s2);
 
 		AddDescText(col, false, pDescTab->GetWideString(ITEMDESC_PRICE));
-		AddDescText(-1, false, _AL(" %s (%s)"), s1, s2);
+		AddDescText(-1, false, _AL(" %s (%s)"), (const wchar_t*)s1, (const wchar_t*)s2);
 	} 
 	else
 	{
@@ -635,7 +635,7 @@ void CECIvtrItem::AddPriceDesc(int col, bool bRepair)
 		BuildPriceNumberStr(GetScaledPrice(), s1);
 
 		AddDescText(col, false, pDescTab->GetWideString(ITEMDESC_PRICE));
-		AddDescText(-1, false, _AL(" %s"), s1);
+		AddDescText(-1, false, _AL(" %s"), (const wchar_t*)s1);
 	}
 }
 
