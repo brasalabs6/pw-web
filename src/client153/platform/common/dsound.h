@@ -88,6 +88,20 @@ inline const void *IID_IDirectSoundNotify() {
                                        0xc9, 0x25, 0xcd, 0x16};
   return id;
 }
+//	The 3D-listener/buffer interface ids: the documented DirectSound
+//	values (Wine's dsound.h: the "8" variants alias the base ids).
+inline const void *IID_IDirectSound3DListener8() {
+  static const unsigned char id[16] = {0x84, 0xfa, 0x9a, 0x27, 0x81, 0x49,
+                                       0xce, 0x11, 0xa5, 0x21, 0x00, 0x20,
+                                       0xaf, 0x0b, 0xe5, 0x60};
+  return id;
+}
+inline const void *IID_IDirectSound3DBuffer8() {
+  static const unsigned char id[16] = {0x86, 0xfa, 0x9a, 0x27, 0x81, 0x49,
+                                       0xce, 0x11, 0xa5, 0x21, 0x00, 0x20,
+                                       0xaf, 0x0b, 0xe5, 0x60};
+  return id;
+}
 
 //	Cooperative levels.
 #define DSSCL_NORMAL 0x00000001
@@ -175,9 +189,41 @@ struct IDirectSoundBuffer : IDSoundUnknown {
   virtual HRESULT Unlock(void *pvAudioPtr1, DWORD dwAudioBytes1,
                          void *pvAudioPtr2, DWORD dwAudioBytes2) = 0;
   virtual HRESULT Restore() = 0;
+  virtual HRESULT SetFormat(const WAVEFORMATEX *pcfxFormat) = 0;
 };
 
 struct IDirectSoundBuffer8 : IDirectSoundBuffer {
+};
+
+//	The 3D parameter records (the documented DirectSound layouts; the
+//	scalar is a 32-bit float, like Wine's dsound.h D3DVALUE).
+typedef float D3DVALUE;
+struct D3DVECTOR {
+  float x;
+  float y;
+  float z;
+};
+struct DS3DLISTENER {
+  DWORD dwSize;
+  D3DVECTOR vPosition;
+  D3DVECTOR vVelocity;
+  D3DVECTOR vOrientFront;
+  D3DVECTOR vOrientTop;
+  D3DVALUE flDistanceFactor;
+  D3DVALUE flRolloffFactor;
+  D3DVALUE flDopplerFactor;
+};
+struct DS3DBUFFER {
+  DWORD dwSize;
+  D3DVECTOR vPosition;
+  D3DVECTOR vVelocity;
+  DWORD dwInsideConeAngle;
+  DWORD dwOutsideConeAngle;
+  D3DVECTOR vConeOrientation;
+  LONG lConeOutsideVolume;
+  D3DVALUE flMinDistance;
+  D3DVALUE flMaxDistance;
+  DWORD dwMode;
 };
 
 struct DSBPOSITIONNOTIFY {
@@ -209,6 +255,9 @@ struct IDirectSound3DBuffer : IDSoundUnknown {
   virtual HRESULT SetVelocity(float x, float y, float z, DWORD apply) = 0;
   virtual HRESULT SetMode(DWORD mode, DWORD apply) = 0;
   virtual HRESULT GetPosition(float *x, float *y, float *z) = 0;
+  virtual HRESULT GetAllParameters(DS3DBUFFER *pBuffer) = 0;
+  virtual HRESULT SetAllParameters(const DS3DBUFFER *pBuffer,
+                                   DWORD apply) = 0;
 };
 
 struct IDirectSound3DBuffer8 : IDirectSound3DBuffer {
@@ -221,6 +270,9 @@ struct IDirectSound3DListener : IDSoundUnknown {
   virtual HRESULT SetOrientation(float xFront, float yFront, float zFront,
                                  float xTop, float yTop, float zTop,
                                  DWORD apply) = 0;
+  virtual HRESULT GetAllParameters(DS3DLISTENER *pListener) = 0;
+  virtual HRESULT SetAllParameters(const DS3DLISTENER *pListener,
+                                   DWORD apply) = 0;
 };
 
 struct IDirectSound3DListener8 : IDirectSound3DListener {

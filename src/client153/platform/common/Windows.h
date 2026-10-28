@@ -105,6 +105,7 @@ typedef BYTE *LPBYTE;
 typedef BYTE *PBYTE;
 typedef DWORD *LPDWORD;
 typedef DWORD *PDWORD;
+typedef LONG *PLONG;
 typedef const char *PSZ;
 
 typedef const char *PCSZ;
@@ -932,6 +933,9 @@ typedef LRESULT *LPRESULT;
 #ifndef PTSTR
 #define PTSTR wchar_t *
 #endif
+#ifndef PTCHAR
+#define PTCHAR wchar_t *
+#endif
 #ifndef PCTSTR
 #define PCTSTR const wchar_t *
 #endif
@@ -1469,6 +1473,9 @@ typedef void *HHOOK;
 //	locale info constant (the documented winnls value).
 #define WM_IME_CONTROL 0x0283
 #define LOCALE_IDEFAULTANSICODEPAGE 0x1004
+#ifndef LOCALE_INVARIANT
+#define LOCALE_INVARIANT 0x0000007F
+#endif
 
 //	The page protections (the documented WinBase values).
 #define PAGE_READWRITE 0x04
@@ -2085,6 +2092,20 @@ inline bool IsEqualIID(const void *a, const void *b) {
 inline bool IsEqualIID(const GUID &a, const GUID &b) {
   return IsEqualGUID(a, b);
 }
+//	The class-identifier comparison (the same documented byte compare
+//	over the seam's opaque REFIID/REFCLSID pointer forms).
+inline bool IsEqualCLSID(const GUID &a, const GUID &b) {
+  return IsEqualGUID(a, b);
+}
+inline bool IsEqualCLSID(const void *a, const void *b) {
+  return a && b && std::memcmp(a, b, 16) == 0;
+}
+inline bool IsEqualCLSID(const void *riid, const GUID &iid) {
+  return IsEqualIID(riid, iid);
+}
+inline bool IsEqualCLSID(const GUID &iid, const void *riid) {
+  return IsEqualIID(riid, iid);
+}
 inline bool operator==(const GUID &a, const GUID &b) {
   return IsEqualGUID(a, b);
 }
@@ -2315,6 +2336,31 @@ inline BOOL ReadFile(HANDLE handle, void *buffer, DWORD toRead,
   SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
   return FALSE;
 }
+
+//	File seek: the DirectShow stream wrapper positions through it; the
+//	adapter's file registry owns real positioning, so an unregistered
+//	handle fails explicitly (the documented INVALID_SET_FILE_POINTER).
+#ifndef INVALID_SET_FILE_POINTER
+#define INVALID_SET_FILE_POINTER 0xFFFFFFFF
+#endif
+inline DWORD SetFilePointer(HANDLE handle, LONG distance, LONG *highDistance,
+                            DWORD method) {
+  (void)handle;
+  (void)distance;
+  (void)highDistance;
+  (void)method;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return INVALID_SET_FILE_POINTER;
+}
+
+//	The 32x32->64 product helper (the documented winnt macro; the
+//	portable product form).
+#define UInt32x32To64(a, b) \
+  ((unsigned long long)(unsigned long)(a) * (unsigned long long)(unsigned long)(b))
+
+//	The 32x32->64 signed product (the documented winnt macro).
+#define Int32x32To64(a, b) \
+  ((long long)(long)(a) * (long long)(long)(b))
 
 //	File attributes: the real filesystem stat (the documented semantics).
 inline DWORD GetFileAttributesA(const char *name) {
@@ -2639,12 +2685,30 @@ inline LONG SetWindowLongA(HWND hWnd, int index, LONG value) {
 inline LONG SetWindowLongW(HWND hWnd, int index, LONG value) {
   return SetWindowLong(hWnd, index, value);
 }
+inline LONG GetWindowLongA(HWND hWnd, int index) {
+  return GetWindowLong(hWnd, index);
+}
+inline LONG GetWindowLongW(HWND hWnd, int index) {
+  return GetWindowLong(hWnd, index);
+}
 
 inline LONG_PTR GetWindowLongPtr(HWND hWnd, int index) {
   return GetWindowLong(hWnd, index);
 }
 inline LONG_PTR SetWindowLongPtr(HWND hWnd, int index, LONG_PTR value) {
   return SetWindowLong(hWnd, index, static_cast<LONG>(value));
+}
+inline LONG_PTR GetWindowLongPtrA(HWND hWnd, int index) {
+  return GetWindowLongPtr(hWnd, index);
+}
+inline LONG_PTR GetWindowLongPtrW(HWND hWnd, int index) {
+  return GetWindowLongPtr(hWnd, index);
+}
+inline LONG_PTR SetWindowLongPtrA(HWND hWnd, int index, LONG_PTR value) {
+  return SetWindowLongPtr(hWnd, index, value);
+}
+inline LONG_PTR SetWindowLongPtrW(HWND hWnd, int index, LONG_PTR value) {
+  return SetWindowLongPtr(hWnd, index, value);
 }
 
 //	mmsystem's tick: the same platform clock as GetTickCount.
@@ -3620,6 +3684,35 @@ inline int CompareStringA(DWORD locale, DWORD flags, const char *left,
       a = static_cast<char>(std::tolower(static_cast<unsigned char>(a)));
       b = static_cast<char>(std::tolower(static_cast<unsigned char>(b)));
     }
+    if (a != b)
+      return a < b ? CSTR_LESS_THAN : CSTR_GREATER_THAN;
+    ++i;
+  }
+  if (i < leftSize)
+    return CSTR_GREATER_THAN;
+  if (i < rightSize)
+    return CSTR_LESS_THAN;
+  return CSTR_EQUAL;
+}
+
+//	The wide form (the documented CompareStringW contract; the same
+//	invariant-locale code-point comparison).
+inline int CompareStringW(DWORD locale, DWORD flags, const wchar_t *left,
+                          int leftLength, const wchar_t *right,
+                          int rightLength) {
+  (void)locale;
+  if (!left || !right)
+    return 0;
+  std::size_t i = 0;
+  const std::size_t leftSize =
+      leftLength < 0 ? std::wcslen(left)
+                     : static_cast<std::size_t>(leftLength);
+  const std::size_t rightSize =
+      rightLength < 0 ? std::wcslen(right)
+                      : static_cast<std::size_t>(rightLength);
+  while (i < leftSize && i < rightSize) {
+    wchar_t a = left[i];
+    wchar_t b = right[i];
     if (a != b)
       return a < b ? CSTR_LESS_THAN : CSTR_GREATER_THAN;
     ++i;

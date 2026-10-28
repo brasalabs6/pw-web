@@ -205,7 +205,8 @@ if(EMSCRIPTEN)
   add_library(client153_middleware_stub STATIC
     thirdparty/fmod/FAudioEngine_stub.cpp
     thirdparty/teamspeak/clientlib_stub.cpp
-    thirdparty/defence/defence_stub.cpp)
+    thirdparty/defence/defence_stub.cpp
+    thirdparty/immersion/ifc_stub.cpp)
   target_include_directories(client153_middleware_stub PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
