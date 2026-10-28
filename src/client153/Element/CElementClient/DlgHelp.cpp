@@ -18,6 +18,9 @@
 #include "AUITextArea.h"
 #include "AUIStillImageButton.h"
 #include "AUITreeView.h"
+//	APtrStack lives in the SDK stack header; the original resolved it
+//	through the project's include order.
+#include <AStack.h>
 #include "AUIImagePicture.h"
 #include "EC_Game.h"
 #include "EC_GameRun.h"
@@ -187,7 +190,7 @@ bool CDlgHelp::BuildHelp(int nGroup, int nDoc)
 	{
 		if( m_vecFile[nDoc].GetLength() > 0 )
 		{
-			sprintf(szFile, "%s\\Info\\%s", af_GetBaseDir(), m_vecFile[nDoc]);
+			sprintf(szFile, "%s\\Info\\%s", af_GetBaseDir(), (const char*)m_vecFile[nDoc]);
 			FILE *file = fopen(szFile, "rb");
 			if( !file ) return AUI_ReportError(__LINE__, __FILE__);
 
@@ -215,7 +218,7 @@ bool CDlgHelp::BuildHelp(int nGroup, int nDoc)
 		{
 			m_pA2DSpriteImage = new A2DSprite;
 
-			sprintf(szFile, "%s\\Info\\%s", af_GetBaseDir(), m_vecImage[nDoc]);
+			sprintf(szFile, "%s\\Info\\%s", af_GetBaseDir(), (const char*)m_vecImage[nDoc]);
 			if( !m_pA2DSpriteImage->Init(m_pA3DDevice, szFile, AUI_COLORKEY) )
 			{
 				delete m_pA2DSpriteImage;
