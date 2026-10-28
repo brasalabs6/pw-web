@@ -33,7 +33,18 @@
 
 ## Novos candidatos
 
-Os próximos candidatos usam `OPT-NNN`, sequenciais; novas inspeções devem preservar IDs, SHA e link file:line, separar hipótese de benchmark e deduplicar com os 17 arquivos acima.
+Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file:line, separar hipótese de benchmark e deduplicar com os 17 registros históricos.
+
+## Novos candidatos estáticos (6)
+
+| ID | Prioridade pós-port | Hipótese |
+|---|---|---|
+| [OPT-001](OPT-001-texture-manager-linear-lookup.md) | P2 | Indexar o cache de texturas da Angelica e reduzir lock contention |
+| [OPT-002](OPT-002-dedup-texture-fetch-upload.md) | P1 | Compartilhar download, hash e textura GPU entre meshes |
+| [OPT-003](OPT-003-pck-decode-buffer-and-inflate.md) | P2 | Reduzir overhead de buffers e zlib em leituras PCK |
+| [OPT-004](OPT-004-animation-track-cache-by-device.md) | P2 | Cache de tracksets com budget por dispositivo em vez de valor fixo |
+| [OPT-005](OPT-005-mox-animation-frames-resident.md) | P2 | Estudar residência parcial de frames MOX no heap |
+| [OPT-006](OPT-006-tick-only-animated-textures.md) | P2 | Evitar varredura de texturas estáticas em TickAnimation |
 
 ## Protocolo
 
