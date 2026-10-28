@@ -17,16 +17,25 @@
 #define D3D_OK 0
 #define D3DLOCK_READONLY 0x0010
 #define D3DLOCK_NOOVERWRITE 0x1000
+#define D3DLOCK_DISCARD 0x2000
 #define D3DCLEAR_TARGET 0x00000001
 #define D3DCLEAR_ZBUFFER 0x00000002
 #define D3DFVF_XYZ 0x002
 #define D3DFVF_XYZRHW 0x0004
+#define D3DFVF_XYZB1 0x006
+#define D3DFVF_XYZB2 0x008
+#define D3DFVF_XYZB3 0x00a
+#define D3DFVF_XYZB4 0x00c
+#define D3DFVF_XYZB5 0x00e
+#define D3DFVF_NORMAL 0x0010
 #define D3DFVF_DIFFUSE 0x0040
 #define D3DFVF_SPECULAR 0x0080
 #define D3DFVF_TEX1 0x0100
 #define D3DFVF_TEX2 0x0200
 #define D3DFVF_TEX3 0x0300
 #define D3DFVF_TEX5 0x0500
+#define D3DFVF_LASTBETA_UBYTE4 0x1000
+#define D3DFVF_LASTBETA_D3DCOLOR 0x8000
 #define D3DTSS_BORDERCOLOR 15
 #define MAX_FVF_DECL_SIZE 20
 
@@ -190,7 +199,11 @@ typedef DWORD D3DBACKBUFFER_TYPE;
 #define D3DTS_WORLD D3DTS_WORLDMATRIX(0)
 
 //	The usage and swap tokens (the documented d3d8types.h values).
+#define D3DUSAGE_RENDERTARGET 0x00000001L
 #define D3DUSAGE_DEPTHSTENCIL 0x00000002L
+#define D3DUSAGE_WRITEONLY 0x00000008L
+#define D3DUSAGE_SOFTWAREPROCESSING 0x00000040L
+#define D3DUSAGE_DYNAMIC 0x00000200L
 #define D3DSWAPEFFECT_DISCARD 1
 #define D3DSWAPEFFECT_FLIP 2
 #define D3DSWAPEFFECT_COPY 3
@@ -314,6 +327,8 @@ enum D3DFORMAT : DWORD {
   D3DFMT_X1R5G5B5 = 24,
   D3DFMT_D24X8 = 77,
   D3DFMT_D16 = 80,
+  D3DFMT_INDEX16 = 101,
+  D3DFMT_INDEX32 = 102,
   D3DFMT_DXT1 = 0x31545844,	//	FOURCC 'DXT1'.
   D3DFMT_DXT3 = 0x33545844,	//	FOURCC 'DXT3'.
 };
@@ -322,6 +337,14 @@ enum D3DMULTISAMPLE_TYPE : DWORD {
   D3DMULTISAMPLE_NONE = 0,
   D3DMULTISAMPLE_2_SAMPLES = 2,
   D3DMULTISAMPLE_4_SAMPLES = 4,
+};
+
+//	The memory pool (the documented d3d8types.h enumeration).
+enum D3DPOOL : DWORD {
+  D3DPOOL_DEFAULT = 1,
+  D3DPOOL_MANAGED = 2,
+  D3DPOOL_SYSTEMMEM = 3,
+  D3DPOOL_SCRATCH = 4,
 };
 
 //	The surface description (the documented D3DSURFACE_DESC layout).
@@ -393,6 +416,17 @@ struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT SetStreamSource(UINT streamNumber,
                                   IDirect3DVertexBuffer8 *streamData,
                                   UINT stride) = 0;
+  //	Vertex/index buffer creation and index binding (the documented
+  //	d3d8.h signatures; the WebGL2 renderer adapter implements them in
+  //	the renderer cycle).
+  virtual HRESULT CreateVertexBuffer(UINT length, DWORD usage, DWORD fvf,
+                                     D3DPOOL pool,
+                                     IDirect3DVertexBuffer8 **vertexBuffer) = 0;
+  virtual HRESULT CreateIndexBuffer(UINT length, DWORD usage, D3DFORMAT format,
+                                    D3DPOOL pool,
+                                    IDirect3DIndexBuffer8 **indexBuffer) = 0;
+  virtual HRESULT SetIndices(IDirect3DIndexBuffer8 *indexData,
+                             UINT baseVertexIndex) = 0;
   virtual HRESULT SetVertexShader(DWORD handle) = 0;
   virtual HRESULT SetPixelShader(DWORD handle) = 0;
   virtual HRESULT SetVertexShaderConstant(DWORD regIndex, const void *data,
