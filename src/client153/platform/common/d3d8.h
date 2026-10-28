@@ -28,6 +28,7 @@
 #define D3DFVF_TEX3 0x0300
 #define D3DFVF_TEX5 0x0500
 #define D3DTSS_BORDERCOLOR 15
+#define MAX_FVF_DECL_SIZE 20
 
 constexpr unsigned int D3DCOLOR_RGBA(unsigned int r, unsigned int g, unsigned int b, unsigned int a) {
   return ((a & 0xffu) << 24) | ((r & 0xffu) << 16) | ((g & 0xffu) << 8) | (b & 0xffu);

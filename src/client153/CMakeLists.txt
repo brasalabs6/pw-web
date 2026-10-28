@@ -65,6 +65,7 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DEngine.cpp
     Angelica2/Angelica3D/Source/A3DTextureMan.cpp
     Angelica2/Angelica3D/Source/A3DShader.cpp
+    Angelica2/Angelica3D/Source/A3DShaderMan.cpp
     Angelica2/Angelica3D/Source/A3DControl.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp

@@ -530,3 +530,16 @@ Estado novo nesta rodada que o Codex precisa saber:
    remover no header é o fix de dono).
 5. PW23-001/002 (winsync thread lifetime + WinMutex ownership)
    RESOLVIDAS com o teste novo `winsync_semantics` (commit a2a9c251).
+
+### Gerenciador original de shaders — compilação incremental
+
+`A3DShaderMan.cpp` da referência 1.5.3 foi incluído no alvo
+`client153_engine_original`, com procedência no manifesto. O cabeçalho
+`A3DFuncs.h` volta a declarar os construtores de declarações de vértices usados
+pelo gerenciador; suas implementações e as operações gráficas de shaders ainda
+precisam ser ligadas e portadas. `MAX_FVF_DECL_SIZE` é 20 para Direct3D 8.
+
+Reprodução: `cmake --build build/client153-wasm --target client153_engine_original -j 4`;
+`cmake --build build/client153-native -j 4 && ctest --test-dir build/client153-native --output-on-failure`.
+Resultado: objeto WASM compilado e 31 testes nativos passaram. Esta etapa não
+comprova link completo, execução de shaders nem jogo no navegador.

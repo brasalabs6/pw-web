@@ -15,6 +15,7 @@
 
 #include <math.h>
 #include "A3DTypes.h"
+#include "A3DVertex.h"
 #include "A3DMacros.h"
 #include "A3DGeometry.h"
 
@@ -134,8 +135,9 @@ A3DMATRIX3 a3d_Matrix3Rotate(const A3DMATRIX3& mat, float fRad);
 A3DMATRIX3 a3d_Matrix3Translate(float x, float y);
 A3DMATRIX3 a3d_Matrix3Translate(const A3DMATRIX3& mat, float x, float y);
 
-//	Vertex-shader declarator builders (a3d_MakeVSDeclarator, a3d_MakeMorphVSDeclarator)
-//	are omitted: they wrap DirectX FVF plumbing with no consumer in this port yet.
+void a3d_MakeVSDeclarator(A3DVERTEXTYPE VertexType, int iStreamIdx, DWORD* pDecl);
+void a3d_MakeMorphVSDeclarator(A3DVERTEXTYPE VertexType, int iNumChannel, DWORD* pDecl);
+void a3d_MakeVSDeclarator(DWORD dwFVF, DWORD* pDecl);
 
 //	Multiply a vertex but don't consider translation factors (the fourth row of matrix),
 //	this function can be used to transform a normal. 
