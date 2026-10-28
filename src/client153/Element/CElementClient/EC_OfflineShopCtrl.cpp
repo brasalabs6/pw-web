@@ -23,7 +23,7 @@
 #include "DlgOfflineShopSelfSetting.h"
 #include "DlgOfflineShopList.h"
 #include "EC_GameUIMan.h"
-#include <Alog.h>
+#include <ALog.h>
 #include "DlgOfflineShopStore.h"
 
 #include "pshopactive_re.hpp"

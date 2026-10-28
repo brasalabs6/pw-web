@@ -588,3 +588,11 @@ símbolos indefinidos; essas contagens são referências repetidas, não testes
 de funcionalidade. Objetos gerados são locais e não são versionados.
 Os testes do probe rodam com `python3 -m unittest discover -s tests/client153
 -p test_project_probe.py`.
+
+A unidade original `EC_OfflineShopCtrl.cpp` passou a compilar para WASM após
+corrigir o nome de `ALog.h` para a capitalização real do arquivo. Para
+reproduzir, executar o probe individual descrito acima com
+`--entry EC_OfflineShopCtrl.cpp`. O link diagnóstico local com esse objeto
+falhou com 4.898 ocorrências de símbolos indefinidos; a compilação não valida o
+funcionamento da loja ou do cliente. `EC_MCDownload.cpp` permanece bloqueado
+por APIs Win32 de named pipes e overlapped I/O que não existem no browser.
