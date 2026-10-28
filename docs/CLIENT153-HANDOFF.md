@@ -466,3 +466,23 @@ do jogo (73,4%)** + AUI 25/46 no probe com `--extra-project`.
 - **Chamada de macro vs função**: os GUIDs como accessores exigem `()` em
   cada call site (IID_IDispatch() etc.) — o Codex vai encontrar os que
   faltam pelos erros "cannot take the address of an rvalue".
+
+## Comparação do contrato RoleInfo
+
+O cliente compilado do projeto 1.5.3 seleciona o `rpcdata/roleinfo` da
+referência; o servidor v145 possui outra definição. Para comparar diretamente
+os bytes de uma `RoleInfo` padrão, sem copiar dados de usuários ou alterar o
+servidor, use os caminhos locais das árvores autorizadas e o Emscripten:
+
+```sh
+python3 scripts/compare-client153-role-wire.py \
+  --reference-root "$PW_CLIENT153_REFERENCE" \
+  --server-root "$PW_SERVER153_ROOT" --emxx "$(command -v em++)"
+```
+
+O comando compila a mesma fonte de teste contra as duas definições, usa o
+compilador de servidor de 32 bits e Node, e retorna 1 quando os bytes divergem.
+Na comparação local de 2026-10-27, o cliente produziu 60 bytes e o servidor
+59; os 59 primeiros coincidem, e o cliente acrescenta o `rank` vazio. Esse
+teste é um diagnóstico de um registro padrão: não comprova compatibilidade do
+restante do protocolo nem criação de personagem ou conexão com o servidor.
