@@ -136,51 +136,57 @@ void CSpeedTreeRT::SetTreePosition(float x, float y, float z)
 	(void)z;
 }
 
-//  Lighting, camera, wind, LOD: configuration of an absent engine. The
-//  limitation is reported at construction; these carry no observable result.
+//  Lighting, camera, wind, LOD: configuration of an absent engine. Every
+//  entry reports the limitation at least once (the log-once helper keeps
+//  the output to a single line); the configuration carries no observable
+//  result because the engine it targets does not exist in this build.
 
-void CSpeedTreeRT::SetBranchLightingMethod(ELightingMethod eMethod) { (void)eMethod; }
-void CSpeedTreeRT::SetLeafLightingMethod(ELightingMethod eMethod) { (void)eMethod; }
-void CSpeedTreeRT::SetFrondLightingMethod(ELightingMethod eMethod) { (void)eMethod; }
+void CSpeedTreeRT::SetBranchLightingMethod(ELightingMethod eMethod) { (void)eMethod; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetLeafLightingMethod(ELightingMethod eMethod) { (void)eMethod; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetFrondLightingMethod(ELightingMethod eMethod) { (void)eMethod; speedtree_limitation_logged(); }
 
 void CSpeedTreeRT::SetLightState(unsigned int nLightIndex, bool bLightOn)
 {
 	(void)nLightIndex;
 	(void)bLightOn;
+	speedtree_limitation_logged();
 }
 
 void CSpeedTreeRT::SetLightAttributes(unsigned int nLightIndex, const float* pLightAttributes)
 {
 	(void)nLightIndex;
 	(void)pLightAttributes;
+	speedtree_limitation_logged();
 }
 
 void CSpeedTreeRT::SetCamera(const float* pPosition, const float* pDirection)
 {
 	(void)pPosition;
 	(void)pDirection;
+	speedtree_limitation_logged();
 }
 
-void CSpeedTreeRT::SetTime(float fTime) { (void)fTime; }
+void CSpeedTreeRT::SetTime(float fTime) { (void)fTime; speedtree_limitation_logged(); }
 
-void CSpeedTreeRT::SetLeafRockingState(bool bFlag) { (void)bFlag; }
-void CSpeedTreeRT::SetNumLeafRockingGroups(unsigned int nRockingGroups) { (void)nRockingGroups; }
-void CSpeedTreeRT::SetLeafWindMethod(EWindMethod eMethod) { (void)eMethod; }
-void CSpeedTreeRT::SetBranchWindMethod(EWindMethod eMethod) { (void)eMethod; }
-void CSpeedTreeRT::SetFrondWindMethod(EWindMethod eMethod) { (void)eMethod; }
+void CSpeedTreeRT::SetLeafRockingState(bool bFlag) { (void)bFlag; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetNumLeafRockingGroups(unsigned int nRockingGroups) { (void)nRockingGroups; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetLeafWindMethod(EWindMethod eMethod) { (void)eMethod; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetBranchWindMethod(EWindMethod eMethod) { (void)eMethod; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetFrondWindMethod(EWindMethod eMethod) { (void)eMethod; speedtree_limitation_logged(); }
 
 float CSpeedTreeRT::SetWindStrength(float fNewStrength, float fOldStrength, float fFrequencyTimeOffset)
 {
 	(void)fOldStrength;
 	(void)fFrequencyTimeOffset;
+	speedtree_limitation_logged();
 	return 0.0f;
 }
 
-void CSpeedTreeRT::ComputeLodLevel(void) { }
-void CSpeedTreeRT::SetLodLevel(float fLodLevel) { (void)fLodLevel; }
-void CSpeedTreeRT::SetLodLimits(float fNear, float fFar) { (void)fNear; (void)fFar; }
-void CSpeedTreeRT::SetDropToBillboard(bool bFlag) { (void)bFlag; }
-void CSpeedTreeRT::SetTextureFlip(bool bFlag) { (void)bFlag; }
+void CSpeedTreeRT::ComputeLodLevel(void) { speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetLodLevel(float fLodLevel) { (void)fLodLevel; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetLodLimits(float fNear, float fFar) { (void)fNear; (void)fFar; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetDropToBillboard(bool bFlag) { (void)bFlag; speedtree_limitation_logged(); }
+void CSpeedTreeRT::SetTextureFlip(bool bFlag) { (void)bFlag; speedtree_limitation_logged(); }
 
 //  LOD queries: no geometry exists, so every level count is zero.
 
@@ -196,12 +202,13 @@ unsigned short CSpeedTreeRT::GetDiscreteLeafLodLevel(float fLodLevel) const
 
 //  Geometry and textures: the caller only reaches these after LoadTree
 //  succeeded, which never happens; the out-parameters keep their inert
-//  zero-initialized state.
+//  zero-initialized state and the limitation is reported.
 
 void CSpeedTreeRT::GetBoundingBox(float* pBounds) const
 {
 	if (pBounds)
 		std::memset(pBounds, 0, 6 * sizeof(float));
+	speedtree_limitation_logged();
 }
 
 void CSpeedTreeRT::GetGeometry(SGeometry& sGeometry, unsigned long ulBitVector,
@@ -212,11 +219,13 @@ void CSpeedTreeRT::GetGeometry(SGeometry& sGeometry, unsigned long ulBitVector,
 	(void)sOverrideBranchLodValue;
 	(void)sOverrideFrondLodValue;
 	(void)sOverrideLeafLodValue;
+	speedtree_limitation_logged();
 }
 
 void CSpeedTreeRT::GetTextures(STextures& sTextures) const
 {
 	(void)sTextures;
+	speedtree_limitation_logged();
 }
 
 //  Nested geometry/texture records: plain zero-initializable data holders.

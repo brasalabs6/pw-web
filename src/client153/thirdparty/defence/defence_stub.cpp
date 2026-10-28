@@ -125,6 +125,36 @@ bool WINAPI Parse(LPVOID buffer, DWORD size)
 	return false;
 }
 
+bool WINAPI Run(WORD id)
+{
+	(void)id;
+	defence_limitation_logged();
+	return false;
+}
+
+bool WINAPI Run(WORD id, DWORD p1)
+{
+	(void)p1;
+	return Run(id);
+}
+
+bool WINAPI Run(WORD id, DWORD p1, DWORD p2)
+{
+	(void)p2;
+	return Run(id, p1);
+}
+
+bool WINAPI Run(WORD id, DWORD p1, DWORD p2, DWORD p3)
+{
+	(void)p3;
+	return Run(id, p1, p2);
+}
+
+void WINAPI DumpResult()
+{
+	defence_limitation_logged();
+}
+
 void WINAPI AppendSpyInfo(DWORD id, LPVOID buf, size_t size)
 {
 	(void)id;

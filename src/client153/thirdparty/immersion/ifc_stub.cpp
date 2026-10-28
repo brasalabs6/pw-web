@@ -51,6 +51,16 @@ CImmCompoundEffect::~CImmCompoundEffect()
 {
 }
 
+void CImmCompoundEffect::Start()
+{
+	immersion_limitation_logged();
+}
+
+void CImmCompoundEffect::Stop()
+{
+	immersion_limitation_logged();
+}
+
 CImmProject::CImmProject()
 {
 }
@@ -69,6 +79,7 @@ BOOL CImmProject::OpenFile(const char *projectName, CImmDevice *device)
 
 void CImmProject::Close()
 {
+	immersion_limitation_logged();
 }
 
 CImmCompoundEffect *CImmProject::CreateEffect(const char *effectName,
@@ -76,12 +87,14 @@ CImmCompoundEffect *CImmProject::CreateEffect(const char *effectName,
 {
 	(void)effectName;
 	(void)device;
+	immersion_limitation_logged();
 	return NULL;
 }
 
 void CImmProject::DestroyEffect(CImmCompoundEffect *effect)
 {
 	(void)effect;
+	immersion_limitation_logged();
 }
 
 BOOL CImmProject::Start(const char *effectName)

@@ -12,6 +12,8 @@
 #include "dsound.h"
 #include "Windows.h"
 
+#include <cstdio>
+
 HRESULT DirectSoundCreate8(const void *pcGuidBuffer, IDirectSound8 **ppDS8,
                            void *pUnkOuter)
 {
@@ -19,6 +21,15 @@ HRESULT DirectSoundCreate8(const void *pcGuidBuffer, IDirectSound8 **ppDS8,
 	(void)pUnkOuter;
 	if (ppDS8)
 		*ppDS8 = NULL;
+	static bool logged = false;
+	if (!logged)
+	{
+		logged = true;
+		std::fprintf(stderr,
+			"pw-browser: DirectSound is not available in the browser build "
+			"(the Web Audio adapter owns the real device later); "
+			"DirectSoundCreate8 fails.\n");
+	}
 	SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
 	return DSERR_GENERIC;
 }
