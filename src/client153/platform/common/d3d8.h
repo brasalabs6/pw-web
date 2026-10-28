@@ -178,6 +178,8 @@ typedef struct _D3DSURFACE_DESC {
 #define D3DPS_VERSION(major, minor) (0xFFFF0000 | ((major) << 8) | (minor))
 #define D3DVS_VERSION(major, minor) (0xFFFE0000 | ((major) << 8) | (minor))
 
+struct IDirect3DBaseTexture8;
+
 // Port interface only; this subset is not a native Direct3D COM vtable.
 struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT CopyRects(IDirect3DSurface8 *source,
@@ -187,6 +189,8 @@ struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT GetRenderState(DWORD state, DWORD *value) = 0;
   virtual HRESULT Clear(DWORD count, const D3DRECT *pRects, DWORD flags,
                         DWORD color, float z, DWORD stencil) = 0;
+  //	Texture stage binding (the wire collector unbinds stage 0).
+  virtual HRESULT SetTexture(DWORD stage, IDirect3DBaseTexture8 *pTexture) = 0;
   //	User clip planes (the grass land render reads and rewrites them).
   virtual HRESULT GetClipPlane(DWORD index, float *pPlane) = 0;
   virtual HRESULT SetClipPlane(DWORD index, const float *pPlane) = 0;
