@@ -668,6 +668,16 @@ typedef NEWTEXTMETRICEXA NEWTEXTMETRICEX;
 typedef PNEWTEXTMETRICEXA PNEWTEXTMETRICEX;
 #endif
 
+//	The plain LOGFONT name (the documented wingdi TCHAR mapping; the seam
+//	defines only the A/W structs above).
+#ifdef UNICODE
+typedef LOGFONTW LOGFONT;
+typedef LPLOGFONTW LPLOGFONT;
+#else
+typedef LOGFONTA LOGFONT;
+typedef LPLOGFONTA LPLOGFONT;
+#endif
+
 //	The high-resolution performance counter: the real monotonic clock
 //	(the documented Win32 contract; the functions live below with the
 //	LARGE_INTEGER layout they reference).
@@ -829,6 +839,28 @@ typedef LARGE_INTEGER *PLARGE_INTEGER;
 #define TRUE 1
 #define FALSE 0
 
+//	The GDI font-enumeration surface (the documented wingdi values and
+//	callback shape; placed after CALLBACK's definition). A browser page
+//	has no GDI font enumeration, so EnumFontFamiliesEx fails with 0 and
+//	never invokes the callback - the FWFontEnum font list stays empty and
+//	the FW editor text falls back to the default font.
+#define ANSI_CHARSET 0
+#define DEFAULT_CHARSET 1
+#define SYMBOL_CHARSET 2
+#define GB2312_CHARSET 134
+#define RASTER_FONTTYPE 0x0001
+#define DEVICE_FONTTYPE 0x0002
+#define TRUETYPE_FONTTYPE 0x0004
+typedef int(CALLBACK *FONTENUMPROC)(const ENUMLOGFONTEX *lpelfe,
+                                    const NEWTEXTMETRICEX *lpntme,
+                                    DWORD FontType, LPARAM lParam);
+inline int EnumFontFamiliesEx(HDC hdc, const LOGFONT *logfont,
+                              FONTENUMPROC proc, LPARAM lParam,
+                              DWORD flags) {
+  (void)hdc; (void)logfont; (void)proc; (void)lParam; (void)flags;
+  return 0;
+}
+
 #define INVALID_HANDLE_VALUE ((HANDLE)(std::intptr_t)-1)
 #define WAIT_OBJECT_0 0u
 #define MAXIMUM_WAIT_OBJECTS 64
@@ -952,19 +984,22 @@ inline void PostQuitMessage(int exitCode) {
 typedef LRESULT *LPRESULT;
 #endif
 #ifndef LPCTSTR
-#define LPCTSTR const wchar_t *
+//	The real winnt.h types are typedefs, not macros; the macro form breaks
+//	comma declarators (LPTSTR a, b; declared b as plain wchar_t, which the
+//	FWArchive string reader hit).
+typedef const wchar_t *LPCTSTR;
 #endif
 #ifndef LPTSTR
-#define LPTSTR wchar_t *
+typedef wchar_t *LPTSTR;
 #endif
 #ifndef PTSTR
-#define PTSTR wchar_t *
+typedef wchar_t *PTSTR;
 #endif
 #ifndef PTCHAR
-#define PTCHAR wchar_t *
+typedef wchar_t *PTCHAR;
 #endif
 #ifndef PCTSTR
-#define PCTSTR const wchar_t *
+typedef const wchar_t *PCTSTR;
 #endif
 
 #define GWL_WNDPROC (-4)
@@ -4225,6 +4260,12 @@ inline BOOL CloseClipboard() { return FALSE; }
 inline BOOL EmptyClipboard() { return FALSE; }
 inline HANDLE GetClipboardData(UINT format) { (void)format; return NULL; }
 inline HANDLE SetClipboardData(UINT format, HANDLE data) { (void)format; (void)data; return NULL; }
+//	The clipboard-format registry is an OS-global; a page has none, so the
+//	registration fails (0 = documented failure; the FW editor's format id
+//	only feeds internal comparisons). Plain name is the wide form (_AL
+//	passes L"..." under UNICODE), like the other text APIs here.
+inline UINT RegisterClipboardFormat(const wchar_t *name) { (void)name; return 0; }
+inline UINT RegisterClipboardFormatA(const char *name) { (void)name; return 0; }
 
 // Caret: the AUI renders its own caret in the browser; the OS caret calls
 // are honest no-ops (the adapter owns the real caret, like SetCapture).
