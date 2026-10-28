@@ -750,3 +750,16 @@ jogo, não inicializa o browser e não comprova que `wWinMain` seja um loop
 compatível com o navegador. Os símbolos dependem das opções do compilador e
 devem ser verificados para cada toolchain. Não descartar o restante das
 funcionalidades do jogo com base nesse recorte.
+
+### Contornos: erro de memória corrigido
+
+`CCharContour::Simplify` escrevia uma terceira coordenada em arrays de duas
+coordenadas. O teste `client153_contour_simplify` executa um contorno real
+com UBSan em WASM/Node: antes da correção falhou em `CharContour.cpp` por
+índice fora dos limites; após remover as duas escritas indevidas passou.
+Reprodução: `cmake --build build/client153-wasm-tests --target
+client153_contour_simplify_test` e `ctest --test-dir build/client153-wasm-tests
+-R '^client153_contour_simplify$' --output-on-failure` (requer Emscripten e
+configuração de testes). O `GetGlyphOutline` da plataforma ainda retorna
+`GDI_ERROR`; este teste não demonstra carregamento de fontes do sistema nem
+renderização de texto no navegador.

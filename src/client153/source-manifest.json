@@ -7,6 +7,18 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/CharContour.cpp",
+      "sha256": "7c01b4496547c48245c96348807a2764d6e1bfb488119be9aa4d7f43e2ceb19a"
+    },
+    {
+      "path": "Element/CFWEditorLib/CharCurve.cpp",
+      "sha256": "6f4cec2340943bce57ad4cefd50fc86752a2d96ab97789a283e3af6a02bc4513"
+    },
+    {
+      "path": "Element/CFWEditorLib/CharOutline.cpp",
+      "sha256": "cb7035af434320fbdb05f3ac70b2ec4f14fc152a45ea5941bbd7325145354da1"
+    },
+    {
       "path": "Element/CFWEditorLib/FWCommandCombine.h",
       "sha256": "3c40868b0422291419e923247ade560f5ab92a341e8fb80925ea8f0d6c1cb0ba"
     },
@@ -9559,6 +9571,12 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/CharContour.cpp",
+      "upstream": "Element/CFWEditorLib/CharContour.cpp",
+      "functions": ["CCharContour::Simplify"],
+      "notes": "Remove writes to nonexistent third component of two-dimensional vertices; verified with WASM undefined-behavior sanitizer. GB18030 comments transcoded to UTF-8."
+    },
     {
       "path": "src/client153/Element/CFWEditorLib/FWDialogEdit.cpp",
       "upstream": "Element/CFWEditorLib/FWDialogEdit.cpp",
