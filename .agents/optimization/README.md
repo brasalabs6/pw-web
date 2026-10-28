@@ -119,3 +119,11 @@ Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file
 | [OPT-039](OPT-039-gfx-shared-texture-cache-lru-and-locked-load.md) | P2 | GFX / cache de textura original | Medir cache LRU de 16 entradas, duas aquisições de referência e mutex durante segunda carga; preservar refcounts |
 
 Baseline de inspeção: `4bd108b30650647d1c510db252442de764b27dd1`. Candidato estático, sem benchmark e sem bloqueio do port; distinto de OPT-001/002/011/016. O port WebAssembly jogável em desktop e mobile continua sendo o gate anterior a qualquer tuning.
+
+## Auditoria incremental — A2D sprite batching (2026-10-28; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-040](OPT-040-sprite-buffer-batch-capacity-and-flush.md) | P2 | A2D SpriteBuffer / UI WebGL2 | Medir limite de lote de sprites, custo de lock/cópia/draw e validar possível excedente de quads em um slot; inspeção estática, não bug reproduzido |
+
+Inspeção no SHA `c86bb95a0cb37d45d31b81a6c7a27d3afe1f6a24`. Distinto de PW23-026 (viewer WebGL2), OPT-023 (placas em multidões) e OPT-001 (cache de texturas). Sem benchmark, teste mobile ou alteração de código. Port funcional continua prioritário.
