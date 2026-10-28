@@ -1,0 +1,593 @@
+# Especificação declarativa do mundo Arena; não carregar diretamente em produção.
+schema_version: 1
+kind: "pw-web.world-design-spec"
+document_version: "1.0.0"
+updated_on: "2026-10-28"
+status: "design_only_not_runtime_configuration"
+applies_to_realm: "genesis-arena"
+source_of_truth: "docs/game-design/genesis-144/PW_WEB_GENESIS_144_GAME_DESIGN_SPEC.md"
+governance:
+  approval_status: "approved tags are locked decisions; proposed tags are tuning hypotheses"
+  deploy_as_runtime_configuration: false
+  approvals_required:
+    - "game_design"
+    - "combat_balance"
+    - "economy"
+    - "security"
+    - "canonical_era_audit"
+    - "legal"
+  change_control:
+    - "versioned_balance_revision"
+    - "economy_audit"
+    - "published_patch_notes"
+    - "rollback_plan"
+identity:
+  id: "genesis-arena"
+  name: "PW Gênesis — Arena"
+  fantasy: "Recriar full PvP acessível, nos moldes de PW ZDX/Fidelity"
+  archetype:
+    status: "approved"
+    value: "fast_access_persistent_full_pvp"
+  content_era:
+    status: "approved"
+    value: "genesis_1_4_4"
+  pillars:
+    - "primeira luta em minutos"
+    - "nível alto desde o início"
+    - "Nirvana como endgame"
+    - "+10 gratuito"
+    - "+12 conquistável"
+    - "economia leve e real"
+    - "sem pay-to-win"
+  audience:
+    - "veteranos de PvP"
+    - "jogadores casuais de combate"
+    - "guildas territoriais"
+    - "colecionadores de prestígio"
+  same_account_as_classic: true
+  character_and_economy_isolated_from_classic: true
+  cross_realm_trade:
+    status: "approved"
+    value: false
+  permanent_progress:
+    status: "approved"
+    value: true
+compatibility:
+  candidate_client_runtime: "wasm_port_client_1_5_3"
+  canonical_data_era: "snapshot_genesis_1_4_4_pending_exact_revision"
+  independent_content_manifest: true
+  server_must_enforce_era: true
+  client_version_by_realm: "automatic"
+  platforms:
+    - "desktop_browser"
+    - "android_browser"
+    - "ios_browser"
+  planned_launchers:
+    - "windows"
+    - "linux"
+    - "android_wrapper"
+  data_hashes_required:
+    - "skills"
+    - "items"
+    - "quests"
+    - "loot"
+    - "npc"
+    - "maps"
+    - "animation"
+    - "assets"
+    - "protocol"
+    - "balance"
+  forbidden_post_era_features_by_default: true
+  client_protocol:
+    status: "pending_era_audit"
+    note: "Versão e compatibilidade reais do cliente/servidor"
+  assets_distribution: "requires_IP_license_check"
+races_and_classes:
+  -
+    race: "humans"
+    classes:
+      - "blademaster"
+      - "wizard"
+  -
+    race: "untamed"
+    classes:
+      - "barbarian"
+      - "venomancer"
+  -
+    race: "winged_elves"
+    classes:
+      - "archer"
+      - "cleric"
+  -
+    race: "tideborn"
+    classes:
+      - "assassin"
+      - "psychic"
+  -
+    race: "earthguard"
+    classes:
+      - "seeker"
+      - "mystic"
+character:
+  level_initial:
+    status: "proposed"
+    value: 101
+  level_cap:
+    status: "proposed"
+    value: 105
+  class_count:
+    status: "approved"
+    value: 10
+  cultivation:
+    status: "proposed"
+    value: "pre_unlocked_to_start_level"
+  starter_skills:
+    status: "proposed"
+    value: "available_up_to_start_level_with_valid_era_ranks"
+  genies:
+    status: "proposed"
+    value: "viable_class_specific_starter"
+  pets_and_summons: "same_era_rules_for_each_class"
+  build_presets:
+    status: "proposed"
+    value:
+      - "damage"
+      - "durability"
+      - "control"
+      - "healing_if_class_supports"
+  starting_equipment:
+    status: "proposed"
+    value: "bound_nirvana_1_4_4_plus_10"
+  starter_gear_grant_idempotent: true
+  target_time_to_first_pvp_minutes:
+    status: "proposed"
+    value: 15
+  tutorial:
+    status: "proposed"
+    value: "short_keyboard_touch_skill_targeting"
+progression:
+  leveling_rate:
+    status: "proposed"
+    value: 100
+  campaign_not_required_before_first_pvp: true
+  objective: "gear_optimization_and_competitive_activities"
+  tiers:
+    -
+      tier: "T0"
+      refine: 10
+      price: "free"
+      time_hours: 0
+      description: "kit competitivo imediato"
+    -
+      tier: "T1"
+      refine: 11
+      time_total_hours:
+        status: "proposed"
+        value:
+          - 10
+          - 18
+      description: "melhoria intermediária no conjunto completo"
+    -
+      tier: "T2"
+      refine: 12
+      time_total_hours:
+        status: "proposed"
+        value:
+          - 30
+          - 50
+      description: "melhoria final no conjunto completo"
+  hours_are_estimates_not_promises: true
+  pve_alternative_to_pvp_grind:
+    status: "proposed"
+    value: true
+  no_daily_login_obligation: true
+  no_gear_or_level_reset:
+    status: "approved"
+    value: true
+equipment:
+  endgame_family:
+    status: "approved"
+    value: "nirvana_1_4_4"
+  refine_free_level:
+    status: "approved"
+    value: 10
+  refine_max_level:
+    status: "approved"
+    value: 12
+  starts_at_refine: 10
+  starter_kit_items:
+    -
+      category: "nirvana_weapon"
+      refine: 10
+      binding: "character_or_account"
+      template_id: "TBD"
+      tradeable: false
+    -
+      category: "nirvana_armor_pieces"
+      refine: 10
+      binding: "character_or_account"
+      template_ids: "TBD"
+      tradeable: false
+    -
+      category: "refinable_accessories_if_era_legal"
+      refine: 10
+      binding: "character_or_account"
+      template_ids: "TBD"
+      tradeable: false
+    -
+      category: "genie"
+      role: "playable_class_build"
+      binding: "character_or_account"
+      template_id: "TBD"
+    -
+      category: "class_gems"
+      role: "balanced_pvp_build"
+      template_ids: "TBD"
+    -
+      category: "pvp_consumables"
+      role: "free_or_very_low_cost"
+      template_ids: "TBD"
+    -
+      category: "flight_mount"
+      role: "accessible_starter"
+      template_ids: "TBD"
+  full_gear_item_id_inventory:
+    status: "pending_era_audit"
+    note: "Extrair IDs, classes, slots, requisitos e atributos do snapshot 1.4.4"
+  free_kit_salvage_to_currency: false
+  free_kit_resell: false
+  tradeable_materials_for_upgrade:
+    status: "proposed"
+    value: true
+  upgrade_slots: "only_when_refine_allowed_in_canonical_patch"
+  crafting:
+    from_10_to_11: "earnable"
+    from_11_to_12: "earnable"
+    total_set_reset_on_failure: false
+  future_rank9_override: false
+  post_era_recast_allowed: false
+  max_refine_above_12: false
+  power_smoothing:
+    status: "proposed"
+    apply_only_to_this_realm: true
+    formula: "effective(r>10) = raw(10) + alpha*(raw(r)-raw(10))"
+    alpha: 0.35
+    historical_until_refine: 10
+    affected_stats:
+      - "attack_refine_bonus"
+      - "hp_refine_bonus"
+      - "defense_refine_bonus_where_supported"
+    server_authoritative: true
+    visible_in_ui: true
+    requires_validation_per_class_slot_and_matchup: true
+    expected_effect: "reduz discrepância sem apagar conquista +12"
+economy:
+  philosophy: "quase tudo básico gratuito; evolução e prestígio geram comércio"
+  currencies:
+    -
+      id: "coins"
+      tradeable: true
+      source:
+        - "pve"
+        - "monsters"
+        - "quests"
+        - "approved_events"
+      sink:
+        - "auction"
+        - "crafting"
+        - "npc_services"
+        - "upgrades"
+        - "cosmetics"
+    -
+      id: "war_marks"
+      display_name: "Marcas de Guerra"
+      status: "proposed"
+      tradeable: false
+      source:
+        - "validated_pvp"
+        - "territory_war"
+        - "guild_objectives"
+      sink:
+        - "nirvana_11_12_upgrades"
+    -
+      id: "conquest_crystals"
+      display_name: "Cristais de Conquista"
+      status: "proposed"
+      tradeable: true
+      source:
+        - "pve"
+        - "bosses"
+        - "guild_events"
+        - "weekly_objectives"
+      sink:
+        - "nirvana_11_12_upgrades"
+        - "optional_cosmetics"
+  upgrade_recipes:
+    -
+      target: "+11"
+      inputs:
+        - "war_marks"
+        - "conquest_crystals"
+        - "coins"
+      quantities: "TBD_beta_tuning"
+    -
+      target: "+12"
+      inputs:
+        - "war_marks"
+        - "conquest_crystals"
+        - "coins"
+      quantities: "TBD_beta_tuning"
+  costs_per_piece: "TBD_not_invented"
+  player_trade: true
+  auction_house:
+    status: "proposed"
+    value: true
+  grants_from_killing_same_target: "subject_to_cooldown_and_diminishing_returns"
+  losing_match_earns_progress:
+    status: "proposed"
+    value: true
+  cheating_detection:
+    - "repeat_kill_farming"
+    - "win_trading"
+    - "multiaccount_reward_abuse"
+    - "afk_queues"
+    - "suspicious_transactions"
+    - "duplicated_rewards"
+  protection:
+    - "unique_item_instance_ids"
+    - "transaction_idempotency"
+    - "audit_log"
+    - "admin_grant_trace"
+    - "fraud_review_and_appeals"
+  tradeable_currency_from_classic:
+    status: "approved"
+    value: false
+  pay_to_win:
+    status: "approved"
+    value: false
+  prohibited_sales:
+    - "exclusive_pvp_power"
+    - "upgrade_materials_for_cash"
+    - "gear_plus_12_for_cash"
+    - "tradeable_currency_for_cash"
+  financial_monetization: "cosmetic_only_if_authorized_and_licensed"
+  dashboards:
+    - "war_marks_minted_spent"
+    - "conquest_crystals_created_consumed"
+    - "coin_supply"
+    - "market_price_percentiles"
+    - "active_traders"
+    - "upgrade_progression_hours"
+gameplay:
+  open_world_pvp:
+    status: "approved"
+    value: true
+  duels: true
+  arena_modes:
+    -
+      mode: "1v1"
+      ranked:
+        status: "proposed"
+        value: true
+      roles: "matchmaking_proposal"
+    -
+      mode: "3v3"
+      ranked:
+        status: "proposed"
+        value: true
+      roles: "group_composition_test"
+    -
+      mode: "6v6"
+      ranked:
+        status: "proposed"
+        value: true
+      roles: "group_composition_test"
+  guild_battles: true
+  territory_wars: true
+  world_bosses:
+    status: "proposed"
+    value: true
+  pve_dungeons:
+    - "Dusk_if_historical"
+    - "Nirvana"
+    - "legacy_group_instances"
+  crafting: true
+  social:
+    - "guild"
+    - "party"
+    - "friends"
+    - "chat"
+    - "player_market"
+    - "guild_events"
+  short_pve_sessions:
+    status: "proposed"
+    value: true
+  normalized_equal_gear_tournament:
+    status: "proposed"
+    value: true
+  mobile_touch_input_without_auto_combat: true
+  spawn_kill_protection:
+    status: "proposed"
+    value: true
+  matchmaking: "skill_rating_not_pay_or_refine_only"
+  pvp_rewards:
+    - "war_marks"
+    - "limited_mats"
+    - "ranked_points"
+    - "cosmetics"
+    - "titles"
+  event_rewards_must_not_create_power_snowball: true
+class_balance:
+  reference_roster: 10
+  roles_are_asymmetric: true
+  matchup_matrix:
+    - "1v1"
+    - "3v3"
+    - "6v6"
+    - "guild_war"
+    - "territory_war"
+    - "pve_dungeon"
+  compare_loadouts:
+    - "plus10_vs_plus10"
+    - "plus10_vs_plus11"
+    - "plus10_vs_plus12"
+    - "plus12_vs_plus12"
+  indicators:
+    - "time_to_kill"
+    - "burst"
+    - "sustain_dps"
+    - "healing"
+    - "survivability"
+    - "crowd_control"
+    - "counterplay"
+    - "win_rate_adjusted_for_skill"
+    - "client_desync"
+  evaluation_ttk_seconds:
+    status: "proposed"
+    value:
+      - 8
+      - 20
+  test_latency_ms:
+    - 20
+    - 80
+    - 150
+    - 250
+  keep_summons_genies_skills_in_equation: true
+  test_real_android_iphone_pc: true
+  skills_and_combat_server_authoritative: true
+  publish_balance_changes: true
+  reproducible_simulation_fixtures: true
+seasons:
+  purpose: "classificação e prestígio, sem wipe do mundo"
+  resetting_only_rankings:
+    status: "approved"
+    value: true
+  cycle_weeks:
+    status: "proposed"
+    value:
+      - 8
+      - 12
+  fields_reset:
+    - "season_rating"
+    - "ladder_position"
+    - "season_points"
+    - "season_match_counters"
+  fields_persist:
+    - "characters"
+    - "levels"
+    - "skills"
+    - "cultivation"
+    - "guilds"
+    - "territories_unless_other_approved_rules"
+    - "coins"
+    - "war_marks"
+    - "conquest_crystals"
+    - "equipment"
+    - "refine"
+    - "bank"
+    - "items"
+    - "collections"
+    - "cosmetics"
+    - "titles"
+  historical_rankings_kept: true
+  rewards:
+    - "cosmetics"
+    - "titles"
+    - "guild_recognition"
+    - "profile_badges"
+  no_exclusive_combat_stats_for_top_rank: true
+engagement:
+  daily:
+    - "practice_duels"
+    - "casual_arenas"
+    - "short_pve"
+  weekly:
+    - "3v3"
+    - "6v6"
+    - "guild_events"
+    - "territory_wars"
+    - "bosses"
+  monthly:
+    - "ranked_tournament"
+    - "cosmetic_rewards"
+  long_term_after_full_12:
+    - "social_status"
+    - "tournament_titles"
+    - "reputation"
+    - "alternate_builds"
+    - "guild_identity"
+    - "cosmetic_collection"
+  avoid_power_creep: true
+security_and_liveops:
+  authority:
+    - "combat"
+    - "movement_validation"
+    - "cooldowns"
+    - "inventory"
+    - "currency"
+    - "item_upgrade"
+    - "rewards"
+    - "rankings"
+  anticheat:
+    - "bot_signals"
+    - "fraud_review"
+    - "trade_anomaly_detection"
+    - "reward_claim_deduplication"
+  patch_and_rollback: "revisioned_balance_and_economy_config"
+  platform_metrics:
+    - "fps_per_device"
+    - "crash_free_sessions"
+    - "memory_peak"
+    - "time_to_play"
+    - "asset_cache_hit_rate"
+  economy_metrics:
+    - "item_creation_and_deletion"
+    - "currency_mint_burn"
+    - "fraud_flags"
+    - "trade_prices"
+  audience_metrics:
+    - "DAU"
+    - "MAU"
+    - "retention_D1_D7_D30"
+    - "pvp_queues"
+    - "active_guilds"
+  player_support:
+    - "fraud_appeals"
+    - "report_abuse"
+    - "safe_log_review"
+delivery:
+  prerequisites:
+    - "functional_1_5_3_webassembly_port"
+    - "selected_1_4_4_content_snapshot"
+    - "era_manifest"
+    - "realm_isolation"
+    - "server_authoritative_combat"
+  milestones:
+    - "basic_combat_and_10_classes"
+    - "free_plus_10_starter_kit"
+    - "earnable_plus_11_plus_12"
+    - "economy_audit"
+    - "balanced_mass_pvp"
+    - "closed_beta_mobile_pc"
+    - "retention_review"
+  acceptance_tests:
+    - "first_combat_under_15_min_candidate"
+    - "100pct_free_plus_10_no_paywall"
+    - "every_refinable_kit_slot_has_matching_era_item"
+    - "trade_does_not_transfer_free_kit"
+    - "earn_up_to_plus_12_without_cash"
+    - "all_10_classes_tested"
+    - "season_resets_only_rank_fields"
+    - "no_cross_realm_items"
+    - "anti_farming_limits_work"
+    - "device_parity_and_movement"
+    - "assets_license_checked"
+  unresolved:
+    - "exact_1_4_4_patch_and_item_ids"
+    - "initial_level_101_or_105"
+    - "starter_class_build_attributes"
+    - "refine_alpha_after_testing"
+    - "mark_and_crystal_income_and_upgrade_recipes"
+    - "ranked_season_length"
+    - "anti_win_trade_thresholds"
+    - "rights_to_publicly_distribute_content"
