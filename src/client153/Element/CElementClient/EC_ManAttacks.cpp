@@ -31,7 +31,9 @@
 #include "EC_BaseUIMan.h"
 #include "EC_CountryConfig.h"
 #include "A3DSkillGfxComposer2.h"
-#include "EC_pet.h"
+//	The real file is EC_Pet.h; the original include relied on the Windows
+//	case-insensitive resolution.
+#include "EC_Pet.h"
 #include "EC_Optimize.h"
 #include "CSplit.h"
 #include <AScriptFile.h>
@@ -151,7 +153,8 @@ bool CECAttackEvent::DoFire()
 				if( m_targets.size() && _get_pos_by_id(m_idHost, vecHost) && _get_pos_by_id(m_targets[0].idTarget, vecTarget) )
 				{
 					m_timeToDoDamage = int(Magnitude(vecHost - vecTarget) / 20.0f * 1000.0f);
-					a_ClampFloor(m_timeToDoDamage, 10ul);
+					//\tDWORD is 32-bit here; the literal must match the clamp type.
+					a_ClampFloor(m_timeToDoDamage, 10u);
 				}
 			}
 		}
@@ -263,7 +266,8 @@ bool CECAttackEvent::DoFire()
 				if( m_targets.size() && _get_pos_by_id(m_idHost, vecHost) && _get_pos_by_id(m_targets[0].idTarget, vecTarget) )
 				{
 					m_timeToDoDamage = int(Magnitude(vecHost - vecTarget) / 20.0f * 1000.0f);
-					a_ClampFloor(m_timeToDoDamage, 10ul);
+					//\tDWORD is 32-bit here; the literal must match the clamp type.
+					a_ClampFloor(m_timeToDoDamage, 10u);
 				}
 			}
 		}
@@ -408,12 +412,13 @@ bool CECAttackEvent::DoDamage()
 			if (m_idHost == idHostPlayer)
 			{
 				if (!strName.IsEmpty())
-					pGameRun->AddFixedChannelMsg(FIXMSG_DODAMAGE, GP_CHAT_DAMAGE, strName, data.nDamage);
+					//\tThe wide string crosses the varargs boundary as a raw pointer.
+					pGameRun->AddFixedChannelMsg(FIXMSG_DODAMAGE, GP_CHAT_DAMAGE, (const wchar_t*)strName, data.nDamage);
 			}
 			else if (data.idTarget == idHostPlayer)
 			{
 				if (!strHostName.IsEmpty())
-					pGameRun->AddFixedChannelMsg(FIXMSG_BEDAMAGED, GP_CHAT_DAMAGE, strHostName, data.nDamage);
+					pGameRun->AddFixedChannelMsg(FIXMSG_BEDAMAGED, GP_CHAT_DAMAGE, (const wchar_t*)strHostName, data.nDamage);
 			}
 		}
 	}

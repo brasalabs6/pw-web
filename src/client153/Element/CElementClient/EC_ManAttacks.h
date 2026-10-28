@@ -18,6 +18,11 @@
 #include "vector.h"
 #include "A3DSkillGfxComposer2.h"
 
+//	MSVC accepted the friend declaration below as introducing
+//	CECAttacksMan; standard C++ needs the forward declaration for the
+//	pointer member and constructor parameter that follow.
+class CECAttacksMan;
+
 // base class for all attack events
 class CECAttackEvent
 {
