@@ -15,12 +15,12 @@
 5. Vincular ao épico/workorder existente. Não substituir roadmap nem modificar PR #17 do servidor sem coordenação; seguir `AGENTS.md` (PR único do cliente, sem self-merge).
 6. Revisões futuras podem registrar novas issues **quando efetivamente executadas**; esta pasta não representa monitoramento automático em background.
 
-## Índice de 22 achados de portabilidade e funcionamento (20 abertos, 2 resolvidos)
+## Índice de 22 achados de portabilidade e funcionamento (18 abertos, 4 resolvidos)
 
 | ID | Prioridade | Estado | Título | Épico |
 |---|---|---|---|---|
-| [PW23-001](PW23-001-thread-handle-use-after-free.md) | P0 | open | CloseHandle de thread ativa pode causar use-after-free | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
-| [PW23-002](PW23-002-winmutex-owner-recursion-infinite.md) | P0 | open | WinMutex não preserva ownership, recursão nem INFINITE | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
+| [PW23-001](PW23-001-thread-handle-use-after-free.md) | P0 | resolved | CloseHandle de thread ativa pode causar use-after-free | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
+| [PW23-002](PW23-002-winmutex-owner-recursion-infinite.md) | P0 | resolved | WinMutex não preserva ownership, recursão nem INFINITE | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
 | [PW23-003](PW23-003-roleinfo-wire-v145-mismatch.md) | P0 | open | RoleInfo difere na serialização entre cliente e servidor v145 | [e10-network-transport-v1](../epics/e10-network-transport-v1/README.md) |
 | [PW23-004](PW23-004-atl-com-qi-variant-bstr.md) | P0 | open | Corrigir ownership, QueryInterface, Variant e layout BSTR | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
 | [PW23-005](PW23-005-activex-pwbrowser-stub.md) | P1 | open | PWBrowser/ActiveX continua sem host funcional | [e09-interface-input-audio-v1](../epics/e09-interface-input-audio-v1/README.md) |
