@@ -669,3 +669,10 @@ teste `python3 -m unittest discover -s tests/client153 -p
 falhou antes da correção. O probe individual de `ElementClient.cpp` gerou
 objeto WASM. O teste compila um trecho nativo extraído do bootstrap; não é
 prova de inicialização do cliente no browser.
+
+`DlgCountryMapSub.cpp` original compila em WASM após ajustar os tipos LONG dos
+limites de zoom e passar ponteiros explícitos de texto às funções variádicas.
+O probe individual gerou objeto em diretório temporário separado durante a
+campanha completa; os 11 testes do probe passaram. Essa compilação não prova
+a operação do mapa em runtime. A campanha completa iniciou antes da alteração,
+portanto seu relatório deve registrar essa unidade como snapshot anterior.

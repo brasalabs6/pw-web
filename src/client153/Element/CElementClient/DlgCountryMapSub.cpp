@@ -291,8 +291,8 @@ void CDlgCountryMapSub::OnEventMouseWheel(WPARAM wParam, LPARAM lParam, AUIObjec
 	szImg.cx *= fScale;
 	szImg.cy *= fScale;
 
-	a_Clamp(szImg.cx, szImgMin.cx, 2048l);
-	a_Clamp(szImg.cy, szImgMin.cy, 2048l);	
+	a_Clamp(szImg.cx, szImgMin.cx, (LONG)2048);
+	a_Clamp(szImg.cy, szImgMin.cy, (LONG)2048);
 
 	//	修改前、先计算鼠标所在位置对应图片原始分辨率象素空间中的坐标
 	A3DPOINT2 ptMouse;
@@ -393,10 +393,10 @@ void CDlgCountryMapSub::UpdateHint(bool bDomainDesc/* =true */)
 
 			if (info.IsAtWar())
 			{
-				strTemp.Format(GetStringFromTable(9904), *CECCountryConfig::Instance().GetName(info.challenger));
+				strTemp.Format(GetStringFromTable(9904), (const ACHAR*)*CECCountryConfig::Instance().GetName(info.challenger));
 				strHint += strTemp;
 				strHint += strNextLine;
-				strTemp.Format(GetStringFromTable(9905), *CECCountryConfig::Instance().GetName(info.owner));
+				strTemp.Format(GetStringFromTable(9905), (const ACHAR*)*CECCountryConfig::Instance().GetName(info.owner));
 				strHint += strTemp;
 				strHint += strNextLine;
 				strTemp.Format(GetStringFromTable(9906), info.player_count[info.challenger - 1]);
@@ -410,7 +410,7 @@ void CDlgCountryMapSub::UpdateHint(bool bDomainDesc/* =true */)
 			}
 			else
 			{
-				strTemp.Format(GetStringFromTable(9900), *CECCountryConfig::Instance().GetName(info.owner));
+				strTemp.Format(GetStringFromTable(9900), (const ACHAR*)*CECCountryConfig::Instance().GetName(info.owner));
 				strHint += strTemp;
 				strHint += strNextLine;
 				strTemp.Format(GetStringFromTable(9901), info.point);
@@ -419,7 +419,7 @@ void CDlgCountryMapSub::UpdateHint(bool bDomainDesc/* =true */)
 				if (info.HasEndTime())
 				{
 					int sec = m_pDlgCountryMap->ConverToSeconds(m_pDlgCountryMap->GetTimeLeft(info.end_time));
-					strTemp.Format(GetStringFromTable(9902), GetGameUIMan()->GetFormatTime(sec));
+					strTemp.Format(GetStringFromTable(9902), (const ACHAR*)GetGameUIMan()->GetFormatTime(sec));
 					strHint += strTemp;
 					strHint += strNextLine;
 				}
