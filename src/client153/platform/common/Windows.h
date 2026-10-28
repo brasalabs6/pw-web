@@ -2006,7 +2006,17 @@ inline HRESULT CoCreateInstance(const GUID &classId, void *outer,
 #endif
 
 //	The overlapped-I/O record (the documented OVERLAPPED layout; the
-//	named-pipe callers memset it and set hEvent).
+//	named-pipe callers memset it and set hEvent). The anonymous struct in
+//	the union is the documented Win32 ABI shape, like the LARGE_INTEGER
+//	layout above.
+#pragma GCC diagnostic push
+//\tThe two anonymous-struct flags are clang-only; GCC errors on the
+//\tunknown option under -Werror=pragmas.
+#if defined(__clang__)
+#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
+#pragma GCC diagnostic ignored "-Wnested-anon-types"
+#endif
+#pragma GCC diagnostic ignored "-Wpedantic"
 typedef struct _OVERLAPPED {
   ULONG_PTR Internal;
   ULONG_PTR InternalHigh;
@@ -2019,6 +2029,7 @@ typedef struct _OVERLAPPED {
   };
   HANDLE hEvent;
 } OVERLAPPED, *LPOVERLAPPED;
+#pragma GCC diagnostic pop
 
 //	The named-pipe open/mode flags (the documented Win32 values).
 #define PIPE_ACCESS_INBOUND 0x00000001
@@ -3746,6 +3757,10 @@ inline HANDLE SetClipboardData(UINT format, HANDLE data) { (void)format; (void)d
 
 // Caret: the AUI renders its own caret in the browser; the OS caret calls
 // are honest no-ops (the adapter owns the real caret, like SetCapture).
+inline BOOL CreateCaret(HWND hWnd, HBITMAP hBitmap, int nWidth, int nHeight) {
+  (void)hWnd; (void)hBitmap; (void)nWidth; (void)nHeight;
+  return TRUE;
+}
 inline BOOL SetCaretPos(int x, int y) { (void)x; (void)y; return TRUE; }
 
 // GDI capture: the browser has no GDI device contexts; the capture functions

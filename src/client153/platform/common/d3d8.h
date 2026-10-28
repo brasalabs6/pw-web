@@ -46,11 +46,13 @@
 constexpr unsigned int D3DCOLOR_RGBA(unsigned int r, unsigned int g, unsigned int b, unsigned int a) {
   return ((a & 0xffu) << 24) | ((r & 0xffu) << 16) | ((g & 0xffu) << 8) | (b & 0xffu);
 }
-//	The opaque color token (the documented d3d8types.h typedef).
-typedef DWORD D3DCOLOR;
 
 #include "Windows.h"
 #include "unknwn.h"	//	GUID (D3DADAPTER_IDENTIFIER8's DeviceIdentifier).
+
+//	The opaque color token (the documented d3d8types.h typedef); DWORD
+//	comes from Windows.h above.
+typedef DWORD D3DCOLOR;
 
 //	D3DX math aliases: the ported A3D math carries the same layouts and the
 //	original D3DX headers wrap them.
