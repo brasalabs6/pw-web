@@ -1398,6 +1398,49 @@ inline BOOL ExtTextOutW(HDC device, int x, int y, UINT options,
   return FALSE;
 }
 
+//	The text alignment options (the documented wingdi.h values).
+#define TA_NOUPDATECP 0x0000
+#define TA_UPDATECP 0x0001
+#define TA_LEFT 0x0000
+#define TA_RIGHT 0x0002
+#define TA_CENTER 0x0006
+#define TA_TOP 0x0000
+#define TA_BOTTOM 0x0002
+#define TA_BASELINE 0x0018
+#define TA_RTLREADING 0x0100
+
+//	The ExtTextOut options (the documented wingdi.h values).
+#define ETO_OPAQUE 0x0004
+#define ETO_CLIPPED 0x0010
+
+//	The A/W-neutral name (the UNICODE build maps it to the wide form).
+#ifdef UNICODE
+#define ExtTextOut ExtTextOutW
+#endif
+
+//	The GDI text state setters: no GDI target exists on the browser
+//	target (the AUI renders through the WebGL adapter); the documented
+//	failure values apply.
+#define CLR_INVALID 0xFFFFFFFF
+inline COLORREF SetTextColor(HDC hDC, COLORREF color) {
+  (void)hDC;
+  (void)color;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return CLR_INVALID;
+}
+inline COLORREF SetBkColor(HDC hDC, COLORREF color) {
+  (void)hDC;
+  (void)color;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return CLR_INVALID;
+}
+inline UINT SetTextAlign(HDC hDC, UINT align) {
+  (void)hDC;
+  (void)align;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return CLR_INVALID;	//	GDI_ERROR, the documented SetTextAlign failure value.
+}
+
 //	The lead byte test: the process locale is the single-byte C locale
 //	(the port converts UTF-16/UTF-8 directly); no lead bytes exist.
 inline BOOL IsDBCSLeadByte(BYTE character) {
