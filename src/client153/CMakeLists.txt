@@ -144,7 +144,39 @@ if(EMSCRIPTEN)
     Angelica2/AngelicaMedia/Source/AMWaveFile.cpp
     Angelica2/AngelicaMedia/Source/FFT.cpp
     Angelica2/ImmWrapper/Source/AMImmEffect.cpp
-    Angelica2/ImmWrapper/Source/AMImmWrapper.cpp)
+    Angelica2/ImmWrapper/Source/AMImmWrapper.cpp
+    Angelica2/Angelica3D/Source/A3DBillBoard.cpp
+    Angelica2/Angelica3D/Source/A3DSuperDecal.cpp
+    Angelica2/Angelica3D/Source/A3DMeshCollector.cpp
+    Angelica2/Angelica3D/Source/A3DDecal.cpp
+    Angelica2/Angelica3D/Source/A3DLensFlare.cpp
+    Angelica2/Angelica3D/Source/A3DMeshSorter.cpp
+    Angelica2/Angelica3D/Source/A3DClothMesh.cpp
+    Angelica2/Angelica3D/Source/A3DMorphMesh.cpp
+    Angelica2/Angelica3D/Source/A3DMeshBase.cpp
+    Angelica2/Angelica3D/Source/A3DModelMan.cpp
+    Angelica2/Angelica3D/Source/A3DMoxMan.cpp
+    Angelica2/Angelica3D/Source/A3DMuscleOrgan.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2LOD.cpp
+    Angelica2/Angelica3D/Source/A3DSkinModelMan.cpp
+    Angelica2/Angelica3D/Source/A3DImgModelMan.cpp
+    Angelica2/AngelicaCommon/Source/APerlinNoiseBase.cpp
+    Angelica2/Angelica3D/Source/A3DRain.cpp
+    Angelica2/Angelica3D/Source/A3DSnow.cpp
+    Angelica2/Angelica3D/Source/A3DParticleSystem.cpp
+    Angelica2/Angelica3D/Source/A3DStars.cpp
+    Angelica2/Angelica3D/Source/A3DWorldCDS.cpp
+    Angelica2/Angelica3D/Source/A3DScene.cpp
+    Angelica2/Angelica3D/Source/A3DSuperSpray.cpp
+    Angelica2/Angelica3D/Source/A3DCubeTexture.cpp
+    Angelica2/Angelica3D/Source/A3DESP.cpp
+    Angelica2/Angelica3D/Source/A3DPArray.cpp
+    Angelica2/Angelica3D/Source/A3DTerrainOutline.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2CullHC.cpp
+    Angelica2/Angelica3D/Source/A3DIBLScene.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2LoaderA.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2LoaderB.cpp
+    Angelica2/Angelica3D/Source/A3DTerrainWaterSimpleAlphaRender.cpp)
   target_include_directories(client153_engine_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
@@ -218,7 +250,13 @@ if(EMSCRIPTEN)
     Common/Output/source/Gfx/A3DParaboloid.cpp
     Common/Output/source/Gfx/A3DParticleSystemEx.cpp
     Common/Output/source/Gfx/A3DRibbon.cpp
-    Common/Output/source/Gfx/A3DTrail.cpp)
+    Common/Output/source/Gfx/A3DTrail.cpp
+    Common/Output/source/Gfx/A3DGFXSoundImp.cpp
+    Common/Output/source/Gfx/A3DGFXGridAnimation.cpp
+    Common/Output/source/Gfx/A3DGFXECMLoader.cpp
+    Common/Output/source/Gfx/A3DGFXAnimable.cpp
+    Common/Output/source/Gfx/A3DParticleEmitter.cpp
+    Common/Output/source/Gfx/TrailList.cpp)
   target_include_directories(client153_gfx_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
@@ -297,13 +335,14 @@ if(EMSCRIPTEN)
     thirdparty/defence/defence_stub.cpp
     thirdparty/immersion/ifc_stub.cpp
     thirdparty/xiph/vorbisfile_stub.cpp
-    thirdparty/mpg123/mpg123_stub.cpp)
+    thirdparty/mpg123/mpg123_stub.cpp
+    thirdparty/ftdriver/ftdriver_stub.cpp)
   target_include_directories(client153_middleware_stub PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
     Angelica2/Output/amsdk/include Angelica2/AngelicaMedia/Header Angelica2/Output/3rdsdk/include
     Common/Output/include/aaudio Element/Output/include Element/CElementClient/defence
-    Element/CElementClient/Network/IOLib)
+    Element/CElementClient/Network/IOLib Common/AUInterface2)
   target_compile_features(client153_middleware_stub PRIVATE cxx_std_17)
   target_compile_options(client153_middleware_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
@@ -344,7 +383,26 @@ if(EMSCRIPTEN)
     Element/CFWEditorLib/FWFlatCollector.cpp
     Element/CFWEditorLib/FWManager.cpp
     Element/CFWEditorLib/FWTemplate.cpp
-    Element/CFWEditorLib/FWAssemblySet.cpp)
+    Element/CFWEditorLib/FWAssemblySet.cpp
+    Element/CFWEditorLib/FWView.cpp
+    Element/CFWEditorLib/FWDoc.cpp
+    Element/CFWEditorLib/FWArchive.cpp
+    Element/CFWEditorLib/FWFontEnum.cpp
+    Element/CFWEditorLib/FWGlyphText.cpp
+    Element/CFWEditorLib/FWGlyphList.cpp
+    Element/CFWEditorLib/FWGlyphFirework.cpp
+    Element/CFWEditorLib/FWFireworkLanch.cpp
+    Element/CFWEditorLib/FWInnerProperty.cpp
+    Element/CFWEditorLib/FWAssemblyCache.cpp
+    Element/CFWEditorLib/FWAssemblyProfile.cpp
+    Element/CFWEditorLib/FWModifierCreator.cpp
+    Element/CFWEditorLib/FWArtCreator.cpp
+    Element/CFWEditorLib/FWFireworkCustom.cpp
+    Element/CFWEditorLib/FWFireworkGraph.cpp
+    Element/CFWEditorLib/FWFireworkSimple.cpp
+    Element/CFWEditorLib/FWFireworkElement.cpp
+    Element/CFWEditorLib/FWLog.cpp
+    Common/CHBasedCD/BestFit.cpp)
   target_include_directories(client153_game_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
@@ -355,14 +413,18 @@ if(EMSCRIPTEN)
     Common/Output/include/aaudio Common/Output/include/cd
     Common/Output/include/PropDlg Common/Output/include
     Element/Output/include Element/CCommon Element/CElementClient
-    Element/Output/include/fw Element/CElementSkill Element/AutoPFImp/AutoMoveImp Common/CHBasedCD)
+    Element/Output/include/fw Element/CElementSkill Element/AutoPFImp/AutoMoveImp Common/CHBasedCD
+    Common/AUInterface2)
   target_compile_features(client153_game_original PRIVATE cxx_std_17)
-  target_compile_definitions(client153_game_original PRIVATE WIN32 NDEBUG _WINDOWS UNICODE _ANGELICA2 _CRT_SECURE_NO_WARNINGS)
+  target_compile_definitions(client153_game_original PRIVATE WIN32 NDEBUG _WINDOWS UNICODE _ANGELICA2 _CRT_SECURE_NO_WARNINGS _FW_EDITOR)
   target_compile_options(client153_game_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+  foreach(widget AUIListBox AUIComboBox AUIEditBox AUILabel AUIStillImageButton AUICheckBox AUIImagePicture AUIDialog)
+    target_compile_options(client153_game_original PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Common/AUInterface2/${widget}.h")
+  endforeach()
 endif()
 
 # Build the original UI sources already supported by the browser port.

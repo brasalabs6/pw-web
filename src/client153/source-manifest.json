@@ -9880,6 +9880,362 @@
     {
       "path": "Common/LuaWrapper/Debugger.cpp",
       "sha256": "9afda78e9b148708cd05466ccfc4b000b54dcd46e43d5732b63dc25bf5e1697e"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXSoundImp.cpp",
+      "sha256": "432f05036430cc307ec771380cc7a97004916254ac7996e01f6363ff46304e21"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXGridAnimation.cpp",
+      "sha256": "eea05119ed259cc99c96d3d1011405d823d768b403c19b04b0f868974d093410"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXECMLoader.cpp",
+      "sha256": "665456c2ac98d57ba8458b7dcb428a7e4c485e9c443eb8f1abd716b8310268bd"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXAnimable.cpp",
+      "sha256": "d001698d0ad2e2bd51922a9128b741d89e9f04d91612122b9d9f6db1a68566eb"
+    },
+    {
+      "path": "Common/GfxCommon/A3DParticleEmitter.cpp",
+      "sha256": "072a91881eda329cdf38dcda0dad9bcfc1bd12f5fff16f3044040b3093803fe4"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWView.cpp",
+      "sha256": "8fa7405f1fa7abd57be122e589dc454c30729916e52f3409be56a1fdf880bf41"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDoc.cpp",
+      "sha256": "12fa6f84d0cc48ba584fb5934ccf07b7a31cf19c4cb7b88023ab5c3cf7ab8790"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArchive.cpp",
+      "sha256": "f17787c34c1c6bfda1aaee37d1eb4236f69a84d0b5c501cb87559a1a664ddead"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFontEnum.cpp",
+      "sha256": "f41318439284b7fbbf676cac3afdf6d88660601370ec7e2f8e45a6e18c1b5b2e"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphFirework.cpp",
+      "sha256": "73199cd24c39523f0896cb201eabc2b16785f57575444c89b9eef18215669968"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkLanch.cpp",
+      "sha256": "9b74e7e949ddb115e72aaf15959197208fad404c2591f2ea679951169cdb726f"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWInnerProperty.cpp",
+      "sha256": "8b4d07f5621830cf182cdf757af58d548a4324113235291a66d4a8c3cdb0dbc7"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphText.cpp",
+      "sha256": "98dc649f26628fdf407424b9ae28990b479a62177f82aabed4d83eb327a0aad0"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphList.cpp",
+      "sha256": "e1a4aa42cd9bb9af6de47da9ef1bcdeb0d059b3cf7376df1fc726c796d5036b6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAssemblyCache.cpp",
+      "sha256": "8934eb974f6bb5404bd06808fcc037f642b96eec28f31dd6f7aed9a59585b413"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAssemblyProfile.cpp",
+      "sha256": "b9be5b73d7f347aff57fe9c775136b30779dab2dccf18824e9f2768cbd405b02"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifierCreator.cpp",
+      "sha256": "e86d57081db2988d39e40ee819b6d1a254c911024937332d81463cf9c3f67d98"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtCreator.cpp",
+      "sha256": "745d9327a2cfb6bbad3342a4dbf33e03fe425d707d42392c7121fa1eb27f1891"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkCustom.cpp",
+      "sha256": "c7a0b4641c52f96d9cff3918cd2147fd948712164bf72072ab0623591fb5da34"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkGraph.cpp",
+      "sha256": "862b657269503804d87f1a563cf4d5b2daaa2f3575ad451a91ca198d4b45eb19"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkSimple.cpp",
+      "sha256": "b825f26307b68856852b1b332b7a96f089117aca92b45e245f7ae87e055c0fe5"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkElement.cpp",
+      "sha256": "048b9d2210094d0c02506f012fbfc2215a4c784ff235f06fb081a3e44243f180"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWLog.cpp",
+      "sha256": "a6d8ba0efd92acedd52889d9208c62773f277ba96030cf0e672f5cb2685c4a45"
+    },
+    {
+      "path": "Element/CFWEditorLib/CharContour.h",
+      "sha256": "39d4df3b308fff8d2d46f9329a85f0a6ca824f5eab4785bb5db814fd7deab542"
+    },
+    {
+      "path": "Element/CFWEditorLib/CharOutline.h",
+      "sha256": "647c8f51b4ecb4edb818f1a68cae090f4e5be37701c14dd319a7928d10021be4"
+    },
+    {
+      "path": "Element/CFWEditorLib/CharVerticesBuffer.h",
+      "sha256": "0030b93dc919501ccd5fde02614659741a5fb691bd76d4111315406b95683e61"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAUIManager.h",
+      "sha256": "7a06cd1b43b4ad81b7045014ab28d1d30c128da68bf35625283957cdb3ee3496"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAlgorithm.h",
+      "sha256": "878f3662c9f73707998361c67c3993032e48b990a7d653355a336fe250b4dd05"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArray.h",
+      "sha256": "2297176b9ce38efa5fac4b72a326b661f962e519d00949b98b20eb5cec3e2376"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArt.h",
+      "sha256": "11cf2aa492600515a0e545137a676aa9e51a3739261fc3aa7cc278c7cbdac3fc"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtArc.h",
+      "sha256": "231e3dee19a775ff904993e785019aab374a21ccbcbaecc16f24699dc244fd13"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtDoubleArc.h",
+      "sha256": "0d915e95b40553705d0fd8fd50d4ffe06e6650901bb2c9c243170e0ac44065fd"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtNoChange.h",
+      "sha256": "8a7b42c89938d9f6395f4397d2405eb980aa3e7c08f42fe6ade568ebf2ba055a"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtStepScale.h",
+      "sha256": "0cf5f4df496d0928b8f259cf09829130c323c1c5eefb57399350fe680f25ddb3"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtTilt.h",
+      "sha256": "3396df713933d85f80d7cb98e0f1105e044825d5b07a8c309ad8f152db87cebd"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtWave.h",
+      "sha256": "a8fc3d9f72930a0dc8fe8fbdda519ebcb51b01249e9b2b4f7b7b9f7c6ebb95d9"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAssemblySet.h",
+      "sha256": "400931ae14dcd3cb6e3fe821388b4361feeec240ca326affc2bebc2e50d79b3c"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommand.h",
+      "sha256": "219980f69bd0eba418f13dfb9cf7b4da8b82f9112b941b8bd9b60a8cd5e5b3b2"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandList.h",
+      "sha256": "b040e0aa51a1f79d0ec06c8ec1963ed1d8673ae91c02fc11a0fde47a1efa9cf8"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandSetGlyphProp.h",
+      "sha256": "0807c49449c2e38d9984aa9099e021b0a3076576e9a7a9d599a8f027a4d463da"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDefinedMsg.h",
+      "sha256": "d9666e6a2b0a782e8335609924b55b601ff7eeb615cad981566d9bc922472579"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogBase.h",
+      "sha256": "29abbfb0a5f96ef5f7004dcb5cc0c143989539df4f1d1030405f188ca1868749"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogBezierMenu.h",
+      "sha256": "8989c76f955e08a03c2a204c5cf76ee50e443291b727c0052d58cdc337ee47ee"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogBoard.h",
+      "sha256": "cd0970a5750895f3a55017dc4cc791af1b63e305815a41867f951dffbef8f070"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogCustom.h",
+      "sha256": "ebb15649b6edd5638f8b49fe6d82f97a4e6cd6af3599ccf76ea9f520fc6ac6dc"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogEdit.h",
+      "sha256": "9063aa3c03777eb885c9798bee7824e0bdffab09018fa606729beeeae8135b0b"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogGraph.h",
+      "sha256": "e73ddd057955f9bf2ef472b4808f2c2c03aa44b1de9a57633f8d391faca0b0ed"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogGraphMenu.h",
+      "sha256": "0b304c54c23155f2253809e68569c81b7c13b5fc8dc6821c5326caba36c0f9f6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogLanch.h",
+      "sha256": "9f4d23253432edc544f147ce1b9f29bb085f2c3ff9464d98f866dc4fafac6a7a"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogPropBase.h",
+      "sha256": "e2b093fb0d3f32a9873e7a7838dce7220fdcdb5dca1b45d8697af44a47febc99"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogSimple.h",
+      "sha256": "0d1ac07e66064a47f7d86bc5fd148cd75fd3d7b2699921249733d48fba252a4c"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogText.h",
+      "sha256": "ed252aff4a6cbd24a2c8e116a8bca724c1fdb7675443335d368c52e3eb8c5fd2"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkCustom.h",
+      "sha256": "5c79e55723c5ab451811873bbe00dc8583378b0c2c92be6290d392ca738fea2c"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkElement.h",
+      "sha256": "d3d83e6e9dd8d0b364f13e4d21e34aa6841ef4c9b6a6df918022e86df93ccece"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkGraph.h",
+      "sha256": "a816a50fc7a72cd4e82d7721fb29fa29631f88c6075b0ba09fde5176237006fa"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkSimple.h",
+      "sha256": "dd35330d034fa311cec89b8439355c1ba416a5907df00e5e9a434ff13e1c8fb0"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFormulaList.h",
+      "sha256": "66ef4d890aaf7da144ef1116458b5722b820b9cd209dda4d38e403e7ea4da3e0"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGfxWithModifier.h",
+      "sha256": "9423396d77e420ec65ca08a2fea042a64e8728c7a6d7d92ea1b5aa9a12c17fae"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphBezier.h",
+      "sha256": "c11e22d13b58444f5192fb061c2b10f0a0e7cbdc8c019bf3198390f22830e298"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWInnerProperty.h",
+      "sha256": "926ea9c7112944722996ef26839c0c8c77d6c54257669fb836507083b4d2a493"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifier.h",
+      "sha256": "6b5223c68a5b8252d89130714a26db03367fe23376bc3c177a324cbc674916bf"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifierParabola.h",
+      "sha256": "df0e4085a3604ca7121e4fa14a8edd831d25b14f12ba12eed6679f0702d3d273"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifierRing.h",
+      "sha256": "8504bbbc6469df47dc5b14539612af51c591f2e2cabe66a961166b4931b77834"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWPlayer.h",
+      "sha256": "2447d788f9d709215649c3280dcfc2eb26eea15efba79b152afd8ffb557a76bc"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWState.h",
+      "sha256": "6cfa6a450ab232ff7190ffd400a19134c1d11c44600709c8977a9e6c00da2cbd"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStateSelect.h",
+      "sha256": "fd321240a789180f64b944275005008698ceadd4d8657fca0d9a197aa853d4fb"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStream.h",
+      "sha256": "77aa571f8d8ecc43e43fb4d80501dbb6ec43c237449511d15536613c6b557adb"
+    },
+    {
+      "path": "Element/CFWEditorLib/GLUPolygon.h",
+      "sha256": "d2ead796d2353f5c24d96db3737a266f3af099a246aa7f51b8a69a4155e70e6b"
+    },
+    {
+      "path": "Element/CFWEditorLib/GLUTess.h",
+      "sha256": "4f433efab91d7c9714b1a18115283c9ce10b26ebd9274fe6ad1675ced9ba7033"
+    },
+    {
+      "path": "Element/CFWEditorLib/Global.h",
+      "sha256": "9b5ab8016cdd19e207b6db57568ae2c70d9e6eb9ae8452893afc6d98480a61ff"
+    },
+    {
+      "path": "Element/CFWEditorLib/Mesh.h",
+      "sha256": "f1c211f5093a780ae4dea620831b491c90a90cc0d1956173b196b12139bc7bea"
+    },
+    {
+      "path": "Element/CFWEditorLib/Triangle.h",
+      "sha256": "dfd2302b7a5fbe5ebc31c57be52a5e3c0a27f4ed9476cca0bac037251786f437"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DBillBoard.cpp",
+      "sha256": "c827f3d7fd50d15494a4b257117a766976d4f7101de88b3bf9bbbf16356318bb"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSuperDecal.cpp",
+      "sha256": "673988f8594776a61fcd0b408cdadc18a5fe3269e35b48ec3bd8218bd8293331"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMeshCollector.cpp",
+      "sha256": "be706e9af26969a56c2a389f5baeccb901d85e3259d6d2032be728df37fa155b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DDecal.cpp",
+      "sha256": "57941f130ca435fa808030593ec74565f865b282b1bcf16041e441f12d08310c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DLensFlare.cpp",
+      "sha256": "27c642a49282dcbb5a403f9388c7210d4c58ef047bcb02d9c10a6018d1c4c87f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMeshSorter.cpp",
+      "sha256": "6ffcbb66b9b63f4e453ca5dbbe80bac83d0eb33472b6eaf161037d1773c35cac"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DClothMesh.cpp",
+      "sha256": "4c43d7b515e86f37794f02fd6e0bf352e8c75ede55cf796d5ec960c05970a189"
+    },
+    {
+      "path": "Common/GfxCommon/TrailList.cpp",
+      "sha256": "ce232f88c3eb4420cf7b84d461d996c202098a76aca9624a67d4f7cc813a6540"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMorphMesh.cpp",
+      "sha256": "75bacddac18421678fe0a9abe73f2c260a35c735d5da578ff181d591fb9353dd"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMeshBase.cpp",
+      "sha256": "5a2b37eaa79d4cdab36938df55f9d4962059e84a9ea09e99ec68c0b2b064f39b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DModelMan.cpp",
+      "sha256": "74b32d33a285d2f5d044e828cd90a60215b83376d966d562745914108ed2d8ae"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMoxMan.cpp",
+      "sha256": "00e52c903dec2a2c0b1ea18572ebfb06de39735f645a0d4a2b4048e0d6659f22"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMuscleOrgan.cpp",
+      "sha256": "9986025e6a262f02d9fd84459b5614cfa14862608b112a58ab7281b51b079c19"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2LOD.cpp",
+      "sha256": "ca2432eff57f816460299d7eb4e52f9522b39c96a3deceebb04ecb1eada4f90b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinModelMan.cpp",
+      "sha256": "2e6a22d9b73eeefc6a0ed6709c7d3b3036b4b56e8725de617e490fc3c15dc764"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/APerlinNoiseBase.cpp",
+      "sha256": "a6eee262e284c9ed04a20f6154f6a83046b30edcc38a47fe2cd7f4e7de87f95f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DImgModelMan.cpp",
+      "sha256": "2ee9a21548fb7b57913f799d20311279b56ae892d867c8dd9c7375d48faa7887"
     }
   ],
   "adaptations": [
@@ -11105,6 +11461,70 @@
         "sprintf2w"
       ],
       "notes": "The macros passed the string object through the varargs stream depending on the MSVC bitwise pass (AWString's first member is the data pointer); non-trivial types cannot travel through C++ varargs, so the port casts explicitly to (const wchar_t*)/(const char*) — same pointer, same formatted result. Header otherwise byte-identical to upstream."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DMorphMesh.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DMorphMesh.cpp",
+      "functions": [],
+      "notes": "Verbatim TU except one include: A3DMorphMesh.h uses APtrArray but does not include its header (the original build saw it through a wider include closure); AArray.h is included first, same treatment as A3DMorphRigidMesh.cpp."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DMeshBase.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DMeshBase.cpp",
+      "functions": [],
+      "notes": "Verbatim TU."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DModelMan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DModelMan.cpp",
+      "functions": [],
+      "notes": "Verbatim TU."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DMoxMan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DMoxMan.cpp",
+      "functions": [],
+      "notes": "Verbatim TU."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DMuscleOrgan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DMuscleOrgan.cpp",
+      "functions": [],
+      "notes": "Verbatim TU."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DTerrain2LOD.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DTerrain2LOD.cpp",
+      "functions": [],
+      "notes": "Verbatim TU."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DSkinModelMan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DSkinModelMan.cpp",
+      "functions": [
+        "A3DSkinModelMan::LoadModelFromFile"
+      ],
+      "notes": "Verbatim TU except two Format() calls that passed AString through varargs (UB in the original; the established treatment casts explicitly to (const char*) - same pointer, same formatted result)."
+    },
+    {
+      "path": "src/client153/AngelicaCommon/Source/APerlinNoiseBase.cpp",
+      "upstream": "Angelica2/AngelicaCommon/Source/APerlinNoiseBase.cpp",
+      "functions": [],
+      "notes": "Verbatim TU."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DImgModelMan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DImgModelMan.cpp",
+      "functions": [
+        "A3DImageModelMan::ReleaseModelGroup(int)"
+      ],
+      "notes": "Verbatim TU except one MSVC for-scoping leak: the loop counter i declared inside the for was read by the 'if (i < m_iNumGroup)' after the loop; i is now declared before the loop with the original semantics."
+    },
+    {
+      "path": "src/client153/Angelica2/Output/a3dsdk/include/A3DImgModel.h",
+      "upstream": "Angelica2/Output/a3dsdk/include/A3DImgModel.h",
+      "functions": [],
+      "notes": "Added 'class A3DImageModelMan;' forward declaration at namespace scope: A3DImgModel.h uses the name as a member pointer and friend but A3DImgModelMan.h includes it before declaring the class (the original build relied on MSVC friend-declaration name visibility); the friend binding and layout are unchanged."
     }
   ],
   "additionalCopyrights": [
