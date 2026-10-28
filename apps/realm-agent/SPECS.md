@@ -81,7 +81,7 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 
 ## 8. Plano de validação e evidências exigidas
 
-- CI cargo test workspace cobre build; faltam testes com systemd sandbox, auth negative, timeout, stderr, revisão de sudoers.
+- CI cargo test workspace inclui testes unitários de auth bearer e nome de unidade; ainda faltam systemd sandbox, timeout, stderr, sudoers e drain/gs real.
 - Executar dry-run de unidade allowlisted e confirmar que unidade não allowlisted recebe 404.
 - Em ambiente real: provar ordenação dos oito daemons + gs, map readiness, save/checkpoint, graceful stop e restore.
 - Crash simulation/power loss não deve corromper WDB; health stale sinaliza degraded.
@@ -109,3 +109,5 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 | Produção | Infra, TLS, segredo, direitos e capacidade | Gate humano com evidência e rollback |
 
 **Decisões abertas** devem virar ADR linkado no documento mestre; não assumir design final em backlog. Consulte os itens `P0` antes de promover qualquer deployment.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

@@ -124,3 +124,5 @@ de produção com PRs não confiáveis.
 7. Completar os fluxos de gerenciamento/admin e provider de previews isolados.
 
 Documentação detalhada de produto/arquitetura: docs/PAINEL.md.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

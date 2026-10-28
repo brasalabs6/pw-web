@@ -32,7 +32,7 @@ Dependências de build e runtime devem ser lidas no `package.json` ou `Cargo.tom
 ### 3.1 Domínio exclusivo / ownership
 
 - GET /healthz processo vivo e GET /readyz tentativa TCP com gameplayReady:false, GET /connect WebSocket
-- primeira mensagem WS JSON {ticket}, timeout 8 s, comprimento 32..256, consumo via POST /v1/internal/tickets/consume com bearer token
+- primeira mensagem WS JSON {ticket}, timeout 8 s, token base64url de 43 caracteres exatamente, consumo via POST /v1/internal/tickets/consume com bearer token
 - TCP upstream por env GNET_UPSTREAM, bidirectional WS Binary↔TCP bytes, fechamento com select; logs de transport sem token
 
 ### 3.2 O que é expressamente proibido neste componente
@@ -81,7 +81,7 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 
 ## 8. Plano de validação e evidências exigidas
 
-- CI cargo test workspace passou compilação; não há suite de frames reais/duas sessões demonstrada.
+- CI cargo test workspace passou, incluindo unit tests de ticket/UUID. Ainda não há suite de frames reais/duas sessões demonstrada.
 - Criar WS unit/integration com upstream fake TCP, mensagens truncadas, binary chunks, auth replay, concorrência e stop.
 - Rodar cliente real PR #23 com glinkd/gs PR #17; valida login, roles, mapa, movimentação, reconexão desktop/mobile.
 - Testes de carga ping p50/p95/p99, memória por sessão, floods, backpressure e desconexão.
@@ -109,3 +109,5 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 | Produção | Infra, TLS, segredo, direitos e capacidade | Gate humano com evidência e rollback |
 
 **Decisões abertas** devem virar ADR linkado no documento mestre; não assumir design final em backlog. Consulte os itens `P0` antes de promover qualquer deployment.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

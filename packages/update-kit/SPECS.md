@@ -66,11 +66,11 @@ packages/update-kit/
 ## 4. Regras de segurança, consistência e integridade
 
 - Chave pública confiável é configurada no build, não no manifesto da rede; unknown key rejeita.
-- Canonicalização por JSON.parse sem detector de duplicate key é insuficiente para garantir contrato canônico rígido; exigir bytes canônicos para documento e campos rejeitados.
-- Manifest aceita path como string sem normalização/traversal check e URL HTTPS arbitrária (sem allowlist de CDN); adicionar pins de origem e controle de MIME/SRI.
-- Atualmente CacheStorage inteiro por objeto pode duplicar memória até 256MiB: usar streaming/chunks/OPFS para mobile e quantidades reais.
+- Publisher emite JSON canônico e loader compara texto canônico exatamente, rejeitando chaves duplicadas/representação divergente. A API verifyManifest de objeto puro não examina bytes; só prepareClient garante canonical bytes.
+- Manifest restringe path relativo, sem traversal/backslash/percent e com detecção de colisão case-insensitive; download só da mesma origem HTTPS do manifesto. Ainda faltam normalização Unicode NFC, MIME/SRI e limite total de bundle.
+- Fetch faz leitura streaming limitada a tamanho declarado e máximo 256 MiB/objeto, mas ainda junta partes em memória/CacheStorage; migrar para OPFS/chunks e orçamentos menores no mobile.
 - Não há eviction, leases multi-tab, atomic install de release completa, crash recovery, quota fallback ou cancel cleanup abrangente; implementar.
-- Tickets 90s são emitidos antes do download; mover emissão para launch e revalidar digest/realm para não expirar durante patching.
+- O endpoint de preflight agora prepara arquivos SEM ticket; /launcher/sessions exige digest e pairing após update, porém a chamada final do shell permanece pendente enquanto o WASM não inicia.
 - Sem service worker agora; não criar segunda autoridade de atualização sem protocolo/garantia.
 - Chave de produção não pode ser usada em previews não confiáveis; Direito de distribuição de assets é gate humano obrigatório.
 
@@ -118,3 +118,5 @@ packages/update-kit/
 - [ ] Evidência no PR com commit, resultado e limites, e aprovação antes de produção.
 
 **Backlog executável:** [TODO.md](TODO.md), com responsabilidades, dependências e critérios de aceite individuais.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

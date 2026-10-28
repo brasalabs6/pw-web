@@ -31,7 +31,7 @@ Dependências de build e runtime devem ser lidas no `package.json` ou `Cargo.tom
 
 ### 3.1 Domínio exclusivo / ownership
 
-- polling de operation_jobs queued com SELECT FOR UPDATE SKIP LOCKED e reserva dispatching
+- polling de operation_jobs queued com SELECT FOR UPDATE SKIP LOCKED, attempts/reserved_until e conversão de reserva vencida a BLOCKED
 - workflow_dispatch com kind/clientCommit/serverCommit/operationId/TTL via GitHub API; marca 'dispatched' após HTTP 204
 - erro estruturado em result e estado blocked no momento do dispatch; nunca anuncia READY por isso
 
@@ -57,7 +57,7 @@ A UI/admin **nunca** executa scripts arbitrários; dados persistentes do jogo pe
 
 1. QUEUED -> DISPATCHING [transação] -> DISPATCHED [GitHub 204] ou BLOCKED [falha]; estados RUNNING/READY não têm handler implementado.
 2. Na inicialização sem GITHUB_TOKEN: avisar e não consumir jobs; workers múltiplos coordenam via SKIP LOCKED.
-3. Crash em DISPATCHING pode deixar job preso: requer lease/attempt/reconciliation para retry seguro.
+3. Crash em DISPATCHING agora tem lease/attempt e expiração para BLOCKED (sem redispatch ambíguo); falta reconciliar run GitHub e permitir retry seguro após confirmação.
 4. Job preview não é preview criado: precisa provisionamento + health GNET/gs e link assinado.
 
 **Princípios:** identificadores estáveis `realm_id` e `deployment_id`; releases pinadas pelo SHA-256; channel pin protegido por `expectedRevision`; session ticket curto e de uso único. Diferenciar `liveness`, `transport_ready` e `gameplay_ready`.
@@ -74,7 +74,7 @@ A UI/admin **nunca** executa scripts arbitrários; dados persistentes do jogo pe
 
 - Separar token GitHub por ambiente e nunca executar script do PR com publicador privilegiado.
 - Validar SHA completo e PR ownership/repo ref antes do dispatch; input não pode virar shell string.
-- Retry finito, idempotência e lease de execução contra timeout HTTP e falha parcial.
+- Há reserva e attempts para dispatch; na falha de resultado ambíguo bloqueia manualmente. Falta retry finito e reconciliador com run_id/artefatos.
 - Arquitetura atual é processo Node permanente; se migrar a Workers/Queues, reescrever driver mantendo contrato de job e event outbox.
 - Distinguir PENDING/BLOCKED/FAILED de READY, registrar metrics/trace por operationId.
 
@@ -109,3 +109,5 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 | Produção | Infra, TLS, segredo, direitos e capacidade | Gate humano com evidência e rollback |
 
 **Decisões abertas** devem virar ADR linkado no documento mestre; não assumir design final em backlog. Consulte os itens `P0` antes de promover qualquer deployment.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

@@ -12,7 +12,7 @@
 
 **Stack:** PostgreSQL 16, node-postgres (pg), TypeScript/tsx e SQL versionado; package @pw/database.
 
-**Situação comprovada [ATUAL]:** Pool/`connectDb`, migration 001 idempotente via SQL, seed de realm offline; CI sobe PostgreSQL real e executa migração/HTTP smoke. Sem RLS, transaction facade, backup, schema migrations incremental ou drivers Workers.
+**Situação comprovada [ATUAL]:** Pool/`connectDb`, migrations 001–004 com controle de checksum e advisory lock, seed de realm offline, transações em rotas críticas e smoke real PostgreSQL. Ainda faltam RLS, transaction facade centralizada, backup/restore e driver Workers.
 
 ### Princípios inegociáveis
 
@@ -31,6 +31,9 @@ packages/database/
 ├── src/migrate.ts
 ├── src/seed-demo.ts
 ├── migrations/001_platform.sql
+├── migrations/002_security_operations.sql
+├── migrations/003_logout_ticket_revocation.sql
+├── migrations/004_contract_state_constraints.sql
 ├── SPECS.md
 └── TODO.md
 ```
@@ -38,7 +41,7 @@ packages/database/
 ### Contratos atuais (tipos, endpoints, dados ou funções)
 
 1. connectDb(): pg.Pool; DATABASE_URL obrigatório; max connections 10/idle 10s; PG_SSL=require ativa SSL com rejectUnauthorized.
-2. migrate.ts: lê `migrations/001_platform.sql` e executa `db.query(sql)`; não mantém tabela de versão do schema nem rollback.
+2. migrate.ts: enumera `migrations/*.sql` ordenadas, serializa aplicações por pg_advisory_lock, registra SHA em schema_migrations e recusa checksum alterado; sem rollback geral automático.
 3. seed-demo.ts: cria/upsert `pwbr-153-lab` com status offline e stable channel; é opcional para desenvolvimento e não provisiona WDB.
 4. PostgreSQL extension pgcrypto fornece gen_random_uuid(); pg/migrations são runtime Node, não driver Cloudflare Workers homologado.
 
@@ -124,3 +127,5 @@ packages/database/
 - [ ] Evidência no PR com commit, resultado e limites, e aprovação antes de produção.
 
 **Backlog executável:** [TODO.md](TODO.md), com responsabilidades, dependências e critérios de aceite individuais.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

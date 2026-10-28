@@ -50,7 +50,7 @@ A UI/admin **nunca** executa scripts arbitrários; dados persistentes do jogo pe
 
 1. GET /v1/catalog/realms -> {realms: CatalogRealm[]}; falha de rede exibe erro e não inventa servidor.
 2. GET /v1/auth/me -> usuário ou 401; POST /v1/auth/login/register/logout -> cookie pw_session; login é web, não GNET.
-3. POST /v1/launcher/sessions {realmId,channel:'stable'} -> {bootstrap: LaunchBootstrap}; 409 quando falta realm READY, pairing SUPPORTED, releases PUBLISHED ou health recente.
+3. POST /v1/launcher/releases {realmId,channel:'stable'} -> release sem ticket para patch. Futuro start: POST /v1/launcher/sessions {realmId,expectedPairingId,expectedClientDigest} -> bootstrap com ticket somente após atualização; 409 se ocorrer troca.
 4. prepareClient({manifestUrl,expectedDigest,trustedKeys,onProgress,signal}) -> manifesto Ed25519 verificado e bytes JS/WASM; files de entrada armazenados com chave SHA-256.
 5. Interface prevista ClientAdapter.start({manifest/assetset,realmId,zone,gatewayUrl,ticket}) -> runtime handle com stop/dispose; não implementada.
 
@@ -60,7 +60,7 @@ A UI/admin **nunca** executa scripts arbitrários; dados persistentes do jogo pe
 
 1. BOOT -> GET catalog -> SELECT_REALM -> AUTH_REQUIRED ou AUTHENTICATED -> USER_REQUEST_LAUNCH -> RESOLVE_PAIRING -> UPDATING -> VERIFIED -> GAME_START_PENDING.
 2. A implementação atual retorna READY (arquivos preparados), mas exibe botão de gameplay desabilitado; não fingir IN_GAME.
-3. No futuro, preparar arquivos *antes* de emitir ticket curto de 90 segundos, evitando expiração durante downloads. Reemitir bootstrap na fronteira do launch e prender cliente ao pairing imutável.
+3. [ATUAL] O shell prepara arquivos por preflight sem emitir ticket. [PENDENTE] A chamada final a /launcher/sessions ocorrerá ao integrar o entry ABI do cliente; ela revalida o pairing e emite um ticket novo na fronteira do WSS.
 4. No switch de realm, desmontar JS/WASM, VFS, WebGL/audio e sockets; nenhum cache por filename sem hash, e não carregar release mais recente silenciosamente.
 
 **Princípios:** identificadores estáveis `realm_id` e `deployment_id`; releases pinadas pelo SHA-256; channel pin protegido por `expectedRevision`; session ticket curto e de uso único. Diferenciar `liveness`, `transport_ready` e `gameplay_ready`.
@@ -116,3 +116,5 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 | Produção | Infra, TLS, segredo, direitos e capacidade | Gate humano com evidência e rollback |
 
 **Decisões abertas** devem virar ADR linkado no documento mestre; não assumir design final em backlog. Consulte os itens `P0` antes de promover qualquer deployment.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

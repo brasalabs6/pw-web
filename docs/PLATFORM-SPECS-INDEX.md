@@ -84,7 +84,7 @@ Se cliente/servidor não têm pairing `supported`, release `published`, deployme
 | Contrato/identidade | Owner atual | Consumidores | Garantia e gap |
 | --- | --- | --- | --- |
 | `CatalogRealm` e `realmStatus` | contracts/control-api | shell/admin | Realms listados sem fingir online |
-| `launcherSessionInput` + `LaunchBootstrap` | contracts/control-api | shell, gateway | Release selecionada pelo realm, ticket de 90s; assinatura bootstrap pendente |
+| `launcherSessionInput` + `LaunchBootstrap` | contracts/control-api | shell, gateway | Release selecionada pelo realm; preflight sem ticket e emissão de ticket após patch por endpoint com CAS; assinatura bootstrap pendente |
 | `UpdateManifest` schema 2 + `assetSetDigest` | contracts/update-kit | shell, publisher | Ed25519 + SHA-256, mas falta DAG/streaming v1 do PR #23 |
 | `client_releases` + `server_releases` | database/control-api | admin, shell, worker | Registros por digest; falta attestation cripto de publish |
 | `pairings` + `realm_channels` revision CAS | database/control-api | admin, shell | Compat profile é pré-filtro, testes reais necessários |
@@ -134,7 +134,7 @@ Se cliente/servidor não têm pairing `supported`, release `published`, deployme
 6. Não mexer no cliente PR #23 ou servidor PR #17 sem base/merge explícito e sem respeitar autoria/branch e direitos de distribuição.
 7. Sem exposição de secrets em Git, sem WDB de produção em preview e sem endpoint de execução shell arbitrária.
 8. `GITHUB ACTIONS DISPATCHED` não equivale a `PREVIEW READY`; `TCP CONNECTED` não equivale a `GAMEPLAY READY`.
-9. Atualizar as SPECS/TODO por componente e este índice quando adicionar/remover package, app ou contrato.
+9. Atualizar as SPECS/TODO por componente e este índice quando adicionar/remover package, app ou contrato. Consulte docs/P0-IMPLEMENTATION-REPORT.md para o avanço P0 com testes.
 10. Ao concluir, reportar commit/PR, testes realmente executados, achados, bloqueios e próximos IDs.
 
 ## 8. Critério de completude da documentação
@@ -142,3 +142,5 @@ Se cliente/servidor não têm pairing `supported`, release `published`, deployme
 Para cada componente, o par `SPECS.md` + `TODO.md` deve responder: *quem é o owner? o que produz? quem consome? quais schemas/IDs/HTTP paths/capabilities? quais estados e falhas? onde há credenciais/dados? como testar? o que já existe e o que falta? quais workorders dependem de quais? como validar e reverter?*
 
 **Atenção:** estes arquivos organizam o trabalho futuro; não fazem o gameplay ou a infraestrutura de preview existir. O baseline factual de testes anterior está em `docs/PLATFORM-IMPLEMENTATION.md` e nos workflows GitHub Actions por SHA, com CI dos sete apps e testes criptográficos já executados em commits anteriores.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

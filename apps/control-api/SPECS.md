@@ -34,7 +34,7 @@ Dependências de build e runtime devem ser lidas no `package.json` ou `Cargo.tom
 ### 3.1 Domínio exclusivo / ownership
 
 - transações e políticas de negócio para CRUD de realms, releases, deployments, channels e pairings
-- hash scrypt das senhas web, cookie pw_session HttpOnly/Strict, web_sessions persistidas e tickets de gateway one-shot
+- hash scrypt assíncrono das senhas web, limitação SQL de login/registro, cookie pw_session HttpOnly/Strict, web_sessions persistidas e tickets de gateway one-shot
 - readiness semântico e audit_events/operation_jobs por actor e idempotency_key
 
 ### 3.2 O que é expressamente proibido neste componente
@@ -50,10 +50,10 @@ A UI/admin **nunca** executa scripts arbitrários; dados persistentes do jogo pe
 1. GET /healthz {status:'alive'} e GET /readyz: teste de PostgreSQL, não prova de jogo.
 2. POST /v1/auth/register|login|logout e GET /v1/auth/me; COOKIE pw_session, token guardado como SHA-256 em web_sessions.
 3. GET /v1/catalog/realms e /v1/catalog/realms/:id; estado online público exige health recente do deployment e pairing supported.
-4. POST /v1/launcher/sessions {realmId,channel} -> bootstrap schema2 com client/server digest, manifestUrl, gatewayUrl, ticket 90s; falha 409 se não houver jogo READY.
+4. POST /v1/launcher/releases {realmId,channel:'stable'} -> release pinada SEM ticket, para atualização. POST /v1/launcher/sessions {realmId,channel:'stable',expectedPairingId,expectedClientDigest} -> bootstrap com ticket de 90s APÓS atualização, 409 para mudança de versão/realm e não READY.
 5. POST /v1/internal/tickets/consume {ticket,deploymentId}; bearer GATEWAY_CONTROL_TOKEN; UPDATE consumed_at atômico com expires_at e deployment.
 6. POST/PATCH /v1/admin/realms, GET /v1/admin/overview, GET/POST /v1/admin/pairings, GET /v1/admin/channels e pin CAS por revision.
-7. POST /v1/admin/releases/clients|servers, POST /v1/admin/releases/:kind/:id/status, GET/POST /v1/admin/deployments, POST /v1/internal/deployments/:id/health.
+7. POST /v1/admin/releases/clients|servers, POST /v1/admin/releases/:kind/:id/status, GET/POST /v1/admin/deployments, POST /v1/internal/deployments/:id/health com bearer+prova Ed25519 temporal por deployment.
 8. POST /v1/admin/previews com Idempotency-Key e createPreviewInput; GET /v1/admin/jobs; 202 queued, não significa preview criado.
 
 **Norma de evolução de contratos:** mudanças em wire JSON/HTTP seguem `packages/contracts` + migracões compatíveis; mudanças C++ GNET precisam evidência de framing e compatibilidade do port PR #23 e do servidor PR #17. Não criar contratos duplicados por aplicação.
@@ -117,3 +117,5 @@ Falhas devem resultar em código/estado explícito e **fail-closed**: não troca
 | Produção | Infra, TLS, segredo, direitos e capacidade | Gate humano com evidência e rollback |
 
 **Decisões abertas** devem virar ADR linkado no documento mestre; não assumir design final em backlog. Consulte os itens `P0` antes de promover qualquer deployment.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.

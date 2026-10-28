@@ -12,7 +12,7 @@
 
 **Stack:** TypeScript + native fetch + cookies credentials include; @pw/api-sdk.
 
-**Situação comprovada [ATUAL]:** PwApi com wrappers para realms/me/auth/launch/overview/createRealm/updateRealm/previews/jobs; API request genérica para funções restantes. Ainda sem cliente OpenAPI gerado, retry/cancel/deadline, observabilidade nem estratégia de múltiplas origens.
+**Situação comprovada [ATUAL]:** PwApi com wrappers para realms/me/auth/launch/overview/createRealm/updateRealm/previews/jobs; API request genérica para funções restantes. Ainda sem cliente OpenAPI gerado, retries complexos/polling ou observabilidade; já aceita AbortSignal, timeout de 15s e VITE_API_BASE_URL.
 
 ### Princípios inegociáveis
 
@@ -36,7 +36,7 @@ packages/api-sdk/
 
 1. PwApi(base=''): request<T>(url,options); usa fetch(base+url, credentials:'include'), Content-Type JSON somente se body, parse JSON e lança ApiError(status,message) em !ok.
 2. realms() -> {realms:CatalogRealm[]}; me() -> {user}; login(email,password), register(email,password,displayName), logout().
-3. launch(realmId) -> POST /v1/launcher/sessions com channel:'stable'; não recebe clientVersion nem URL de servidor arbitrária.
+3. resolveRelease(realmId,signal?) -> preflight de release estável sem ticket; launch(realmId,expectedPairingId,expectedClientDigest) -> ticket depois da atualização. Não recebe clientVersion/URL arbitrária.
 4. overview(), createRealm(...), updateRealm(id,...), previews({kind,commits,ttlHours}) com Idempotency-Key crypto.randomUUID(), jobs().
 5. ApiError estende Error e carrega status; a maioria das respostas é tipada por TS mas não validada com Zod em runtime.
 6. Admin release/pairing/deployment endpoints ainda são chamados via request genérica diretamente pelos componentes.
@@ -45,7 +45,7 @@ packages/api-sdk/
 
 - AuthUser: {id,email,displayName,role}; role é string no SDK, validação forte do RBAC fica no backend.
 - CatalogRealm de @pw/contracts; LaunchBootstrap de @pw/contracts usado no shell.
-- ApiError {status,message} não padroniza problem+json, trace_id ou causas seguras.
+- ApiError {status,message}; runtime Zod valida realm, usuário e bootstrap, porém nem todas as rotas admin; falta padrão problem+json e trace_id.
 - Cookies HttpOnly não são acessados pelo SDK; apenas enviados automaticamente conforme browser e política do servidor.
 
 ## 3. Mapa de relações: produtores, consumidores e ownership
@@ -65,7 +65,7 @@ packages/api-sdk/
 
 ## 4. Regras de segurança, consistência e integridade
 
-- Sem timeout/retries e cancelamento, UI pode ficar travada em rede ruim. Retry só operações idempotentes com safe backoff.
+- Já há AbortSignal e timeout de 15 s, sem retries automáticos em POST. Faltam backoff idempotente, tracing e polling durável.
 - Generic request não valida URL ou origin; frontend não deve aceitar base URL oriunda do realm ou query sem allowlist.
 - Credenciais cross-origin/cookies SameSite Strict exigem mesmo site ou arquitetura de sessão aprovada.
 - Falha 204 No Content e erros não-JSON retornam Invalid response; contrato de problem responses precisa ser estável.
@@ -115,3 +115,5 @@ packages/api-sdk/
 - [ ] Evidência no PR com commit, resultado e limites, e aprovação antes de produção.
 
 **Backlog executável:** [TODO.md](TODO.md), com responsabilidades, dependências e critérios de aceite individuais.
+
+> **Nota de manutenção (2026-10-28):** status verificado, dependências e itens parciais desta área são acompanhados em [P0-IMPLEMENTATION-REPORT.md](../../docs/P0-IMPLEMENTATION-REPORT.md). Fluxos de gameplay dependentes do PR #23/gs continuam pendentes.
