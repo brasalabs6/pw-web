@@ -1391,6 +1391,18 @@ inline HCURSOR SetCursor(HCURSOR cursor) {
   return nullptr;
 }
 
+//	Cursor object lifetime: no real cursor objects exist on the browser
+//	target (the loader below fails first, so no handle is ever live);
+//	the destroy is vacuous and the file loader reports none.
+inline BOOL DestroyCursor(HCURSOR cursor) {
+  (void)cursor;
+  return TRUE;
+}
+inline HCURSOR LoadCursorFromFileA(const char *file) {
+  (void)file;
+  return NULL;
+}
+
 //	The window creation record (the documented CREATESTRUCTW layout;
 //	WM_CREATE hands it to the window procedure).
 typedef struct tagCREATESTRUCTW {
