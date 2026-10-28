@@ -40,6 +40,55 @@
 #define DSBFREQUENCY_MAX 100000
 #define DSBFREQUENCY_ORIGINAL 0
 
+//	Buffer capability flags: the documented DSBCAPS_* values.
+#define DSBCAPS_PRIMARYBUFFER 0x00000001
+#define DSBCAPS_STATIC 0x00000002
+#define DSBCAPS_LOCHARDWARE 0x00000004
+#define DSBCAPS_LOCSOFTWARE 0x00000008
+#define DSBCAPS_CTRL3D 0x00000010
+#define DSBCAPS_CTRLFREQUENCY 0x00000020
+#define DSBCAPS_CTRLPAN 0x00000040
+#define DSBCAPS_CTRLVOLUME 0x00000080
+#define DSBCAPS_CTRLPOSITIONNOTIFY 0x00000100
+#define DSBCAPS_CTRLFX 0x00000200
+#define DSBCAPS_STICKYFOCUS 0x00004000
+#define DSBCAPS_GLOBALFOCUS 0x00008000
+#define DSBCAPS_GETCURRENTPOSITION2 0x00010000
+#define DSBCAPS_MUTE3DATMAXDISTANCE 0x00020000
+#define DSBCAPS_LOCDEFER 0x00040000
+
+//	The 3D algorithm identifiers: GUID objects (not accessor functions)
+//	because the original assigns them by value into DSBUFFERDESC and
+//	passes the interface ids as pointers. The documented dsound.h bytes.
+static const GUID DS3DALG_DEFAULT = {0x00000000u, 0x0000, 0x0000,
+                                     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                      0x00, 0x00}};
+static const GUID DS3DALG_NO_VIRTUALIZATION = {0xc241333fu, 0x1c1b, 0x11d2,
+                                               {0x94, 0xf5, 0x00, 0xc0, 0x4f,
+                                                0xc2, 0x8a, 0xca}};
+static const GUID DS3DALG_HRTF_FULL = {0xc2413340u, 0x1c1b, 0x11d2,
+                                       {0x94, 0xf5, 0x00, 0xc0, 0x4f, 0xc2,
+                                        0x8a, 0xca}};
+static const GUID DS3DALG_HRTF_LIGHT = {0xc2413342u, 0x1c1b, 0x11d2,
+                                        {0x94, 0xf5, 0x00, 0xc0, 0x4f, 0xc2,
+                                         0x8a, 0xca}};
+
+//	The buffer/notify interface ids: accessor functions like the seam's
+//	other COM ids (the call sites pass them as pointers, so the id
+//	travels as the address of the documented byte layout).
+inline const void *IID_IDirectSoundBuffer8() {
+  static const unsigned char id[16] = {0x49, 0xa4, 0x25, 0x68, 0x24, 0x75,
+                                       0x82, 0x4d, 0x92, 0x0f, 0x50, 0xe3,
+                                       0x6a, 0xb3, 0xab, 0x1e};
+  return id;
+}
+inline const void *IID_IDirectSoundNotify() {
+  static const unsigned char id[16] = {0x83, 0x07, 0x21, 0xb0, 0xcd, 0x89,
+                                       0xd0, 0x11, 0xaf, 0x08, 0x00, 0xa0,
+                                       0xc9, 0x25, 0xcd, 0x16};
+  return id;
+}
+
 //	Cooperative levels.
 #define DSSCL_NORMAL 0x00000001
 #define DSSCL_PRIORITY 0x00000002
@@ -79,6 +128,7 @@ struct DSBUFFERDESC {
   DWORD dwBufferBytes;
   DWORD dwReserved;
   WAVEFORMATEX *lpwfxFormat;
+  GUID guid3DAlgorithm;  //  the documented trailing member (3D algorithm selection).
 };
 
 struct DSCAPS {
@@ -135,6 +185,9 @@ struct DSBPOSITIONNOTIFY {
   HANDLE hEventNotify;
 };
 
+//	The special notify offset: the documented DSBPN_OFFSETSTOP.
+#define DSBPN_OFFSETSTOP 0xFFFFFFFFu
+
 struct IDirectSoundNotify : IDSoundUnknown {
   virtual HRESULT SetNotificationPositions(DWORD dwNumElements,
                                            const DSBPOSITIONNOTIFY *pcElements) = 0;
@@ -177,7 +230,11 @@ struct IDirectSound : IDSoundUnknown {
   virtual HRESULT SetCooperativeLevel(HWND hwnd, DWORD dwLevel) = 0;
 };
 
+struct IDirectSoundBuffer;
 struct IDirectSound8 : IDirectSound {
+  virtual HRESULT CreateSoundBuffer(const DSBUFFERDESC *pcDSBufferDesc,
+                                    IDirectSoundBuffer **ppDSBuffer,
+                                    void *pUnkOuter) = 0;
 };
 
 //	The factory: the audio adapter implements the real device creation.

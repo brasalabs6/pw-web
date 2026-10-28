@@ -503,6 +503,11 @@ struct PALETTEENTRY {
   BYTE peFlags;
 };
 
+//	Palette-entry flags: the documented wingdi values.
+#define PC_RESERVED 0x01
+#define PC_EXPLICIT 0x02
+#define PC_NOCOLLAPSE 0x04
+
 //	The logical font (the documented wingdi layouts; the browser IME
 //	adapter owns the real font selection).
 typedef struct tagLOGFONTA {
