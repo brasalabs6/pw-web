@@ -134,6 +134,16 @@ inline HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface8 *destination,
 //	The D3DX default sentinel (the documented d3dx8 value).
 #define D3DX_DEFAULT 0xFFFFFFFF
 
+//	The error string: the documented D3DXGetErrorStringA contract is a
+//	text description of the HRESULT; the port renders the code itself
+//	(the real D3D error table is not part of the seam).
+inline HRESULT D3DXGetErrorStringA(HRESULT hr, char *buffer, UINT size) {
+  if (buffer && size)
+    std::snprintf(buffer, size, "D3D error 0x%08x",
+                  static_cast<unsigned int>(hr));
+  return D3D_OK;
+}
+
 //	The D3DX texture filters (the documented d3dx8tex values).
 #define D3DX_FILTER_NONE (1 << 0)
 #define D3DX_FILTER_POINT (2 << 0)

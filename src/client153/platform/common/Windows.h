@@ -415,12 +415,56 @@ inline BOOL Shell_NotifyIcon(DWORD message, NOTIFYICONDATA *data) {
 //	mode; a reset of an unchanged display is vacuously successful (the
 //	documented DISP_CHANGE result).
 #define CDS_RESET 0x40000000
+#define CDS_TEST 0x00000002
 #define DISP_CHANGE_SUCCESSFUL 0
 #define DISP_CHANGE_FAILED 1
 inline LONG ChangeDisplaySettings(void *deviceMode, DWORD flags) {
   (void)deviceMode;
   (void)flags;
   return DISP_CHANGE_SUCCESSFUL;
+}
+
+//	The display-mode record (the documented DEVMODE core; the client
+//	reads the graphics-mode tail only - the printer ICM fields stay
+//	out until a consumer names them).
+typedef struct _devicemodeW {
+  wchar_t dmDeviceName[32];
+  WORD dmSpecVersion;
+  WORD dmDriverVersion;
+  WORD dmSize;
+  WORD dmDriverExtra;
+  DWORD dmFields;
+  short dmOrientation;
+  short dmPaperSize;
+  short dmPaperLength;
+  short dmPaperWidth;
+  short dmScale;
+  short dmCopies;
+  short dmDefaultSource;
+  short dmPrintQuality;
+  short dmColor;
+  short dmDuplex;
+  short dmYResolution;
+  short dmTTOption;
+  short dmCollate;
+  wchar_t dmFormName[32];
+  WORD dmLogPixels;
+  DWORD dmBitsPerPel;
+  DWORD dmPelsWidth;
+  DWORD dmPelsHeight;
+  DWORD dmDisplayFlags;
+  DWORD dmDisplayFrequency;
+} DEVMODE, *LPDEVMODE;
+
+//	The display-mode enumeration: the browser host owns the display
+//	and publishes no mode list; the call reports none (the frequency
+//	probe keeps its zero default, the documented fallback).
+inline BOOL EnumDisplaySettings(const wchar_t *deviceName, DWORD modeIndex,
+                                DEVMODE *deviceMode) {
+  (void)deviceName;
+  (void)modeIndex;
+  (void)deviceMode;
+  return FALSE;
 }
 
 struct PALETTEENTRY {
@@ -3486,6 +3530,19 @@ inline BOOL SetCaretPos(int x, int y) { (void)x; (void)y; return TRUE; }
 // the DC and returns early; CaptureWindow's BitBlt is a no-op over NULL).
 inline HDC GetWindowDC(HWND hWnd) { (void)hWnd; return NULL; }
 inline int ReleaseDC(HWND hWnd, HDC hDC) { (void)hWnd; (void)hDC; return 0; }
+
+//	The screen device context and capability probe: no GDI contexts
+//	exist on the browser target (the canvas adapter owns the real
+//	metrics, like GetSystemMetrics); the context is none and the
+//	capability reports zero (the documented unknown-capability value).
+#define BITSPIXEL 12
+#define VREFRESH 116
+inline HDC GetDC(HWND hWnd) { (void)hWnd; return NULL; }
+inline int GetDeviceCaps(HDC hDC, int index) {
+  (void)hDC;
+  (void)index;
+  return 0;
+}
 inline HDC CreateCompatibleDC(HDC hDC) { (void)hDC; return NULL; }
 inline HBITMAP CreateCompatibleBitmap(HDC hDC, int width, int height) {
   (void)hDC; (void)width; (void)height;
