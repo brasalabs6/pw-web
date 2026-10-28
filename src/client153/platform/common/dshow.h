@@ -14,13 +14,17 @@
 #ifndef PW153_PLATFORM_DSHOW_H
 #define PW153_PLATFORM_DSHOW_H
 
-#include "Windows.h"
+//	The DirectShow SDK interfaces (strmif.h seam: the documented IPin/
+//	IBaseFilter/... surfaces the vendored base classes derive from, plus
+//	the identifier GUIDs and the media-type records).
+#include "strmif.h"
 
 //	DirectShow result codes the client checks.
 #define S_OK 0
 #define S_FALSE 1
 #define E_FAIL 0x80004005
 #define VFW_S_NO_MORE_ITEMS 0x00000001L
+#define NOERROR 0
 
 //	Media event codes the client's event pump switches on.
 #define EC_COMPLETE 0x00000001
@@ -30,15 +34,12 @@
 #define OATRUE (-1)
 #define OAFALSE 0
 
-//	Filter-graph time format: the documented 100-nanosecond units; media
-//	position uses the documented double-precision seconds.
-typedef std::int64_t REFERENCE_TIME;
-typedef double REFTIME;
-
-//	COM base for the DirectShow interfaces.
+//	COM base for the media-level consumer interfaces (the graph and
+//	control surfaces the client drives directly; the identifier arrives
+//	as the GUID reference the client passes).
 struct IDShowUnknown {
   virtual ~IDShowUnknown() = default;
-  virtual HRESULT QueryInterface(const void *riid, void **ppvObject) = 0;
+  virtual HRESULT QueryInterface(const GUID &riid, void **ppvObject) = 0;
   virtual ULONG AddRef() = 0;
   virtual ULONG Release() = 0;
 };
@@ -63,29 +64,13 @@ struct IMediaEventEx : IMediaEvent {
                                   LONG_PTR lInstanceParam) = 0;
 };
 
-//	The filter-graph pin surface the video clip walks (the documented
-//	DirectShow signatures; the media cycle's adapter implements them).
-enum PIN_DIRECTION { PINDIR_INPUT = 0, PINDIR_OUTPUT = 1 };
-
-struct IPin : IDShowUnknown {
-  virtual HRESULT QueryDirection(PIN_DIRECTION *pPinDir) = 0;
-  virtual HRESULT QueryId(wchar_t **pId) = 0;
-};
-
-struct IEnumPins : IDShowUnknown {
-  virtual HRESULT Next(ULONG cPins, IPin **ppPins, ULONG *pcFetched) = 0;
-};
-
-struct IFilterGraph;
+//	The pin/filter surfaces (IPin/IEnumPins/IBaseFilter with their full
+//	documented method sets) come from the strmif.h seam above; the
+//	vendored base classes derive from them.
 
 struct FILTER_INFO {
   wchar_t achName[128];
   IFilterGraph *pGraph;
-};
-
-struct IBaseFilter : IDShowUnknown {
-  virtual HRESULT EnumPins(IEnumPins **ppEnum) = 0;
-  virtual HRESULT QueryFilterInfo(FILTER_INFO *pInfo) = 0;
 };
 
 struct IMediaPosition : IDShowUnknown {
@@ -99,14 +84,35 @@ struct IBasicAudio : IDShowUnknown {
   virtual HRESULT get_Volume(LONG *plVolume) = 0;
 };
 
+//	The graph builder (the documented IGraphBuilder surface: the
+//	RenderFile auto-build plus the manual-build calls InitSafe drives).
 struct IGraphBuilder : IDShowUnknown {
   virtual HRESULT RenderFile(const wchar_t *lpwstrFile,
                              const void *pUnkReserved) = 0;
+  virtual HRESULT AddFilter(void *pFilter, const wchar_t *pName) = 0;
+  virtual HRESULT RemoveFilter(void *pFilter) = 0;
+  virtual HRESULT Connect(IPin *ppinOut, IPin *ppinIn) = 0;
+  virtual HRESULT Disconnect(IPin *pin) = 0;
+  virtual HRESULT Render(IPin *ppinOut) = 0;
+  virtual HRESULT FindFilterByName(const wchar_t *pName,
+                                   IBaseFilter **ppFilter) = 0;
+  virtual HRESULT AddSourceFilter(const wchar_t *lpwstrFileName,
+                                  const wchar_t *lpwstrFilterName,
+                                  IBaseFilter **ppFilter) = 0;
 };
 
 struct IFilterGraph : IDShowUnknown {
   virtual HRESULT AddFilter(void *pFilter, const wchar_t *pName) = 0;
 };
 
+//	The COM task allocator the DirectShow contracts hand out buffers
+//	with (the documented CoTaskMemAlloc pair; plain heap storage on
+//	this target).
+inline void *CoTaskMemAlloc(std::size_t size) {
+  return std::malloc(size);
+}
+inline void CoTaskMemFree(void *block) {
+  std::free(block);
+}
 
 #endif // PW153_PLATFORM_DSHOW_H

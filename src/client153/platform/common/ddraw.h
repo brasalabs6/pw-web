@@ -138,6 +138,93 @@ static_assert(offsetof(DDSURFACEDESC2, dwWidth) == 12 &&
               "DDSURFACEDESC2 field offsets must match the documented layout");
 
 struct IDirectDraw : IUnknown {};
+
+//	The DirectDraw 7 declaration surface the vendored DirectShow SDK
+//	headers (videoctl.h) reference. The browser has no DirectDraw; these
+//	exist so the SDK declarations parse — the runtime path fails through
+//	DirectDrawCreate's explicit failure below.
+struct IDirectDrawSurface : IUnknown {};
+struct IDirectDrawClipper : IUnknown {};
+struct IDirectDrawPalette : IUnknown {};
+
+typedef IDirectDraw *LPDIRECTDRAW;
+typedef IDirectDrawSurface *LPDIRECTDRAWSURFACE;
+typedef IDirectDrawClipper *LPDIRECTDRAWCLIPPER;
+typedef IDirectDrawPalette *LPDIRECTDRAWPALETTE;
+typedef PALETTEENTRY *LPPALETTEENTRY;
+typedef DDCOLORKEY *LPDDCOLORKEY;
+typedef DDPIXELFORMAT *LPDDPIXELFORMAT;
+
+//	The DirectDraw 3-era surface description (the documented layout: the
+//	DDSURFACEDESC2 fields without the extended unions).
+struct DDSURFACEDESC {
+  DWORD dwSize;
+  DWORD dwFlags;
+  DWORD dwHeight;
+  DWORD dwWidth;
+  union {
+    int lPitch;
+    DWORD dwLinearSize;
+  };
+  DWORD dwBackBufferCount;
+  DWORD dwMipMapCount;
+  DWORD dwAlphaBitDepth;
+  DWORD dwReserved;
+  DWORD lpSurface;
+  DDCOLORKEY ddckCKDestOverlay;
+  DDCOLORKEY ddckCKDestBlt;
+  DDCOLORKEY ddckCKSrcOverlay;
+  DDCOLORKEY ddckCKSrcBlt;
+  DDPIXELFORMAT ddpfPixelFormat;
+  DDSCAPS2 ddsCaps;
+};
+typedef DDSURFACEDESC *LPDDSURFACEDESC;
+
+typedef HRESULT (*LPDDENUMMODESCALLBACK)(LPDDSURFACEDESC, void *);
+
+//	The DirectDraw caps record pointer (the struct is defined above).
+typedef DDSCAPS *LPDDSCAPS;
+
+//	The blit-effects record (the documented DDBLTFX layout).
+struct DDBLTFX {
+  DWORD dwSize;
+  DWORD dwDDFX;
+  DWORD dwROP;
+  DWORD dwDDROP;
+  DWORD dwRotationAngle;
+  DWORD dwZBufferOpCode;
+  DWORD dwZBufferLow;
+  DWORD dwZBufferHigh;
+  DWORD dwZBufferBaseDest;
+  DWORD dwZDestConstBitDepth;
+  IDirectDrawSurface *lpDDSZBufferDest;
+  DWORD dwZSrcConstBitDepth;
+  IDirectDrawSurface *lpDDSZBufferSrc;
+  DWORD dwAlphaEdgeBlendBitDepth;
+  DWORD dwAlphaEdgeBlend;
+  DWORD dwReserved;
+  DWORD dwAlphaDestConstBitDepth;
+  IDirectDrawSurface *lpDDSAlphaDest;
+  DWORD dwAlphaSrcConstBitDepth;
+  IDirectDrawSurface *lpDDSAlphaSrc;
+  IDirectDrawSurface *lpDDSPattern;
+  DDCOLORKEY ddckDestColorkey;
+  DDCOLORKEY ddckSrcColorkey;
+};
+typedef DDBLTFX *LPDDBLTFX;
+
+//	The blit-batch record (the documented DDBLTBATCH layout).
+struct DDBLTBATCH {
+  RECT *lprDest;
+  IDirectDrawSurface *lpDDSSrcSurface;
+  RECT *lprSrc;
+  DWORD dwFlags;
+  DDBLTFX *lpDDBltFx;
+};
+typedef DDBLTBATCH *LPDDBLTBATCH;
+
+typedef HRESULT (*LPDDENUMSURFACESCALLBACK)(LPDIRECTDRAWSURFACE,
+                                            LPDDSURFACEDESC, void *);
 struct IDirectDraw2 : IUnknown {
   virtual HRESULT GetAvailableVidMem(DDSCAPS *caps, DWORD *total, DWORD *free) = 0;
 };

@@ -10,6 +10,14 @@
 * Copyright (c) 2010 Archosaur Studio, All Rights Reserved.
 */
 
+//\tThe AngelicaCommon AString/AArray copies come first: the GfxCommon
+//\theader chain reaches acsdk's buggy copies otherwise, and the shared
+//\tinclude guards skip them once the good ones are parsed (the
+//\twidget-prelude pattern; this TU builds in the game target without the
+//\twidget prelude).
+#include "AString.h"
+#include "AArray.h"
+
 #include "StdAfx.h"
 #include "RandStringContainer.h"
 

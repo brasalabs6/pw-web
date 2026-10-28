@@ -9276,6 +9276,494 @@
     {
       "path": "Element/CElementSkill/skillwrapper.cpp",
       "sha256": "e9c46a85c220ae1f3fe7056c6df2dcea1a7982f527bd0ca1ac2089d8706f445d"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DFont.cpp",
+      "sha256": "7d456cbf9afa45257c2e8c3eea4b591c81fef0f3c37f4d2188decf60908c2514"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSurface.cpp",
+      "sha256": "7598b6c134ab9a5584e0cfdc28d53f5ab7d297fbd908ce55664f1d7523cd522a"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSurfaceMan.cpp",
+      "sha256": "9c182437d77f1264c665e196df8776a9b064ddac6abef68ace4f45e320bf96f3"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2RenderAux.cpp",
+      "sha256": "4197ed8269d29ffa1d9ffec42324dbaed5c75cef6cfe7f1d5b900fe4eabb136b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrainWaterRender.cpp",
+      "sha256": "fd701925be40d5acf284e7fd0ba01c9d891819f2b21998705de1d027d57032d6"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DWaterWave.cpp",
+      "sha256": "be348f68f2e65214767d2a4e34e9dbceac1a6986ef3c28c5811471fea4dbf9af"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/a3dskinrender.cpp",
+      "sha256": "092b78df418548dae8c0876d84569b3d48ebd6448381b637e92f330f2ddb9ebe"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DCollision.cpp",
+      "sha256": "d5c464d4a5cb2b17d386bb5cd4741cb5d928a8d6c6144ebd0ce88bf7f5813f50"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DGFXMan.cpp",
+      "sha256": "713501695c23565327a7520ce4a59d6dbdc834fb6aadb5ddb160aaef3af524b1"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DRenderTarget.cpp",
+      "sha256": "14309fed4bc44e28dc2907e0f5ff33e735e8d3831b6648b285ccc19601c705c3"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DVertexShader.cpp",
+      "sha256": "82124ef0140faf01412a2e20b6162eedc93f1cf5458d8a00effc955915e3ca5f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DPixelShader.cpp",
+      "sha256": "39b0fbfc69f57d864d46d7c1fbaf4a4e05d7662e63b786272828b0108dc9e103"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/PfConstant.cpp",
+      "sha256": "74289ee171b97dd0d8926b8150d3b32368adcda32efebbb68b243fd118bb3316"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/Graph.cpp",
+      "sha256": "b5c70f2f6b9a63e0247cf4a504ecdea75102fe83d963cd32b3bfb89a90edfa78"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/GHeap.cpp",
+      "sha256": "99f3f8cd9ceeb18b8dc410919fa68484a88b2bc357259d67f745096cb3ffe7b0"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MapNode.cpp",
+      "sha256": "23ddb8cd609c0cc78587e6b7858d4e2e9cf71b441f202f33e4e69a043513294c"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MapGraph.cpp",
+      "sha256": "5ee94fef8df93db077bf41b67f87846b789785f392c7bcacb600207021075d6c"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/GAStar.cpp",
+      "sha256": "05a78c7744f0d0e8641563956970ac4e80576f62bfaa4981cb5e24ae9552c850"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MAStar.cpp",
+      "sha256": "446c823a161ae76e70e996916afe2fce2a7974ffafb020c451e73c484896c8d8"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/CluCommon.cpp",
+      "sha256": "28bf36289db52e1f216c27cc8cdc477857fa5979b3ea4e5b3f0bb9dd7973d130"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/CluGraph.cpp",
+      "sha256": "ae7232540b05f29e108604db8f9c637a35d675dc8d86c1e44f1ec49afa6238cc"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/ClusterAbstraction.cpp",
+      "sha256": "b8d0bc4f8bc156a897b6dedd561bfdb1d01475c3c718f7558a2e80869fd3d88c"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/CluGraphConnector.cpp",
+      "sha256": "db2d42167f9ed489e1b6d95fdc4b6b6ec7f7293ad59e8828fd9cee621e35443e"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/Island.cpp",
+      "sha256": "a31ae17ae4f9e8625fca3b1ec9e9e1b266dea1d9f76689b9853b0f6ba65b4352"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MultiCluGraph.cpp",
+      "sha256": "8735c032bd10daae1849139f396feb5e416f8d95f978d12ad27e33614cd00034"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MoveMap.cpp",
+      "sha256": "d1e2ad23e1c773e2d201e749cca9629602e4e7e4eef909b3f24f3d1355370e46"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/LayerMap.cpp",
+      "sha256": "bedfa27f05c8e3e9b9ae3850d327d65b3df9d6507047e6d30f7b17b35532ad48"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/PfClu.cpp",
+      "sha256": "ec1634bca6bfceee3390fcc051041d734f6fa52280128ba1ac6863bf1766ecdc"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/OptimizePath.cpp",
+      "sha256": "b1f3120c432e027e76632483828f361dcea14795a66a5b5f96803eb7491b59bc"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/CluCommon.h",
+      "sha256": "6d9f844bc617dcfabbe1cdda41dbfe76bdfc80acb280b71796804e92803d7ca1"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/CluGraph.h",
+      "sha256": "167784ac2b19d44f3f249190c6ca66f45578b425d3d18bb238f3f0ecfa1dc755"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/CluGraphConnector.h",
+      "sha256": "bbb730ef30d7326f515211fbcc8a2bfeb4feacb824f9c1c163ff951d92cae738"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/ClusterAbstraction.h",
+      "sha256": "6775dc04948b828abba094c9fdf21cc86fe594b0e00c111bb7f825ca5928b87d"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/GAStar.h",
+      "sha256": "05365f01e13578b3cc9b7ba545439104b08ab28e56ad6e07d7d58b5e6f62125a"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/GHeap.h",
+      "sha256": "7e2d0a390b41365add057d86009244c767550b6f8c0cecd44c48b84ba197cedc"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/Graph.h",
+      "sha256": "b73f1c987c5c94dd53e395efa4e6b2ee2f0fa1840d2f1cfae29572508fd4c3e6"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/JointList.h",
+      "sha256": "5810391ef4cfb0c7f8ccec59dcfff79b14c795cbfee2017eeb384a47557a2a94"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MapGraph.h",
+      "sha256": "53e960ba7e81b50f11ab123606ad1b7dbb02929496a625fa9bddd9e7197eb02d"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MapNode.h",
+      "sha256": "5199f3ec374c9472952f23aa3f6f6e9353aaae65b59f8fcf1f670e0c61dcdab3"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MAStar.h",
+      "sha256": "dc18273b3e91308c9c8886ddf4ea107772381b6e41ebec43972dd87cca0fff83"
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MultiCluGraph.h",
+      "sha256": "cc6c36cd4be1f4d615ca04635622ba79e4e5903618822d0c97739970be3dcf38"
+    },
+    {
+      "path": "Common/CHBasedCD/Matrix.h",
+      "sha256": "58afc9a94bf35a77d60d705bd5449ba0ff1ad0c5274e4c58901b13e78578d498"
+    },
+    {
+      "path": "Common/CHBasedCD/LEquations.h",
+      "sha256": "4af3691e14f2c35e8701c7987147206331d9ad08f26fd692189c9851f1d3cc23"
+    },
+    {
+      "path": "Common/CHBasedCD/Matrix.cpp",
+      "sha256": "8ee27794416e5697f8e5c940391ed7a4e07b2e9e2a383af39182b571049cd3d0"
+    },
+    {
+      "path": "Common/CHBasedCD/LEquations.cpp",
+      "sha256": "422555339a75c645488f0d7db4dc9f57bc7e594d5227cc77d1f63e322a5a45e8"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinMeshMan.cpp",
+      "sha256": "a4c81d693e4e1460ada0be1fb67b9d5bc1e3a3c84b24b135acb37c7af38d45c0"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkySphere.cpp",
+      "sha256": "b30f3333ba38ccb85e41a6bee5f8811708962ad66b40293b4a24538b4e8848c8"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTrace.cpp",
+      "sha256": "4ab3be0233249fe099a1dbbb7efaab163e3c1dbabfac1050b0f013732977c0c3"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMVideoEngine.cpp",
+      "sha256": "7bacacc1d547899a14b2ec1bf126cf37860f02afbbe5eac21162c853d5b330bb"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMSoundBuffer.cpp",
+      "sha256": "039ebaf1cfb0f3a7a1291115b9af69647f2fd4d51d312ae858a4fde973d7cc7d"
+    },
+    {
+      "path": "Common/GfxCommon/RandStringContainer.cpp",
+      "sha256": "39fadcd031763405943f33752f5725d24d79e13daa160a1816c4ec1432a1870f"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXContainer.cpp",
+      "sha256": "ed9b8b6f6533107265288888df546c6559503f6ad712f3a42f4c9f1e15d88e4d"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXECModel.cpp",
+      "sha256": "93b741469304b6491b944f50c58397bc2af4ab7c0a9720137d797226eeefbee6"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXEditorInterface.cpp",
+      "sha256": "0b7db6fb0edd87fd82dc0836eb6dfdeb7c71caa4ebd60fe1609dfffe0b94944a"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXFuncs.cpp",
+      "sha256": "6d29dcf14c6234f289216b4b2e83f4de11a7d8ec6a986a013e739b3829015db3"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXInterface.cpp",
+      "sha256": "3d85cfb95764ba40a10f8ec23d6e33561a4546531a11b53624e51fd35e570c07"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXLight.cpp",
+      "sha256": "11400b7336331a088b86446db64e4ea5e72dd82e30fccd83ccf27594b2c08698"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXModel.cpp",
+      "sha256": "d7d6a75474e4836a72a43283a90f839c8287904b3da12d835fdcc61b91e7de7e"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXModelMan.cpp",
+      "sha256": "eaf19f9b56e6c96f576f7c082ed815cecab1fc4501b297940f7bd71540aaa064"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXRenderSlot.cpp",
+      "sha256": "17406fc3543067260e4d0f17af39830346c81359bccfcb1e3fd1185728368c49"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXSound.cpp",
+      "sha256": "8ff08986585e2f35b7a8209d516d1a97ad9b8a4f0790d26ea399e4085d38e6af"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXStreamMan.cpp",
+      "sha256": "826ced17fb38dd1eb827d63a8a90054be68d08abfff7a4610ab2d592df95da66"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXSurfaceRender.cpp",
+      "sha256": "b65b59246371691cc601aaeaf9d729a33e1030e5086dc0420f5351ec5951f4b1"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXTexMan.cpp",
+      "sha256": "8f308b5e682b062a200f20c9364392a12be49e018987049cb93ad7591983c330"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebug.cpp",
+      "sha256": "7d5329ab5d23916f13e466fea8ef08dfe28a87a47614a8e1b5b5c70cdadcfa0b"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaScript.cpp",
+      "sha256": "22477af3e9a6790b492c0792f481f51aef35f6b6ffee62f477caa0ee80f442a5"
+    },
+    {
+      "path": "Common/GfxCommon/A3DDecalEx.cpp",
+      "sha256": "e0fddf02efa68a4afbae25c99e459cd7b2157c63c4e0e90db5117df4a09287d7"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGridDecalEx.cpp",
+      "sha256": "edf20a373d6b25d6ebc582b1dd07dfe58c7d93b0ce4ff1a6a0741d03c4cca4a4"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXRing.cpp",
+      "sha256": "7c92cd5ebed15c5ca3eb181083f1a076acdb436a333f5507d7baf7fc2156e2da"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXShakeCamera.cpp",
+      "sha256": "8f776923aca0cded538cc6d031c88230497f42198610db743d5ec5be15a9fa0d"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXLightning.cpp",
+      "sha256": "67a07ae54889a39dd7fc0f44f61e53edf20ec05934ab68263ff39f44d57006b8"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXLightningEx.cpp",
+      "sha256": "a5eb6713ca052af1c85024a77f59d2e938c995449a3605d5254a8dc3ff3a60a6"
+    },
+    {
+      "path": "Common/GfxCommon/A3DLtnBolt.cpp",
+      "sha256": "e90ecf9f01f4828faa362bb143ca28886dccb423b40001e380255fe315e5c2ab"
+    },
+    {
+      "path": "Common/GfxCommon/A3DLtnTrail.cpp",
+      "sha256": "00c409db9e3d9d4c76f5a707246b4291496facfa8e249664bf04363922e6dafa"
+    },
+    {
+      "path": "Common/GfxCommon/A3DParaboloid.cpp",
+      "sha256": "7eedb67374a9037ed88bd090ea21ae66f4c27dfae3695532ea74c46391b427f4"
+    },
+    {
+      "path": "Common/GfxCommon/A3DParticleSystemEx.cpp",
+      "sha256": "b63c87059514dbf1a7282e15feafc406364192213e945c46355c5013ad5b7a84"
+    },
+    {
+      "path": "Common/GfxCommon/A3DRibbon.cpp",
+      "sha256": "b7e757b538d1e7a9b97da4f392810db0269a473a58b06ad6a1dd53e3d560ac55"
+    },
+    {
+      "path": "Common/GfxCommon/A3DTrail.cpp",
+      "sha256": "e50ef3cb78868e7e517dc387963ed1fffede2bfee9a7f34460a524c253a8d7fa"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFlatCollector.cpp",
+      "sha256": "04bb383cfbaeca7bed64034f312b8acd741729fd7c227b29f98acc84389ae467"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWManager.cpp",
+      "sha256": "2873a3b9ebc823c6f59140214be24ee61c12d6312445244c7dc7b11a2ea18e97"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWTemplate.cpp",
+      "sha256": "9cc6d7895f9ad7c15ce9f6f0a057e4f33814aa5a4a6fbb664d901697e62a7ed5"
+    },
+    {
+      "path": "Element/CFWEditorLib/CodeTemplate.h",
+      "sha256": "6f7c5962fae94689c49aee8474f1cff52c1823eafeb3e97bfedcd0482d5c74d1"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArchive.h",
+      "sha256": "094ae0321a67854ed000b641c5b9817f95ff708e3745638fe8f913b5f98016b8"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtCreator.h",
+      "sha256": "ef6438375eebd51a2cb884a6e0de45f85e215bfd00300609959eab6c634cfc72"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAssemblyCache.h",
+      "sha256": "c6c9d6ffd6b3312b98d8fd0d9dceb63c32b186db8be15a678477a742f4212052"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAssemblyProfile.h",
+      "sha256": "c978f3c4fd377ab8ae3baaf4e54481e24aee8e4679e4900f62244ec614643c5d"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWConfig.h",
+      "sha256": "07da9ecd864219fc7aa65c7a1060e9b6aee86695c67ceecd9c9c0946823dead7"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDoc.h",
+      "sha256": "dceeda9aad40b15c30da53857435768e59feabc49971f39fd9b9ef17da1cfae6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFirework.h",
+      "sha256": "e529347c0fff13778b19a47262440a36ac712e4bad1ed0bd9026ab70bcb5afc2"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkLanch.h",
+      "sha256": "6a02dfbe7ad61e10c776d69e3829acdce41296091afbdf6ca5d4a4606ae07a08"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkLeaf.h",
+      "sha256": "a552fbf1b8796d069c711c89efb84cd4862d5c32553b73bd2daa4b87cf03a59e"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFlatCollector.h",
+      "sha256": "e52590d15147baf390e4c6afb86d19256f8008137f1e6d1ea6615bcd01fc5ca2"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFontEnum.h",
+      "sha256": "1e42d6f1cc28bdc0a7b6bbe604dd5f5cda6509de8934df8b42334bfb8c166285"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyph.h",
+      "sha256": "9ab3a3e2e2bf38b72eb61b865f04a48139501856a72f03e1d4b49a1405dd2add"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphFirework.h",
+      "sha256": "5d2ff3f6f037562d016571d5f650e89510c43f1d7ebb3340b27f3b5affcdf842"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphGraphBase.h",
+      "sha256": "8450c5ce748fd52b8cca3181ac4456d5c5a48ce58a42f0432bb389a960315e94"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphList.h",
+      "sha256": "e00bbcb3d613475df5e3fa7b4462c60dd7b912643df5554356fff7c16cd9cd6b"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphText.h",
+      "sha256": "ae806ba01690ba7df1337e1d30645e619854a22f766464ad8ce264ff20ac3e79"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWInfoSet.h",
+      "sha256": "54b7f127782cab4afdbf53453343771454160e15bc7bb92493e1e9d2f0a298aa"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWLog.h",
+      "sha256": "47ea70e36ebce10e018c02d4ae66843758e072c78355366e13704c3c8921d045"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWManager.h",
+      "sha256": "c3a00e50bc922ed0d73d99012794bf98ec2b38d2f59c393ecc8cf45d4e0a4110"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifierCreator.h",
+      "sha256": "536662197ee5fd5280ebb69b43ebd2fb5e49c2924484cd448be2218628af2fd5"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWObPtrList.h",
+      "sha256": "97eb5a3105b7dabaffa7caf662c221682ef1167ab2bd18c298fd59f32b80e251"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWObject.h",
+      "sha256": "60d01b2070f0861d3a3d7504efc99f778f1612c8ec060f8c96bf05fa3eb38848"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWOutterProperty.h",
+      "sha256": "3a61d096b2a5841b9c3f0041dad0b6daa32da2be6f7399a57b65587b279840e6"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWParam.h",
+      "sha256": "3a55878e5d5509c6d012c7a94092ea6e6e6e4e955a8e045448dada3e65f45d97"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWRuntimeClass.h",
+      "sha256": "74c315024b035f40e43a308f5303ef86f4dfc8f4b09485887ee73217b7283f60"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWTemplate.h",
+      "sha256": "e8d04af2791c8417a728bf51b7549056618397b0e7fa8cbb2f41915fa236cbce"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWTextMesh.h",
+      "sha256": "cdd8d6d825aeb9d70a073ffdec066225bb2cf45c892b1a22bbb7b98d2b7ee909"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWView.h",
+      "sha256": "5825303bb2860f99f4d2995907a945a472e725dbf6fc07b0cba0e0ee0ae29de1"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXGridAnimation.h",
+      "sha256": "5b731b535c2b9e8427999ec01643aceb950ac076d2e1eb2b1933a4a4efaa5374"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DVectorComp.cpp",
+      "sha256": "0473fab2ee7f5950530721583bdcd3259044f5ad5bc1e131f805d3114726c5f7"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DVertexCollector.cpp",
+      "sha256": "49b0f11f7cde3d0dbca2e08a36c21c425ff453163f18336b20f61b47edb6053c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DWorld.cpp",
+      "sha256": "2dd67be102990957ed78698f98930114679609fa367ff43007fc26d52a1dabd9"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/APerlinNoise1D.cpp",
+      "sha256": "7e6624fba676cd650df8ae00d56bcdc9ae6dfce9709d21012912e9fc35bf5189"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/ARandomGen.cpp",
+      "sha256": "92a7e418574af214657c0484895bf7f8004d65dcb6b191e06b78ede575b5cb0b"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AFileUnicode.cpp",
+      "sha256": "0e6ad5adfdefcb3bbdb4dd7ada925c793eb62b041ca0d113927da240d5dc3d82"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AMemFile.cpp",
+      "sha256": "a605087d43ec07ddaf432d93948fb4b0adc9744c24a7fa354301c9ea07e1cde5"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMSoundDevice.cpp",
+      "sha256": "8f66c782aaf5c154e1e068306480db293d869e73b74be646419d4745909609bc"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AM3DSoundBuffer.cpp",
+      "sha256": "babeda3091f1c91bdddb17dc112f13e402b25aa5c381e1ffe0b4ee65647891d1"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AM3DSoundDevice.cpp",
+      "sha256": "3d0cc8f596a0bd3beee517657367354c5b5c85f88aa759eeaa9c2e35f038b094"
+    },
+    {
+      "path": "Angelica2/ImmWrapper/Source/AMImmWrapper.cpp",
+      "sha256": "af5aa091c737d3d0a5be4e4b594aabc88f35adaccf414903064a03ead53f7d02"
     }
   ],
   "adaptations": [
@@ -10139,6 +10627,236 @@
         "GNET::SkillWrapper (all out-of-line methods incl. LoadData/instance)"
       ],
       "notes": "ASCII upstream file; verbatim port."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DTerrain2RenderAux.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DTerrain2RenderAux.cpp",
+      "functions": [
+        "A3DTrn2RenderSlot (all out-of-line methods)",
+        "A3DTrn2StreamMan (all out-of-line methods incl. INDEX_STREAM ctor)"
+      ],
+      "notes": "verbatim copy; two upstream 'return false;' from the pointer-returning AllocVertStream/AllocIndexStream fixed to 'return NULL;' (bool does not convert to pointer under clang)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DWaterWave.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DWaterWave.cpp",
+      "functions": [
+        "A3DWaterWave (all out-of-line methods)",
+        "A3DWaveMoveCtrl::SetCtrlValues/UpdateValue"
+      ],
+      "notes": "verbatim port, zero adaptations."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DTerrainWaterRender.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DTerrainWaterRender.cpp",
+      "functions": [
+        "A3DTerrainWaterRender (all out-of-line methods)"
+      ],
+      "notes": "GB18030 comments transcoded to UTF-8 (3 lines); no code adaptations; D3DRS_LOCALVIEWER/D3DRS_NORMALIZENORMALS and D3DTSS_TCI_* added to the d3d8.h seam with documented values."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DSurface.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DSurface.cpp",
+      "functions": [
+        "A3DSurface (all out-of-line methods)"
+      ],
+      "notes": "verbatim port; IDirect3DDevice8::CreateImageSurface added to the d3d8.h seam with the documented signature."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DSurfaceMan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DSurfaceMan.cpp",
+      "functions": [
+        "A3DSurfaceMan (all out-of-line methods)"
+      ],
+      "notes": "verbatim port; D3DXLoadSurfaceFromFileInMemory added to the d3dx8.h seam (explicit D3DERR_INVALIDCALL failure) and D3DXIMAGE_INFO::Format typed as the documented D3DFORMAT enum."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DFont.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DFont.cpp",
+      "functions": [
+        "A3DFont (all out-of-line methods)"
+      ],
+      "notes": "verbatim copy; three upstream 'return false;' from the pointer-returning AllocTextureSlot fixed to 'return NULL;'; GDI text state setters (SetTextColor/SetBkColor/SetTextAlign), TA_*/ETO_* values and the UNICODE ExtTextOut mapping added to the Windows.h seam (explicit ERROR_CALL_NOT_IMPLEMENTED failures)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DFrame.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DFrame.cpp",
+      "functions": [
+        "A3DFrame::Render"
+      ],
+      "notes": "GetCurIBLLightParam()'s return temporary cannot bind to A3DMeshSorter::InsertMesh's non-const lvalue reference under C++17 (MSVC extension); a named local at the call site preserves the original call semantics."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/a3dskinrender.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/a3dskinrender.cpp",
+      "functions": [
+        "A3DSkinRender::SelectRenderSlot"
+      ],
+      "notes": "the allocation-failure return was `return false` relying on the MSVC bool-to-pointer conversion; C++17 needs the explicit null pointer (return NULL) for the RENDERSLOT* return."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DVertexShader.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DVertexShader.cpp",
+      "functions": [],
+      "notes": "the AF.h include is not resolvable with the engine-target include set; it is replaced by the AFI.h/AFileImage.h headers that provide the af_*/AFileImage helpers this unit actually uses (the established A3DLitModel.cpp include-omission pattern)."
+    },
+    {
+      "path": "src/client153/Angelica2/Output/a3dsdk/include/A3DSkinRender.h",
+      "upstream": "Angelica2/Output/a3dsdk/include/A3DSkinRender.h",
+      "functions": [],
+      "notes": "forward declaration of A3DSkinMan added before the m_psm member: the original build saw the name through the project's precompiled umbrella (A3D.h), and the pinned header itself never declares it (both upstream copies are byte-identical); standard C++ needs the declaration for the pointer member."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/PWBrowser.cpp",
+      "upstream": "Element/CElementClient/PWBrowser.cpp",
+      "functions": [
+        "CPWBrowser::OnMessage",
+        "CPWBrowser::DocumentComplete",
+        "CPWBrowser::NavigateUrl",
+        "CPWBrowser::GoForward",
+        "CPWBrowser::GoBackward",
+        "CPWBrowser::Refresh",
+        "CPWBrowser::DelayDestroy"
+      ],
+      "notes": "the UNICODE SetWindowText macro resolves to the wide member (SetWindowTextW); the interface ids are accessor functions on this target (IID_IHTMLDocument2(), IID_IHTMLElement2()); the scroll locals stay 32-bit long and pass through (LONG*) casts (the port's LONG is a distinct type); the IE/MSHTML container cannot exist in a browser sandbox — the ATL host seams fail explicitly (AtlAxGetControl/AtlAxWinInit/SetExternalUIHandler/QueueUserAPC), the first browser request logs the limitation once and navigation requests fail, so CPWBrowser stays constructible and its callers keep their existing error paths; the ATL surface (IWebBrowser2::Navigate2, IHTMLElement2::get_scrollHeight, IHTMLStyle::put_overflow, CComVariant narrow/copy construction with deep BSTR copy, CComObject::CreateInstance out-parameter form, CWindow MessageBox/ShowWindow/MoveWindow, the CWindowImpl message-map contract SafeWinImpl dispatches through, ATLASSERT, QueueUserAPC) comes from the exdisp/atlbase/atlhost/atlwin/winsync seams."
+    },
+    {
+      "path": "src/client153/Common/Output/include/Gfx/A3DGFXGridAnimation.h",
+      "upstream": "Common/GfxCommon/A3DGFXGridAnimation.h",
+      "functions": [
+        "A3DGfxGridAnimation (header surface)"
+      ],
+      "notes": "the upstream namespace-scope forward declaration 'struct A3DGridDecalEx::GRID_VERTEX_DATA;' is ill-formed C++ (MSVC laxity, clang rejects even as a redeclaration); the header now includes the defining A3DGridDecalEx.h instead (no include cycle: the decal header only forward-declares the animation class)."
+    },
+    {
+      "path": "src/client153/Common/Output/source/Gfx/A3DRibbon.cpp",
+      "upstream": "Common/GfxCommon/A3DRibbon.cpp",
+      "functions": [
+        "A3DRibbon (all out-of-line symbols)"
+      ],
+      "notes": "upstream include \"stdafx.h\" relies on Win32 case-insensitive resolution; corrected to the real StdAfx.h (case-variant include)."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWFlatCollector.cpp",
+      "upstream": "Element/CFWEditorLib/FWFlatCollector.cpp",
+      "functions": [
+        "FWFlatCollector (all out-of-line symbols)"
+      ],
+      "notes": "upstream include \"fwflatcollector.h\" relies on Win32 case-insensitive resolution; corrected to the real FWFlatCollector.h (case-variant include)."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWManager.h",
+      "upstream": "Element/CFWEditorLib/FWManager.h",
+      "functions": [
+        "FWManager (header surface)"
+      ],
+      "notes": "dropped the local 'typedef unsigned long DWORD;' that redefines the platform seam's DWORD (std::uint32_t) with a different underlying type; the force-included platform Windows.h provides DWORD."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWTextMesh.h",
+      "upstream": "Element/CFWEditorLib/FWTextMesh.h",
+      "functions": [
+        "FWTextMesh (header surface)"
+      ],
+      "notes": "upstream include \"WTypes.h\" relies on Win32 case-insensitive resolution; corrected to the platform seam's wtypes.h (case-variant include)."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWInfoSet.h",
+      "upstream": "Element/CFWEditorLib/FWInfoSet.h",
+      "functions": [
+        "FWInfoSet<T> (header template)"
+      ],
+      "notes": "qualified unqualified calls into the dependent base APtrList<T*> with this-> (MSVC two-phase-lookup laxity); 11 call sites."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWObPtrList.h",
+      "upstream": "Element/CFWEditorLib/FWObPtrList.h",
+      "functions": [
+        "FWObPtrList<T> (header template)"
+      ],
+      "notes": "qualified unqualified calls into the dependent base APtrList<T> with this-> (MSVC two-phase-lookup laxity); 7 call sites."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWArchive.h",
+      "upstream": "Element/CFWEditorLib/FWArchive.h",
+      "functions": [
+        "FWArchive (header surface)"
+      ],
+      "notes": "C++17 removes dynamic exception specifications: dropped the throw(FWExceptionArchive) specs on Read/Write (the exceptions still propagate, the original semantics); the LONG operator<</>> overloads are exact duplicates of the int overloads in this environment (the platform seam's LONG is std::int32_t) and were ill-formed redeclarations - removed."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWTemplate.cpp",
+      "upstream": "Element/CFWEditorLib/FWTemplate.cpp",
+      "functions": [
+        "FWTemplate (all out-of-line symbols)"
+      ],
+      "notes": "the original passed the AString returned by S2AS through varargs (UB, aborts at runtime); cast to (const char*) like the other port call sites."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DVectorComp.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DVectorComp.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DVertexCollector.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DVertexCollector.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DWorld.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DWorld.cpp",
+      "functions": [],
+      "notes": "two SetLampParams temporaries -> named locals (non-const vector references)."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaCommon/Source/APerlinNoise1D.cpp",
+      "upstream": "Angelica2/AngelicaCommon/Source/APerlinNoise1D.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaCommon/Source/ARandomGen.cpp",
+      "upstream": "Angelica2/AngelicaCommon/Source/ARandomGen.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaFile/Source/AFileUnicode.cpp",
+      "upstream": "Angelica2/AngelicaFile/Source/AFileUnicode.cpp",
+      "functions": [],
+      "notes": "AAssist.h include the precompiled header supplied."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaFile/Source/AMemFile.cpp",
+      "upstream": "Angelica2/AngelicaFile/Source/AMemFile.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaMedia/Source/AMSoundDevice.cpp",
+      "upstream": "Angelica2/AngelicaMedia/Source/AMSoundDevice.cpp",
+      "functions": [],
+      "notes": "verbatim port; IDirectSoundBuffer::SetFormat declared in the dsound seam."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaMedia/Source/AM3DSoundBuffer.cpp",
+      "upstream": "Angelica2/AngelicaMedia/Source/AM3DSoundBuffer.cpp",
+      "functions": [],
+      "notes": "IID accessor call sites; the DS3D surface comes from the dsound seam."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaMedia/Source/AM3DSoundDevice.cpp",
+      "upstream": "Angelica2/AngelicaMedia/Source/AM3DSoundDevice.cpp",
+      "functions": [],
+      "notes": "IID accessor call site; the DS3D surface comes from the dsound seam."
+    },
+    {
+      "path": "src/client153/Angelica2/ImmWrapper/Source/AMImmWrapper.cpp",
+      "upstream": "Angelica2/ImmWrapper/Source/AMImmWrapper.cpp",
+      "functions": [],
+      "notes": "the <ifc.h> include resolves to the explicit failing seam (platform/common/ifc.h + thirdparty/immersion/ifc_stub.cpp); force feedback is a declared browser limitation."
     }
   ],
   "additionalCopyrights": [

@@ -89,7 +89,38 @@ if(EMSCRIPTEN)
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
     Angelica2/AngelicaMedia/Source/AMEngine.cpp
-    Angelica2/AngelicaMedia/Source/AMSoundEngine.cpp)
+    Angelica2/AngelicaMedia/Source/AMSoundEngine.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2RenderAux.cpp
+    Angelica2/Angelica3D/Source/A3DWaterWave.cpp
+    Angelica2/Angelica3D/Source/A3DTerrainWaterRender.cpp
+    Angelica2/Angelica3D/Source/A3DSurface.cpp
+    Angelica2/Angelica3D/Source/A3DSurfaceMan.cpp
+    Angelica2/Angelica3D/Source/A3DFont.cpp
+    Angelica2/Angelica3D/Source/a3dskinrender.cpp
+    Angelica2/Angelica3D/Source/A3DCollision.cpp
+    Angelica2/Angelica3D/Source/A3DFrame.cpp
+    Angelica2/Angelica3D/Source/A3DGFXMan.cpp
+    Angelica2/Angelica3D/Source/A3DRenderTarget.cpp
+    Angelica2/Angelica3D/Source/A3DVertexShader.cpp
+    Angelica2/Angelica3D/Source/A3DPixelShader.cpp
+    Angelica2/Angelica3D/Source/A3DSkinMeshMan.cpp
+    Angelica2/Angelica3D/Source/A3DSkinModelAct.cpp
+    Angelica2/Angelica3D/Source/A3DSkySphere.cpp
+    Angelica2/Angelica3D/Source/A3DTrace.cpp
+    Angelica2/Angelica3D/Source/A3DVectorComp.cpp
+    Angelica2/Angelica3D/Source/A3DVertexCollector.cpp
+    Angelica2/Angelica3D/Source/A3DWorld.cpp
+    Angelica2/AngelicaCommon/Source/APerlinNoise1D.cpp
+    Angelica2/AngelicaCommon/Source/ARandomGen.cpp
+    Angelica2/AngelicaFile/Source/AFileUnicode.cpp
+    Angelica2/AngelicaFile/Source/AMemFile.cpp
+    Angelica2/AngelicaMedia/Source/AMSoundStream.cpp
+    Angelica2/AngelicaMedia/Source/AMVideoEngine.cpp
+    Angelica2/AngelicaMedia/Source/AMSoundBuffer.cpp
+    Angelica2/AngelicaMedia/Source/AMSoundDevice.cpp
+    Angelica2/AngelicaMedia/Source/AM3DSoundBuffer.cpp
+    Angelica2/AngelicaMedia/Source/AM3DSoundDevice.cpp
+    Angelica2/ImmWrapper/Source/AMImmWrapper.cpp)
   target_include_directories(client153_engine_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
@@ -129,7 +160,35 @@ if(EMSCRIPTEN)
     Common/Output/source/LuaWrapper/LuaState.cpp
     Common/Output/source/LuaWrapper/LuaUtil.cpp
     Common/Output/source/LuaWrapper/LuaMemTbl.cpp
-    Common/Output/source/LuaWrapper/LuaAPI.cpp)
+    Common/Output/source/LuaWrapper/LuaAPI.cpp
+    Common/Output/source/LuaWrapper/LuaDebug.cpp
+    Common/Output/source/LuaWrapper/LuaScript.cpp
+    Common/Output/source/Gfx/A3DGFXKeyPoint.cpp
+    Common/Output/source/Gfx/A3DGFXInterface.cpp
+    Common/Output/source/Gfx/A3DGFXFuncs.cpp
+    Common/Output/source/Gfx/A3DGFXModel.cpp
+    Common/Output/source/Gfx/A3DGFXModelMan.cpp
+    Common/Output/source/Gfx/A3DGFXContainer.cpp
+    Common/Output/source/Gfx/A3DGFXECModel.cpp
+    Common/Output/source/Gfx/A3DGFXLight.cpp
+    Common/Output/source/Gfx/A3DGFXRenderSlot.cpp
+    Common/Output/source/Gfx/A3DGFXStreamMan.cpp
+    Common/Output/source/Gfx/A3DGFXTexMan.cpp
+    Common/Output/source/Gfx/A3DGFXSound.cpp
+    Common/Output/source/Gfx/A3DGFXSurfaceRender.cpp
+    Common/Output/source/Gfx/A3DGFXEditorInterface.cpp
+    Common/Output/source/Gfx/A3DDecalEx.cpp
+    Common/Output/source/Gfx/A3DGridDecalEx.cpp
+    Common/Output/source/Gfx/A3DGFXRing.cpp
+    Common/Output/source/Gfx/A3DGFXShakeCamera.cpp
+    Common/Output/source/Gfx/A3DGFXLightning.cpp
+    Common/Output/source/Gfx/A3DGFXLightningEx.cpp
+    Common/Output/source/Gfx/A3DLtnBolt.cpp
+    Common/Output/source/Gfx/A3DLtnTrail.cpp
+    Common/Output/source/Gfx/A3DParaboloid.cpp
+    Common/Output/source/Gfx/A3DParticleSystemEx.cpp
+    Common/Output/source/Gfx/A3DRibbon.cpp
+    Common/Output/source/Gfx/A3DTrail.cpp)
   target_include_directories(client153_gfx_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
@@ -229,7 +288,30 @@ if(EMSCRIPTEN)
     Common/CHBasedCD/CDWithCH.cpp
     Common/CHBasedCD/Face.cpp
     Element/CElementSkill/skill.cpp
-    Element/CElementSkill/skillwrapper.cpp)
+    Element/CElementSkill/skillwrapper.cpp
+    Element/AutoPFImp/AutoMoveImp/PfClu.cpp
+    Element/AutoPFImp/AutoMoveImp/PfConstant.cpp
+    Element/AutoPFImp/AutoMoveImp/MoveMap.cpp
+    Element/AutoPFImp/AutoMoveImp/LayerMap.cpp
+    Element/AutoPFImp/AutoMoveImp/Island.cpp
+    Element/AutoPFImp/AutoMoveImp/OptimizePath.cpp
+    Element/AutoPFImp/AutoMoveImp/Graph.cpp
+    Element/AutoPFImp/AutoMoveImp/GHeap.cpp
+    Element/AutoPFImp/AutoMoveImp/MapNode.cpp
+    Element/AutoPFImp/AutoMoveImp/MapGraph.cpp
+    Element/AutoPFImp/AutoMoveImp/GAStar.cpp
+    Element/AutoPFImp/AutoMoveImp/MAStar.cpp
+    Element/AutoPFImp/AutoMoveImp/CluCommon.cpp
+    Element/AutoPFImp/AutoMoveImp/CluGraph.cpp
+    Element/AutoPFImp/AutoMoveImp/ClusterAbstraction.cpp
+    Element/AutoPFImp/AutoMoveImp/CluGraphConnector.cpp
+    Element/AutoPFImp/AutoMoveImp/MultiCluGraph.cpp
+    Common/CHBasedCD/Matrix.cpp
+    Common/CHBasedCD/LEquations.cpp
+    Common/Output/source/Gfx/RandStringContainer.cpp
+    Element/CFWEditorLib/FWFlatCollector.cpp
+    Element/CFWEditorLib/FWManager.cpp
+    Element/CFWEditorLib/FWTemplate.cpp)
   target_include_directories(client153_game_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header

@@ -131,6 +131,7 @@ typedef void *HMODULE;
 typedef std::int32_t HRESULT;
 #ifndef E_FAIL
 #define E_FAIL 0x80004005
+#define E_UNEXPECTED 0x8000FFFF
 #ifndef E_NOTIMPL
 #define E_NOTIMPL 0x80004001
 #endif
@@ -826,6 +827,32 @@ typedef LARGE_INTEGER *PLARGE_INTEGER;
 #define INFINITE 0xFFFFFFFFu
 #define GENERIC_READ 0x80000000u
 
+//	The MSVC source-annotation macros: the vendored DirectShow SDK headers
+//	(amfilter.h, outputq.h, winctrl.h, winutil.h, transip.h, source.h,
+//	renbase.h) annotate parameters with them. They are annotation-only
+//	(empty under MSVC too, via sal.h) — empty definitions preserve the
+//	declarations exactly.
+#define __in
+#define __in_opt
+#define __in_bcount(size)
+#define __in_bcount_opt(size)
+#define __in_ecount(size)
+#define __out
+#define __out_opt
+#define __out_bcount(size)
+#define __out_bcount_part(size, count)
+#define __out_ecount(size)
+#define __out_ecount_part(size, count)
+#define __inout
+#define __inout_opt
+#define __deref_out
+#define __field_ecount_opt(size)
+#define __range(min, max)
+
+//	The DirectShow owner-window handle (the documented OAHWND is a
+//	LONG_PTR; the vendored DirectShow SDK headers use it).
+typedef LONG_PTR OAHWND;
+
 //	The file seek origins (the documented Win32 values).
 #define FILE_BEGIN 0
 #define FILE_CURRENT 1
@@ -1051,6 +1078,8 @@ inline HWND GetAncestor(HWND hWnd, UINT flags) {
 //	The window procedure: the adapter's dispatch supplies the real
 //	pump; the type is the documented Win32 signature.
 typedef LRESULT (*WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+//	The dialog-box callback (the documented Win32 signature).
+typedef INT_PTR (*DLGPROC)(HWND, UINT, WPARAM, LPARAM);
 
 //	The message sending: the adapter's dispatch supplies the real pump;
 //	headless messages have no handler.
@@ -3405,6 +3434,8 @@ inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
 
 #include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
 #include "eh.h"	//	SEH record layouts (EXCEPTION_RECORD/CONTEXT/EXCEPTION_POINTERS) for the minidump surface.
+#include "ddraw.h"	//	DirectDraw surface (the DirectShow SDK headers the media engine compiles expect it, like the original PCH did).
+#include "dshow.h"	//	DirectShow interface surface (the vendored base classes derive from these; the media adapter owns the runtime).
 
 // ---------------------------------------------------------------------------
 // IMM32 / clipboard / GDI-capture / caret / input-synthesis surface.
@@ -3559,6 +3590,18 @@ typedef struct tagBITMAPINFOHEADER {
   DWORD biClrUsed;
   DWORD biClrImportant;
 } BITMAPINFOHEADER, *LPBITMAPINFOHEADER;
+
+//	The DIB section record (the documented Win32 layout).
+typedef struct tagDIBSECTION {
+  BITMAP dsBm;
+  BITMAPINFOHEADER dsBmih;
+  DWORD dsBitfields[3];
+  HANDLE dshSection;
+  DWORD dsOffset;
+} DIBSECTION, *LPDIBSECTION;
+
+//	The long pointer (the documented Win32 typedef).
+typedef LONG *LPLONG;
 
 typedef struct tagBITMAPINFO {
   BITMAPINFOHEADER bmiHeader;

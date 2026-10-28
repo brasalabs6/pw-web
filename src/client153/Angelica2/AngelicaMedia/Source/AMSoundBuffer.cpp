@@ -11,6 +11,8 @@
  */
 
 #include "AMConfig.h"
+//\tThe original saw ACounter through the precompiled header.
+#include "ACounter.h"
 #include "AMPI.h"
 #include "AMEngine.h"
 #include "AMSoundEngine.h"

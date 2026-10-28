@@ -10,6 +10,14 @@
  * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.	
  */
 
+//\tThe AngelicaCommon AString/AArray copies come first: the AM* headers
+//\tchain into acsdk's AC.h, whose own-directory copies carry the
+//\toriginal's undeclared-member bugs; parsing the good copies first makes
+//\tthe shared include guards skip the bad ones (the widget-prelude
+//\tpattern).
+#include "AString.h"
+#include "AArray.h"
+
 #include "AMTypes.h"
 #include "AMPlatform.h"
 #include "AMImmEffect.h"
