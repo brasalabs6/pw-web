@@ -140,9 +140,12 @@ std::function<void()> MakeThreadBody(const std::shared_ptr<ThreadState> &state,
 
 } // namespace pw153::platform
 
-//	Events: real condition-variable backed flags.
+//	Events: real condition-variable backed flags. The name is not
+//	addressable across processes in a browser target, so it is accepted
+//	only for call-site compatibility; the UNICODE build binds the neutral
+//	name to the wide form (the original game is a UNICODE build).
 inline HANDLE CreateEventW(void *attributes, BOOL manualReset,
-                           BOOL initialState, const char *name) {
+                           BOOL initialState, const wchar_t *name) {
   (void)attributes;
   (void)name;
   return new pw153::platform::WinEvent(manualReset != 0, initialState != 0);
@@ -150,11 +153,12 @@ inline HANDLE CreateEventW(void *attributes, BOOL manualReset,
 
 inline HANDLE CreateEventA(void *attributes, BOOL manualReset,
                            BOOL initialState, const char *name) {
-  return CreateEventW(attributes, manualReset, initialState, name);
+  (void)name;
+  return CreateEventW(attributes, manualReset, initialState, nullptr);
 }
 
 inline HANDLE CreateEvent(void *attributes, BOOL manualReset,
-                          BOOL initialState, const char *name) {
+                          BOOL initialState, const wchar_t *name) {
   return CreateEventW(attributes, manualReset, initialState, name);
 }
 
