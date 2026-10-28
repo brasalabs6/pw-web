@@ -391,6 +391,11 @@ if(EMSCRIPTEN)
     Common/CHBasedCD/Matrix.cpp
     Common/CHBasedCD/LEquations.cpp
     Common/Output/source/Gfx/RandStringContainer.cpp
+    Element/CFWEditorLib/FWRuntimeClass.cpp
+    Element/CFWEditorLib/FWAlgorithm.cpp
+    Element/CFWEditorLib/FWGlyphRectBase.cpp
+    Element/CFWEditorLib/FWFireworkLeaf.cpp
+    Element/CFWEditorLib/FWGlyph.cpp
     Element/CFWEditorLib/FWFlatCollector.cpp
     Element/CFWEditorLib/FWManager.cpp
     Element/CFWEditorLib/FWTemplate.cpp

@@ -7,6 +7,30 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWRuntimeClass.cpp",
+      "sha256": "956b5c5e5ba57e090f69ce29061feb38751c9b9b647fdefeca4bc3cfbc4e65e5"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAlgorithm.cpp",
+      "sha256": "e34540494f9ea2b7a6ba1734a8d59f12339db10d91147e5029014433d5d03372"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphRectBase.cpp",
+      "sha256": "6263ebd20ea312aabc001b5a83de6ab0ad2258b6d2cca23e4b117b4b138e7e44"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphRectBase.h",
+      "sha256": "912540e085842b77981c6b818bc89a4bf03b5c44baf8f0d743998f1c11108f32"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFireworkLeaf.cpp",
+      "sha256": "6359fda8613d68689d74a6b28c810bdfb2288bdcad4c66577da3af11fd271858"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyph.cpp",
+      "sha256": "0c52f247514abc5227c3c84624c3e7076631c055c97d958ab642ef610d142b20"
+    },
+    {
       "path": "Angelica2/Angelica3D/Source/A3DHermiteSpline.cpp",
       "sha256": "6e46660260cdae7c81e9d9537aa2bda0c70cd6ec27e2be94cf67754552dcb83e"
     },
@@ -9175,6 +9199,18 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWAlgorithm.cpp",
+      "upstream": "Element/CFWEditorLib/FWAlgorithm.cpp",
+      "functions": [],
+      "notes": "Include cfloat explicitly; remove unused ocidl.h; GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWGlyphRectBase.h",
+      "upstream": "Element/CFWEditorLib/FWGlyphRectBase.h",
+      "functions": [],
+      "notes": "Include FWAlgorithm.h for POINTF and remove unused ocidl.h; GB18030 comments transcoded to UTF-8."
+    },
     {
       "path": "src/client153/Common/Output/source/Gfx/A3DMultiPlaneEmitter.cpp",
       "upstream": "Common/GfxCommon/A3DMultiPlaneEmitter.cpp",
