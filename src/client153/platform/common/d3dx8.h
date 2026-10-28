@@ -134,6 +134,34 @@ inline HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface8 *destination,
 //	The D3DX default sentinel (the documented d3dx8 value).
 #define D3DX_DEFAULT 0xFFFFFFFF
 
+//	The texture creation from memory: real texture creation does not
+//	exist on the browser target yet (the WebGL backend owns the real
+//	surfaces when it registers); the call fails explicitly and the
+//	callers' error paths handle it.
+inline HRESULT D3DXCreateTextureFromFileInMemoryEx(
+    IDirect3DDevice8 *device, const void *srcData, UINT srcDataSize,
+    UINT width, UINT height, UINT mipLevels, DWORD usage, D3DFORMAT format,
+    D3DPOOL pool, DWORD filter, DWORD mipFilter, D3DCOLOR colorKey,
+    D3DXIMAGE_INFO *srcInfo, PALETTEENTRY *palette,
+    IDirect3DTexture8 **texture) {
+  (void)device;
+  (void)srcData;
+  (void)srcDataSize;
+  (void)width;
+  (void)height;
+  (void)mipLevels;
+  (void)usage;
+  (void)format;
+  (void)pool;
+  (void)filter;
+  (void)mipFilter;
+  (void)colorKey;
+  (void)srcInfo;
+  (void)palette;
+  (void)texture;
+  return D3DERR_INVALIDCALL;
+}
+
 //	The error string: the documented D3DXGetErrorStringA contract is a
 //	text description of the HRESULT; the port renders the code itself
 //	(the real D3D error table is not part of the seam).
@@ -160,6 +188,25 @@ inline HRESULT D3DXGetErrorStringA(HRESULT hr, char *buffer, UINT size) {
 inline HRESULT D3DXGetImageInfoFromFileA(const char *file,
                                          D3DXIMAGE_INFO *info) {
   (void)file;
+  if (info) {
+    info->Width = 0;
+    info->Height = 0;
+    info->Depth = 0;
+    info->MipLevels = 0;
+    info->Format = 0;
+    info->ResourceType = 0;
+    info->ImageFileFormat = 0;
+  }
+  return D3DERR_INVALIDCALL;
+}
+
+//	The image header read from memory: the same explicit failure (the
+//	real image decode lands with the graphics cycle).
+inline HRESULT D3DXGetImageInfoFromFileInMemory(const void *srcData,
+                                                UINT srcDataSize,
+                                                D3DXIMAGE_INFO *info) {
+  (void)srcData;
+  (void)srcDataSize;
   if (info) {
     info->Width = 0;
     info->Height = 0;

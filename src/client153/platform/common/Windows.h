@@ -154,6 +154,7 @@ typedef std::uintptr_t UINT_PTR;
 typedef std::intptr_t INT_PTR;
 typedef std::intptr_t LONG_PTR;
 typedef std::uintptr_t ULONG_PTR;
+typedef ULONG *PULONG;
 typedef std::uintptr_t DWORD_PTR;
 typedef std::uintptr_t WPARAM;
 typedef std::intptr_t LPARAM;
