@@ -423,6 +423,12 @@ struct IDirect3DDevice8 : IUnknownD3D {
                                      D3DMULTISAMPLE_TYPE multiSample,
                                      BOOL lockable,
                                      IDirect3DSurface8 **surface) = 0;
+  //	Depth/stencil surface creation (the documented d3d8.h signature; the
+  //	WebGL2 renderer adapter implements it in the renderer cycle).
+  virtual HRESULT CreateDepthStencilSurface(UINT width, UINT height,
+                                            D3DFORMAT format,
+                                            D3DMULTISAMPLE_TYPE multiSample,
+                                            IDirect3DSurface8 **surface) = 0;
   //	Texture creation (the documented d3d8.h signature; the WebGL2
   //	renderer adapter implements it in the renderer cycle).
   virtual HRESULT CreateTexture(UINT width, UINT height, UINT levels,
@@ -477,6 +483,17 @@ struct IDirect3DDevice8 : IUnknownD3D {
                                           DWORD count) = 0;
   virtual HRESULT SetPixelShaderConstant(DWORD regIndex, const void *data,
                                          DWORD count) = 0;
+  //	Shader object creation/destruction (the documented d3d8.h
+  //	signatures; the WebGL2 renderer adapter implements them in the
+  //	renderer cycle - a browser cannot run D3D shader bytecode without
+  //	the adapter's translation).
+  virtual HRESULT CreateVertexShader(const DWORD *declaration,
+                                     const DWORD *function, DWORD *handle,
+                                     DWORD usage) = 0;
+  virtual HRESULT DeleteVertexShader(DWORD handle) = 0;
+  virtual HRESULT CreatePixelShader(const DWORD *function,
+                                    DWORD *handle) = 0;
+  virtual HRESULT DeletePixelShader(DWORD handle) = 0;
   virtual void SetGammaRamp(DWORD flags, const D3DGAMMARAMP *ramp) = 0;
   virtual HRESULT ResourceManagerDiscardBytes(DWORD bytes) = 0;
   virtual HRESULT GetDeviceCaps(D3DCAPS8 *caps) = 0;
