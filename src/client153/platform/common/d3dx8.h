@@ -364,6 +364,11 @@ inline D3DXMATRIX *D3DXMatrixOrthoOffCenterLH(D3DXMATRIX *out, float left,
 inline HRESULT D3DXDeclaratorFromFVF(DWORD FVF, DWORD *pDeclarator) {
   if (!pDeclarator)
     return E_INVALIDARG;
+  const int texCount = (int)((FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
+  // Direct3D 8 defines at most eight texture-coordinate sets. Reject the
+  // other encodings before calculating shifts or writing any output tokens.
+  if (texCount > 8)
+    return E_FAIL;
   int i = 0;
   pDeclarator[i++] = D3DVSD_STREAM(0);
   //	The position field is bits 1-3 and the encodings are alternatives
@@ -411,7 +416,6 @@ inline HRESULT D3DXDeclaratorFromFVF(DWORD FVF, DWORD *pDeclarator) {
     pDeclarator[i++] = D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR);
   if (FVF & D3DFVF_SPECULAR)
     pDeclarator[i++] = D3DVSD_REG(D3DVSDE_SPECULAR, D3DVSDT_D3DCOLOR);
-  const int texCount = (int)((FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
   for (int t = 0; t < texCount; ++t) {
     const DWORD sizeBits = (FVF >> (t * 2 + 16)) & 0x3;
     DWORD type = D3DVSDT_FLOAT2;

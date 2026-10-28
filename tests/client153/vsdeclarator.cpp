@@ -4,10 +4,10 @@
 //	the fixed-function registers, D3DVSD_END terminator, documented
 //	texture-size-bit decoding). The engine's own FVFs (A3DVertex.h) pin
 //	the exercised surface.
-#include "A3DVertex.h"
-#include "d3dx8.h"
 #include <iostream>
 #include <stdexcept>
+#include "A3DVertex.h"
+#include "d3dx8.h"
 #define CHECK(x)                                                               \
   do {                                                                         \
     if (!(x))                                                                  \
@@ -75,6 +75,19 @@ int main() {
   //	HRESULT; the seam returns E_FAIL), as does a null declarator.
   CHECK(D3DXDeclaratorFromFVF(D3DFVF_NORMAL | D3DFVF_TEX1, decl) != D3D_OK);
   CHECK(D3DXDeclaratorFromFVF(A3DFVF_A3DVERTEX, NULL) != D3D_OK);
+
+  // The four-bit FVF texture count can encode invalid values 9..15.
+  // They must be rejected before reading past the 32-bit size flags or
+  // writing past the 20-DWORD Direct3D 8 declaration buffer.
+  struct Guarded { DWORD values[MAX_FVF_DECL_SIZE]; DWORD guard[8]; } guarded{};
+  for (DWORD &value : guarded.guard) value = 0x13579bdfu;
+  const DWORD base = D3DFVF_XYZB5 | D3DFVF_NORMAL | D3DFVF_PSIZE |
+                     D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
+  CHECK(D3DXDeclaratorFromFVF(base | (8u << D3DFVF_TEXCOUNT_SHIFT), guarded.values) == D3D_OK);
+  for (DWORD count = 9; count <= 15; ++count) {
+    CHECK(D3DXDeclaratorFromFVF(base | (count << D3DFVF_TEXCOUNT_SHIFT), guarded.values) != D3D_OK);
+    for (DWORD value : guarded.guard) CHECK(value == 0x13579bdfu);
+  }
 
   std::cout << "client153_vsdeclarator: all checks passed\n";
   return 0;
