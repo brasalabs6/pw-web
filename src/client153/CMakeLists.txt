@@ -369,6 +369,16 @@ if(EMSCRIPTEN)
     Element/CFWEditorLib/CharVerticesBuffer.cpp
     Element/CFWEditorLib/GLUPolygon.cpp
     Element/CFWEditorLib/GLUTess.cpp
+    Element/CFWEditorLib/GLUContour.cpp
+    Element/CFWEditorLib/FWFormula.cpp
+    Element/CFWEditorLib/FWArtArc.cpp
+    Element/CFWEditorLib/FWArtDoubleArc.cpp
+    Element/CFWEditorLib/FWArtNoChange.cpp
+    Element/CFWEditorLib/FWArtStepScale.cpp
+    Element/CFWEditorLib/FWArtTilt.cpp
+    Element/CFWEditorLib/FWArtWave.cpp
+    Element/CFWEditorLib/FWModifierParabola.cpp
+    Element/CFWEditorLib/FWModifierRing.cpp
     Element/CFWEditorLib/FWObject.cpp
     Element/CElementSkill/ElementSkill.cpp
     Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp

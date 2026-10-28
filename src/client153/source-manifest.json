@@ -7,6 +7,50 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWArtArc.cpp",
+      "sha256": "91776f1d0ca8a369e0da88220b6917f7725c12eff6a53a210071d68e95c1db58"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtDoubleArc.cpp",
+      "sha256": "689c70188df3253c0fac867f7aa4169f1b56b26c21c404d46ca5796363effd9d"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtNoChange.cpp",
+      "sha256": "f0ca7c48827b98fa3827060c1e6a3fddc0f027204e406c6bec632ce162e3ba35"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtStepScale.cpp",
+      "sha256": "17f29211db5175bbdbd3e6770573a85f50de818003c4d4092ba4fdeb2a32a28a"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtTilt.cpp",
+      "sha256": "37aee6fc3423ee72c8d8e5bd029b21b451e05f9f9a91e915f43a7ff396b0c5bc"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWArtWave.cpp",
+      "sha256": "5939175dd10e641f0a3d9248bc5a2cde4a68825bfeac14450a63a89a32707b37"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFormula.cpp",
+      "sha256": "253451c93ff312d89513c1429425585934b850224738e9893bcf2c009c0628f0"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifierParabola.cpp",
+      "sha256": "2c384b36f11de3e3226ee1bef0bbd3f962440c490224507dfe7659261e0af3e5"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWModifierRing.cpp",
+      "sha256": "b7935a5e2ffc4bd97d6dcea65c0ad354a9f2fe2f9d3815d4bf3de012b5faecd7"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWOperator.h",
+      "sha256": "ec9a83919d28f96fd23e7277a93ec38126bf8f147c047bde03da533d672f2f53"
+    },
+    {
+      "path": "Element/CFWEditorLib/GLUContour.cpp",
+      "sha256": "23fb8512d072e60212d3dd04b428bc84cec619194e53f7c2abce803a5c7f34bf"
+    },
+    {
       "path": "Element/CFWEditorLib/CharVerticesBuffer.cpp",
       "sha256": "1341d8c089aae9f41f3452c34e8efe307868041421039f2a3a938fd08a8a5f7c"
     },
@@ -9339,6 +9383,48 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWArtArc.cpp",
+      "upstream": "Element/CFWEditorLib/FWArtArc.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWArtDoubleArc.cpp",
+      "upstream": "Element/CFWEditorLib/FWArtDoubleArc.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWArtStepScale.cpp",
+      "upstream": "Element/CFWEditorLib/FWArtStepScale.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWArtTilt.cpp",
+      "upstream": "Element/CFWEditorLib/FWArtTilt.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8. Use int literals for GFX_PROPERTY integer overload."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWArtWave.cpp",
+      "upstream": "Element/CFWEditorLib/FWArtWave.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8. Use int literals for GFX_PROPERTY integer overload."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWModifierParabola.cpp",
+      "upstream": "Element/CFWEditorLib/FWModifierParabola.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWModifierRing.cpp",
+      "upstream": "Element/CFWEditorLib/FWModifierRing.cpp",
+      "functions": [],
+      "notes": "Pass named FWParam to Add for non-const reference compatibility; GB18030 comments transcoded to UTF-8."
+    },
     {
       "path": "src/client153/Element/CFWEditorLib/FWGlyphPolygon.cpp",
       "upstream": "Element/CFWEditorLib/FWGlyphPolygon.cpp",
