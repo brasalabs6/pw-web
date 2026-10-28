@@ -22,8 +22,8 @@ AStringWithWildcard::~AStringWithWildcard()
 
 bool AStringWithWildcard::IsMatch(AString strOriginal, AString strWildcard)
 {
-	m_string.Format(" %s ", strOriginal);
-	m_wildcard.Format(" %s ", strWildcard);
+	m_string.Format(" %s ", (const char*)strOriginal);
+	m_wildcard.Format(" %s ", (const char*)strWildcard);
 	m_nPosInOriginal = 0;
 
 	bool bMatch = true;

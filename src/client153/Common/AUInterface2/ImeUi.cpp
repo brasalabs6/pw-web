@@ -2016,7 +2016,7 @@ LPARAM ImeUi_ProcessMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM& lParam
 						}
 						else
 						{
-							g_uCandPageSize = min( lpCandList->dwPageSize, MAX_CANDLIST );
+							g_uCandPageSize = min( lpCandList->dwPageSize, (DWORD)MAX_CANDLIST );	//	explicit DWORD so the seam min overload resolves.
 							if (g_uCandPageSize)
 								startOfPage = g_bUILessMode ? lpCandList->dwPageStart : ( g_dwSelection / g_uCandPageSize ) * g_uCandPageSize;
 							else
@@ -3336,7 +3336,7 @@ BOOL CTsfUiLessMode::SetupSinks()
 	if (m_TsfSink)
 	{
 		ITfSource *srcTm;
-		if (SUCCEEDED(hr = m_tm->QueryInterface(__uuidof(ITfSource), (void **)&srcTm)))
+		if (SUCCEEDED(hr = m_tm->QueryInterface((const void *)&__uuidof(ITfSource), (void **)&srcTm)))
 		{
 			hr = srcTm->AdviseSink(__uuidof(ITfActiveLanguageProfileNotifySink),(ITfUIElementSink*)m_TsfSink,&m_cookieActiveLPNotify);
 
@@ -3373,7 +3373,7 @@ void CTsfUiLessMode::ReleaseSinks()
 	ITfSource *source;
 
 	// Remove all sinks
-	if ( m_tm && SUCCEEDED(m_tm->QueryInterface(__uuidof(ITfSource), (void **)&source)))
+	if ( m_tm && SUCCEEDED(m_tm->QueryInterface((const void *)&__uuidof(ITfSource), (void **)&source)))
 	{
 		if(TF_INVALID_COOKIE!=m_dwAlpnSinkCookie)
 		{
@@ -3421,7 +3421,7 @@ STDAPI CTsfUiLessMode::CUIElementSink::QueryInterface(REFIID riid, void **ppvObj
 
     *ppvObj = NULL;
 
-    if (IsEqualIID(riid, IID_IUnknown))
+    if (IsEqualIID(riid, IID_IUnknown()))	//	the seam GUID accessor takes parens.
 	{
         *ppvObj = reinterpret_cast<IUnknown *>(this);
 	}
@@ -3476,13 +3476,13 @@ STDAPI CTsfUiLessMode::CUIElementSink::BeginUIElement(DWORD dwUIElementId, BOOL 
     ITfReadingInformationUIElement   *preading = NULL;
 	ITfCandidateListUIElement		*pcandidate = NULL;
 	*pbShow = FALSE;
-	if (!g_bCandList && SUCCEEDED(pElement->QueryInterface(__uuidof(ITfReadingInformationUIElement),
+	if (!g_bCandList && SUCCEEDED(pElement->QueryInterface((const void *)&__uuidof(ITfReadingInformationUIElement),
                                       (void **)&preading)))
     {
 		MakeReadingInformationString(preading);
         preading->Release();
     }
-	else if (SUCCEEDED(pElement->QueryInterface(__uuidof(ITfCandidateListUIElement),
+	else if (SUCCEEDED(pElement->QueryInterface((const void *)&__uuidof(ITfCandidateListUIElement),
 									(void **)&pcandidate)))
 	{
 		m_nCandidateRefCount++;
@@ -3502,13 +3502,13 @@ STDAPI CTsfUiLessMode::CUIElementSink::UpdateUIElement(DWORD dwUIElementId)
 
     ITfReadingInformationUIElement   *preading = NULL;
     ITfCandidateListUIElement		*pcandidate = NULL;
-	if (!g_bCandList && SUCCEEDED(pElement->QueryInterface(__uuidof(ITfReadingInformationUIElement),
+	if (!g_bCandList && SUCCEEDED(pElement->QueryInterface((const void *)&__uuidof(ITfReadingInformationUIElement),
                                       (void **)&preading)))
     {
 		MakeReadingInformationString(preading);
         preading->Release();
     }
-	else if (SUCCEEDED(pElement->QueryInterface(__uuidof(ITfCandidateListUIElement),
+	else if (SUCCEEDED(pElement->QueryInterface((const void *)&__uuidof(ITfCandidateListUIElement),
 											(void **)&pcandidate)))
 	{
 		MakeCandidateStrings(pcandidate);
@@ -3526,7 +3526,7 @@ STDAPI CTsfUiLessMode::CUIElementSink::EndUIElement(DWORD dwUIElementId)
         return E_INVALIDARG;
 
     ITfReadingInformationUIElement   *preading = NULL;
-	if (!g_bCandList && SUCCEEDED(pElement->QueryInterface(__uuidof(ITfReadingInformationUIElement),
+	if (!g_bCandList && SUCCEEDED(pElement->QueryInterface((const void *)&__uuidof(ITfReadingInformationUIElement),
                                       (void **)&preading)))
     {
 		g_dwCount = 0;
@@ -3534,7 +3534,7 @@ STDAPI CTsfUiLessMode::CUIElementSink::EndUIElement(DWORD dwUIElementId)
     }
 
 	ITfCandidateListUIElement   *pcandidate = NULL;
-	if (SUCCEEDED(pElement->QueryInterface(__uuidof(ITfCandidateListUIElement),
+	if (SUCCEEDED(pElement->QueryInterface((const void *)&__uuidof(ITfCandidateListUIElement),
 									(void **)&pcandidate)))
 	{
 		m_nCandidateRefCount--;
@@ -3914,7 +3914,7 @@ void CTsfUiLessMode::MakeCandidateStrings(ITfCandidateListUIElement* pcandidate)
 		}
 	}
 	//if(dwPageSize!=0)
-	g_uCandPageSize = min(dwPageSize, MAX_CANDLIST);
+	g_uCandPageSize = min(dwPageSize, (DWORD)MAX_CANDLIST);	//	explicit DWORD so the seam min overload resolves.
 	//else
 	//	g_uCandPageSize = MAX_CANDLIST;
 
@@ -3960,7 +3960,7 @@ ITfUIElement* CTsfUiLessMode::GetUIElement(DWORD dwUIElementId)
     ITfUIElementMgr *puiem;
     ITfUIElement *pElement = NULL;
 
-    if (SUCCEEDED(m_tm->QueryInterface(__uuidof(ITfUIElementMgr), (void **)&puiem)))
+    if (SUCCEEDED(m_tm->QueryInterface((const void *)&__uuidof(ITfUIElementMgr), (void **)&puiem)))
     {
         puiem->GetUIElement(dwUIElementId, &pElement);
         puiem->Release();
@@ -3979,7 +3979,7 @@ BOOL CTsfUiLessMode::CurrentInputLocaleIsIme()
 	if (SUCCEEDED(hr))
 	{
 		ITfInputProcessorProfileMgr *pProfileMgr;
-		hr = pProfiles->QueryInterface(__uuidof(ITfInputProcessorProfileMgr), (LPVOID*)&pProfileMgr);
+		hr = pProfiles->QueryInterface((const void *)&__uuidof(ITfInputProcessorProfileMgr), (LPVOID*)&pProfileMgr);
 		if (SUCCEEDED(hr))
 		{
 			TF_INPUTPROCESSORPROFILE tip;
@@ -4008,7 +4008,7 @@ void CTsfUiLessMode::EnableUiUpdates(bool bEnable)
 	}
 	ITfSource *srcTm = NULL;
 	HRESULT hr = E_FAIL;
-	if (SUCCEEDED(hr = m_tm->QueryInterface(__uuidof(ITfSource), (void **)&srcTm)))
+	if (SUCCEEDED(hr = m_tm->QueryInterface((const void *)&__uuidof(ITfSource), (void **)&srcTm)))
 	{
 		if ( bEnable )
 		{
@@ -4034,7 +4034,8 @@ BOOL CTsfUiLessMode::GetCompartments( ITfCompartmentMgr** ppcm, ITfCompartment**
 	static GUID _GUID_COMPARTMENT_KEYBOARD_INPUTMODE_CONVERSION = { 0xCCF05DD8, 0x4A87, 0x11D7, 0xA6, 0xE2, 0x00, 0x06, 0x5B, 0x84, 0x43, 0x5C };
 
 	HRESULT hr;
-	if (SUCCEEDED(hr = m_tm->QueryInterface( IID_ITfCompartmentMgr, (void**)&pcm )))
+	if (SUCCEEDED(hr = m_tm->QueryInterface( (const void *)&IID_ITfCompartmentMgr, (void**)&pcm )))
+				//	the seam's opaque id pointer form.
 	{
 		if (SUCCEEDED(hr = pcm->GetCompartment( GUID_COMPARTMENT_KEYBOARD_OPENCLOSE, &pTfOpenMode )))
 		{
@@ -4074,7 +4075,7 @@ BOOL CTsfUiLessMode::SetupCompartmentSinks( BOOL bRemoveOnly, ITfCompartment* pT
 		return FALSE;
 	}
 	ITfSource *srcOpenMode = NULL;
-	if (SUCCEEDED(hr = pTfOpenMode->QueryInterface( IID_ITfSource, (void**)&srcOpenMode )))
+	if (SUCCEEDED(hr = pTfOpenMode->QueryInterface( (const void *)&IID_ITfSource, (void**)&srcOpenMode )))
 	{
 		// Remove existing sink for open mode
 		if ( m_dwOpenModeSinkCookie != TF_INVALID_COOKIE )
@@ -4086,7 +4087,7 @@ BOOL CTsfUiLessMode::SetupCompartmentSinks( BOOL bRemoveOnly, ITfCompartment* pT
 		if ( bRemoveOnly || SUCCEEDED(hr = srcOpenMode->AdviseSink( IID_ITfCompartmentEventSink, (ITfCompartmentEventSink*)m_TsfSink, &m_dwOpenModeSinkCookie )))
 		{
 			ITfSource *srcConvMode = NULL;
-			if (SUCCEEDED(hr = pTfConvMode->QueryInterface( IID_ITfSource, (void**)&srcConvMode )))
+			if (SUCCEEDED(hr = pTfConvMode->QueryInterface( (const void *)&IID_ITfSource, (void**)&srcConvMode )))
 			{
 				// Remove existing sink for open mode
 				if ( m_dwConvModeSinkCookie != TF_INVALID_COOKIE )

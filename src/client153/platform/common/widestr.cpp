@@ -279,6 +279,16 @@ int wide_snprintf(wchar_t *out, std::size_t count, const wchar_t *format, ...) {
   return result.size() > count ? -1 : static_cast<int>(result.size());
 }
 
+int wide_vsnprintf(wchar_t *out, std::size_t count, const wchar_t *format,
+                   va_list args) {
+  const auto result = wide_format_buffer(format, args);
+  const std::size_t copied = result.size() < count ? result.size() : count;
+  for (std::size_t i = 0; i < copied; ++i) out[i] = result[i];
+  if (count > 0)
+    out[copied < count ? copied : count - 1] = L'\0';
+  return result.size() >= count ? -1 : static_cast<int>(result.size());
+}
+
 int wide_fprintf_utf16le(std::FILE *out, const wchar_t *format, ...) {
   va_list args;
   va_start(args, format);
@@ -766,3 +776,11 @@ wchar_t *wide_strchr(const wchar_t *text, wchar_t character) {
 }
 
 } // namespace pw153::platform
+
+//	MSVC _vsnwprintf: the count-bounded wide formatter at global scope
+//	(the game's glb_vsnprintf macro maps here). Always nul-terminates
+//	within the count (the callers read the result as a string).
+int _vsnwprintf(wchar_t *out, std::size_t count, const wchar_t *format,
+                va_list args) {
+  return pw153::platform::wide_vsnprintf(out, count, format, args);
+}

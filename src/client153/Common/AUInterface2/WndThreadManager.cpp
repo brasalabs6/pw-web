@@ -243,7 +243,7 @@ CWndManager * CWndManager::POINTER()
 #endif
 #include "windowsx.h"
 #include "WndThreadManager.h"
-#include "TCHAR.H"
+#include "tchar.h"
 
 
 

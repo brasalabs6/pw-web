@@ -44,7 +44,8 @@ public:
 		m_3dlistenerDesc.vecOrientFront = vecFront;
 		m_3dlistenerDesc.vecOrientTop = vecTop;
 	}
-	inline void SetPosition(A3DVECTOR3& vecPos) { m_3dlistenerDesc.vecPos = vecPos; }
+//	MSVC bound the temporary to the non-const reference; the standard form.
+	inline void SetPosition(const A3DVECTOR3& vecPos) { m_3dlistenerDesc.vecPos = vecPos; }
 	inline void SetRolloffFactor(FLOAT vRolloffFactor) { m_3dlistenerDesc.vRolloffFactor = vRolloffFactor; }
 	inline void SetVelocity(A3DVECTOR3& vecVel) { m_3dlistenerDesc.vecVel = vecVel; }
 	

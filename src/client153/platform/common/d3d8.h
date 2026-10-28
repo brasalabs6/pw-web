@@ -92,13 +92,6 @@ struct IDirect3DSurface8 : IUnknownD3D {
   virtual HRESULT GetDesc(void *pDesc) = 0;
 };
 
-struct IDirect3DTexture8 : IUnknownD3D {
-  virtual HRESULT GetSurfaceLevel(UINT level, IDirect3DSurface8 **ppSurface) = 0;
-  virtual HRESULT LockRect(UINT level, D3DLOCKED_RECT *pLockedRect,
-                           const RECT *pRect, DWORD flags) = 0;
-  virtual HRESULT UnlockRect(UINT level) = 0;
-};
-
 struct IDirect3DVertexBuffer8 : IUnknownD3D {
   virtual HRESULT Lock(UINT offset, UINT size, BYTE **ppbData, DWORD flags) = 0;
   virtual HRESULT Unlock() = 0;
@@ -110,15 +103,90 @@ struct IDirect3DIndexBuffer8 : IUnknownD3D {
 };
 
 constexpr DWORD D3DRS_ZWRITEENABLE = 14;
+//	The render states the UI/media surfaces name (the documented
+//	d3d8types.h values).
+constexpr DWORD D3DRS_ZENABLE = 8;
+constexpr DWORD D3DRS_COLORWRITEENABLE = 168;
+constexpr DWORD D3DCOLORWRITEENABLE_RED = 1;
+constexpr DWORD D3DCOLORWRITEENABLE_GREEN = 2;
+constexpr DWORD D3DCOLORWRITEENABLE_BLUE = 4;
+constexpr DWORD D3DCOLORWRITEENABLE_ALPHA = 8;
+
+//	The surface format (the documented d3d8types.h values for the
+//	formats the client names).
+enum D3DFORMAT : DWORD {
+  D3DFMT_UNKNOWN = 0,
+  D3DFMT_R5G6B5 = 23,
+  D3DFMT_X1R5G5B5 = 24,
+  D3DFMT_X8R8G8B8 = 22,
+  D3DFMT_DXT1 = 0x31545844,	//	FOURCC 'DXT1'.
+  D3DFMT_DXT3 = 0x33545844,	//	FOURCC 'DXT3'.
+};
+
+enum D3DMULTISAMPLE_TYPE : DWORD {
+  D3DMULTISAMPLE_NONE = 0,
+  D3DMULTISAMPLE_2_SAMPLES = 2,
+  D3DMULTISAMPLE_4_SAMPLES = 4,
+};
+
+//	The surface description (the documented D3DSURFACE_DESC layout).
+typedef struct _D3DSURFACE_DESC {
+  D3DFORMAT Format;
+  D3DMULTISAMPLE_TYPE MultiSampleType;
+  DWORD MultiSampleQuality;
+  UINT Width;
+  UINT Height;
+} D3DSURFACE_DESC;
+
+//	The SDK version token (the documented DX8.1 value); the direct
+//	factory returns none until the graphics backend registers (the
+//	callers' null-device paths handle it).
+#define D3D_SDK_VERSION 220
+
+//	The shader version tokens (the documented d3d8types macros).
+#define D3DPS_VERSION(major, minor) (0xFFFF0000 | ((major) << 8) | (minor))
+#define D3DVS_VERSION(major, minor) (0xFFFE0000 | ((major) << 8) | (minor))
 
 // Port interface only; this subset is not a native Direct3D COM vtable.
 struct IDirect3DDevice8 : IUnknownD3D {
+  virtual HRESULT CopyRects(IDirect3DSurface8 *source,
+                            const RECT *sourceRects, UINT rectCount,
+                            IDirect3DSurface8 *destination,
+                            const POINT *destinationPoints) = 0;
   virtual HRESULT GetRenderState(DWORD state, DWORD *value) = 0;
   virtual HRESULT Clear(DWORD count, const D3DRECT *pRects, DWORD flags,
                         DWORD color, float z, DWORD stencil) = 0;
   //	User clip planes (the grass land render reads and rewrites them).
   virtual HRESULT GetClipPlane(DWORD index, float *pPlane) = 0;
   virtual HRESULT SetClipPlane(DWORD index, const float *pPlane) = 0;
+};
+
+//	The texture resource hierarchy (the documented d3d8 interfaces:
+//	resource -> base texture -> texture).
+struct IDirect3DResource8 : IUnknownD3D {
+  virtual HRESULT GetDevice(IDirect3DDevice8 **ppDevice) = 0;
+  virtual HRESULT SetPrivateData(DWORD guid, const void *data,
+                                 DWORD size, DWORD flags) = 0;
+  virtual HRESULT GetPrivateData(DWORD guid, void *data, DWORD *size) = 0;
+  virtual HRESULT FreePrivateData(DWORD guid) = 0;
+  virtual DWORD SetPriority(DWORD priorityNew) = 0;
+  virtual DWORD GetPriority() = 0;
+};
+
+struct IDirect3DBaseTexture8 : IDirect3DResource8 {
+  virtual DWORD SetLOD(DWORD lodNew) = 0;
+  virtual DWORD GetLOD() = 0;
+  virtual DWORD GetLevelCount() = 0;
+};
+
+//	The palette entry lives in Windows.h (the GDI layout; the seam's
+//	umbrella owns it).
+
+struct IDirect3DTexture8 : IDirect3DBaseTexture8 {
+  virtual HRESULT GetSurfaceLevel(UINT level, IDirect3DSurface8 **ppSurface) = 0;
+  virtual HRESULT LockRect(UINT level, D3DLOCKED_RECT *pLockedRect,
+                           const RECT *pRect, DWORD flags) = 0;
+  virtual HRESULT UnlockRect(UINT level) = 0;
 };
 
 struct IDirect3DSwapChain8 : IUnknownD3D {
@@ -220,5 +288,12 @@ struct IDirect3D8 : IUnknownD3D {
   virtual HRESULT GetAdapterIdentifier(UINT adapter, DWORD flags,
                                        D3DADAPTER_IDENTIFIER8 *identifier) = 0;
 };
+
+//	The direct factory: returns none until the graphics backend
+//	registers (the callers' null-device paths handle it).
+inline IDirect3D8 *Direct3DCreate8(UINT sdkVersion) {
+  (void)sdkVersion;
+  return nullptr;
+}
 
 #endif // PW153_PLATFORM_D3D8_H

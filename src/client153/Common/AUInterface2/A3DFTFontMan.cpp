@@ -217,7 +217,7 @@ static _face_path_pair _font_inner_map[] =
 const _face_path_pair* _get_inner_font_path_by_name(const wchar_t* wszFace)
 {
 	for (int i = 0; i < sizeof(_font_inner_map) / sizeof(_face_path_pair); i++)
-		if (wcsicmp(wszFace, _font_inner_map[i].face_name) == 0)
+		if (pw153::platform::wide_casecmp(wszFace, _font_inner_map[i].face_name) == 0)
 			return &_font_inner_map[i];
 
 	return NULL;

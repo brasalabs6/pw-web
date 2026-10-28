@@ -29,7 +29,8 @@ public:
 	// Translate bone
 	void Translate(A3DVECTOR3& v);
 	// Rotate bone
-	void Rotate(A3DVECTOR3& vPos, A3DVECTOR3& vRad);
+//	MSVC bound the temporary to the non-const reference; the standard form.
+	void Rotate(A3DVECTOR3& vPos, const A3DVECTOR3& vRad);
 	// Scale bone
 	void Scale(A3DVECTOR3& vPos, A3DVECTOR3& v);
 	// Update bone

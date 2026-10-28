@@ -308,7 +308,7 @@ bool AUIImagePicture::Save(FILE *file)
 	if( !AUIPicture::Save(file) ) return false;
 
 	fprintf(file, " %d %d \"%s\" \"%s\"\n", m_nNumFrames,
-		m_nInterval, m_pA2DSprite ? m_pA2DSprite->GetName() : "", m_strGfx);
+		m_nInterval, m_pA2DSprite ? m_pA2DSprite->GetName() : "", (const char*)m_strGfx);
 
 	return true;
 }

@@ -407,7 +407,7 @@ bool AUITextArea::Save(FILE *file)
 
 	ACHAR szFontName[256];
 	a_sprintf(szFontName, _AL("%s###%d###%d###%d###%d"),
-		m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
+		(const wchar_t*)m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
 	int idString = m_pParent->AddStringToTable(szFontName);
 	if( idString < 0 ) return false;
 
@@ -842,7 +842,7 @@ bool AUITextArea::RenderScroll()
 	nTextH = ptSize.y;
 
 	if( m_pA2DSpriteEmotion && m_pA2DSpriteEmotion[0] )
-		nTextH = max(m_pA2DSpriteEmotion[0]->GetItem(0)->GetRect().Height() * fWindowScale, nTextH);
+		nTextH = max(m_pA2DSpriteEmotion[0]->GetItem(0)->GetRect().Height() * fWindowScale, float(nTextH));
 	nTextH += m_nLineSpace * fWindowScale;
 
 	if( m_bOnlyShowText ) return true;
@@ -1421,7 +1421,7 @@ void AUITextArea::BuildRenderCache()
 	A3DCOLOR r = A3DCOLOR_GETRED(m_color);
 	A3DCOLOR g = A3DCOLOR_GETGREEN(m_color);
 	A3DCOLOR b = A3DCOLOR_GETBLUE(m_color);
-	str.Format(_AL("^%02X%02X%02X%s"), r, g, b, m_szText);
+	str.Format(_AL("^%02X%02X%02X%s"), r, g, b, (const wchar_t*)m_szText);
 
 	TAG_OP_IN_PARAMS InParams(m_pFont ? m_pFont : GetParent()->GetAUIManager()->GetDefaultFont(),
 		0, 0, str, &rcText, m_nFirstLine, m_nLineSpace * fWindowScale, false, NULL,

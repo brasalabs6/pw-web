@@ -53,7 +53,7 @@ public:
 
 	void RemoveItem(const AString& strName)
 	{
-		SharedItemMap::iterator it = m_SharedItemMap.find(strName);
+		typename SharedItemMap::iterator it = m_SharedItemMap.find(strName);
 
 		if (it == m_SharedItemMap.end())
 			return;
@@ -69,7 +69,7 @@ public:
 
 	T* GetAndRefItem(const AString& strName)
 	{
-		SharedItemMap::iterator it = m_SharedItemMap.find(strName);
+		typename SharedItemMap::iterator it = m_SharedItemMap.find(strName);
 
 		if (it == m_SharedItemMap.end())
 			return NULL;
@@ -80,7 +80,7 @@ public:
 
 	void Release()
 	{
-		SharedItemMap::iterator it = m_SharedItemMap.begin();
+		typename SharedItemMap::iterator it = m_SharedItemMap.begin();
 
 		for (; it != m_SharedItemMap.end(); ++it)
 			delete it->second;

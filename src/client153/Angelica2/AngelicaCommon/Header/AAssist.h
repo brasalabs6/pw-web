@@ -30,11 +30,28 @@ int a_WideCharToMultiByte(int iCodePage, const wchar_t* wszWideChar, int iWideCh
 int a_MultiByteToWideChar(const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar);
 int a_MultiByteToWideChar(int iCodePage, const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar);
 
+
+
 #include "ABaseDef.h"
 #include "AString.h"
 #include "AWString.h"
 
 #include <cstdlib>
+
+//	Memory statistic functions: the custom memory manager is not
+//	ported (a_malloc maps to the platform allocator), so the size
+//	statistics report the real process heap and the custom allocator's
+//	slot/alloc counters report zero (the debug display's documented
+//	limitation on this target). Implemented in AAssist.cpp.
+int a_GetMemPeakSize();
+DWORD a_GetMemAllocCounter();
+int a_GetMemCurSize();
+int a_GetMemRawSize();
+void a_GetSmallMemInfo(int iSlot, int* piBlkSize, int* piBlkCnt, int* piFreeCnt);
+void a_GetLargeMemInfo(int* piBlkCnt, int* piAllocSize);
+void a_MemGarbageCollectAuto();
+void a_MemGarbageCollectAll();
+void a_ExportMemLog(const char* szPath);
 
 ///////////////////////////////////////////////////////////////////////////
 //

@@ -3521,7 +3521,7 @@ void SetTickCB(vector<CScriptValue>& args, vector<CScriptValue>& results)
 	{
 		if(AUI_IsLogEnabled())
 		{		
-			a_LogOutput(1, "SetTickCB dialog name error: %s", dlg_name);
+			a_LogOutput(1, "SetTickCB dialog name error: %s", (const char*)dlg_name);
 		}
 	}
 }

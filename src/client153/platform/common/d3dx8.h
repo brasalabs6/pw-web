@@ -46,6 +46,31 @@ typedef struct _D3DXIMAGE_INFO {
 #define D3DERR_INVALIDCALL 0x8876086C
 #endif
 
+//	The image file formats (the documented D3DXIMAGE_FILEFORMAT values).
+#define D3DXIFF_BMP 0
+#define D3DXIFF_JPG 1
+#define D3DXIFF_DDS 2
+#define D3DXIFF_DIB 3
+#define D3DXIFF_HDR 4
+#define D3DXIFF_PFM 5
+#define D3DXIFF_PNG 6
+#define D3DXIFF_PPM 7
+#define D3DXIFF_TGA 8
+
+//	The texture save: the render-target textures do not exist on the
+//	browser target yet (the WebGL backend owns the real surface when it
+//	registers); the save fails explicitly and the caller's error path
+//	handles it.
+inline HRESULT D3DXSaveTextureToFileA(const char *file, DWORD format,
+                                     IDirect3DBaseTexture8 *texture,
+                                     const PALETTEENTRY *palette) {
+  (void)file;
+  (void)format;
+  (void)texture;
+  (void)palette;
+  return D3DERR_INVALIDCALL;
+}
+
 //	The image header read: the BBS download path has no files on the
 //	browser target yet (the download seam fails explicitly), so the
 //	read fails with D3DERR_INVALIDCALL and the caller's documented

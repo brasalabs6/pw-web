@@ -404,6 +404,10 @@ public:
 	AUITAG_NODE* GetNode(const char* szClassName) const;
 	void RegisterTagtype(AUITextTag& tg);
 	bool UnRegisterTagType(AUITextTag& tg);
+	//	MSVC bound the registration temporaries to the lvalue overloads;
+	//	the rvalue forms forward to the same implementations.
+	inline void RegisterTagtype(AUITextTag&& tg) { RegisterTagtype(tg); }
+	inline bool UnRegisterTagType(AUITextTag&& tg) { return UnRegisterTagType(tg); }
 	
 	// Helper functions for debug
 	void GetClassHierarchyInRuntime(char* szBuffer, int iLenBuffer) const;
@@ -417,6 +421,7 @@ protected:
 	AUIRichTextPrinter();
 
 	void RegisterTagtypeBuiltIn(AUITextTag& tg);
+	inline void RegisterTagtypeBuiltIn(AUITextTag&& tg) { RegisterTagtypeBuiltIn(tg); }
 	const AUITextTag* GetTag(const ACHAR* pszText, int index, int len) const;
 	const AUITextTag* RenderPlainText(TAG_OP_IN_PARAMS& inParams, TAG_RESOLVER_CONTEXT& context, const TAG_OP_OUT_PARAMS& outParams) const;
 

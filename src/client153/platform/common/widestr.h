@@ -20,6 +20,8 @@ namespace pw153::platform {
 // number of characters written, excluding the terminator.
 int wide_vformat(wchar_t *out, const wchar_t *format, va_list args);
 int wide_snprintf(wchar_t *out, std::size_t count, const wchar_t *format, ...);
+int wide_vsnprintf(wchar_t *out, std::size_t count, const wchar_t *format,
+                   va_list args);
 int wide_fprintf_utf16le(std::FILE *out, const wchar_t *format, ...);
 
 // _wtoi: parses an optionally signed decimal prefix; parsing stops at the
@@ -145,6 +147,69 @@ inline wchar_t *wcslwr(wchar_t *text) {
 inline wchar_t *wcsupr(wchar_t *text) {
   pw153::platform::wide_strupr(text);
   return text;
+}
+
+//	MSVC _vsnwprintf: the count-bounded wide formatter (the game's
+//	glb_vsnprintf macro maps here). Always nul-terminates within the
+//	count (the callers read the result as a string; MSVC could leave it
+//	unterminated at exactly count - the callers never rely on that).
+int _vsnwprintf(wchar_t *out, std::size_t count, const wchar_t *format,
+                va_list args);
+
+//	MSVC _vsnprintf: the count-bounded narrow formatter over the
+//	standard vsnprintf.
+inline int _vsnprintf(char *out, std::size_t count, const char *format,
+                      va_list args) {
+  return std::vsnprintf(out, count, format, args);
+}
+
+//	MSVC itoa/_itoa: the radix int-to-string conversion (the CRT
+//	contract; the buffer receives the nul-terminated digits).
+inline char *itoa(int value, char *buffer, int radix) {
+  if (!buffer || radix < 2 || radix > 36)
+    return buffer;
+  char digits[36];
+  int length = 0;
+  unsigned long magnitude =
+      value < 0 ? static_cast<unsigned long>(-static_cast<long>(value))
+                : static_cast<unsigned long>(value);
+  do {
+    digits[length++] = static_cast<char>("0123456789abcdefghijklmnopqrstuvwxyz"[magnitude % radix]);
+    magnitude /= static_cast<unsigned long>(radix);
+  } while (magnitude);
+  int out = 0;
+  if (value < 0 && radix == 10)
+    buffer[out++] = '-';
+  while (length > 0)
+    buffer[out++] = digits[--length];
+  buffer[out] = '\0';
+  return buffer;
+}
+inline char *_itoa(int value, char *buffer, int radix) {
+  return itoa(value, buffer, radix);
+}
+
+//	swprintf: the port owns both arities. The C99 count-bounded form
+//	matches the libc declaration (extern "C", the host's exception
+//	spec) so every call binds to the 16-bit implementation - the
+//	system swprintf scans 32-bit units under -fshort-wchar. The MSVC
+//	2-arg form has no libc counterpart.
+extern "C" {
+inline int swprintf(wchar_t *out, std::size_t count, const wchar_t *format,
+                    ...) PW153_WCS_THROW {
+  va_list args;
+  va_start(args, format);
+  const int written = pw153::platform::wide_vsnprintf(out, count, format, args);
+  va_end(args);
+  return written;
+}
+}
+inline int swprintf(wchar_t *out, const wchar_t *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int written = pw153::platform::wide_vsprintf(out, format, args);
+  va_end(args);
+  return written;
 }
 
 #endif // PW153_PLATFORM_WIDESTR_H

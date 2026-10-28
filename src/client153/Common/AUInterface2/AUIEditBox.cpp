@@ -506,7 +506,7 @@ bool AUIEditBox::Save(FILE *file)
 
 	ACHAR szFontName[256];
 	a_sprintf(szFontName, _AL("%s###%d###%d###%d###%d"),
-		m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
+		(const wchar_t*)m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
 	int idString = m_pParent->AddStringToTable(szFontName);
 	if( idString < 0 ) return false;
 
@@ -1607,7 +1607,7 @@ void AUIEditBox::RenderEditText(A3DFTFont* pFont, const ACHAR* szText)
 			}
 			
 			wchar_t temp = *p;
-			(wchar_t)*p = L'\0';
+			*(ACHAR*)p = L'\0';
 			int offset = pHead-szText;
 			if( m_pA2DSpriteEmotion != NULL )
 			{
@@ -1663,7 +1663,7 @@ void AUIEditBox::RenderEditText(A3DFTFont* pFont, const ACHAR* szText)
 				}
 			}
 
-			(wchar_t)*p = temp;
+			*(ACHAR*)p = temp;
 
 			if (*p == L'\0')
 				break;
@@ -3013,7 +3013,9 @@ int AUIEditBox::GetMaxLength()
 
 void GetComCanValX(ime_str_val* pVal)
 {
-	__try
+//	SEH is unavailable on the wasm target; the ImeUi queries are safe (the
+//	input adapter owns the IME), so the defensive __try/__except (no-op
+//	handler) is dropped here.
 	{
 #ifdef UNICODE
 		pVal->append_com_wstr(ImeUi_GetCompositionString(),wcslen(ImeUi_GetCompositionString()));
@@ -3035,11 +3037,6 @@ void GetComCanValX(ime_str_val* pVal)
 			pVal->push_can_str(ImeUi_GetCandidate(i),strlen(ImeUi_GetCandidate(i)));
 		}
 #endif
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-		//		pVal->Clear();
-		//		g_bHideIme = false;
 	}
 }
 

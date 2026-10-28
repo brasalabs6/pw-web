@@ -35,3 +35,14 @@ HRESULT CoInitialize(void *reserved) {
 }
 
 void CoUninitialize() {}
+
+//	VariantClear: the real reset (frees a BSTR value, empties the rest).
+HRESULT VariantClear(VARIANT *variant) {
+  if (!variant)
+    return E_INVALIDARG;
+  if (variant->vt == VT_BSTR && variant->bstrVal)
+    SysFreeString(variant->bstrVal);
+  variant->vt = VT_EMPTY;
+  variant->bstrVal = nullptr;
+  return S_OK;
+}

@@ -45,31 +45,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-inline BSTR SysAllocString(const wchar_t *text) {
-  if (!text)
-    return nullptr;
-  std::size_t length = 0;
-  while (text[length])
-    ++length;
-  auto *header = static_cast<std::uint32_t *>(std::malloc(sizeof(std::uint32_t) + (length + 1) * sizeof(wchar_t)));
-  if (!header)
-    return nullptr;
-  *header = static_cast<std::uint32_t>(length);
-  auto *data = reinterpret_cast<wchar_t *>(header + 1);
-  std::memcpy(data, text, (length + 1) * sizeof(wchar_t));
-  return data;
-}
-
-inline void SysFreeString(BSTR text) {
-  if (text)
-    std::free(reinterpret_cast<std::uint32_t *>(text) - 1);
-}
-
-inline std::uint32_t SysStringLen(BSTR text) {
-  if (!text)
-    return 0;
-  return *(reinterpret_cast<std::uint32_t *>(text) - 1);
-}
+//	SysAllocString/SysFreeString/SysStringLen live in wtypes.h
 
 ///////////////////////////////////////////////////////////////////////////
 //

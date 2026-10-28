@@ -89,6 +89,7 @@ struct _EXCEPTION_POINTERS;
 typedef _EXCEPTION_POINTERS *LPEXCEPTION_POINTERS;
 typedef void *HANDLE;
 typedef BYTE *LPBYTE;
+typedef BYTE *PBYTE;
 typedef DWORD *LPDWORD;
 typedef const char *PSZ;
 
@@ -132,6 +133,9 @@ typedef std::int32_t HRESULT;
 #endif
 #ifndef S_FALSE
 #define S_FALSE 1
+#endif
+#ifndef ERROR_CALL_NOT_IMPLEMENTED
+#define ERROR_CALL_NOT_IMPLEMENTED 120
 #endif
 #endif
 typedef struct _CONTEXT *PCONTEXT;
@@ -375,12 +379,163 @@ struct NOTIFYICONDATA {
   DWORD dwInfoFlags;
 };
 
+//	The tray icon flags and messages (the documented shellapi values).
+#define NIM_ADD 0x00
+#define NIM_MODIFY 0x01
+#define NIM_DELETE 0x02
+#define NIF_MESSAGE 0x01
+#define NIF_ICON 0x02
+#define NIF_TIP 0x04
+
+//	The tray icon update: no system tray exists on the browser target;
+//	the call fails (the callers' error paths handle it).
+inline BOOL Shell_NotifyIcon(DWORD message, NOTIFYICONDATA *data) {
+  (void)message;
+  (void)data;
+  return FALSE;
+}
+
+//	The display settings change: the browser host owns the display
+//	mode; a reset of an unchanged display is vacuously successful (the
+//	documented DISP_CHANGE result).
+#define CDS_RESET 0x40000000
+#define DISP_CHANGE_SUCCESSFUL 0
+#define DISP_CHANGE_FAILED 1
+inline LONG ChangeDisplaySettings(void *deviceMode, DWORD flags) {
+  (void)deviceMode;
+  (void)flags;
+  return DISP_CHANGE_SUCCESSFUL;
+}
+
 struct PALETTEENTRY {
   BYTE peRed;
   BYTE peGreen;
   BYTE peBlue;
   BYTE peFlags;
 };
+
+//	The logical font (the documented wingdi layouts; the browser IME
+//	adapter owns the real font selection).
+typedef struct tagLOGFONTA {
+  LONG lfHeight;
+  LONG lfWidth;
+  LONG lfEscapement;
+  LONG lfOrientation;
+  LONG lfWeight;
+  BYTE lfItalic;
+  BYTE lfUnderline;
+  BYTE lfStrikeOut;
+  BYTE lfCharSet;
+  BYTE lfOutPrecision;
+  BYTE lfClipPrecision;
+  BYTE lfQuality;
+  BYTE lfPitchAndFamily;
+  char lfFaceName[32];
+} LOGFONTA, *LPLOGFONTA;
+
+typedef struct tagLOGFONTW {
+  LONG lfHeight;
+  LONG lfWidth;
+  LONG lfEscapement;
+  LONG lfOrientation;
+  LONG lfWeight;
+  BYTE lfItalic;
+  BYTE lfUnderline;
+  BYTE lfStrikeOut;
+  BYTE lfCharSet;
+  BYTE lfOutPrecision;
+  BYTE lfClipPrecision;
+  BYTE lfQuality;
+  BYTE lfPitchAndFamily;
+  wchar_t lfFaceName[32];
+} LOGFONTW, *LPLOGFONTW;
+
+//	The IME composition/candidate context handle (the documented imm
+//	handle; the browser IME belongs to the input adapter).
+typedef HANDLE HIMCC;
+
+//	The legacy pointer near/far qualifiers (empty on 32-bit Windows -
+//	the documented values).
+#ifndef NEAR
+#define NEAR
+#endif
+#ifndef FAR
+#define FAR
+#endif
+
+//	The MSVC integer pointer typedefs.
+typedef int *PINT, *LPINT;
+typedef unsigned int *PUINT, *LPUINT;
+
+//	The language identifier (the documented Win32 typedef).
+typedef unsigned short LANGID;
+
+//	The language extraction macros and the language constants (the
+//	documented WinNT values).
+#define PRIMARYLANGID(langId) ((unsigned short)(langId) & 0x3ff)
+#define SUBLANGID(langId) ((unsigned short)(langId) >> 10)
+#define MAKELANGID(primary, sublang) \
+  ((((unsigned short)(sublang)) << 10) | (unsigned short)(primary))
+#define LANG_NEUTRAL 0x00
+#define LANG_ENGLISH 0x09
+#define LANG_CHINESE 0x04
+#define LANG_JAPANESE 0x11
+#define LANG_KOREAN 0x12
+#define SUBLANG_NEUTRAL 0x00
+#define SUBLANG_DEFAULT 0x01
+#define SUBLANG_ENGLISH_US 0x01
+#define SUBLANG_CHINESE_SIMPLIFIED 0x01
+#define SUBLANG_CHINESE_TRADITIONAL 0x02
+#define SUBLANG_JAPANESE 0x01
+#define SUBLANG_KOREAN 0x01
+
+//	The IME composition string attributes (the documented imm.h values).
+#define ATTR_INPUT 0x00
+#define ATTR_TARGET_CONVERTED 0x01
+#define ATTR_CONVERTED 0x02
+#define ATTR_TARGET_NOTCONVERTED 0x03
+#define ATTR_INPUT_ERROR 0x04
+#define ATTR_FIXEDCONVERTED 0x05
+
+//	The IME conversion mode flags (the documented imm.h values).
+#define IME_CMODE_ALPHANUMERIC 0x0000
+#define IME_CMODE_NATIVE 0x0001
+#define IME_CMODE_KATAKANA 0x0002
+#define IME_CMODE_LANGUAGE 0x0003
+#define IME_CMODE_FULLSHAPE 0x0008
+#define IME_CMODE_ROMAN 0x0010
+#define IME_CMODE_CHARCODE 0x0020
+#define IME_CMODE_HANJACONVERT 0x0040
+#define IME_CMODE_SOFTKBD 0x0080
+#define IME_CMODE_NOCONVERSION 0x0100
+#define IME_CMODE_EUDC 0x0200
+#define IME_CMODE_SYMBOL 0x0400
+#define IME_CMODE_FIXED 0x0800
+
+//	The IME notifications (the documented imm.h values).
+#define IMN_CLOSESTATUSWINDOW 0x0001
+#define IMN_OPENSTATUSWINDOW 0x0002
+#define IMN_CHANGECANDIDATEWINDOW 0x0003
+#define IMN_CLOSECANDIDATEWINDOW 0x0004
+#define IMN_OPENCANDIDATEWINDOW 0x0005
+#define IMN_SETCONVERSIONMODE 0x0006
+#define IMN_SETSENTENCEMODE 0x0007
+#define IMN_SETOPENSTATUS 0x0008
+#define IMN_SETCANDIDATEPOS 0x0009
+#define IMN_SETCOMPOSITIONFONT 0x000A
+#define IMN_SETCOMPOSITIONWINDOW 0x000B
+#define IMN_GUIDELINE 0x000C
+#define IMN_SETSTATUSWINDOWPOS 0x000D
+#define IMN_PRIVATE 0x000E
+
+//	The IME hotkey identifiers (the documented imm.h values).
+#define IME_JHOTKEY_CLOSE_OPEN 0x30
+#define IME_KHOTKEY_SHAPE_TOGGLE 0x50
+#define IME_KHOTKEY_HANJACONVERT 0x51
+#define IME_KHOTKEY_ENGLISH 0x52
+#define IME_THOTKEY_IME_NONIME_TOGGLE 0x70
+#define IME_THOTKEY_SHAPE_TOGGLE 0x71
+#define IME_THOTKEY_SYMBOL_TOGGLE 0x72
 
 struct LARGE_INTEGER {
   std::int64_t QuadPart;
@@ -495,6 +650,12 @@ typedef LRESULT *LPRESULT;
 #ifndef LPTSTR
 #define LPTSTR wchar_t *
 #endif
+#ifndef PTSTR
+#define PTSTR wchar_t *
+#endif
+#ifndef PCTSTR
+#define PCTSTR const wchar_t *
+#endif
 
 #define GWL_WNDPROC (-4)
 #define GWLP_WNDPROC (-4)
@@ -508,6 +669,28 @@ inline int lstrlenW(const wchar_t *text) {
   int length = 0;
   while (text[length]) ++length;
   return length;
+}
+inline int lstrlen(const wchar_t *text) {
+  return lstrlenW(text);
+}
+inline int lstrlenA(const char *text) {
+  if (!text) return 0;
+  int length = 0;
+  while (text[length]) ++length;
+  return length;
+}
+
+//	The character advance (the documented Win32 signature: the next
+//	character, or the terminator's own address at the end; the C form
+//	returns a mutable pointer from the const input).
+inline wchar_t *CharNextW(const wchar_t *text) {
+  return const_cast<wchar_t *>(*text ? text + 1 : text);
+}
+inline char *CharNextA(const char *text) {
+  return const_cast<char *>(*text ? text + 1 : text);
+}
+inline wchar_t *CharNext(const wchar_t *text) {
+  return CharNextW(text);
 }
 
 inline int _access(const char *path, int mode) {
@@ -655,6 +838,21 @@ inline BOOL KillTimer(HWND hWnd, UINT_PTR id) {
   (void)hWnd;
   (void)id;
   return TRUE;
+}
+
+//	The focus window: no Win32 windows exist; there is no foreground
+//	window.
+inline HWND GetFocus() {
+  return nullptr;
+}
+inline HWND GetForegroundWindow() {
+  return nullptr;
+}
+
+//	The caret blink time: the documented default (the browser host
+//	owns the caret; the AUI draws its own).
+inline UINT GetCaretBlinkTime() {
+  return 500;
 }
 
 //	The window destruction: no Win32 windows exist; destroying the
@@ -857,6 +1055,156 @@ inline BOOL AdjustWindowRect(RECT *rect, DWORD style, BOOL menu) {
   (void)style;
   (void)menu;
   return rect ? TRUE : FALSE;
+}
+
+//	The extended variant: the same borderless canvas (the extended
+//	style adds nothing).
+inline BOOL AdjustWindowRectEx(RECT *rect, DWORD style, BOOL menu,
+                               DWORD exStyle) {
+  (void)style;
+  (void)menu;
+  (void)exStyle;
+  return rect ? TRUE : FALSE;
+}
+
+//	The redraw request: a null window invalidates everything (the
+//	vacuous success - no windows exist to invalidate); a specific
+//	window fails (no such window).
+inline BOOL InvalidateRect(HWND hWnd, const RECT *rect, BOOL erase) {
+  (void)rect;
+  (void)erase;
+  return hWnd ? FALSE : TRUE;
+}
+
+//	The parent window: no Win32 windows exist; there is no parent.
+inline HWND GetParent(HWND hWnd) {
+  (void)hWnd;
+  return nullptr;
+}
+
+//	The window of a DC: no GDI DCs exist on the browser target.
+inline HWND WindowFromDC(HDC device) {
+  (void)device;
+  return nullptr;
+}
+
+//	The 64-bit integers (the documented Win32 typedefs; the same
+//	int64_t spelling wtypes.h uses so the redeclaration is identical).
+typedef std::int64_t LONGLONG, *PLONGLONG;
+typedef std::uint64_t ULONGLONG, *PULONGLONG;
+
+#ifndef CONST
+#define CONST const
+#endif
+
+//	The hook handle (the browser target has no hookable message flow).
+typedef void *HHOOK;
+
+//	The IME composition string flags, notification actions and
+//	composition actions (the documented imm.h values).
+#define GCS_COMPREADSTR 0x0001
+#define GCS_COMPREADATTR 0x0002
+#define GCS_COMPREADCLAUSE 0x0004
+#define GCS_COMPSTR 0x0008
+#define GCS_COMPATTR 0x0010
+#define GCS_COMPCLAUSE 0x0020
+#define GCS_CURSORPOS 0x0080
+#define GCS_DELTASTART 0x0100
+#define GCS_RESULTREADSTR 0x0200
+#define GCS_RESULTREADCLAUSE 0x0400
+#define GCS_RESULTSTR 0x0800
+#define GCS_RESULTCLAUSE 0x1000
+#define SCS_SETSTR (GCS_COMPREADSTR | GCS_COMPSTR)
+#define SCS_CHANGEATTR (GCS_COMPREADATTR | GCS_COMPATTR)
+#define SCS_CHANGECLAUSE (GCS_COMPREADCLAUSE | GCS_COMPCLAUSE)
+#define NI_OPENCANDIDATE 0x0010
+#define NI_CLOSECANDIDATE 0x0011
+#define NI_SELECTCANDIDATESTR 0x0012
+#define NI_CHANGECANDIDATELIST 0x0013
+#define NI_FINALIZECONVERSIONRESULT 0x0014
+#define NI_COMPOSITIONSTR 0x0015
+#define NI_SETCANDIDATE_PAGESTART 0x0016
+#define NI_SETCANDIDATE_PAGESIZE 0x0017
+#define NI_IMEMENUSELECTED 0x0018
+#define CPS_COMPLETE 0x0001
+#define CPS_CONVERT 0x0002
+#define CPS_REVERT 0x0003
+#define CPS_CANCEL 0x0004
+#define IME_CAND_READ 0x0004
+
+//	The IME control actions (the documented imm.h values).
+#define IMC_GETCANDIDATEPOS 0x0007
+#define IMC_SETCANDIDATEPOS 0x0008
+#define IMC_GETCOMPOSITIONFONT 0x0009
+#define IMC_SETCOMPOSITIONFONT 0x000A
+#define IMC_GETCOMPOSITIONWINDOW 0x000B
+#define IMC_SETCOMPOSITIONWINDOW 0x000C
+#define IMC_GETSTATUSWINDOWPOS 0x000F
+#define IMC_SETSTATUSWINDOWPOS 0x0010
+#define IMC_CLOSESTATUSWINDOW 0x0021
+#define IMC_OPENSTATUSWINDOW 0x0022
+
+//	The IME control message (the documented winuser value) and the
+//	locale info constant (the documented winnls value).
+#define WM_IME_CONTROL 0x0283
+#define LOCALE_IDEFAULTANSICODEPAGE 0x1004
+
+//	The page protections (the documented WinBase values).
+#define PAGE_READWRITE 0x04
+#define PAGE_EXECUTE_READWRITE 0x40
+
+//	The page protection change: wasm memory has no mprotect-style page
+//	protections the port can apply; the call fails explicitly (the
+//	defence export/IAT walk is unreachable - the module handles are
+//	NULL).
+inline BOOL VirtualProtect(LPVOID address, SIZE_T size, DWORD newProtect,
+                           LPDWORD oldProtect) {
+  (void)address;
+  (void)size;
+  (void)newProtect;
+  if (oldProtect)
+    *oldProtect = 0;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
+
+//	The GDI text draw: no GDI target exists on the browser target (the
+//	AUI renders through the WebGL adapter); the draw fails.
+inline BOOL TextOutA(HDC device, int x, int y, const char *text, int length) {
+  (void)device;
+  (void)x;
+  (void)y;
+  (void)text;
+  (void)length;
+  return FALSE;
+}
+
+//	The GDI extended text draw: the same no-GDI-target failure (the
+//	IME hook's candidate window drawing never runs on the browser).
+inline BOOL ExtTextOutW(HDC device, int x, int y, UINT options,
+                        const RECT *rect, const wchar_t *text, UINT count,
+                        const int *dx) {
+  (void)device;
+  (void)x;
+  (void)y;
+  (void)options;
+  (void)rect;
+  (void)text;
+  (void)count;
+  (void)dx;
+  return FALSE;
+}
+
+//	The lead byte test: the process locale is the single-byte C locale
+//	(the port converts UTF-16/UTF-8 directly); no lead bytes exist.
+inline BOOL IsDBCSLeadByte(BYTE character) {
+  (void)character;
+  return FALSE;
+}
+inline BOOL IsDBCSLeadByteEx(DWORD codePage, BYTE character) {
+  (void)codePage;
+  (void)character;
+  return FALSE;
 }
 
 //	The system metrics: no windowing adapter is registered yet; the
@@ -1149,9 +1497,36 @@ inline DWORD GetVersion() {
 typedef struct IUnknown *LPUNKNOWN;
 
 //	The COM apartment entry points: the port's activation registry
-//	(atlcom_registry.cpp) owns the definitions.
+//	(atlcom_registry.cpp) owns the definitions. unknwn.h supplies the
+//	GUID layout (its own Windows.h include is guard-blocked here).
+#include "unknwn.h"
 HRESULT CoInitialize(void *reserved);
 void CoUninitialize();
+
+//	The COM apartment init (the same activation registry; the apartment
+//	model is the caller's bookkeeping on this target).
+#define COINIT_APARTMENTTHREADED 0x2
+#define COINIT_MULTITHREADED 0x0
+inline HRESULT CoInitializeEx(void *reserved, DWORD coInit) {
+  (void)coInit;
+  return CoInitialize(reserved);
+}
+
+//	The direct COM activation: the port's activation registry
+//	(atlcom_registry.cpp) is empty, so the activation fails explicitly
+//	(the callers' SUCCEEDED/FAILED guards take the non-COM path). The
+//	signature is the documented CoCreateInstance contract.
+inline HRESULT CoCreateInstance(const GUID &classId, void *outer,
+                                 DWORD classContext, const GUID &interfaceId,
+                                 void **result) {
+  (void)classId;
+  (void)outer;
+  (void)classContext;
+  (void)interfaceId;
+  if (result)
+    *result = nullptr;
+  return E_FAIL;
+}
 
 #ifndef TEXT
 #define TEXT(text) L##text
@@ -1205,6 +1580,10 @@ inline DWORD GetFileAttributesW(const wchar_t *name) {
 #define SW_SHOWNORMAL 1
 #define SW_SHOW 5
 #define SW_SHOWMAXIMIZED 3
+#define SW_MINIMIZE 6
+#define SW_SHOWMINIMIZED 2
+#define SW_MAXIMIZE 3
+#define SW_RESTORE 9
 
 //	The window rect: the adapter's window registry supplies real windows;
 //	headless the rect is empty.
@@ -1756,6 +2135,16 @@ inline LRESULT DispatchMessage(const MSG *message) {
 #define VK_SHIFT 0x10
 #define VK_CONTROL 0x11
 #define VK_MENU 0x12
+#define VK_APPS 0x5D
+#define VK_JUNJA 0x17
+#define VK_FINAL 0x18
+#define VK_HANJA 0x19
+#define VK_KANJI 0x19
+#define VK_CONVERT 0x1C
+#define VK_NONCONVERT 0x1D
+#define VK_ACCEPT 0x1E
+#define VK_MODECHANGE 0x1F
+#define VK_PROCESSKEY 0xE5
 #define VK_PAUSE 0x13
 #define VK_CAPITAL 0x14
 #define VK_ESCAPE 0x1B
@@ -1810,6 +2199,18 @@ inline int min(int a, int b) { return a < b ? a : b; }
 inline int max(int a, int b) { return a > b ? a : b; }
 inline long min(long a, long b) { return a < b ? a : b; }
 inline long max(long a, long b) { return a > b ? a : b; }
+inline unsigned long min(unsigned long a, unsigned long b) {
+  return a < b ? a : b;
+}
+inline unsigned long max(unsigned long a, unsigned long b) {
+  return a > b ? a : b;
+}
+inline unsigned int min(unsigned int a, unsigned int b) {
+  return a < b ? a : b;
+}
+inline unsigned int max(unsigned int a, unsigned int b) {
+  return a > b ? a : b;
+}
 inline float min(float a, float b) { return a < b ? a : b; }
 inline float max(float a, float b) { return a > b ? a : b; }
 inline double min(double a, double b) { return a < b ? a : b; }
@@ -2066,26 +2467,83 @@ inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
 #define GCS_CURSORPOS 0x0080
 #define CFS_POINT 0x0002
 #define CFS_RECT 0x0001
-#define NI_COMPOSITIONSTR 0x0010
-#define IMN_OPENCANDIDATE 0x0004
-#define IMN_CHANGECANDIDATE 0x0003
-#define IMN_CLOSECANDIDATE 0x0005
-#define IMN_SETCONVERSIONMODE 0x0006
-#define IMN_SETSENTENCEMODE 0x0007
-#define IMN_SETOPENSTATUS 0x0008
+//	The short IMN_ aliases over the documented values (defined above).
+#define IMN_OPENCANDIDATE IMN_OPENCANDIDATEWINDOW
+#define IMN_CHANGECANDIDATE IMN_CHANGECANDIDATEWINDOW
+#define IMN_CLOSECANDIDATE IMN_CLOSECANDIDATEWINDOW
 #define IGP_PROPERTY 0x0004
 #define CPS_COMPLETE 0x0001
 #define IME_PROP_AT_CARET 0x00010000
 
-// Clipboard formats and SEH result (documented values).
+//	The clipboard formats and SEH result (documented values).
 #define CF_UNICODETEXT 0x000D
 #define EXCEPTION_EXECUTE_HANDLER 1
 
-// GDI raster-op, bitmap constants and the system color index (documented).
+//	The bitmap file header (the documented wingdi layout; the
+//	screenshot writer emits the file container itself).
+typedef struct tagBITMAPFILEHEADER {
+  WORD bfType;
+  DWORD bfSize;
+  WORD bfReserved1;
+  WORD bfReserved2;
+  DWORD bfOffBits;
+} BITMAPFILEHEADER, *LPBITMAPFILEHEADER;
+
+//	The GDI raster-op, bitmap constants and the system color index (documented).
 #define SRCCOPY 0x00CC0020
+#define BLACKNESS 0x00000042
+#define WHITENESS 0x00FF0062
 #define BI_RGB 0
 #define DIB_RGB_COLORS 0
 #define COLOR_WINDOW 5
+
+//	The paint record and the paint boundary (the documented winuser
+//	layout; the browser host owns the presentation, so the paint
+//	boundary reports an empty region and succeeds - the WM_PAINT
+//	handler's drawing is a no-op over it).
+typedef struct tagPAINTSTRUCT {
+  HDC hdc;
+  BOOL fErase;
+  RECT rcPaint;
+  BOOL fRestore;
+  BOOL fIncUpdate;
+  BYTE rgbReserved[32];
+} PAINTSTRUCT, *LPPAINTSTRUCT;
+
+inline HDC BeginPaint(HWND hWnd, PAINTSTRUCT *paint) {
+  (void)hWnd;
+  if (!paint)
+    return nullptr;
+  paint->hdc = nullptr;
+  paint->fErase = FALSE;
+  paint->rcPaint = RECT{0, 0, 0, 0};
+  return nullptr;
+}
+inline BOOL EndPaint(HWND hWnd, const PAINTSTRUCT *paint) {
+  (void)hWnd;
+  (void)paint;
+  return TRUE;
+}
+
+//	The window sizing bounds (the documented winuser layout).
+typedef struct tagMINMAXINFO {
+  POINT ptReserved;
+  POINT ptMaxSize;
+  POINT ptMaxPosition;
+  POINT ptMinTrackSize;
+  POINT ptMaxTrackSize;
+} MINMAXINFO, *LPMINMAXINFO;
+
+//	The window sizing edges (the documented winuser values; WM_SIZING's
+//	wParam).
+#define WMSZ_BOTTOM 1
+#define WMSZ_BOTTOMLEFT 2
+#define WMSZ_BOTTOMRIGHT 3
+#define WMSZ_LEFT 4
+#define WMSZ_RIGHT 5
+#define WMSZ_TOP 6
+#define WMSZ_TOPLEFT 7
+#define WMSZ_TOPRIGHT 8
 #define DEFAULT_CHARSET 1
 
 // Global memory flags (documented): GHND = moveable | zero-init, LPTR = fixed | zero-init.
@@ -2166,11 +2624,238 @@ typedef struct tagCANDIDATEFORM {
 // IMM32: the browser has no IMM context; ImmGetContext returns NULL so the
 // composition/candidate paths bail (the input adapter owns the IME).
 inline HIMC ImmGetContext(HWND hWnd) { (void)hWnd; return NULL; }
+inline BOOL ImmSetConversionStatus(HIMC hIMC, DWORD conversion, DWORD sentence) {
+  (void)hIMC; (void)conversion; (void)sentence;
+  return FALSE;	//	no IMM context on the browser target.
+}
+inline BOOL ImmSetOpenStatus(HIMC hIMC, BOOL open) {
+  (void)hIMC; (void)open;
+  return FALSE;	//	no IMM context on the browser target.
+}
+//	IME belongs to the input adapter, so the queries report none).
+typedef struct tagCANDIDATELIST {
+  DWORD dwSize;
+  DWORD dwStyle;
+  DWORD dwCount;
+  DWORD dwSelection;
+  DWORD dwPageStart;
+  DWORD dwPageSize;
+  DWORD dwOffset[1];
+} CANDIDATELIST, *LPCANDIDATELIST;
+
+inline DWORD ImmGetCandidateListA(HIMC context, DWORD index,
+                                  LPCANDIDATELIST list, DWORD size) {
+  (void)context;
+  (void)index;
+  (void)list;
+  (void)size;
+  return 0;	//	no candidate list on the browser target.
+}
+inline DWORD ImmGetCandidateListW(HIMC context, DWORD index,
+                                  LPCANDIDATELIST list, DWORD size) {
+  return ImmGetCandidateListA(context, index, list, size);
+}
+inline UINT ImmGetIMEFileNameA(HKL layout, LPSTR file, UINT buffer) {
+  (void)layout; (void)file; (void)buffer;
+  return 0;	//	no IME file on the browser target.
+}
+inline BOOL ImmSimulateHotKey(HWND window, DWORD hotKey) {
+  (void)window; (void)hotKey;
+  return FALSE;	//	no IMM context on the browser target.
+}
+inline UINT ImmGetVirtualKey(HIMC hIMC) {
+  (void)hIMC;
+  return 0;	//	no IMM context on the browser target.
+}
+inline HWND ImmGetDefaultIMEWnd(HWND hWnd) {
+  (void)hWnd;
+  return nullptr;	//	no IME window on the browser target.
+}
+inline BOOL ImmGetOpenStatus(HIMC hIMC) {
+  (void)hIMC;
+  return FALSE;	//	no IMM context on the browser target.
+}
+inline BOOL ImmSetCompositionString(HIMC hIMC, DWORD index, const void *composition,
+                                     DWORD compositionLength, const void *read,
+                                     DWORD readLength) {
+  (void)hIMC; (void)index; (void)composition; (void)compositionLength;
+  (void)read; (void)readLength;
+  return FALSE;	//	no IMM context on the browser target.
+}
+
+//	The locale sorting and comparison constants (the documented WinNT
+//	values).
+#define SORT_DEFAULT 0
+#define SORT_INVARIANT 0x73
+#define NORM_IGNORECASE 0x00000001
+#define NORM_IGNORENONSPACE 0x00000002
+#define NORM_IGNORESYMBOLS 0x00000004
+#define LCID_INVARIANT 0x0000007F
+#define MAKELCID(langId, sortId) \
+  ((((DWORD)(sortId)) << 16) | (DWORD)(langId))
+
+//	The string comparison results (the documented CSTR_* values).
+#define CSTR_LESS_THAN 1
+#define CSTR_EQUAL 2
+#define CSTR_GREATER_THAN 3
+
+//	The string comparison: the real invariant-locale comparison (the
+//	documented contract; ASCII case handling for NORM_IGNORECASE, a
+//	negative length reads to the terminator).
+inline int CompareStringA(DWORD locale, DWORD flags, const char *left,
+                          int leftLength, const char *right,
+                          int rightLength) {
+  (void)locale;
+  if (!left || !right)
+    return 0;
+  std::size_t i = 0;
+  const bool ignoreCase = (flags & NORM_IGNORECASE) != 0;
+  const std::size_t leftSize =
+      leftLength < 0 ? std::strlen(left) : static_cast<std::size_t>(leftLength);
+  const std::size_t rightSize =
+      rightLength < 0 ? std::strlen(right)
+                      : static_cast<std::size_t>(rightLength);
+  while (i < leftSize && i < rightSize) {
+    char a = left[i];
+    char b = right[i];
+    if (ignoreCase) {
+      a = static_cast<char>(std::tolower(static_cast<unsigned char>(a)));
+      b = static_cast<char>(std::tolower(static_cast<unsigned char>(b)));
+    }
+    if (a != b)
+      return a < b ? CSTR_LESS_THAN : CSTR_GREATER_THAN;
+    ++i;
+  }
+  if (i < leftSize)
+    return CSTR_GREATER_THAN;
+  if (i < rightSize)
+    return CSTR_LESS_THAN;
+  return CSTR_EQUAL;
+}
+
+//	The file version queries: no native DLLs exist on the browser
+//	target, so the version surface reports none (the callers' size
+//	checks bail).
+inline DWORD GetFileVersionInfoSizeA(const char *file, DWORD *handle) {
+  (void)file;
+  if (handle)
+    *handle = 0;
+  return 0;
+}
+inline BOOL GetFileVersionInfoA(const char *file, DWORD handle, DWORD length,
+                               void *data) {
+  (void)file;
+  (void)handle;
+  (void)length;
+  (void)data;
+  return FALSE;
+}
+inline BOOL VerQueryValueA(const void *block, const char *query, void **buffer,
+                           unsigned *length) {
+  (void)block;
+  (void)query;
+  if (buffer)
+    *buffer = nullptr;
+  if (length)
+    *length = 0;
+  return FALSE;
+}
+
+//	The fixed version record (the documented ver.h layout; the queries
+//	above report none on the browser target, the struct only shapes the
+//	caller's reads).
+typedef struct tagVS_FIXEDFILEINFO {
+  DWORD dwSignature;
+  DWORD dwStrucVersion;
+  DWORD dwFileVersionMS;
+  DWORD dwFileVersionLS;
+  DWORD dwProductVersionMS;
+  DWORD dwProductVersionLS;
+  DWORD dwFileFlagsMask;
+  DWORD dwFileFlags;
+  DWORD dwFileOS;
+  DWORD dwFileType;
+  DWORD dwFileSubtype;
+  DWORD dwFileDateMS;
+  DWORD dwFileDateLS;
+} VS_FIXEDFILEINFO;
+
+//	The registry surface: the browser target has no Win32 registry, so
+//	the queries fail explicitly (the callers' error paths handle it).
+typedef void *HKEY;
+#define HKEY_CLASSES_ROOT ((HKEY)0x80000000)
+#define HKEY_CURRENT_USER ((HKEY)0x80000001)
+#define HKEY_LOCAL_MACHINE ((HKEY)0x80000002)
+#define HKEY_USERS ((HKEY)0x80000003)
+#define KEY_READ 0x20019
+#define KEY_WRITE 0x20006
+#define KEY_ALL_ACCESS 0xF003F
+#define REG_SZ 1
+#define REG_BINARY 3
+#define REG_DWORD 4
+
+inline LONG RegOpenKeyExA(HKEY key, const char *subKey, DWORD options,
+                          DWORD access, HKEY *result) {
+  (void)key;
+  (void)subKey;
+  (void)options;
+  (void)access;
+  if (result)
+    *result = nullptr;
+  return 2;	//	ERROR_FILE_NOT_FOUND: no registry on the browser target.
+}
+inline LONG RegQueryValueExA(HKEY key, const char *value, DWORD *reserved,
+                             DWORD *type, BYTE *data, DWORD *size) {
+  (void)key;
+  (void)value;
+  (void)reserved;
+  if (type)
+    *type = 0;
+  if (size)
+    *size = 0;
+  (void)data;
+  return 2;	//	ERROR_FILE_NOT_FOUND.
+}
+inline LONG RegCloseKey(HKEY key) {
+  (void)key;
+  return 0;	//	ERROR_SUCCESS (nothing was opened).
+}
+
+//	The locale info query: the process locale is the single-byte C
+//	locale (the port converts UTF-16/UTF-8 directly); the query
+//	reports none (the callers' fallbacks handle it).
+inline int GetLocaleInfoA(DWORD locale, DWORD type, char *buffer, int size) {
+  (void)locale;
+  (void)type;
+  if (buffer && size > 0)
+    buffer[0] = '\0';
+  return 0;
+}
 inline BOOL ImmReleaseContext(HWND hWnd, HIMC hIMC) { (void)hWnd; (void)hIMC; return TRUE; }
 inline BOOL ImmIsIME(HKL hKL) { (void)hKL; return FALSE; }
+
+//	The IME candidate list (the documented imm.h layout; the browser
+
+
+inline DWORD ImmGetCandidateList(HIMC context, DWORD index,
+                                 LPCANDIDATELIST list, DWORD size) {
+  (void)context;
+  (void)index;
+  (void)list;
+  (void)size;
+  return 0;	//	no candidate list on the browser target.
+}
 inline LONG ImmGetCompositionStringW(HIMC hIMC, DWORD index, LPVOID buffer, DWORD bufLen) {
   (void)hIMC; (void)index; (void)buffer; (void)bufLen;
   return -1;
+}
+inline LONG ImmGetCompositionString(HIMC hIMC, DWORD index, LPVOID buffer,
+                                     DWORD bufLen) {
+  return ImmGetCompositionStringW(hIMC, index, buffer, bufLen);
+}
+inline LONG ImmGetCompositionStringA(HIMC hIMC, DWORD index, LPVOID buffer,
+                                      DWORD bufLen) {
+  return ImmGetCompositionStringW(hIMC, index, buffer, bufLen);
 }
 inline HKL GetKeyboardLayout(DWORD idThread) { (void)idThread; return NULL; }
 inline HIMC ImmAssociateContext(HWND hWnd, HIMC hIMC) { (void)hWnd; (void)hIMC; return NULL; }
@@ -2263,11 +2948,17 @@ inline BOOL PeekMessageW(LPMSG message, HWND hWnd, UINT min, UINT max, UINT remo
 inline BOOL PeekMessage(MSG *message, HWND hWnd, UINT min, UINT max, UINT remove) {
   return PeekMessageW(message, hWnd, min, max, remove);
 }
+inline BOOL PeekMessageA(MSG *message, HWND hWnd, UINT min, UINT max, UINT remove) {
+  return PeekMessageW(message, hWnd, min, max, remove);
+}
 //	The peek modes (the documented WinUser values).
 #define PM_NOREMOVE 0x0000
 #define PM_REMOVE 0x0001
 #define PM_NOYIELD 0x0002
 inline BOOL GetMessageW(LPMSG message, HWND hWnd, UINT min, UINT max) {
+  return GetMessage(message, hWnd, min, max);
+}
+inline BOOL GetMessageA(MSG *message, HWND hWnd, UINT min, UINT max) {
   return GetMessage(message, hWnd, min, max);
 }
 inline LRESULT DispatchMessageA(const MSG *message) { return DispatchMessage(message); }

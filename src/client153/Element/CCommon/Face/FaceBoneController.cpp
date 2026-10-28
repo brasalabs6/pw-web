@@ -199,7 +199,8 @@ bool CFaceBoneController::ImportBoneFromSkeleton()
 		// For face editor, the correct position is as following.
 //		m_FaceBone[i].SetPos(pBone->GetAbsoluteTM().GetRow(3));
 		// For element(game), the following is correct.
-		m_FaceBone[i].SetPos(pBone->GetRelativeTM().GetRow(3));
+		A3DVECTOR3 vBonePos = pBone->GetRelativeTM().GetRow(3);	//	MSVC bound this temporary to a non-const reference.
+		m_FaceBone[i].SetPos(vBonePos);
 
 		m_FaceBone[i].SetBone(pBone);
 		m_FaceBone[i].InitController();
@@ -357,7 +358,8 @@ bool CFaceBoneController::TranslateBone(A3DVECTOR3& vector, bool bUpdate, bool b
 }
 
 // Rotate Bone
-bool CFaceBoneController::RotateBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate, bool bHalfFace)
+//	MSVC bound the temporary to the non-const reference; the standard form.
+bool CFaceBoneController::RotateBone(const A3DVECTOR3& v, CENTERTYPE type, bool bUpdate, bool bHalfFace)
 {
 	int i, nIndex;
 	A3DVECTOR3 vCenter;
@@ -462,7 +464,8 @@ bool CFaceBoneController::ScaleBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate
 				mi = a3d_ScalingRelative(m, v.x, v.y, v.z);
 				vPosOld = m_FaceBone[nIndex].GetPos();
 				vPosNew = vPosOld * mi;
-				m_FaceBone[nIndex].Translate(vPosNew - vPosOld);
+				A3DVECTOR3 vDelta = vPosNew - vPosOld;	//	MSVC bound this temporary to a non-const reference.
+				m_FaceBone[nIndex].Translate(vDelta);
 				if (bUpdate)
 					UpdateBone(nIndex, true);
 				if (bHalfFace)
@@ -474,7 +477,8 @@ bool CFaceBoneController::ScaleBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate
 						mi = a3d_ScalingRelative(mCor, v.x, v.y, v.z);
 						vPosOld = m_FaceBone[nIndex].GetPos();
 						vPosNew = vPosOld * mi;
-						m_FaceBone[nIndex].Translate(vPosNew - vPosOld);
+						A3DVECTOR3 vDelta = vPosNew - vPosOld;	//	MSVC bound this temporary to a non-const reference.
+						m_FaceBone[nIndex].Translate(vDelta);
 						if (bUpdate)
 							UpdateBone(nIndex, true);
 					}
@@ -498,7 +502,8 @@ bool CFaceBoneController::ScaleBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate
 				mi = a3d_ScalingRelative(m, v.x, v.y, v.z);
 				vPosOld = m_FaceBone[nIndex].GetPos();
 				vPosNew = vPosOld * mi;
-				m_FaceBone[nIndex].Translate(vPosNew - vPosOld);
+				A3DVECTOR3 vDelta = vPosNew - vPosOld;	//	MSVC bound this temporary to a non-const reference.
+				m_FaceBone[nIndex].Translate(vDelta);
 				if (bUpdate)
 					UpdateBone(nIndex, true);
 				if (bHalfFace)
@@ -510,7 +515,8 @@ bool CFaceBoneController::ScaleBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate
 						mi = a3d_ScalingRelative(mCor, v.x, v.y, v.z);
 						vPosOld = m_FaceBone[nIndex].GetPos();
 						vPosNew = vPosOld * mi;
-						m_FaceBone[nIndex].Translate(vPosNew - vPosOld);
+						A3DVECTOR3 vDelta = vPosNew - vPosOld;	//	MSVC bound this temporary to a non-const reference.
+						m_FaceBone[nIndex].Translate(vDelta);
 						if (bUpdate)
 							UpdateBone(nIndex, true);
 					}
@@ -780,7 +786,8 @@ void CFaceBoneController::ScalePartDown(float fScale, bool bUpdate)
 	ClearSelection();
 	SelectBonePart(2);
 
-	ScaleBone(A3DVECTOR3(1.0, fScale, 1.0), CT_SPECIAL, bUpdate, true);
+	A3DVECTOR3 vScaleBone(1.0, fScale, 1.0);	//	MSVC bound this temporary to a non-const reference.
+	ScaleBone(vScaleBone, CT_SPECIAL, bUpdate, true);
 
 }
 
@@ -811,7 +818,8 @@ void CFaceBoneController::ScalePartUp(float fScale, bool bUpdate)
 	ClearSelection();
 	SelectBonePart(0);
 
-	ScaleBone(A3DVECTOR3(1.0, fScale, 1.0), CT_SPECIAL, bUpdate, true);
+	A3DVECTOR3 vScaleBone(1.0, fScale, 1.0);	//	MSVC bound this temporary to a non-const reference.
+	ScaleBone(vScaleBone, CT_SPECIAL, bUpdate, true);
 
 }
 
@@ -830,7 +838,8 @@ void CFaceBoneController::ScalePartMiddle(float fScale, bool bUpdate)
 	ClearSelection();
 	SelectBonePart(1);
 
-	ScaleBone(A3DVECTOR3(1.0, fScale, 1.0), CT_SPECIAL, bUpdate, true);
+	A3DVECTOR3 vScaleBone(1.0, fScale, 1.0);	//	MSVC bound this temporary to a non-const reference.
+	ScaleBone(vScaleBone, CT_SPECIAL, bUpdate, true);
 
 	
 	strcpy(szCenter, "鼻型010");

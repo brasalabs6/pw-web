@@ -201,7 +201,7 @@ bool AUILuaManager::DealWindowsMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return results[0].GetBool();
 	else
 	{
-		AUI_ReportError("%s:OnEventMap message %d no return value!", m_szName, uMsg);
+		AUI_ReportError("%s:OnEventMap message %d no return value!", (const char*)m_szName, uMsg);
 	}
 	
 // 	return true;

@@ -7,7 +7,7 @@
 #include <Windows.h>
 
 #include "AUIImeHook.h"
-#include "StdIo.h"
+#include "StdIO.h"
 #include "hashmap.h"
 #include "AString.h"
 
@@ -436,7 +436,9 @@ extern bool g_bHideIme;
 
 void GetComCanVal(ime_str_val* pVal, BOOL bNormMode)
 {
-	__try
+//	SEH is unavailable on the wasm target; the hooked IME queries are safe
+//	(the seam functions fail explicitly), so the defensive __try/__except
+//	wrappers (no-op handlers) are dropped throughout this file.
 	{
 		if (!hwnd_parent) return;
 		_ime_str_val = pVal;
@@ -461,11 +463,6 @@ void GetComCanVal(ime_str_val* pVal, BOOL bNormMode)
 			if (hwnd_can_list && IsWindowVisible(hwnd_can_list)) ::InvalidateRect(hwnd_can_list, NULL, TRUE);
 			if (hwnd_com_list && IsWindowVisible(hwnd_com_list)) ::InvalidateRect(hwnd_com_list, NULL, TRUE);
 		}
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-//		pVal->Clear();
-//		g_bHideIme = false;
 	}
 }
 
@@ -513,7 +510,6 @@ HWND WINAPI MyCreateWindowExA(
 {
 	HWND hRet = 0;
 
-	__try
 	{
 		if( stricmp(lpClassName, "MSCandUIWindow_Candidate") != 0 )
 		{
@@ -537,9 +533,6 @@ HWND WINAPI MyCreateWindowExA(
 			lpParam);
 		*CreateWindowExA_Entry = CreateWindowExA_Entry_Content_New;
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-	}
 
 	return hRet;
 }
@@ -560,7 +553,6 @@ HWND WINAPI MyCreateWindowExW(
 {
 	HWND hRet = 0;
 
-	__try
 	{
 		if( a_stricmp(lpClassName, _AL("MSCandUIWindow_Candidate")) != 0 )
 		{
@@ -585,9 +577,6 @@ HWND WINAPI MyCreateWindowExW(
 
 		*CreateWindowExW_Entry = CreateWindowExW_Entry_Content_New;
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-	}
 
 	return hRet;
 }
@@ -603,7 +592,6 @@ BOOL WINAPI MySetWindowPos(
 {
 	BOOL bRet = FALSE;
 
-	__try
 	{
 		char szClassName[50];
 		::GetClassNameA(hWnd, szClassName, 50);
@@ -636,9 +624,6 @@ BOOL WINAPI MySetWindowPos(
 		bRet = SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 		*SetWindowPos_Entry = SetWindowPos_Entry_Content_New;
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-	}
 
 	return bRet;
 }
@@ -646,7 +631,6 @@ BOOL WINAPI MySetWindowPos(
 BOOL WINAPI MyTextOutA(HDC hDC, int nx, int ny, LPCSTR lp, int cb) 
 {
 	BOOL bShowText = TRUE, bRet = TRUE;
-	__try
 	{
 		if (hDC == hdc_can_list || hDC == hdc_com_list)
 		{
@@ -665,9 +649,6 @@ BOOL WINAPI MyTextOutA(HDC hDC, int nx, int ny, LPCSTR lp, int cb)
 			*TextOutA_Entry = TextOutA_Entry_Content_New;
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-	}
 	return bRet;
 }
 
@@ -682,7 +663,6 @@ BOOL WINAPI MyExtTextOutW(
 	CONST INT *dx)
 {
 	BOOL bShowText = TRUE, bRet = TRUE;
-	__try
 	{
 		if (hDC == hdc_can_list || hDC == hdc_com_list)
 		{
@@ -709,9 +689,6 @@ BOOL WINAPI MyExtTextOutW(
 			*ExtTextOutW_Entry = ExtTextOutW_Entry_Content_New;
 		}
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-	}
 	return bRet;
 }
 
@@ -719,7 +696,6 @@ HDC WINAPI MyCreateCompatibleDC(HDC hDC)
 {
 	HDC hRet = 0;
 
-	__try
 	{
 		*CreateCompatibleDC_Entry = CreateCompatibleDC_Entry_Content;
 		hRet = CreateCompatibleDC(hDC);
@@ -734,9 +710,6 @@ HDC WINAPI MyCreateCompatibleDC(HDC hDC)
 			if (ime_type == enumZNCQ && hWndIme == hwnd_status)
 				hdc_zncq = hDC;
 		}
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
 	}
 
 	return hRet;

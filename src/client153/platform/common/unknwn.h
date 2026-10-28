@@ -20,6 +20,10 @@
 #define STDMETHOD_(type, method) virtual type method
 #define STDMETHODIMP HRESULT STDMETHODCALLTYPE
 #define STDMETHODIMP_(type) type STDMETHODCALLTYPE
+//	STDAPI/STDAPI_: the free-function forms (the seam's __stdcall is
+//	empty; the linkage is the caller's, like STDMETHODIMP above).
+#define STDAPI HRESULT
+#define STDAPI_(type) type
 #define PURE = 0
 #define __stdcall
 #define STDMETHODCALLTYPE
@@ -41,10 +45,25 @@ inline bool IsEqualGUID(const GUID &a, const GUID &b) {
 
 //	The interface comparison: riid arrives as the seam's REFIID (const
 //	void* to the GUID bytes); the __uuidof operand yields a GUID
-//	reference.
+//	reference; the byte-array accessors yield const void*.
 inline bool IsEqualIID(const void *riid, const GUID &iid) {
   return riid && IsEqualGUID(*static_cast<const GUID *>(riid), iid);
 }
+inline bool IsEqualIID(const void *a, const void *b) {
+  return a && b && std::memcmp(a, b, 16) == 0;
+}
+inline bool IsEqualIID(const GUID &a, const GUID &b) {
+  return IsEqualGUID(a, b);
+}
+inline bool operator==(const GUID &a, const GUID &b) {
+  return IsEqualGUID(a, b);
+}
+inline bool operator!=(const GUID &a, const GUID &b) {
+  return !IsEqualGUID(a, b);
+}
+
+//	The null GUID (the documented all-zero id).
+inline const GUID GUID_NULL = {};
 
 //	The COM uuid attribute: the __uuidof operator needs it; it exists
 //	only under MSVC or clang's -fms-extensions (the game probe builds);
@@ -71,5 +90,28 @@ struct PW153_COM_UUID("{00000000-0000-0000-C000-000000000046}") IUnknown {
   virtual ULONG AddRef() = 0;
   virtual ULONG Release() = 0;
 };
+
+//	The COM reference types (the seam's REFIID/REFCLSID are the opaque
+//	pointer forms; the interface ids are byte layouts behind them).
+typedef const void *REFIID;
+typedef const void *REFCLSID;
+typedef const GUID &REFGUID;
+
+//	The MIDL interface declaration macro (the uuid-carrying struct
+//	declaration the generated COM headers use).
+#define MIDL_INTERFACE(uuidText) struct PW153_COM_UUID(uuidText)
+#define DECLSPEC_UUID(uuidText) PW153_COM_UUID(uuidText)
+
+//	The COM identifier types (the documented forms: CLSID/IID are GUIDs).
+typedef GUID CLSID;
+typedef GUID IID;
+
+//	IUnknown's interface id (the documented bytes).
+inline const void *IID_IUnknown() {
+  static const unsigned char id[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0xc0, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0x00, 0x46};
+  return id;
+}
 
 #endif // PW153_PLATFORM_UNKNWN_H

@@ -314,3 +314,72 @@ int a_MultiByteToWideChar(int iCodePage, const char* szMultiByte, int iMultiByte
 	(void)iCodePage;	//	the port always converts UTF-8 to UTF-16.
 	return a_MultiByteToWideChar(szMultiByte, iMultiByte, wszWideChar, iWideChar);
 }
+
+/*	Memory statistics: the custom memory manager is not ported (a_malloc
+	maps to the platform allocator), so the size statistics report the
+	real process heap (the sbrk growth since the first query) and the
+	custom allocator's slot/alloc counters report zero - the debug
+	display's documented limitation on this target.
+*/
+
+#include <unistd.h>	//	sbrk.
+
+static int a_MemoryHeapBaseline()
+{
+	static const int baseline = static_cast<int>(reinterpret_cast<std::uintptr_t>(sbrk(0)));
+	return baseline;
+}
+
+int a_GetMemCurSize()
+{
+	return static_cast<int>(reinterpret_cast<std::uintptr_t>(sbrk(0))) - a_MemoryHeapBaseline();
+}
+
+int a_GetMemPeakSize()
+{
+	static int iPeak = 0;
+	const int iCurrent = a_GetMemCurSize();
+	if (iCurrent > iPeak) iPeak = iCurrent;
+	return iPeak;
+}
+
+int a_GetMemRawSize()
+{
+	return a_GetMemCurSize();
+}
+
+DWORD a_GetMemAllocCounter()
+{
+	return 0;	//	no allocation counting without the custom allocator.
+}
+
+void a_GetSmallMemInfo(int iSlot, int* piBlkSize, int* piBlkCnt, int* piFreeCnt)
+{
+	(void)iSlot;
+	if (piBlkSize) *piBlkSize = 0;
+	if (piBlkCnt) *piBlkCnt = 0;
+	if (piFreeCnt) *piFreeCnt = 0;
+}
+
+void a_GetLargeMemInfo(int* piBlkCnt, int* piAllocSize)
+{
+	if (piBlkCnt) *piBlkCnt = 0;
+	if (piAllocSize) *piAllocSize = 0;
+}
+
+void a_MemGarbageCollectAuto()
+{
+	//	The platform allocator manages its own reclamation.
+}
+
+void a_MemGarbageCollectAll()
+{
+	//	The platform allocator manages its own reclamation.
+}
+
+void a_ExportMemLog(const char* szPath)
+{
+	//	The custom allocator's log does not exist on this target; the
+	//	export writes nothing.
+	(void)szPath;
+}

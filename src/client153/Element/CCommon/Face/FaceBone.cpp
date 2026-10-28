@@ -49,7 +49,8 @@ void CFaceBone::Translate(A3DVECTOR3& v)
 }
 
 // Rotate bone
-void CFaceBone::Rotate(A3DVECTOR3& vPos, A3DVECTOR3& vRad)
+//	MSVC bound the temporary to the non-const reference; the standard form.
+void CFaceBone::Rotate(A3DVECTOR3& vPos, const A3DVECTOR3& vRad)
 {
 	A3DMATRIX4 m;
 
@@ -128,7 +129,8 @@ void CFaceBone::Update(bool bSaveShape, int nTransTime)
 	// For face editor, the correct position is as following.
 //	SetPos(m_pBone->GetAbsoluteTM().GetRow(3));//GetPos());
 	// For element(game), the following is correct.
-	SetPos(m_pBone->GetRelativeTM().GetRow(3));
+	A3DVECTOR3 vBonePos = m_pBone->GetRelativeTM().GetRow(3);	//	MSVC bound this temporary to a non-const reference.
+	SetPos(vBonePos);
 
 	SetScale(vScale.x);
 
@@ -302,7 +304,8 @@ void CFaceBone::Add(const A3DMATRIX4* mats, const float* weights, int nNumMat, i
 
 	// Store the new parameters
 	SetTransformMatrix(mt);
-	SetPos(m_pBone->GetRelativeTM().GetRow(3));
+	A3DVECTOR3 vBonePos = m_pBone->GetRelativeTM().GetRow(3);	//	MSVC bound this temporary to a non-const reference.
+	SetPos(vBonePos);
 	SetScale(vScale.x);
 
 }

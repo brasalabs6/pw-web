@@ -253,7 +253,7 @@ bool AUIProgress::InitXML(A3DEngine *pA3DEngine, A3DDevice *pA3DDevice, AXMLItem
 		{
 			if(AUI_IsLogEnabled())
 			{
-				a_LogOutput(1, "AUIProgress::InitXML, Failed to change texture %s or %s", m_strPosBgImage, m_strPosImage);
+				a_LogOutput(1, "AUIProgress::InitXML, Failed to change texture %s or %s", (const char*)m_strPosBgImage, (const char*)m_strPosImage);
 			}
 			return true;
 		}

@@ -73,7 +73,8 @@ public:
 	// Translate bone
 	bool TranslateBone(A3DVECTOR3& vector, bool bUpdate, bool bHalfFace);
 	// Rotate bone
-	bool RotateBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate, bool bHalfFace);
+//	MSVC bound the temporary to the non-const reference; the standard form.
+	bool RotateBone(const A3DVECTOR3& v, CENTERTYPE type, bool bUpdate, bool bHalfFace);
 	// Scale bone
 	bool ScaleBone(A3DVECTOR3& v, CENTERTYPE type, bool bUpdate, bool bHalfFace);
 	// Update bone

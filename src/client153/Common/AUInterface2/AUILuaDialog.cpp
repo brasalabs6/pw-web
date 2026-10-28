@@ -222,7 +222,7 @@ bool AUILuaDialog::OnEventMap(UINT uMsg, WPARAM wParam, LPARAM lParam, PAUIOBJEC
 		return results[0].GetBool();
 	else
 	{
-		AUI_ReportError("%s:OnEventMap message %d no return value!", m_szName, uMsg);
+		AUI_ReportError("%s:OnEventMap message %d no return value!", (const char*)m_szName, uMsg);
 	}
 	
 	return false;
@@ -248,7 +248,7 @@ bool AUILuaDialog::OnCommandMap(const char *szCommand)
 		return results[0].GetBool();
 	else
 	{
-		AUI_ReportError("%s:OnEventMap message %d no return value!", m_szName, szCommand);
+		AUI_ReportError("%s:OnEventMap message %d no return value!", (const char*)m_szName, szCommand);
 	}
 	
 	return true;

@@ -10,6 +10,12 @@
 * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.	
 */
 
+//	The original AUInterface_2.2.vcproj built this library with _ANGELICA2
+//	defined; the legacy branches target an older engine SDK (A3DRenderTarget
+//	::RTFMT/ApplyToDevice/WithdrawFromDevice) absent from this tree, so the
+//	_ANGELICA2 branch is taken here.
+#define _ANGELICA2 1
+
 #include "AUI.h"
 
 #include "UIRenderTarget.h"

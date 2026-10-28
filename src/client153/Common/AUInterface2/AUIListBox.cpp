@@ -18,6 +18,8 @@
 #include "AMemFile.h"
 #include "CSplit.h"
 
+#include <float.h>
+
 #include "AUIDef.h"
 #include "AUICommon.h"
 #include "AUIDialog.h"
@@ -397,7 +399,7 @@ bool AUIListBox::Save(FILE *file)
 
 	ACHAR szFontName[256];
 	a_sprintf(szFontName, _AL("%s###%d###%d###%d###%d"),
-		m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
+		(const wchar_t*)m_szFontName, m_nShadow, m_nOutline, m_bBold, m_bItalic);
 	int idString = m_pParent->AddStringToTable(szFontName);
 	if( idString < 0 ) return false;
 
@@ -418,7 +420,7 @@ bool AUIListBox::Save(FILE *file)
 			fprintf(file, " \"%s\"", m_pA2DSprite[i] ? m_pA2DSprite[i]->GetName() : "");
 	}
 	
-	fprintf(file, " %d \"%s\" %d\n", m_bMultipleSelection, m_strCols, m_nFrameMode);
+	fprintf(file, " %d \"%s\" %d\n", m_bMultipleSelection, (const char*)m_strCols, m_nFrameMode);
 
 	return true;
 }
@@ -1166,7 +1168,7 @@ bool AUIListBox::Render(void)
 				if( m_bAutoWrap )
 				{
 					float fScaleY = min(float(fTextH * m_Item[i].nLines),
-						rcText.bottom - y) / float(m_pA2DSprite[AUILISTBOX_RECT_ITEM]->GetHeight());
+						float(rcText.bottom - y)) / float(m_pA2DSprite[AUILISTBOX_RECT_ITEM]->GetHeight());
 					m_pA2DSprite[AUILISTBOX_RECT_ITEM]->SetScaleY(fScaleY);
 				}
 				else
@@ -1212,7 +1214,7 @@ bool AUIListBox::Render(void)
 					if( m_bAutoWrap )
 					{
 						float fScaleY = min(float(fTextH * m_Item[i].nLines),
-							rcText.bottom - y) / float(m_pA2DSprite[AUILISTBOX_RECT_HILIGHT]->GetHeight());
+							float(rcText.bottom - y)) / float(m_pA2DSprite[AUILISTBOX_RECT_HILIGHT]->GetHeight());
 						m_pA2DSprite[AUILISTBOX_RECT_HILIGHT]->SetScaleY(fScaleY);
 					}
 					else
@@ -1264,12 +1266,12 @@ bool AUIListBox::Render(void)
 					if (m_bRenderHScroll)
 					{
 						int l = max(rcText.left, x - m_nHBarPos);
-						int r = max(rcText.left, l + m_nColWidth[j] * fWindowScale);
-						rc.SetRect(l, y, r, min(y + fTextH * m_Item[i].nLines, rcText.bottom));
+						int r = max(float(rcText.left), l + m_nColWidth[j] * fWindowScale);
+						rc.SetRect(l, y, r, min(y + fTextH * m_Item[i].nLines, float(rcText.bottom)));
 					}
 					else
 					{
-						rc.SetRect(x, y, x + m_nColWidth[j] * fWindowScale, min(y + fTextH * m_Item[i].nLines, rcText.bottom));
+						rc.SetRect(x, y, x + m_nColWidth[j] * fWindowScale, min(y + fTextH * m_Item[i].nLines, float(rcText.bottom)));
 					}
 
 					if( m_nColAlign[j] != AUIFRAME_ALIGN_LEFT || m_nAlign != AUIFRAME_ALIGN_TOP )

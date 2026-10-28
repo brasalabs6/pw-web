@@ -31,8 +31,8 @@ AUICustomize::~AUICustomize()
 
 bool AUICustomize::Save(FILE *file)
 {
-	fprintf(file, "%s \"%s\" \"%s\" \"%s\" %d %d %d %d", m_szObjectType, m_szName,
-		m_strCommand, m_strSound, m_x, m_y, m_nWidth, m_nHeight);
+	fprintf(file, "%s \"%s\" \"%s\" \"%s\" %d %d %d %d", (const char*)m_szObjectType, (const char*)m_szName,
+		(const char*)m_strCommand, (const char*)m_strSound, m_x, m_y, m_nWidth, m_nHeight);
 
 	return true;
 }
