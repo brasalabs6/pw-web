@@ -398,6 +398,13 @@ if(EMSCRIPTEN)
     Element/CFWEditorLib/FWState.cpp
     Element/CFWEditorLib/FWDialogBase.cpp
     Element/CFWEditorLib/FWOutterProperty.cpp
+    Element/CFWEditorLib/FWAUIManager.cpp
+    Element/CFWEditorLib/FWCommandList.cpp
+    Element/CFWEditorLib/FWFormulaList.cpp
+    Element/CFWEditorLib/FWGfxWithModifier.cpp
+    Element/CFWEditorLib/FWGlyphComposite.cpp
+    Element/CFWEditorLib/FWFirework.cpp
+    Element/CFWEditorLib/FWStream.cpp
     Element/CFWEditorLib/FWRuntimeClass.cpp
     Element/CFWEditorLib/FWAlgorithm.cpp
     Element/CFWEditorLib/FWGlyphRectBase.cpp

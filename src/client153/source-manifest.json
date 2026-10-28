@@ -7,6 +7,70 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWAUIManager.cpp",
+      "sha256": "321ad7b9ebf15dfc14d9bcd00f2aa0c8c3c7ed7841a04d21df2f0dc43bc13386"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWCommandList.cpp",
+      "sha256": "d78bc3443af92be87668e21cd5ef0c9e12b21bf7c15dd6ca822c9454b090c0fa"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogMain.h",
+      "sha256": "48991494e07cce6b820b0f0c501d099c563a2758472813d5c029a9a528d5c3ee"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogParam.h",
+      "sha256": "ef999c1b2304046392939fc43c93b34a6585ecc35195d6b6c6acc60da7334b06"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogPlay.h",
+      "sha256": "8df3ae092bb54e1d33e5c323a136bb9e1aebeb05afa37b0df4487e80ba0a4fc9"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogScale.h",
+      "sha256": "f09780fa16f369c601ffeeb51cf10e5dc10910e2992bbc972ae385cfec64e25c"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWDialogTool.h",
+      "sha256": "74c2918ecb92fd87c7325da7cfa5b66c464d32f368c2ea4dbb2c2bb4b6146381"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFirework.cpp",
+      "sha256": "f3d3e115a56035b26a0d2d641709b8d775a7e3d6f6ec81d23e39af86d82d82b8"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFormula.h",
+      "sha256": "a26491e40ee72d9973120539f1a0825e1285b0faeeb76f1947b0388d517a81d0"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFormulaElement.h",
+      "sha256": "bbf3af8297013a478c222cdbc6661401d29c5158d8a18b973361089ad70a0be5"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWFormulaList.cpp",
+      "sha256": "b8913d85ed27d4ab22c09772476ea868598def281185cebff4f006f931040bbf"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGfxWithModifier.cpp",
+      "sha256": "a37a6908487a8a4d56ddfc60e2be5480d64e129ffd64b3641058e60f9431fe83"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphComposite.cpp",
+      "sha256": "222deccb5670f67a3b4b8a0b603b255b332a3012ecb85f4c12ea7e58d438cec2"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWGlyphComposite.h",
+      "sha256": "a2c9d8b9ef5cff39e4cb429075a7a11bf0f7efd0ba35675ad2086eaf7935bbf3"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWOperand.h",
+      "sha256": "ee567842b1ae7a3c81a71789f4095651ce214e921017db11abe92e359f257100"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWStream.cpp",
+      "sha256": "2452be373d2a531547fa9edd490e7aed5fbf7e9a75394cd3475d1c36ad50cc10"
+    },
+    {
       "path": "Element/CFWEditorLib/FWGlyphGraphBase.cpp",
       "sha256": "9f1bfb38ebceb9e90baf59d66b9a1775d5c95bb09af16ed219b54a7121c30784"
     },
