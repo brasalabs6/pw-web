@@ -36,7 +36,8 @@ bool CDlgWikiNPCList::Release()
 void CDlgWikiNPCList::SetNPCProvider(const WikiNPCEssenceProvider* pData, bool isAutoSelectNearest)
 {
 	SetContentProvider(pData);
-	SetSearchCommand(!pData ? NULL : &WikiSearchAll());
+	WikiSearchAll searchAll;
+	SetSearchCommand(pData ? &searchAll : NULL);
 	m_isAutoSelectNearest = isAutoSelectNearest;
 }
 

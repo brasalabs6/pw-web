@@ -676,3 +676,13 @@ O probe individual gerou objeto em diretório temporário separado durante a
 campanha completa; os 11 testes do probe passaram. Essa compilação não prova
 a operação do mapa em runtime. A campanha completa iniciou antes da alteração,
 portanto seu relatório deve registrar essa unidade como snapshot anterior.
+
+Probe completo local concluído no snapshot iniciado antes dos commits de
+largura e mapa: 688/787 unidades do jogo e 46/46 AUI compilaram. Depois,
+`ElementClient.cpp` e `DlgCountryMapSub.cpp` foram compilados separadamente
+no estado corrigido; `DlgWikiNPCList.cpp` também passou ao substituir o
+endereço de temporário por variável local, preservando a clonagem síncrona de
+`WikiSearcher::SetSearchCommand`. Com bibliotecas reconstruídas, o link
+local de 778 objetos e nove bibliotecas falhou com 4.401 ocorrências de
+referências indefinidas. Testes do probe: 11/11. Isso não prova jogo, UI ou
+rede em execução.
