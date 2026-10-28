@@ -3607,6 +3607,72 @@ inline int GetDIBits(HDC hDC, HBITMAP hBitmap, UINT start, UINT lines,
   (void)bits; (void)info; (void)usage;
   return 0;
 }
+
+//	The GDI font/text-metric surface: no GDI target exists on the
+//	browser target (the browser IME adapter owns the real font
+//	selection). Font creation and the DIB section report none, the
+//	mapping-mode change reports failure and the extent probe zeroes
+//	its record and reports none - the font manager's Init fails on
+//	the memory DC and its callers' error paths handle it.
+#define MM_TEXT 1
+#define FW_NORMAL 400
+#define FW_BOLD 700
+#define OUT_DEFAULT_PRECIS 0
+#define CLIP_DEFAULT_PRECIS 0
+#define ANTIALIASED_QUALITY 4
+#define VARIABLE_PITCH 2
+inline HFONT CreateFontW(int height, int width, int escapement,
+                         int orientation, DWORD weight, DWORD italic,
+                         DWORD underline, DWORD strikeOut, DWORD charset,
+                         DWORD outPrecision, DWORD clipPrecision,
+                         DWORD quality, DWORD pitchAndFamily,
+                         const wchar_t *faceName) {
+  (void)height; (void)width; (void)escapement; (void)orientation;
+  (void)weight; (void)italic; (void)underline; (void)strikeOut;
+  (void)charset; (void)outPrecision; (void)clipPrecision; (void)quality;
+  (void)pitchAndFamily; (void)faceName;
+  return NULL;
+}
+//	The UNICODE build maps the unprefixed text GDI to the W forms.
+inline HFONT CreateFont(int height, int width, int escapement,
+                        int orientation, DWORD weight, DWORD italic,
+                        DWORD underline, DWORD strikeOut, DWORD charset,
+                        DWORD outPrecision, DWORD clipPrecision,
+                        DWORD quality, DWORD pitchAndFamily,
+                        const wchar_t *faceName) {
+  return CreateFontW(height, width, escapement, orientation, weight, italic,
+                     underline, strikeOut, charset, outPrecision,
+                     clipPrecision, quality, pitchAndFamily, faceName);
+}
+inline HBITMAP CreateDIBSection(HDC hDC, const BITMAPINFO *info, UINT usage,
+                                void **bits, HANDLE section, DWORD offset) {
+  (void)hDC; (void)info; (void)usage; (void)section; (void)offset;
+  if (bits)
+    *bits = NULL;
+  return NULL;
+}
+inline int SetMapMode(HDC hDC, int mode) {
+  (void)hDC;
+  (void)mode;
+  return 0;
+}
+inline BOOL GetTextExtentPoint32W(HDC hDC, const wchar_t *text, int count,
+                                  SIZE *size) {
+  (void)hDC; (void)text; (void)count;
+  if (size) {
+    size->cx = 0;
+    size->cy = 0;
+  }
+  return FALSE;
+}
+inline BOOL GetTextExtentPoint32(HDC hDC, const wchar_t *text, int count,
+                                 SIZE *size) {
+  return GetTextExtentPoint32W(hDC, text, count, size);
+}
+inline BOOL DeleteDC(HDC hDC) {
+  (void)hDC;
+  return TRUE;	//	no real DC objects exist (the creator fails first).
+}
 inline COLORREF GetSysColor(int index) { (void)index; return 0; }
 
 // Global memory: the heap is the C library; the GDI capture never reaches
