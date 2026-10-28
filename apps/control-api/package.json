@@ -1,0 +1,11 @@
+{
+  "name": "@pw/control-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"dev": "tsx watch src/server.ts", "start": "tsx src/server.ts"},
+  "dependencies": {
+    "@pw/contracts": "*", "@pw/database": "*",
+    "hono": "^4.10.0", "@hono/node-server": "^1.19.0"
+  }
+}
