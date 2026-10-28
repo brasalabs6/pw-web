@@ -185,6 +185,15 @@ struct RECT {
 typedef RECT *LPRECT;
 typedef RECT *PRECT;
 typedef const RECT *LPCRECT;
+//	The rectangle setter (the documented user32 contract: assigns the
+//	fields and returns TRUE).
+inline BOOL SetRect(LPRECT rect, int left, int top, int right, int bottom) {
+  rect->left = left;
+  rect->top = top;
+  rect->right = right;
+  rect->bottom = bottom;
+  return TRUE;
+}
 inline BOOL IntersectRect(LPRECT out, LPCRECT a, LPCRECT b) {
   const RECT overlap{std::max(a->left, b->left), std::max(a->top, b->top),
                      std::min(a->right, b->right), std::min(a->bottom, b->bottom)};
@@ -723,8 +732,11 @@ typedef BYTE byte;
 #define IDNO 7
 #define IDOK 1
 #define IDCANCEL 2
+//	The DllMain reason codes (the documented WinBase values; the original
+//	DllMain switches on all four, so they must stay distinct).
 #define DLL_PROCESS_ATTACH 1
-#define DLL_THREAD_DETACH 0
+#define DLL_THREAD_ATTACH 2
+#define DLL_THREAD_DETACH 3
 #define DLL_PROCESS_DETACH 0
 
 //	Critical section init/enter/leave come from criticalsection.h; the
