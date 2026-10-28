@@ -21,3 +21,10 @@ test('game ticket is single-use',()=>{
  assert.match(api,/consumed_at IS NULL/);
  assert.match(api,/loginAndEnterWorldPassed/);
 });
+
+test('switching realms cancels in-flight version update and ignores stale progress',()=>{
+ const shell=readFileSync('apps/shell/src/App.tsx','utf8');
+ assert.match(shell,/inflight\.current\?\.abort\(\)/);
+ assert.match(shell,/if\(request!==generation\.current\)return/);
+ assert.match(shell,/signal:abort\.signal/);
+});

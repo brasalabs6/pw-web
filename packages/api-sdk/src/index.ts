@@ -31,9 +31,9 @@ export class PwApi {
   }
   register(email:string,password:string,displayName:string){return this.request<{user:AuthUser}>('/v1/auth/register',{method:'POST',body:JSON.stringify({email,password,displayName})})}
   logout(){return this.request<{ok:boolean}>('/v1/auth/logout',{method:'POST'})}
-  async resolveRelease(realmId:string){
+  async resolveRelease(realmId:string,signal?:AbortSignal){
     const data=await this.request<{release:LaunchRelease}>('/v1/launcher/releases',{
-      method:'POST',body:JSON.stringify({realmId,channel:'stable'})});
+      method:'POST',body:JSON.stringify({realmId,channel:'stable'}),signal});
     return {release:launchReleaseSchema.parse(data.release)};
   }
   async launch(realmId:string,expectedPairingId:string,expectedClientDigest:string){
