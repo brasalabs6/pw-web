@@ -18,7 +18,7 @@ add_library(client153_platform STATIC platform/common/clock.cpp platform/common/
 target_include_directories(client153_platform PUBLIC platform/common)
 target_include_directories(client153_platform PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
-target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic)
+target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic -Wno-template-body)
 add_library(client153_common STATIC
   Angelica2/AngelicaCommon/Source/AWString.cpp
   Angelica2/AngelicaCommon/Source/AString.cpp
@@ -32,7 +32,7 @@ target_include_directories(client153_common PUBLIC Angelica2/AngelicaCommon/Head
 target_compile_features(client153_common PUBLIC cxx_std_17)
 #	The original debug-new pattern (#define new A_DEBUG_NEW) hides a keyword;
 #	clang flags it where GCC does not.
-target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
+target_compile_options(client153_common PRIVATE -Wall -Wextra -Werror -pedantic -Wno-template-body "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 if(EMSCRIPTEN)
   target_compile_options(client153_platform PUBLIC -fexceptions)
   target_link_options(client153_platform INTERFACE -fexceptions)
@@ -114,6 +114,7 @@ if(EMSCRIPTEN)
     Angelica2/AngelicaCommon/Source/ARandomGen.cpp
     Angelica2/AngelicaFile/Source/AFileUnicode.cpp
     Angelica2/AngelicaFile/Source/AMemFile.cpp
+    Angelica2/AngelicaMedia/Source/AMVideoClip.cpp
     Angelica2/AngelicaMedia/Source/AMSoundStream.cpp
     Angelica2/AngelicaMedia/Source/AMVideoEngine.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBuffer.cpp
@@ -388,7 +389,7 @@ add_library(client153_formats STATIC
   Angelica2/Angelica3D/port/ski.cpp)
 target_include_directories(client153_formats PUBLIC Angelica2/Angelica3D/port)
 target_compile_features(client153_formats PUBLIC cxx_std_17)
-target_compile_options(client153_formats PRIVATE -Wall -Wextra -Werror -pedantic)
+target_compile_options(client153_formats PRIVATE -Wall -Wextra -Werror -pedantic -Wno-template-body)
 if(EMSCRIPTEN)
   target_compile_options(client153_formats PUBLIC -fexceptions)
   target_link_options(client153_formats INTERFACE -fexceptions)
@@ -396,7 +397,7 @@ if(EMSCRIPTEN)
   target_compile_features(client153_webgl_caps PUBLIC cxx_std_17)
   add_executable(client153 platform/web/runtime.cpp)
   target_link_libraries(client153 PRIVATE client153_formats client153_file client153_math client153_webgl_caps)
-  target_compile_options(client153 PRIVATE -Wall -Wextra -Werror)
+  target_compile_options(client153 PRIVATE -Wall -Wextra -Werror -Wno-template-body)
   set_target_properties(client153 PROPERTIES CXX_EXTENSIONS ON)
   target_link_options(client153 PRIVATE
     --no-entry
@@ -427,20 +428,20 @@ target_link_libraries(client153_file PUBLIC client153_common client153_platform)
 target_link_libraries(client153_file PUBLIC ${PW153_ZLIB_LINK})
 #	Some legacy path operations still require review for truncation; keep
 #	the GCC diagnostic visible while porting those call sites.
-target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic "$<$<CXX_COMPILER_ID:GNU>:-Wno-error=format-truncation>" "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
+target_compile_options(client153_file PRIVATE -Wall -Wextra -Werror -pedantic -Wno-template-body "$<$<CXX_COMPILER_ID:GNU>:-Wno-error=format-truncation>" "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-error=keyword-macro>")
 
 # Original matrix/vector unions retain MSVC anonymous-struct layout.
 add_library(client153_math STATIC Angelica2/Angelica3D/Source/A3DMatrix.cpp Angelica2/Angelica3D/Source/A3DQuaternion.cpp)
 target_link_libraries(client153_math PUBLIC client153_common)
 target_include_directories(client153_math PUBLIC Angelica2/Angelica3D/Header)
 target_compile_features(client153_math PUBLIC cxx_std_17)
-target_compile_options(client153_math PRIVATE -Wall -Wextra -Werror)
+target_compile_options(client153_math PRIVATE -Wall -Wextra -Werror -Wno-template-body)
 
 set_target_properties(client153_math PROPERTIES CXX_EXTENSIONS ON)
 
 add_library(client153_animation STATIC Angelica2/Angelica3D/Source/A3DTrackData.cpp)
 target_link_libraries(client153_animation PUBLIC client153_math client153_file)
-target_compile_options(client153_animation PRIVATE -Wall -Wextra -Werror)
+target_compile_options(client153_animation PRIVATE -Wall -Wextra -Werror -Wno-template-body)
 
 target_sources(client153_math PRIVATE
   Angelica2/Angelica3D/Header/A3DObject.h
@@ -472,7 +473,7 @@ set_target_properties(client153_skeleton PROPERTIES CXX_EXTENSIONS ON)
 
 add_library(client153_skinning STATIC Angelica2/Angelica3D/port/skin_binding.cpp Angelica2/Angelica3D/port/animated_skin.cpp)
 target_link_libraries(client153_skinning PUBLIC client153_skeleton client153_formats)
-target_compile_options(client153_skinning PRIVATE -Wall -Wextra -Werror)
+target_compile_options(client153_skinning PRIVATE -Wall -Wextra -Werror -Wno-template-body)
 
 # Diagnostic only: attempt to link all currently compiled original engine and
 # UI objects. Unresolved symbols fail the target; this is not a game binary.

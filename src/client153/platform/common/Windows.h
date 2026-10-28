@@ -106,6 +106,9 @@ typedef BYTE *PBYTE;
 typedef DWORD *LPDWORD;
 typedef DWORD *PDWORD;
 typedef LONG *PLONG;
+//	The pointer-to-BOOL form (the documented winnt.h type; the vendored
+//	DirectShow SDK headers pass it, e.g. videoctl.h's vertical-blank query).
+typedef BOOL *LPBOOL;
 typedef const char *PSZ;
 
 typedef const char *PCSZ;
@@ -827,27 +830,13 @@ typedef LARGE_INTEGER *PLARGE_INTEGER;
 #define INFINITE 0xFFFFFFFFu
 #define GENERIC_READ 0x80000000u
 
-//	The MSVC source-annotation macros: the vendored DirectShow SDK headers
-//	(amfilter.h, outputq.h, winctrl.h, winutil.h, transip.h, source.h,
-//	renbase.h) annotate parameters with them. They are annotation-only
-//	(empty under MSVC too, via sal.h) — empty definitions preserve the
-//	declarations exactly.
-#define __in
-#define __in_opt
-#define __in_bcount(size)
-#define __in_bcount_opt(size)
-#define __in_ecount(size)
-#define __out
-#define __out_opt
-#define __out_bcount(size)
-#define __out_bcount_part(size, count)
-#define __out_ecount(size)
-#define __out_ecount_part(size, count)
-#define __inout
-#define __inout_opt
-#define __deref_out
-#define __field_ecount_opt(size)
-#define __range(min, max)
+//	The documented winnt.h direction annotations (the base-class headers
+//	annotate with them). The SAL parameter-annotation set itself lives in
+//	the strmif.h seam: this umbrella is included before the C++ standard
+//	headers in the native test builds, and GCC 16's libstdc++ uses the
+//	__in/__out identifiers as structured-binding names.
+#define IN
+#define OUT
 
 //	The DirectShow owner-window handle (the documented OAHWND is a
 //	LONG_PTR; the vendored DirectShow SDK headers use it).
@@ -2073,6 +2062,59 @@ inline UINT WinExec(const char *commandLine, UINT showCmd) {
   return ERROR_FILE_NOT_FOUND;
 }
 
+//	The debugger's named shared-memory IPC (CLuaDebugIPC): a named file
+//	mapping plus named events shared with a separate LuaDebugger process.
+//	A browser page has no second native process and no cross-process
+//	shared memory, so the mapping calls fail explicitly (the caller's
+//	Init error path disables the Lua debugger and the game continues
+//	without it). The named events themselves come from winsync.h.
+#define FILE_MAP_ALL_ACCESS 0x000F001F
+
+inline HANDLE CreateFileMappingW(HANDLE file, void *attributes,
+                                 DWORD protect, DWORD maxSizeHigh,
+                                 DWORD maxSizeLow, const wchar_t *name) {
+  (void)file;
+  (void)attributes;
+  (void)protect;
+  (void)maxSizeHigh;
+  (void)maxSizeLow;
+  (void)name;
+  return NULL;
+}
+inline HANDLE CreateFileMappingA(HANDLE file, void *attributes,
+                                 DWORD protect, DWORD maxSizeHigh,
+                                 DWORD maxSizeLow, const char *name) {
+  (void)name;
+  return CreateFileMappingW(file, attributes, protect, maxSizeHigh,
+                            maxSizeLow, nullptr);
+}
+inline HANDLE CreateFileMapping(HANDLE file, void *attributes,
+                                DWORD protect, DWORD maxSizeHigh,
+                                DWORD maxSizeLow, const wchar_t *name) {
+  return CreateFileMappingW(file, attributes, protect, maxSizeHigh,
+                            maxSizeLow, name);
+}
+
+inline void *MapViewOfFile(HANDLE mapping, DWORD access, DWORD offsetHigh,
+                           DWORD offsetLow, size_t bytes) {
+  (void)mapping;
+  (void)access;
+  (void)offsetHigh;
+  (void)offsetLow;
+  (void)bytes;
+  return NULL;
+}
+inline void *MapViewOfFileEx(HANDLE mapping, DWORD access, DWORD offsetHigh,
+                             DWORD offsetLow, size_t bytes, void *base) {
+  (void)base;
+  return MapViewOfFile(mapping, access, offsetHigh, offsetLow, bytes);
+}
+
+inline BOOL UnmapViewOfFile(const void *base) {
+  (void)base;
+  return FALSE;
+}
+
 //	The OS version: the documented GetVersion encoding for Windows 5.1
 //	build 2600 (the baseline the client targets; LOBYTE(LOWORD) == 5).
 inline DWORD GetVersion() {
@@ -2212,6 +2254,16 @@ inline HRESULT CoInitializeEx(void *reserved, DWORD coInit) {
   (void)coInit;
   return CoInitialize(reserved);
 }
+
+//	The COM class-context flags (the documented CLSCTX values; the media
+//	clip's CoCreateInstance calls pass CLSCTX_INPROC_SERVER).
+#define CLSCTX_INPROC_SERVER 0x1
+#define CLSCTX_INPROC_HANDLER 0x2
+#define CLSCTX_LOCAL_SERVER 0x4
+#define CLSCTX_REMOTE_SERVER 0x10
+#define CLSCTX_SERVER (CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER)
+#define CLSCTX_ALL \
+  (CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER)
 
 //	The direct COM activation: the port's activation registry
 //	(atlcom_registry.cpp) is empty, so the activation fails explicitly
@@ -3171,6 +3223,24 @@ inline float min(float a, float b) { return a < b ? a : b; }
 inline float max(float a, float b) { return a > b ? a : b; }
 inline double min(double a, double b) { return a < b ? a : b; }
 inline double max(double a, double b) { return a > b ? a : b; }
+//	The 64-bit integer forms the original windows.h macro handled for any
+//	type (the port's overload family above reconstructs the macro). LP64's
+//	long/unsigned long already are the 64-bit types, so the guarded pair
+//	completes the family where they are distinct (wasm32, MSVC's LLP64).
+#if !defined(__LP64__)
+inline std::int64_t min(std::int64_t a, std::int64_t b) {
+  return a < b ? a : b;
+}
+inline std::int64_t max(std::int64_t a, std::int64_t b) {
+  return a > b ? a : b;
+}
+inline std::uint64_t min(std::uint64_t a, std::uint64_t b) {
+  return a < b ? a : b;
+}
+inline std::uint64_t max(std::uint64_t a, std::uint64_t b) {
+  return a > b ? a : b;
+}
+#endif
 
 //	The MSVC _snprintf: the documented truncating semantics over the real
 //	std::snprintf (returns the would-be length, always nul-terminates).
@@ -3744,6 +3814,8 @@ inline int CompareStringW(DWORD locale, DWORD flags, const wchar_t *left,
                           int leftLength, const wchar_t *right,
                           int rightLength) {
   (void)locale;
+  (void)flags;
+  (void)flags;
   if (!left || !right)
     return 0;
   std::size_t i = 0;
