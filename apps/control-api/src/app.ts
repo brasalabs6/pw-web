@@ -267,13 +267,21 @@ app.post('/v1/admin/pairings',async c=>{
 app.post('/v1/admin/realms/:id/channels/:name/pin',async c=>{
   const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
   const input=await json(c,patchChannelInput);if(!input)return fail(c,422,'Invalid channel pin');
-  const pair=await db.query('SELECT status FROM pairings WHERE id=$1',[input.pairingId]);
-  if(pair.rows[0]?.status!=='supported')return fail(c,409,'Only proven supported pairings can be pinned');
-  const q=await db.query('UPDATE realm_channels SET pairing_id=$3,revision=revision+1 WHERE realm_id=$1 AND name=$2 AND revision=$4 RETURNING *',
-    [c.req.param('id'),c.req.param('name'),input.pairingId,input.expectedRevision]);
-  if(!q.rowCount)return fail(c,409,'Channel missing or revision changed');
-  await audit(db,u.id,'channel.pin',c.req.param('id'),{channel:c.req.param('name'),pairingId:input.pairingId});
-  return c.json({channel:q.rows[0]});
+  const tx=await db.connect();
+  try{
+    await tx.query('BEGIN');
+    const pair=await tx.query('SELECT status FROM pairings WHERE id=$1',[input.pairingId]);
+    if(pair.rows[0]?.status!=='supported'){
+      await tx.query('ROLLBACK');return fail(c,409,'Only proven supported pairings can be pinned');
+    }
+    const q=await tx.query('UPDATE realm_channels SET pairing_id=$3,revision=revision+1 WHERE realm_id=$1 AND name=$2 AND revision=$4 RETURNING *',
+      [c.req.param('id'),c.req.param('name'),input.pairingId,input.expectedRevision]);
+    if(!q.rowCount){await tx.query('ROLLBACK');return fail(c,409,'Channel missing or revision changed')}
+    await tx.query('INSERT INTO audit_events(actor_id,action,resource,details) VALUES($1,$2,$3,$4)',
+      [u.id,'channel.pin',c.req.param('id'),JSON.stringify({channel:c.req.param('name'),pairingId:input.pairingId})]);
+    await tx.query('COMMIT');
+    return c.json({channel:q.rows[0]});
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
 });
 app.post('/v1/admin/previews',async c=>{
   const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
@@ -337,13 +345,22 @@ app.post('/v1/admin/releases/:kind/:id/status',async c=>{
   if(!table)return fail(c,404,'Unknown release kind');
   const input=await json(c,z.object({status:z.enum(['validated','published','revoked']),evidenceUrl:z.url()}));
   if(!input)return fail(c,422,'Evidence URL and status required');
-  const previous=await db.query('SELECT status FROM '+table+' WHERE id=$1',[c.req.param('id')]);
-  if(!previous.rowCount)return fail(c,404,'Release not found');
-  const allowed:Record<string,string[]>={draft:['validated','revoked'],validated:['published','revoked'],published:['revoked'],revoked:[]};
-  if(!allowed[previous.rows[0].status]?.includes(input.status))return fail(c,409,'Invalid release state transition');
-  const q=await db.query('UPDATE '+table+' SET status=$2 WHERE id=$1 RETURNING *',[c.req.param('id'),input.status]);
-  await audit(db,u.id,'release.'+kind+'.'+input.status,q.rows[0].id,{evidenceUrl:input.evidenceUrl});
-  return c.json({release:q.rows[0]});
+  const tx=await db.connect();
+  try{
+    await tx.query('BEGIN');
+    // Lock row so concurrent publish/revoke operations cannot cross state transitions.
+    const previous=await tx.query('SELECT status FROM '+table+' WHERE id=$1 FOR UPDATE',[c.req.param('id')]);
+    if(!previous.rowCount){await tx.query('ROLLBACK');return fail(c,404,'Release not found')}
+    const allowed:Record<string,string[]>={draft:['validated','revoked'],validated:['published','revoked'],published:['revoked'],revoked:[]};
+    if(!allowed[previous.rows[0].status]?.includes(input.status)){
+      await tx.query('ROLLBACK');return fail(c,409,'Invalid release state transition');
+    }
+    const q=await tx.query('UPDATE '+table+' SET status=$2 WHERE id=$1 RETURNING *',[c.req.param('id'),input.status]);
+    await tx.query('INSERT INTO audit_events(actor_id,action,resource,details) VALUES($1,$2,$3,$4)',
+      [u.id,'release.'+kind+'.'+input.status,q.rows[0].id,JSON.stringify({evidenceUrl:input.evidenceUrl})]);
+    await tx.query('COMMIT');
+    return c.json({release:q.rows[0]});
+  }catch(e){await tx.query('ROLLBACK');throw e}finally{tx.release()}
 });
 // Only a probe authorized by the deployment environment can attest gameplay health.
 // Bearer credential alone must NEVER be enough to mark a world READY.
