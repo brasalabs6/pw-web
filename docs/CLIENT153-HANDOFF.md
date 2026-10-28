@@ -630,3 +630,11 @@ builds nativo e ASan/UBSan: `cmake --build build/client153-native --target
 client153_winsync_semantics_test && ctest --test-dir build/client153-native -R
 '^client153_winsync_semantics$' --output-on-failure`, repetindo com
 `client153-sanitize`. Essa prova não valida pthreads nem DNS no navegador.
+
+`Common/GfxCommon/A3DGFXElement.cpp` original agora integra o alvo
+`client153_gfx_original`: conversões explícitas em varargs e propriedades e
+limites `DWORD` permitem sua compilação WASM. O link diagnóstico deixou de
+relatar as três funções `g_Gfx{Apply,Load,Save}PixelShaderConsts`, mas a nova
+unidade também introduziu dependências ainda não resolvidas (4.867 ocorrências
+no link local com 772 objetos e nove bibliotecas). Build de Gfx e 31 testes
+nativos passaram; estes testes não executam os efeitos ou o jogo no browser.

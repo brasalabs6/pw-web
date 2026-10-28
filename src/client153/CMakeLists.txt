@@ -101,6 +101,7 @@ endif()
 if(EMSCRIPTEN)
   add_library(client153_gfx_original OBJECT EXCLUDE_FROM_ALL
     Common/Output/source/Gfx/A3DGFXEx.cpp
+    Common/Output/source/Gfx/A3DGFXElement.cpp
     Common/Output/source/Gfx/A3DCombinedAction.cpp
     Common/Output/source/Gfx/A3DGFXExMan.cpp
     Common/Output/source/Gfx/EC_Model.cpp

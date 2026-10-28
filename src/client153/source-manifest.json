@@ -8993,6 +8993,10 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DMaterial.cpp",
       "sha256": "29e4bec5b2bbb0e9f8681433277556e9a8db88d8dda002f720c1c5253bdb0734"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXElement.cpp",
+      "sha256": "7e9efb886a84a012974327884b64903f18ad72cf5830043955c806e72e82e7aa"
     }
   ],
   "adaptations": [
