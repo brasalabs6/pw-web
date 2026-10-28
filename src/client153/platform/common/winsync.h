@@ -4,10 +4,13 @@
  * DESCRIPTION: The Win32 synchronization primitives the client uses, with
  * real implementations: events are condition-variable backed flags with
  * auto/manual reset semantics, semaphores are real counting semaphores,
- * threads are std::threads with a completion event for timed joins, and
+ * mutexes track the owning thread with recursive acquisition depth (the
+ * Win32 contract), threads are std::threads whose runtime state is owned
+ * jointly by the handle and the running entry (so closing a running
+ * thread's handle cannot destroy the state the thread still uses), and
  * WaitForSingleObject implements the real wait semantics (WAIT_OBJECT_0 on
- * signal, WAIT_TIMEOUT on timeout). Handles are pointers to these objects;
- * CloseHandle releases them.
+ * signal, WAIT_TIMEOUT on timeout, true infinite waits for INFINITE).
+ * Handles are pointers to these objects; CloseHandle releases them.
  *
  * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.
  */
@@ -20,8 +23,18 @@
 #include <condition_variable>
 #include <cstring>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <thread>
+
+//	The thread id: a real distinct id per thread (the OS id value is
+//	opaque; the port issues stable per-thread ids). Defined before the
+//	sync objects: the mutex tracks its owner by it.
+inline DWORD GetCurrentThreadId() {
+  static std::atomic<DWORD> issued(0);
+  thread_local const DWORD currentId = ++issued;
+  return currentId;
+}
 
 namespace pw153::platform {
 
@@ -30,6 +43,18 @@ struct SyncObject {
   explicit SyncObject(Kind k) : kind(k) {}
   virtual ~SyncObject() = default;
   const Kind kind;
+};
+
+//	The thread's runtime state: owned jointly by the handle object and
+//	the running entry lambda (shared_ptr), so CloseHandle of a running
+//	thread detaches the std::thread and frees the handle while the
+//	entry's state survives until the thread completes (PW23-001).
+struct ThreadState {
+  std::mutex mutex;
+  std::condition_variable cv;
+  bool done = false;
+  bool joined = false;	//	one waiter performs the std::thread join.
+  long exitCode = 0;
 };
 
 struct WinEvent : SyncObject {
@@ -51,12 +76,9 @@ struct WinSemaphore : SyncObject {
 };
 
 struct WinThread : SyncObject {
-  explicit WinThread() : SyncObject(Kind::Thread), done(false) {}
+  explicit WinThread() : SyncObject(Kind::Thread), state(new ThreadState()) {}
+  std::shared_ptr<ThreadState> state;
   std::thread thread;
-  std::mutex mutex;
-  std::condition_variable cv;
-  bool done;
-  long exitCode = 0;
   std::function<void()> pending;	//	CREATE_SUSPENDED threads launch on the first resume.
 };
 
@@ -71,12 +93,23 @@ inline void ResetEventState(WinEvent *event) {
   event->signaled = false;
 }
 
+//	The mutex tracks its owning thread and the recursive acquisition
+//	depth (the Win32 contract: the owner reacquires freely, a foreign
+//	release fails) (PW23-002).
 struct WinMutex : SyncObject {
   explicit WinMutex(bool initialOwned)
-      : SyncObject(Kind::Mutex), owned(initialOwned) {}
+      : SyncObject(Kind::Mutex), owned(false), depth(0), owner(0) {
+    if (initialOwned) {
+      owned = true;
+      depth = 1;
+      owner = ::GetCurrentThreadId();
+    }
+  }
   std::mutex mutex;
   std::condition_variable cv;
   bool owned;
+  unsigned depth;
+  DWORD owner;
 };
 
 //	ExitThread's unwind token: the thread entry wrappers catch it to
@@ -84,6 +117,26 @@ struct WinMutex : SyncObject {
 struct ThreadExit {
   DWORD code;
 };
+
+//	The thread entry body shared by every creation form: runs the start
+//	routine, records the exit code, marks the state done. The state is
+//	owned via the shared_ptr, independent of the handle's lifetime.
+template <class Run>
+std::function<void()> MakeThreadBody(const std::shared_ptr<ThreadState> &state,
+                                     Run &&run) {
+  return [state, run = std::forward<Run>(run)]() {
+    long exitCode = 0;
+    try {
+      exitCode = static_cast<long>(run());
+    } catch (const ThreadExit &ex) {
+      exitCode = static_cast<long>(ex.code);
+    }
+    std::lock_guard<std::mutex> lock(state->mutex);
+    state->exitCode = exitCode;
+    state->done = true;
+    state->cv.notify_all();
+  };
+}
 
 } // namespace pw153::platform
 
@@ -133,15 +186,21 @@ inline HANDLE CreateMutexA(void *attributes, BOOL initialOwner,
   return CreateMutexW(attributes, initialOwner, nullptr);
 }
 
+//	ReleaseMutex: only the owning thread releases; a recursive owner
+//	releases one depth level and the last level wakes the waiters (the
+//	Win32 contract).
 inline BOOL ReleaseMutex(HANDLE handle) {
-  auto *mutex = static_cast<pw153::platform::WinMutex *>(handle);
-  if (!mutex)
+  auto *object = static_cast<pw153::platform::SyncObject *>(handle);
+  if (!object || object->kind != pw153::platform::SyncObject::Kind::Mutex)
     return FALSE;
+  auto *mutex = static_cast<pw153::platform::WinMutex *>(object);
   std::lock_guard<std::mutex> lock(mutex->mutex);
-  if (!mutex->owned)
+  if (!mutex->owned || mutex->owner != GetCurrentThreadId())
     return FALSE;
-  mutex->owned = false;
-  mutex->cv.notify_all();
+  if (--mutex->depth == 0) {
+    mutex->owned = false;
+    mutex->cv.notify_all();
+  }
   return TRUE;
 }
 
@@ -151,6 +210,11 @@ inline HANDLE CreateSemaphoreW(void *attributes, LONG initial, LONG maximum,
   (void)attributes;
   (void)name;
   return new pw153::platform::WinSemaphore(initial, maximum);
+}
+
+inline HANDLE CreateSemaphore(void *attributes, LONG initial, LONG maximum,
+                              const char *name) {
+  return CreateSemaphoreW(attributes, initial, maximum, name);
 }
 
 inline BOOL ReleaseSemaphore(HANDLE handle, LONG count, LONG *previous) {
@@ -168,7 +232,7 @@ inline BOOL ReleaseSemaphore(HANDLE handle, LONG count, LONG *previous) {
   return TRUE;
 }
 
-//	Threads: std::thread with a completion event for the timed-join wait.
+//	Threads: std::thread with a completion state for the timed-join wait.
 #if defined(_MSC_VER)
 typedef unsigned(__stdcall *ThreadStart)(void *);
 #else
@@ -182,75 +246,97 @@ inline HANDLE _beginthreadex(void *security, unsigned stackSize,
   (void)stackSize;
   (void)flags;
   auto *wrapped = new pw153::platform::WinThread();
-  struct Argument {
-    ThreadStart start;
-    void *argument;
-    pw153::platform::WinThread *wrapped;
-  };
-  auto *state = new Argument{start, argument, wrapped};
-  wrapped->thread = std::thread([state]() {
-    long exitCode = 0;
-    try {
-      exitCode = static_cast<long>(state->start(state->argument));
-    } catch (const pw153::platform::ThreadExit &ex) {
-      exitCode = static_cast<long>(ex.code);
-    }
-    std::lock_guard<std::mutex> lock(state->wrapped->mutex);
-    state->wrapped->exitCode = exitCode;
-    state->wrapped->done = true;
-    state->wrapped->cv.notify_all();
-    delete state;
-  });
+  auto body = pw153::platform::MakeThreadBody(
+      wrapped->state, [start, argument]() -> unsigned {
+        return start(argument);
+      });
+  wrapped->thread = std::thread(std::move(body));
   if (threadId)
     *threadId = 0; //\tThread ids are not addressable in this backend.
   return wrapped;
 }
 
-//	WaitForSingleObject: real wait semantics over the tagged objects.
+//	WaitForSingleObject: real wait semantics over the tagged objects;
+//	INFINITE is a true unbounded wait (not a huge timeout).
 inline DWORD WaitForSingleObject(HANDLE handle, DWORD milliseconds) {
   auto *object = static_cast<pw153::platform::SyncObject *>(handle);
   if (!object)
     return WAIT_FAILED;
+  const bool infinite = milliseconds == INFINITE;
   const auto timeout = std::chrono::milliseconds(milliseconds);
   if (object->kind == pw153::platform::SyncObject::Kind::Event) {
     auto *event = static_cast<pw153::platform::WinEvent *>(object);
     std::unique_lock<std::mutex> lock(event->mutex);
     if (event->manualReset) {
-      if (!event->cv.wait_for(lock, timeout,
-                              [&] { return event->signaled; }))
+      if (infinite) {
+        event->cv.wait(lock, [&] { return event->signaled; });
+      } else if (!event->cv.wait_for(lock, timeout,
+                                     [&] { return event->signaled; })) {
         return WAIT_TIMEOUT;
+      }
       return WAIT_OBJECT_0;
     }
     //\tAuto-reset: one waiter consumes the signal.
-    if (!event->cv.wait_for(lock, timeout, [&] { return event->signaled; }))
+    if (infinite) {
+      event->cv.wait(lock, [&] { return event->signaled; });
+    } else if (!event->cv.wait_for(lock, timeout,
+                                   [&] { return event->signaled; })) {
       return WAIT_TIMEOUT;
+    }
     event->signaled = false;
     return WAIT_OBJECT_0;
   }
   if (object->kind == pw153::platform::SyncObject::Kind::Semaphore) {
     auto *semaphore = static_cast<pw153::platform::WinSemaphore *>(object);
     std::unique_lock<std::mutex> lock(semaphore->mutex);
-    if (!semaphore->cv.wait_for(
-            lock, timeout, [&] { return semaphore->count > 0; }))
+    if (infinite) {
+      semaphore->cv.wait(lock, [&] { return semaphore->count > 0; });
+    } else if (!semaphore->cv.wait_for(
+                   lock, timeout, [&] { return semaphore->count > 0; })) {
       return WAIT_TIMEOUT;
+    }
     --semaphore->count;
     return WAIT_OBJECT_0;
   }
   if (object->kind == pw153::platform::SyncObject::Kind::Mutex) {
     auto *mutexObject = static_cast<pw153::platform::WinMutex *>(object);
     std::unique_lock<std::mutex> lock(mutexObject->mutex);
-    if (!mutexObject->cv.wait_for(lock, timeout, [&] { return !mutexObject->owned; }))
+    const DWORD self = GetCurrentThreadId();
+    //\tRecursive acquisition by the owner (the Win32 contract).
+    if (mutexObject->owned && mutexObject->owner == self) {
+      ++mutexObject->depth;
+      return WAIT_OBJECT_0;
+    }
+    if (infinite) {
+      mutexObject->cv.wait(lock, [&] { return !mutexObject->owned; });
+    } else if (!mutexObject->cv.wait_for(
+                   lock, timeout, [&] { return !mutexObject->owned; })) {
       return WAIT_TIMEOUT;
+    }
     mutexObject->owned = true;
+    mutexObject->owner = self;
+    mutexObject->depth = 1;
     return WAIT_OBJECT_0;
   }
   auto *thread = static_cast<pw153::platform::WinThread *>(object);
   {
-    std::unique_lock<std::mutex> lock(thread->mutex);
-    if (!thread->cv.wait_for(lock, timeout, [&] { return thread->done; }))
+    std::unique_lock<std::mutex> lock(thread->state->mutex);
+    if (infinite) {
+      thread->state->cv.wait(lock, [&] { return thread->state->done; });
+    } else if (!thread->state->cv.wait_for(
+                   lock, timeout, [&] { return thread->state->done; })) {
       return WAIT_TIMEOUT;
+    }
   }
-  if (thread->thread.joinable())
+  //	Exactly one waiter joins the std::thread (multiple waiters on the
+  //	same handle all return WAIT_OBJECT_0; a concurrent join is UB).
+  bool joinNeeded = false;
+  {
+    std::lock_guard<std::mutex> lock(thread->state->mutex);
+    joinNeeded = !thread->state->joined;
+    thread->state->joined = true;
+  }
+  if (joinNeeded && thread->thread.joinable())
     thread->thread.join();
   return WAIT_OBJECT_0;
 }
@@ -276,12 +362,15 @@ inline bool PollSignaled(HANDLE handle) {
   case pw153::platform::SyncObject::Kind::Mutex: {
     auto *mutexObject = static_cast<pw153::platform::WinMutex *>(object);
     std::lock_guard<std::mutex> lock(mutexObject->mutex);
-    return !mutexObject->owned;
+    //	Acquirable by this thread: free, or owned by it (the recursive
+    //	acquisition the consume path performs).
+    return !mutexObject->owned ||
+           mutexObject->owner == GetCurrentThreadId();
   }
   case pw153::platform::SyncObject::Kind::Thread: {
     auto *thread = static_cast<pw153::platform::WinThread *>(object);
-    std::lock_guard<std::mutex> lock(thread->mutex);
-    return thread->done;
+    std::lock_guard<std::mutex> lock(thread->state->mutex);
+    return thread->state->done;
   }
   }
   return false;
@@ -323,8 +412,8 @@ inline DWORD WaitForMultipleObjects(DWORD count, const HANDLE *handles,
   return WAIT_TIMEOUT;
 }
 
-//	The thread exit code: the wrapper thread records the start routine's
-//	return; a live thread reports STILL_ACTIVE (the Win32 contract).
+//	The thread exit code: the entry records the start routine's return;
+//	a live thread reports STILL_ACTIVE (the Win32 contract).
 #define STILL_ACTIVE 259
 
 inline BOOL GetExitCodeThread(HANDLE handle, DWORD *code) {
@@ -333,17 +422,11 @@ inline BOOL GetExitCodeThread(HANDLE handle, DWORD *code) {
       object->kind != pw153::platform::SyncObject::Kind::Thread)
     return FALSE;
   auto *thread = static_cast<pw153::platform::WinThread *>(object);
-  std::lock_guard<std::mutex> lock(thread->mutex);
-  *code = thread->done ? static_cast<DWORD>(thread->exitCode) : STILL_ACTIVE;
+  std::lock_guard<std::mutex> lock(thread->state->mutex);
+  *code = thread->state->done
+              ? static_cast<DWORD>(thread->state->exitCode)
+              : STILL_ACTIVE;
   return TRUE;
-}
-
-//	The thread id: a real distinct id per thread (the OS id value is
-//	opaque; the port issues stable per-thread ids).
-inline DWORD GetCurrentThreadId() {
-  static std::atomic<DWORD> issued(0);
-  thread_local const DWORD currentId = ++issued;
-  return currentId;
 }
 
 //	The thread priorities (the documented Win32 values; the browser
@@ -371,7 +454,7 @@ inline DWORD ResumeThread(HANDLE handle) {
   if (!object || object->kind != pw153::platform::SyncObject::Kind::Thread)
     return static_cast<DWORD>(-1);
   auto *thread = static_cast<pw153::platform::WinThread *>(object);
-  std::lock_guard<std::mutex> lock(thread->mutex);
+  std::lock_guard<std::mutex> lock(thread->state->mutex);
   if (thread->pending) {
     auto run = std::move(thread->pending);
     thread->pending = nullptr;
@@ -393,27 +476,13 @@ inline HANDLE CreateThread(void *security, unsigned stackSize, Start start,
   (void)security;
   (void)stackSize;
   auto *wrapped = new pw153::platform::WinThread();
-  struct Argument {
-    Start start;
-    void *argument;
-    pw153::platform::WinThread *wrapped;
-  };
-  auto *state = new Argument{std::move(start), argument, wrapped};
-  auto body = [state]() {
-    long exitCode = 0;
-    try {
-      exitCode = static_cast<long>(state->start(state->argument));
-    } catch (const pw153::platform::ThreadExit &ex) {
-      exitCode = static_cast<long>(ex.code);
-    }
-    std::lock_guard<std::mutex> lock(state->wrapped->mutex);
-    state->wrapped->exitCode = exitCode;
-    state->wrapped->done = true;
-    state->wrapped->cv.notify_all();
-    delete state;
-  };
+  auto body = pw153::platform::MakeThreadBody(
+      wrapped->state,
+      [start = std::move(start), argument]() -> unsigned long {
+        return start(argument);
+      });
   if (creationFlags & CREATE_SUSPENDED) {
-    std::lock_guard<std::mutex> lock(wrapped->mutex);
+    std::lock_guard<std::mutex> lock(wrapped->state->mutex);
     wrapped->pending = std::move(body);
   } else {
     wrapped->thread = std::thread(std::move(body));
@@ -457,7 +526,9 @@ inline BOOL CloseHandle(HANDLE handle) {
   case pw153::platform::SyncObject::Kind::Thread: {
     auto *thread = static_cast<pw153::platform::WinThread *>(object);
     if (thread->thread.joinable()) {
-      //\tClosing a running thread handle detaches it (Win32 semantics).
+      //\tClosing a running thread handle detaches it (Win32 semantics);
+      //\tthe entry's shared state outlives the handle until the thread
+      //\tcompletes (PW23-001).
       thread->thread.detach();
     }
     delete thread;
@@ -466,8 +537,6 @@ inline BOOL CloseHandle(HANDLE handle) {
   }
   return FALSE;
 }
-
-#endif // PW153_PLATFORM_WINSYNC_H
 
 #ifndef CreateMutex
 #define CreateMutex(attributes, initialOwner, name) \
@@ -480,20 +549,13 @@ inline HANDLE _beginthread(void (*start)(void *), unsigned stackSize,
                            void *argument) {
   (void)stackSize;
   auto *wrapped = new pw153::platform::WinThread();
-  struct Argument { void (*start)(void *); void *argument; pw153::platform::WinThread *wrapped; };
-  auto *state = new Argument{start, argument, wrapped};
-  wrapped->thread = std::thread([state]() {
-    long exitCode = 0;
-    try {
-      state->start(state->argument);
-    } catch (const pw153::platform::ThreadExit &ex) {
-      exitCode = static_cast<long>(ex.code);
-    }
-    std::lock_guard<std::mutex> lock(state->wrapped->mutex);
-    state->wrapped->exitCode = exitCode;
-    state->wrapped->done = true;
-    state->wrapped->cv.notify_all();
-    delete state;
-  });
+  auto body = pw153::platform::MakeThreadBody(
+      wrapped->state, [start, argument]() -> unsigned {
+        start(argument);
+        return 0;
+      });
+  wrapped->thread = std::thread(std::move(body));
   return wrapped;
 }
+
+#endif // PW153_PLATFORM_WINSYNC_H
