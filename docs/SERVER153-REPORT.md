@@ -237,6 +237,22 @@ pelo Worker pela camada de mediação (mais forte que um connect local).
 Nota: a conta está no Workers Paid (o Worker usa Durable Object com
 storage SQLite, que a doc exige no plano Paid; o deploy passa).
 
+**Fontes oficiais (modelo de tráfego e APIs)**:
+- Containers — visão geral e modelo de acesso:
+  https://developers.cloudflare.com/containers/ ("Container instances are
+  spun up on-demand and controlled by code you write in your Worker") —
+  clientes não conectam direto ao container; o tráfego passa pelo Worker/DO.
+- Durable Object Container API (`getTcpPort` — o caminho de mediação usado
+  pelo nosso Worker):
+  https://developers.cloudflare.com/containers/api/durable-object-container/
+  ("getTcpPort() returns a TCP port from the container. Use it to
+  communicate with the container over TCP or HTTP.")
+- Workers Runtime APIs (o runtime expõe Fetch, TCP sockets e WebSockets;
+  sem API WebTransport server-side — base do ADR-0006):
+  https://developers.cloudflare.com/workers/runtime-apis/
+- Limits and Instance Types (a instância lite: 1/16 vCPU, 256 MiB, 2 GB):
+  https://developers.cloudflare.com/containers/platform/limits/
+
 ## 7. Reprodução
 
 Ver `scripts/build-server153.sh` (build + pacote) e `scripts/boot-server153.sh`

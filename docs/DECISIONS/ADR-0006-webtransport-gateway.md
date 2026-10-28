@@ -33,15 +33,26 @@ glinkd (src/server153) → gdeliveryd → gamedbd/gs
 - WebTransport reduz head-of-line blocking e overhead vs. WebSocket sobre TCP+TLS,
   e oferece datagramas (interessante para movimento/posição no futuro).
 
-## Restrições de plataforma (verificadas em 2026-10-25)
+## Restrições de plataforma (verificadas em 2026-10-25; fontes oficiais consultadas 2026-10-28)
 
-- **Cloudflare Workers não terminam WebTransport server-side** (só Fetch/WebSocket);
-  HTTP/3 chega à borda, mas o isolado não expõe sessões/streams WebTransport.
-- **Cloudflare Containers** recebem tráfego via mediação Worker/DO
-  (`getTcpPort(port).fetch()/connect()`); inbound bruto UDP/QUIC de clientes não é
-  o modelo suportado. Portanto: o gateway WebTransport roda como **serviço próprio**
-  (VM/origem com UDP 443 liberado); no Cloudflare, o caminho nativo hoje é
-  WSS via Workers/Containers.
+- **Cloudflare Workers não terminam WebTransport server-side**. O índice
+  oficial de Runtime APIs do Workers lista Fetch, TCP sockets (`connect`) e
+  WebSockets como APIs de transporte do runtime — WebTransport não aparece:
+  https://developers.cloudflare.com/workers/runtime-apis/
+  A API de WebSocket (a baseline WSS) é documentada em
+  https://developers.cloudflare.com/workers/runtime-apis/websockets/
+- **Cloudflare Containers recebem tráfego via mediação Worker/DO**
+  (`ctx.container.getTcpPort(port).fetch()/connect()`); inbound bruto de
+  clientes não é o modelo. Fontes oficiais:
+  https://developers.cloudflare.com/containers/ ("Container instances are
+  spun up on-demand and controlled by code you write in your Worker") e
+  https://developers.cloudflare.com/containers/api/durable-object-container/
+  ("getTcpPort() returns a TCP port from the container. Use it to
+  communicate with the container over TCP or HTTP."). Portanto: o gateway
+  WebTransport roda como **serviço próprio** (VM/origem com UDP 443
+  liberado); no Cloudflare, o caminho nativo hoje é WSS via Workers e TCP
+  via `getTcpPort().connect()` — validado em produção no deploy deste
+  projeto (ver `docs/SERVER153-REPORT.md` §6, endpoint `/tcpprobe`).
 
 ## Bibliotecas candidatas (gateway)
 
