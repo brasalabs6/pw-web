@@ -40,6 +40,8 @@
 | [PW23-019](PW23-019-blocking-main-loop-workers-pthreads.md) | P0 | open | Game loop, render/defence threads e waits ainda sem modelo browser validado | [e04-wasm-runtime-v1](../epics/e04-wasm-runtime-v1/README.md) |
 
 
+| [PW23-020](PW23-020-assets-streaming-cache-cloudflare-pending.md) | P2 | open | Streaming/caching/Cloudflare de cliente completo continuam não implementados | [e15-assets-streaming-perf-v1](../epics/e15-assets-streaming-perf-v1/README.md) |
+
 **Triagem sugerida:** começar por memória/lock e compatibilidade de wire (001–004), depois shims obrigatórios + link do jogo (006–009, 014, 019). Qualidade de testes e evidência (013/017) devem acompanhar cada milestone.
 
 **Referências:** [review inicial](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6451050045) · [review atualizado](https://github.com/brasalabs6/pw-web/pull/23#pullrequestreview-5676905878).
