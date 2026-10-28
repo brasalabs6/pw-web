@@ -110,6 +110,22 @@ export const logicalAssetPath=z.string().min(1).max(240).refine(path=>{
   const segments=path.split('/');
   return segments.every(s=>s.length>0&&s!=='.'&&s!=='..'&&s.length<=120);
 },'Unsafe asset path');
+export const launchReleaseSchema=z.object({
+  schema:z.literal(2),
+  realmId:z.string().uuid(),channel:z.literal('stable'),pairingId:z.string().uuid(),
+  client:z.object({version:z.string(),releaseDigest:sha256Hex,manifestUrl:z.url().startsWith('https://')}).strict(),
+  server:z.object({version:z.string(),releaseDigest:sha256Hex,deploymentId:z.string().uuid()}).strict(),
+  assetBaseUrl:z.url().startsWith('https://')
+}).strict();
+export const launchBootstrapSchema=launchReleaseSchema.extend({
+  gateway:z.object({
+    url:z.url().startsWith('wss://'),ticket:z.string().min(32),
+    ticketExpiresAt:z.iso.datetime({offset:true})
+  }).strict()
+}).strict();
+export const publicUserSchema=z.object({
+  id:z.string().uuid(),email:z.email(),displayName:z.string(),role:z.enum(['player','operator','admin'])
+}).strict();
 export const updateManifest = z.object({
   schema: z.literal(2),
   clientVersion: z.string(),

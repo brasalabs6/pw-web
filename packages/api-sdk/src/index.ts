@@ -1,25 +1,46 @@
-import type {CatalogRealm,LaunchBootstrap,LaunchRelease} from '@pw/contracts';
+import {catalogRealm,launchReleaseSchema,launchBootstrapSchema,publicUserSchema,
+  type CatalogRealm,type LaunchBootstrap,type LaunchRelease} from '@pw/contracts';
 export type AuthUser={id:string;email:string;displayName:string;role:string};
 export class ApiError extends Error {constructor(public status:number,message:string){super(message)}}
 export class PwApi {
   constructor(private base=''){}
   async request<T>(url:string, options:RequestInit={}):Promise<T>{
-    const r=await fetch(this.base+url,{...options,credentials:'include',headers:{
+    if(!url.startsWith('/v1/'))throw new ApiError(400,'Only versioned API paths are allowed');
+    // No automatic retry on mutations: an idempotency key belongs to one user action.
+    const signal=options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000);
+    const r=await fetch(this.base+url,{...options,signal,credentials:'include',headers:{
+      'Accept':'application/json',
       ...(options.body?{'Content-Type':'application/json'}:{}),...options.headers}});
-    const data=await r.json().catch(()=>({error:'Invalid response from API'}));
-    if(!r.ok)throw new ApiError(r.status,String(data.error||'Request failed'));
+    if(r.status===204)return undefined as T;
+    const data=await r.json().catch(()=>({error:'Invalid JSON response from API'}));
+    if(!r.ok)throw new ApiError(r.status,typeof data.error==='string'?data.error:'Request failed');
+    if(data?.error==='Invalid JSON response from API')throw new ApiError(502,'Invalid JSON response from API');
     return data as T;
   }
-  realms(){return this.request<{realms:CatalogRealm[]}>('/v1/catalog/realms')}
-  me(){return this.request<{user:AuthUser}>('/v1/auth/me')}
-  login(email:string,password:string){return this.request<{user:AuthUser}>('/v1/auth/login',{method:'POST',body:JSON.stringify({email,password})})}
+  async realms(){
+    const data=await this.request<{realms:CatalogRealm[]}>('/v1/catalog/realms');
+    return {realms:catalogRealm.array().parse(data.realms)};
+  }
+  async me(){
+    const data=await this.request<{user:AuthUser}>('/v1/auth/me');
+    return {user:publicUserSchema.parse(data.user)};
+  }
+  async login(email:string,password:string){
+    const data=await this.request<{user:AuthUser}>('/v1/auth/login',{method:'POST',body:JSON.stringify({email,password})});
+    return {user:publicUserSchema.parse(data.user)};
+  }
   register(email:string,password:string,displayName:string){return this.request<{user:AuthUser}>('/v1/auth/register',{method:'POST',body:JSON.stringify({email,password,displayName})})}
   logout(){return this.request<{ok:boolean}>('/v1/auth/logout',{method:'POST'})}
-  resolveRelease(realmId:string){return this.request<{release:LaunchRelease}>('/v1/launcher/releases',{
-    method:'POST',body:JSON.stringify({realmId,channel:'stable'})})}
-  launch(realmId:string,expectedPairingId:string,expectedClientDigest:string){
-    return this.request<{bootstrap:LaunchBootstrap}>('/v1/launcher/sessions',{
-      method:'POST',body:JSON.stringify({realmId,channel:'stable',expectedPairingId,expectedClientDigest})})}
+  async resolveRelease(realmId:string){
+    const data=await this.request<{release:LaunchRelease}>('/v1/launcher/releases',{
+      method:'POST',body:JSON.stringify({realmId,channel:'stable'})});
+    return {release:launchReleaseSchema.parse(data.release)};
+  }
+  async launch(realmId:string,expectedPairingId:string,expectedClientDigest:string){
+    const data=await this.request<{bootstrap:LaunchBootstrap}>('/v1/launcher/sessions',{
+      method:'POST',body:JSON.stringify({realmId,channel:'stable',expectedPairingId,expectedClientDigest})});
+    return {bootstrap:launchBootstrapSchema.parse(data.bootstrap)};
+  }
   overview(){return this.request<{realms:any[];clientReleases:any[];serverReleases:any[];jobs:any[]}>('/v1/admin/overview')}
   createRealm(input:{slug:string;name:string;description:string}){return this.request<{realm:any}>('/v1/admin/realms',{method:'POST',body:JSON.stringify(input)})}
   updateRealm(id:string,input:{status?:string;name?:string}){return this.request<{realm:any}>('/v1/admin/realms/'+id,{method:'PATCH',body:JSON.stringify(input)})}
