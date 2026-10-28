@@ -32,6 +32,19 @@ int main() {
     CHECK(!pw153::load_dds(b.data(), i, out, error));
   put(b, 84, 0x30315844);
   CHECK(!pw153::load_dds(b.data(), b.size(), out, error));
+  std::vector<unsigned char> rgba(136);
+  rgba[0]='D'; rgba[1]='D'; rgba[2]='S'; rgba[3]=' ';
+  put(rgba,4,124); put(rgba,12,1); put(rgba,16,2); put(rgba,28,1);
+  put(rgba,76,32); put(rgba,80,0x41); put(rgba,88,32);
+  put(rgba,92,0xff0000); put(rgba,96,0xff00); put(rgba,100,0xff); put(rgba,104,0xff000000);
+  rgba[128]=1; rgba[129]=2; rgba[130]=3; rgba[131]=4;
+  CHECK(pw153::load_dds(rgba.data(), rgba.size(), out, error));
+  CHECK(out.encoding == pw153::DdsEncoding::bgra8);
+  std::vector<unsigned char> pixels;
+  CHECK(pw153::dds_bgra_to_rgba(rgba.data(), rgba.size(), out.levels[0], pixels));
+  CHECK(pixels[0]==3 && pixels[1]==2 && pixels[2]==1 && pixels[3]==4);
+  CHECK(!pw153::dds_bgra_to_rgba(rgba.data(), 130, out.levels[0], pixels));
+  put(rgba,104,0); CHECK(!pw153::load_dds(rgba.data(), rgba.size(), out, error));
   std::cout
       << "PASS DDS DXT3 layout, mip size, truncation, unsupported format\n";
 }

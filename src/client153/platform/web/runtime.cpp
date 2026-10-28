@@ -266,8 +266,16 @@ int client_texture(int index, const unsigned char *data, unsigned length) {
   glBindTexture(GL_TEXTURE_2D, gpu[index].texture);
   for (unsigned level = 0; level < dds.levels.size(); level++) {
     const auto &l = dds.levels[level];
-    glCompressedTexImage2D(GL_TEXTURE_2D, level, dds.gl_format, l.width,
-                           l.height, 0, l.bytes, data + l.offset);
+    if (dds.encoding == pw153::DdsEncoding::bgra8) {
+      std::vector<std::uint8_t> pixels;
+      if (!pw153::dds_bgra_to_rgba(data, length, l, pixels))
+        return fail("invalid DDS pixel data");
+      glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA8, l.width, l.height, 0,
+                   GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+    } else {
+      glCompressedTexImage2D(GL_TEXTURE_2D, level, dds.gl_format, l.width,
+                             l.height, 0, l.bytes, data + l.offset);
+    }
   }
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,
                   int(dds.levels.size()) - 1);
