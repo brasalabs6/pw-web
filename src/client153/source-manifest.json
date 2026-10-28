@@ -8973,6 +8973,10 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DTerrain2Env.cpp",
       "sha256": "bb1362f6062c217cff35e3357f18a39f441b034fcdf6b858723bfc1dc16d55fa"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DShader.cpp",
+      "sha256": "f5628fb41c0063371e3792fbc3e980ad9460070a1fdeb1358d1fcbac1d8b1bf2"
     }
   ],
   "adaptations": [
