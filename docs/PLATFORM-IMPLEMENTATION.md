@@ -60,12 +60,14 @@ Node 22+, npm, PostgreSQL 16, Docker Compose e Rust stable:
     export DATABASE_URL='postgres://pw:pw_local_only@127.0.0.1:5433/pw_control'
     export APP_ORIGINS='http://localhost:5173,http://localhost:5174,http://localhost:5175'
     npm run db:migrate
+    npm run db:seed-demo     # opt-in: insere um realm offline no shell
     npm run dev:api          # 127.0.0.1:8787
     npm run dev:shell        # 127.0.0.1:5173
     npm run dev:portal       # 127.0.0.1:5174
     npm run dev:admin        # 127.0.0.1:5175
     npm run dev:operations
     npm run typecheck && npm run build:web && npm run test:platform
+    npm run test:updater     # teste real Ed25519 e hash de releases
 
 Rode os comandos dev em terminais separados. Variáveis em .env.platform.example
 são exemplos, não são carregadas automaticamente. Controle de acesso: registre

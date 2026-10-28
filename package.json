@@ -2,8 +2,13 @@
   "name": "pw-web-platform",
   "private": true,
   "type": "module",
-  "engines": {"node": ">=22"},
-  "workspaces": ["apps/*", "packages/*"],
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:api": "npm run dev -w @pw/control-api",
     "dev:shell": "npm run dev -w @pw/shell",
@@ -13,7 +18,9 @@
     "db:migrate": "npm run migrate -w @pw/database",
     "build:web": "npm run build -w @pw/shell && npm run build -w @pw/player-portal && npm run build -w @pw/admin-console",
     "typecheck": "tsc -p tsconfig.platform.json --noEmit",
-    "test:platform": "node --test tests/platform/*.test.mjs"
+    "test:platform": "node --test tests/platform/*.test.mjs",
+    "db:seed-demo": "npm run seed:demo -w @pw/database",
+    "test:updater": "node --import tsx --test tests/platform/update-kit.test.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

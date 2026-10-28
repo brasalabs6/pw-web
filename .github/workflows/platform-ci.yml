@@ -37,6 +37,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run build:web
       - run: npm run test:platform
+      - run: npm run test:updater
       - run: npm run db:migrate
       - name: PostgreSQL + HTTP smoke
         shell: bash
