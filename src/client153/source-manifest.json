@@ -9085,6 +9085,10 @@
     {
       "path": "Common/LuaWrapper/LuaScript.h",
       "sha256": "063e6406bcf889b2a87eab4b99a66b11be7ba4b25541e72318918ed64df9f0e1"
+    },
+    {
+      "path": "Common/GfxCommon/FX_BINDING.CPP",
+      "sha256": "bfb5726b04efeaf8fd72944424106b8b070bacea2c2164610af95cf3dd4eaf4c"
     }
   ],
   "adaptations": [
@@ -9560,6 +9564,16 @@
         "AP_GetActionName"
       ],
       "notes": "the CONVERT_TYPE_TO_TEXT macro drops the invalid ::##iAction token paste (an MSVC traditional-preprocessor laxity); the parameter expands without it and the stringization is unchanged."
+    },
+    {
+      "path": "src/client153/Common/Output/source/Gfx/FX_BINDING.cpp",
+      "upstream": "Common/GfxCommon/FX_BINDING.CPP",
+      "functions": [
+        "MODEL_SCALE_BINDING (all)",
+        "MATTRANS_BINDING (all)",
+        "AUDIOEVENT_BINDING (all)"
+      ],
+      "notes": "ASCII upstream file, verbatim port with a provenance header; the original 'A3DGfxInterface.h' include resolves to the real A3DGFXInterface.h (case-insensitive Win32 resolution); the AudioEngine calls it makes resolve against the explicit FMOD failing seam (thirdparty/fmod/FAudioEngine_stub.cpp)."
     }
   ],
   "additionalCopyrights": [

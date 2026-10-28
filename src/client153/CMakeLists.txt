@@ -14,7 +14,7 @@ add_compile_options(-fshort-wchar)
   set(PW153_ZLIB_LINK ZLIB::ZLIB)
 endif()
 
-add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp platform/common/widestr.cpp platform/common/keystate.cpp platform/common/findfiles.cpp platform/common/toolhelp.cpp platform/common/atlcom_registry.cpp platform/common/inifile.cpp)
+add_library(client153_platform STATIC platform/common/clock.cpp platform/common/format.cpp platform/common/utf16.cpp platform/common/widestr.cpp platform/common/keystate.cpp platform/common/findfiles.cpp platform/common/toolhelp.cpp platform/common/atlcom_registry.cpp platform/common/inifile.cpp platform/common/dsound.cpp)
 target_include_directories(client153_platform PUBLIC platform/common)
 target_include_directories(client153_platform PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
@@ -110,6 +110,7 @@ if(EMSCRIPTEN)
     Common/Output/source/Gfx/A3DGFXElement.cpp
     Common/Output/source/Gfx/A3DCombinedAction.cpp
     Common/Output/source/Gfx/A3DGFXExMan.cpp
+    Common/Output/source/Gfx/FX_BINDING.cpp
     Common/Output/source/Gfx/EC_Model.cpp
     Common/Output/source/Gfx/EC_ModelHook.cpp
     Common/Output/source/Gfx/EC_ModelMan.cpp
@@ -161,6 +162,22 @@ if(EMSCRIPTEN)
     Angelica2/Output/amsdk/include Angelica2/AngelicaMedia/Header Angelica2/Output/3rdsdk/include)
   target_compile_features(client153_speedtree_stub PRIVATE cxx_std_17)
   target_compile_options(client153_speedtree_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
+  # Proprietary-middleware browser-build boundaries: FMOD (the AudioEngine
+  # wrapper) and TeamSpeak ship headers + prebuilt Windows libraries only in
+  # the pinned tree; the referenced entry points are defined once with
+  # explicit failure semantics. See thirdparty/fmod/FAudioEngine_stub.cpp
+  # and thirdparty/teamspeak/clientlib_stub.cpp.
+  add_library(client153_middleware_stub STATIC
+    thirdparty/fmod/FAudioEngine_stub.cpp
+    thirdparty/teamspeak/clientlib_stub.cpp)
+  target_include_directories(client153_middleware_stub PRIVATE
+    platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
+    Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
+    Angelica2/Output/amsdk/include Angelica2/AngelicaMedia/Header Angelica2/Output/3rdsdk/include
+    Common/Output/include/aaudio Element/Output/include)
+  target_compile_features(client153_middleware_stub PRIVATE cxx_std_17)
+  target_compile_options(client153_middleware_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
 endif()
 
