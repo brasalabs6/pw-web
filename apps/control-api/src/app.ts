@@ -182,6 +182,11 @@ app.get('/v1/admin/pairings',async c=>{
   const q=await db.query('SELECT * FROM pairings ORDER BY id LIMIT 200');
   return c.json({pairings:q.rows});
 });
+app.get('/v1/admin/channels',async c=>{
+  if(!mustAdmin(c))return fail(c,403,'Operator required');
+  const q=await db.query('SELECT ch.realm_id,r.name AS realm_name,ch.name,ch.pairing_id,ch.revision FROM realm_channels ch JOIN realms r ON r.id=ch.realm_id ORDER BY r.name,ch.name');
+  return c.json({channels:q.rows});
+});
 app.post('/v1/admin/pairings',async c=>{
   const u=mustAdmin(c);if(!u)return fail(c,403,'Operator required');
   const input=await json(c,pairingCreateInput);if(!input)return fail(c,422,'Invalid pairing');
@@ -190,6 +195,7 @@ app.post('/v1/admin/pairings',async c=>{
   if(!r.rowCount||!s.rowCount)return fail(c,404,'Missing release');
   if(!compatiblePair(r.rows[0],s.rows[0])||input.protocolProfile!==r.rows[0].protocol_profile||
      input.dataProfile!==r.rows[0].data_profile)return fail(c,409,'Client/server protocol or data profiles differ');
+  if(input.status==='supported' && u.role!=='admin')return fail(c,403,'Admin required to approve supported pairing');
   if(input.status==='supported' && !input.evidenceUrl)return fail(c,422,'Proof URL required for supported pairing');
   const q=await db.query(
     'INSERT INTO pairings(client_release_id,server_release_id,protocol_profile,data_profile,status,evidence_url) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(client_release_id,server_release_id) DO NOTHING RETURNING *',

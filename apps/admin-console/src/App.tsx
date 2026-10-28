@@ -1,6 +1,8 @@
 import React,{useEffect,useState} from 'react';
 import {api,type AuthUser} from '@pw/api-sdk';
 import {Layout,AuthPanel,Status} from '@pw/ui';
+import ReleaseManager from './ReleaseManager.tsx';
+import DeploymentManager from './DeploymentManager.tsx';
 type Overview=Awaited<ReturnType<typeof api.overview>>;
 export default function App(){
   const [user,setUser]=useState<AuthUser|null>(null),[data,setData]=useState<Overview|null>(null),
@@ -32,11 +34,8 @@ export default function App(){
           <div className="grid"><label>Slug<input required pattern="[a-z0-9][a-z0-9-]{2,47}" value={slug} onChange={e=>setSlug(e.target.value)}/></label>
           <label>Nome<input required value={name} onChange={e=>setName(e.target.value)}/></label></div>
           <label>Descrição<textarea value={description} maxLength={400} onChange={e=>setDescription(e.target.value)}/></label><button>Criar realm</button></form></>}
-      {tab==='releases'&&<><div className="panel"><h2>Clientes</h2><table><thead><tr><th>Versão</th><th>Digest</th><th>Estado</th></tr></thead>
-          <tbody>{data?.clientReleases.map(r=><tr key={r.id}><td>{r.version}</td><td><code>{r.digest.slice(0,18)}…</code></td><td><Status value={r.status}/></td></tr>)}</tbody></table></div>
-        <div className="panel"><h2>Servidores / Builds</h2><table><thead><tr><th>Versão</th><th>Digest</th><th>Estado</th></tr></thead>
-          <tbody>{data?.serverReleases.map(r=><tr key={r.id}><td>{r.version}</td><td><code>{r.digest.slice(0,18)}…</code></td><td><Status value={r.status}/></td></tr>)}</tbody></table></div></>}
-      {tab==='deployments'&&<div className="panel"><h2>Deployments</h2><p className="muted">Registry de deployments e health semântico — obtenha os IDs e use a API administrativa para registrar hosts e provas. Nenhum servidor é declarado pronto somente por ter HTTP online.</p><button className="secondary" onClick={()=>{void api.request('/v1/admin/deployments').then(v=>setInfo(JSON.stringify(v).slice(0,3000))).catch(e=>setError(String(e)))}}>Consultar deployments</button></div>}
+      {tab==='releases'&&data&&<ReleaseManager clientReleases={data.clientReleases} serverReleases={data.serverReleases} onMutate={refresh} role={user.role}/>}
+      {tab==='deployments'&&data&&<DeploymentManager realms={data.realms} releases={data.serverReleases}/>}
       {tab==='previews'&&<><form className="panel" onSubmit={e=>{e.preventDefault();void send(()=>api.previews({kind,clientCommit:clientCommit||undefined,serverCommit:serverCommit||undefined,ttlHours:ttl}))}}>
        <h2>Solicitar preview isolado</h2><p className="muted">Informe o commit completo de cada candidato. O worker só despacha o workflow configurado e não anuncia READY sem teste real.</p>
        <label>Tipo<select value={kind} onChange={e=>setKind(e.target.value as typeof kind)}><option value="client">Cliente</option><option value="server">Servidor</option><option value="paired">Pareado</option></select></label>
