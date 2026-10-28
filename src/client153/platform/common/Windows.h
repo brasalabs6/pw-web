@@ -27,6 +27,7 @@
 #include <unistd.h>	//	getcwd/chdir/mkdir.
 #include <sys/stat.h>	//	stat/mkdir.
 #include <atomic>
+#include <cerrno>
 #include <chrono>
 #include <cstdint>
 #include <cstdio>
@@ -59,6 +60,7 @@ typedef unsigned int UINT;
 typedef int INT;
 typedef unsigned long ULONG;
 typedef unsigned short USHORT;
+typedef std::uint16_t ATOM;
 typedef unsigned char UCHAR;
 typedef std::uint64_t UINT64;
 typedef std::int64_t INT64;
@@ -347,6 +349,7 @@ typedef BYTE byte;
 #define MB_YESNOCANCEL 3
 #define MB_RETRYCANCEL 5
 #define MB_ICONERROR 0x10
+#define MB_ICONSTOP MB_ICONERROR
 #define MB_ICONWARNING 0x30
 #define MB_ICONINFORMATION 0x40
 #define MB_YESNO 4
@@ -420,6 +423,14 @@ inline int lstrlenW(const wchar_t *text) {
   int length = 0;
   while (text[length]) ++length;
   return length;
+}
+
+inline int _access(const char *path, int mode) {
+  if (!path || (mode != 0 && mode != 2 && mode != 4 && mode != 6)) {
+    errno = EINVAL;
+    return -1;
+  }
+  return access(path, mode);
 }
 
 // The browser host supplies screen coordinates from pointer events.
