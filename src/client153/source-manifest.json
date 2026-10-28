@@ -7,6 +7,18 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/FWFormulaElement.cpp",
+      "sha256": "6cfb579b2e2052ecfc50b92493aa52eb97707cfcbb8962305d19a0a505940141"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWOperand.cpp",
+      "sha256": "8b1fb0d8587a86c4fc1c05008e755f54b359dc0dcbcb90f65a16f29708cecf47"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWOperator.cpp",
+      "sha256": "072d8b946f679b10ec0264511354b23a8205d17ab15db2ba1e6d3c00975d0fc8"
+    },
+    {
       "path": "Element/CFWEditorLib/FWArtArc.cpp",
       "sha256": "91776f1d0ca8a369e0da88220b6917f7725c12eff6a53a210071d68e95c1db58"
     },
@@ -9383,6 +9395,12 @@
       "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWOperand.cpp",
+      "upstream": "Element/CFWEditorLib/FWOperand.cpp",
+      "functions": [],
+      "notes": "Use int literal for the GFX_PROPERTY integer overload; GB18030 comments transcoded to UTF-8. Original invalid-input path falls through without a return and remains unverified."
+    },
     {
       "path": "src/client153/Element/CFWEditorLib/FWArtArc.cpp",
       "upstream": "Element/CFWEditorLib/FWArtArc.cpp",

@@ -714,3 +714,18 @@ Pendências visíveis incluem DirectShow BaseClasses, geometria de texto
 (CCharContour/CCharCurve/CCharOutline/GLU), área dos emissores, partes da
 engine de terreno e várias classes de interface de efeitos. Os arquivos do
 probe são locais e o CI do HEAD ainda precisa ser acompanhado.
+
+### Atualização do link e risco de fórmulas
+
+Após integrar as fontes originais de efeitos, geometria e fórmulas e
+reconstruir as bibliotecas locais, o diagnóstico em `python3
+scripts/link-client153-full.py --error-limit 5000` falhou com 1121 objetos,
+12 bibliotecas, 162 ocorrências e 97 símbolos distintos. O parser preserva
+agora vírgulas em assinaturas; a comparação com contagens anteriores é
+aproximada. Persistem GLU, GDI, DirectShow e classes do editor de efeitos.
+
+O compilador também reportou caminhos sem retorno no código original de
+`FWOperand::operator GFX_PROPERTY()` e `FWOperator::Operate()` quando dados
+ou operadores são inválidos. Esses caminhos permanecem sem validação de
+runtime: corrigir com testes do comportamento de falha antes de considerar
+as fórmulas prontas. A compilação dos objetos não comprova gameplay.

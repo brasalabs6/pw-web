@@ -371,6 +371,9 @@ if(EMSCRIPTEN)
     Element/CFWEditorLib/GLUTess.cpp
     Element/CFWEditorLib/GLUContour.cpp
     Element/CFWEditorLib/FWFormula.cpp
+    Element/CFWEditorLib/FWFormulaElement.cpp
+    Element/CFWEditorLib/FWOperand.cpp
+    Element/CFWEditorLib/FWOperator.cpp
     Element/CFWEditorLib/FWArtArc.cpp
     Element/CFWEditorLib/FWArtDoubleArc.cpp
     Element/CFWEditorLib/FWArtNoChange.cpp
