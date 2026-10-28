@@ -10,4 +10,8 @@
 #ifndef PW153_PLATFORM_MMREG_H
 #define PW153_PLATFORM_MMREG_H
 #include "mmsystem.h"
+
+//	The RIFF fourcc (the documented mmreg.h constant; the wave-file
+//	loader checks the file type with it).
+#define FOURCC_RIFF mmioFOURCC('R', 'I', 'F', 'F')
 #endif

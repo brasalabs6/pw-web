@@ -20,6 +20,12 @@
 #ifndef PW153_TIMEGETTIME_IN_WINDOWS
 inline DWORD timeGetTime() { return GetTickCount(); }
 #endif
+
+//	Four-character-code builder (the documented mmsystem.h macro; the
+//	wave-file loader matches RIFF chunk ids with it).
+#define mmioFOURCC(ch0, ch1, ch2, ch3)                                   \
+  ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |                      \
+   ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24))
 inline UINT timeBeginPeriod(UINT period) {
   (void)period;
   return TIMERR_NOERROR;

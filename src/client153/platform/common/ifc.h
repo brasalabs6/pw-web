@@ -30,6 +30,11 @@ class CImmDevice {
 class CImmCompoundEffect {
  public:
   virtual ~CImmCompoundEffect();
+  //	AMImmEffect.cpp drives the effect through these; the stub never
+  //	hands out an effect, so the wrapper's NULL guard keeps them
+  //	unreachable in the browser build.
+  virtual void Start();
+  virtual void Stop();
 };
 
 class CImmProject {
