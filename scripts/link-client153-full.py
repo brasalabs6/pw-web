@@ -18,6 +18,23 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
+def parse_undefined_symbols(stderr: str) -> dict[str, set[str]]:
+    seen = {}
+    for line in stderr.splitlines():
+        if 'undefined symbol: ' not in line:
+            continue
+        head, _, tail = line.partition('undefined symbol: ')
+        symbol = tail.partition(', referenced by ')[0].strip()
+        obj = head.split('error: ')[-1].rstrip(': ').strip()
+        seen.setdefault(symbol, set()).add(pathlib.Path(obj).name if obj else '?')
+    return seen
+
+
+def format_link_errors(stderr: str) -> str:
+    return '\n'.join(line for line in stderr.splitlines()
+                     if 'error:' in line and 'undefined symbol:' not in line)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--emxx', default=str(
@@ -82,19 +99,15 @@ def main() -> int:
         if 'undefined symbol' in line:
             undefined.append(line.strip())
     print(f'link failed: {len(undefined)} undefined-symbol reports')
-    seen = {}
-    for line in undefined:
-        # wasm-ld: error: <object>: undefined symbol: <name>, referenced by <ref>
-        head, _, tail = line.partition('undefined symbol: ')
-        symbol = tail.split(',')[0].strip()
-        obj = head.split('error: ')[-1].split(': undefined')[0].strip()
-        obj = pathlib.Path(obj).name if obj else '?'
-        ref = tail.split('referenced by ')[-1].strip() if 'referenced by ' in tail else ''
-        seen.setdefault(symbol, set()).add(obj)
+    seen = parse_undefined_symbols(result.stderr)
     print(f'distinct undefined symbols: {len(seen)}')
     for symbol in sorted(seen):
         refs = ', '.join(sorted(seen[symbol])[:4])
         print(f'  {symbol}  <-  {refs}')
+    other_errors = format_link_errors(result.stderr)
+    if other_errors:
+        print('other linker errors:')
+        print(other_errors)
     return 1
 
 
