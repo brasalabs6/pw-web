@@ -15,6 +15,12 @@ endif()
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   if(EMSCRIPTEN)
+    add_executable(client153_gnet_web_scheduler_test tests/client153/gnet_web_scheduler.cpp)
+    target_include_directories(client153_gnet_web_scheduler_test PRIVATE src/client153/platform/common)
+    target_compile_features(client153_gnet_web_scheduler_test PRIVATE cxx_std_17)
+    target_link_options(client153_gnet_web_scheduler_test PRIVATE "-sENVIRONMENT=node")
+    add_test(NAME client153_gnet_web_scheduler COMMAND client153_gnet_web_scheduler_test)
+    set_tests_properties(client153_gnet_web_scheduler PROPERTIES PASS_REGULAR_EXPRESSION "web poll callbacks stopped")
     add_executable(client153_readonly_package_test tests/client153/readonly_package.c)
     target_link_options(client153_readonly_package_test PRIVATE "-sENVIRONMENT=node" "-sFORCE_FILESYSTEM=1"
       "SHELL:--pre-js ${PROJECT_SOURCE_DIR}/scripts/client153-readonly-node.js"

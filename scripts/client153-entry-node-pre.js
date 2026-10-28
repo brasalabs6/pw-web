@@ -17,6 +17,9 @@ var Module = {
       const result = Module.__Z8wWinMainPvS_Pwi(0, 0, empty, 0);
       console.error('PW_ENTRY_PROBE_RETURN ' + result);
       process.exitCode = result === 0 ? 0 : 1;
+      // Startup failure may leave the event-loop poll timer alive. Let queued
+      // diagnostics flush, then terminate this Node-only probe with failure.
+      if (result !== 0) setTimeout(() => process.exit(1), 50);
     } catch (error) {
       console.error('PW_ENTRY_PROBE_EXCEPTION ' + (error && error.stack || error));
       process.exitCode = 1;

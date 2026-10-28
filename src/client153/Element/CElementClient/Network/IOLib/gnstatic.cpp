@@ -1,4 +1,8 @@
 #include <winsock2.h>
+#ifdef __EMSCRIPTEN__
+#include <cstdlib>
+#include "gnet_web_poll.h"
+#endif
 
 #include "gnconf.h"
 #include "gnrpc.h"
@@ -131,15 +135,28 @@ namespace GNET
 		FD_ZERO(&rfds); 
 		FD_ZERO(&wfds);
 		FD_ZERO(&efds);
+#ifdef __EMSCRIPTEN__
+		if (!pw153::platform::start_web_poll([](void *) {
+			PollIO::Poll(0);
+			Timer::Update();
+		}, nullptr))
+			std::abort();
+#else
 		PollControl::Init();
 		Thread::Pool::AddTask(PollIO::Task::GetInstance());
 		Thread::Pool::Run(1);
+#endif
 	}
 
 	void PollIO::Close()
 	{
+#ifdef __EMSCRIPTEN__
+		pw153::platform::stop_web_poll();
+		PollIO::ShutDown();
+#else
 		Thread::Pool::Shutdown();
 		PollIO::WakeUp();
+#endif
 	}
 
 	void SHA256Hash::init()

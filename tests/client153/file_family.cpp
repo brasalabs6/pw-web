@@ -148,6 +148,8 @@ int main(int argc, char **argv) {
   try {
     // Output capacity is MAX_PATH; too-long input must fail without writing past it.
     char guarded[512]; std::memset(guarded, 0x5a, sizeof(guarded));
+    af_GetRelativePathNoBase("//Configs\\element_client.cfg", "/", guarded);
+    CHECK(std::string(guarded) == "Configs\\element_client.cfg");
     const std::string limit(MAX_PATH - 1, 'x');
     af_GetFullPathNoBase(guarded, "", limit.c_str());
     CHECK(std::string(guarded) == limit);

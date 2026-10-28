@@ -118,8 +118,8 @@ void af_GetRelativePathNoBase(const char* szFullpath, const char* szParentPath, 
 		return;
 	}
 
-	if( *p2 == '\\' )
-		p2 ++;
+	while (*p2 == '\\' || *p2 == '/')
+		p2++;
 
 	const auto length = std::strlen(p2);
 	if (length >= MAX_PATH) throw std::length_error("Angelica relative path exceeds MAX_PATH");

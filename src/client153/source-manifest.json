@@ -9584,6 +9584,24 @@
       "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
       "adaptations": [
     {
+      "path": "src/client153/Angelica2/AngelicaFile/Source/AFI.cpp",
+      "upstream": "AngelicaFile/Source/AFI.cpp",
+      "functions": ["af_GetRelativePathNoBase"],
+      "notes": "Strip both forward and backslash separators after the base path so a POSIX root resolves package-relative names."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/Network/IOLib/gnpollio.h",
+      "upstream": "Element/CElementClient/Network/IOLib/gnpollio.h",
+      "functions": ["PollIO::Poll", "PollIO::WakeUp"],
+      "notes": "On Emscripten poll without blocking; use scheduled ticks instead of a UDP wakeup socket. Native behavior remains unchanged."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/Network/IOLib/gnstatic.cpp",
+      "upstream": "Element/CElementClient/Network/IOLib/gnstatic.cpp",
+      "functions": ["PollIO::Init", "PollIO::Close"],
+      "notes": "On Emscripten schedule nonblocking polling and timer updates on the event loop and cancel on close; do not start the native polling thread."
+    },
+    {
       "path": "src/client153/Element/CFWEditorLib/Mesh.cpp",
       "upstream": "Element/CFWEditorLib/Mesh.cpp",
       "functions": ["CMesh::ShrinkVertices"],

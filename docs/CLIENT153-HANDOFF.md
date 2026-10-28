@@ -831,3 +831,21 @@ não prova que o socket UDP funcione no navegador: a adaptação do polling e do
 transporte WebSocket continua necessária. O crescimento de memória está
 habilitado apenas para o probe; o consumo completo de memória não foi medido.
 O acesso Node sob demanda não implementa o streaming de produção no navegador.
+
+### Polling web e caminhos de configuração
+
+Em Emscripten, `PollIO::Init` agenda `Poll(0)` e `Timer::Update` no loop de
+ eventos, em vez de abrir um socket UDP local e iniciar uma thread Windows;
+`Close` cancela o agendamento. O teste `client153_gnet_web_scheduler` valida
+que os callbacks rodam e param após cancelamento. O teste nativo anterior de
+polling continua passando. Ainda falta demonstrar o ciclo do jogo retornando
+ao navegador e a transferência real de mensagens pela conexão WebSocket; o
+agendamento não é uma prova de rede funcional.
+
+A extração de caminho relativo agora remove separadores `/` e `\\` após o
+prefixo, incluindo o caso da raiz `/`. Uma regressão em `client153_file_family`
+falhou antes e passou após a correção, em nativo e WASM. No probe Node com os
+pacotes disponíveis, o bootstrap passou da leitura `Configs\\element_client.cfg`
+e falhou na configuração seguinte, pois `userdata\\SystemSettings.ini` não
+estava disponibilizado no filesystem virtual. O probe usa objetos de builds
+locais; uma recompilação completa é necessária antes de conclusões mais amplas.

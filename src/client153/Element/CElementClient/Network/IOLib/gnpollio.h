@@ -92,6 +92,10 @@ public:
 
 	static void Poll(int timeout)
 	{
+#ifdef __EMSCRIPTEN__
+		// The browser event loop must never block on a Windows-style select.
+		timeout = 0;
+#endif
 		Thread::Mutex::Scoped l(locker_poll);
 		{
 			Thread::Mutex::Scoped l(locker_ionew);
@@ -116,6 +120,11 @@ public:
 		for (FDSet::const_iterator i = fdset.begin(); i != fdset.end(); ++i)
 			if ((*i)->fd >= nfds) nfds = (*i)->fd + 1;
 		int nevents;
+#ifdef __EMSCRIPTEN__
+		if (nfds == 0) {
+			nevents = 0;
+		} else
+#endif
 		if (timeout < 0){
 			nevents = select(nfds, &rfds, &wfds, &efds, NULL);
 		}
@@ -200,10 +209,15 @@ class PollControl : public PollIO
 
 inline void PollIO::WakeUp() 
 { 
+#ifdef __EMSCRIPTEN__
+	// The next event-loop tick observes queued descriptors without a UDP wakeup.
+	wakeup_flag = true;
+#else
 	if (wakeup_scope)
 		PollControl::WakeUp(); 
 	else
 		wakeup_flag = true;
+#endif
 }
 
 };
