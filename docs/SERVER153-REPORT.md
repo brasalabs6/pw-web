@@ -160,6 +160,29 @@ de tradução. Cada uma causava segfault na inicialização:
     conf commitado tem UM worker nessa prioridade. Um worker bloqueado
     (ex.: pelo rwlock corrompido acima) matava o fluxo inteiro. Runtime
     conf agora usa `(101,4)`.
+14. **Use-after-free logout↔re-login (derrubava o gdeliveryd — corrigido)**:
+    o usuário fecha o cliente e re-loga rápido; o logout antigo
+    (`RoleLogout`) ainda roda quando o re-login (`RoleLogin`) faz
+    `delete user->role` — o `role->name` vira memória liberada e o
+    `EraseName` hasheia o ponteiro morto → SIGSEGV no gdeliveryd (coredump
+    com backtrace resolvido: `hash<Octets>` ← `hash_map::find` ←
+    `EraseName` ← `RoleLogout`) → todos os links entre servidores caem
+    junto. Fix em duas camadas: `UserLogout` segura o write lock do
+    UserContainer durante todo o logout (serializa contra o re-login; o
+    `EraseUser` interno vira `EraseUserNoLock`) + `RoleLogout` copia o nome
+    da role antes do caminho lento. Commit f6e0abb7.
+15. **Crash do gs no caminho `erase` do hashtab (matava a instância is61
+    em runtime — corrigido)**: o guard anterior cobria só o `find`; o
+    `erase` (destrutores de `ClassInfo` do `libskill.so` apagando do
+    registro de classes destruído) ainda dividia por zero. A instância
+    is61 morria em runtime, o provider era apagado do gameservermap, e o
+    login da role (spawn no mundo 161) falhava com `result=31,
+    gameid=-1`. Guard espelhado no `erase`. Commit a4fc35aa.
+16. **Watchdog**: `scripts/watchdog-server153.sh` mantém os 8 daemons + gs
+    vivos (reinicia na ordem documentada; glinkd com o argumento de
+    instância; zombies não contam como vivos). Validado ao vivo: glinkd
+    morto → renasce em ~10s → probe GNET OK. Um crash eventual é um blip
+    de segundos, não um outage.
 
 ### 4.3 Config/ambiente (documentados no `scripts/boot-server153.sh`)
 
