@@ -143,6 +143,24 @@ static void TestThreadSuspendedAndExitThread() {
   CHECK(CloseHandle(thread));
 }
 
+static void TestBeginThreadExSuspended() {
+  std::atomic<bool> ran{false};
+  auto start = +[](void *arg) -> unsigned {
+    static_cast<std::atomic<bool> *>(arg)->store(true);
+    return 17;
+  };
+  HANDLE thread = _beginthreadex(nullptr, 0, start, &ran, CREATE_SUSPENDED, nullptr);
+  CHECK(thread != nullptr);
+  CHECK(WaitForSingleObject(thread, 100) == WAIT_TIMEOUT);
+  CHECK(!ran.load());
+  CHECK(ResumeThread(thread) == 1);
+  CHECK(WaitForSingleObject(thread, INFINITE) == WAIT_OBJECT_0);
+  CHECK(ran.load());
+  DWORD code = 0;
+  CHECK(GetExitCodeThread(thread, &code) && code == 17);
+  CHECK(CloseHandle(thread));
+}
+
 static void TestEventAndSemaphoreTimeouts() {
   HANDLE event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
   CHECK(WaitForSingleObject(event, 0) == WAIT_TIMEOUT);
@@ -165,6 +183,7 @@ int main() {
   TestThreadCloseWhileRunning();
   TestThreadWaitAndExitCode();
   TestThreadSuspendedAndExitThread();
+  TestBeginThreadExSuspended();
   TestEventAndSemaphoreTimeouts();
   std::printf("winsync_semantics: all checks passed\n");
   return 0;

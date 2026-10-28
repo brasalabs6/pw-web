@@ -239,18 +239,24 @@ typedef unsigned(__stdcall *ThreadStart)(void *);
 typedef unsigned (*ThreadStart)(void *);
 #endif
 
+#define CREATE_SUSPENDED 0x00000004
+
 inline HANDLE _beginthreadex(void *security, unsigned stackSize,
                              ThreadStart start, void *argument,
                              unsigned flags, unsigned *threadId) {
   (void)security;
   (void)stackSize;
-  (void)flags;
   auto *wrapped = new pw153::platform::WinThread();
   auto body = pw153::platform::MakeThreadBody(
       wrapped->state, [start, argument]() -> unsigned {
         return start(argument);
       });
-  wrapped->thread = std::thread(std::move(body));
+  if (flags & CREATE_SUSPENDED) {
+    std::lock_guard<std::mutex> lock(wrapped->state->mutex);
+    wrapped->pending = std::move(body);
+  } else {
+    wrapped->thread = std::thread(std::move(body));
+  }
   if (threadId)
     *threadId = 0; //\tThread ids are not addressable in this backend.
   return wrapped;
@@ -443,8 +449,6 @@ inline BOOL GetExitCodeThread(HANDLE handle, DWORD *code) {
 //	launches on the first resume); mid-flight suspend is not, so
 //	SuspendThread on a running thread fails with (DWORD)-1. The
 //	render-loop mapping (m-boot) owns the real pause path.
-#define CREATE_SUSPENDED 0x00000004
-
 inline DWORD SuspendThread(HANDLE handle) {
   (void)handle;
   return static_cast<DWORD>(-1);

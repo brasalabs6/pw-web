@@ -620,3 +620,13 @@ GL_NO_ERROR) e rejeitou a DDS DXT3 original com a mensagem esperada. O teste
 `tests/client153/browser-uncompressed-dds.cjs` aceita `PW_DISABLE_S3TC=1` e
 `PW_EXPECT_COMPRESSED_SCENE=1` para repetir os dois caminhos. Esse resultado é
 do visualizador, não prova boot do jogo ou fallback para DDS comprimida.
+
+A revisão do PR levou a confirmar que PW23-001 e PW23-002 têm resolução no
+código e testes em `winsync_semantics.cpp`, embora `.agents/issues/README.md`
+ainda os liste como abertos. Na mesma revisão, `_beginthreadex` ignorava
+`CREATE_SUSPENDED`, opção usada por `EC_GetHostByName.cpp`; agora aguarda
+`ResumeThread`. O teste de regressão falhou antes da mudança e passou nos
+builds nativo e ASan/UBSan: `cmake --build build/client153-native --target
+client153_winsync_semantics_test && ctest --test-dir build/client153-native -R
+'^client153_winsync_semantics$' --output-on-failure`, repetindo com
+`client153-sanitize`. Essa prova não valida pthreads nem DNS no navegador.
