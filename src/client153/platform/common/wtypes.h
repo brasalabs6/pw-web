@@ -50,6 +50,7 @@ struct tagVARIANT {
   union {
     LONGLONG llVal;
     LONG lVal;
+    int intVal;
     BYTE bVal;
     short iVal;
     VARIANT_BOOL boolVal;

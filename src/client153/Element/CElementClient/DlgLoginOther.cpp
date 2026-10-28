@@ -62,7 +62,10 @@ void CDlgLoginOther::DocumentComplete(IDispatch* pDisp,VARIANT* URL)
 		//	解析 spDoc2 尝试获取登陆信息
 		HRESULT hr = E_FAIL;
 		CComPtr<IHTMLElementCollection> spAll;
-		hr = spDoc2->get_all(&spAll);
+		//	The original passed the collection pointer straight through
+		//	get_all's IDispatch** parameter (an MSVC-only laxity); the
+		//	explicit cast is the standard-conforming spelling.
+		hr = spDoc2->get_all(reinterpret_cast<IDispatch **>(&spAll));
 		if (!spAll)
 			break;
 
@@ -84,7 +87,9 @@ void CDlgLoginOther::DocumentComplete(IDispatch* pDisp,VARIANT* URL)
 			hr = spAll->item(index, index, &ppvdispOption);
 			if (!ppvdispOption) continue;
 			
-			hr = ppvdispOption->QueryInterface(IID_IHTMLInputElement, (void **) &ppvOption);
+			//	The interface ids are accessor functions on this target
+			//	(the call sites need the ()).
+			hr = ppvdispOption->QueryInterface(IID_IHTMLInputElement(), (void **) &ppvOption);
 			ppvdispOption->Release();			
 			if (!ppvOption) continue;
 			
@@ -118,7 +123,9 @@ void CDlgLoginOther::DocumentComplete(IDispatch* pDisp,VARIANT* URL)
 
 			//	设置登录参数
 			ACString strUser;
-			strUser.Format(_AL("%s@%s@sso"), strUserId, strAgent);
+			//	The string arguments pass through varargs as raw wide
+			//	pointers (non-POD class objects cannot cross the ellipsis).
+			strUser.Format(_AL("%s@%s@sso"), (const wchar_t*)strUserId, (const wchar_t*)strAgent);
 			CECLoginSwitch::Instance().SSOLogin(strUser, strTicket, strAgent);
 
 			//	启用登录流程

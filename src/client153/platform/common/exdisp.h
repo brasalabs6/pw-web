@@ -198,8 +198,24 @@ inline const void *DIID_DWebBrowserEvents2() {
   return id;
 }
 
-//	The form input surface (the documented MSHTML interfaces).
-struct IHTMLElementCollection : IDispatch {};
-struct IHTMLInputElement : IHTMLElement {};
+//\tThe form input surface (the documented MSHTML interfaces; the
+//\tcollection enumerates the document's elements and the input element
+//\tcarries the form fields the login parser reads).
+struct IHTMLElementCollection : IDispatch {
+  virtual HRESULT get_length(long *length) = 0;
+  virtual HRESULT item(VARIANT name, VARIANT index, IDispatch **item) = 0;
+};
+struct IHTMLInputElement : IHTMLElement {
+  virtual HRESULT get_name(BSTR *name) = 0;
+  virtual HRESULT get_value(BSTR *value) = 0;
+};
+
+//	The form input interface ID (the documented IID_IHTMLInputElement).
+inline const void *IID_IHTMLInputElement() {
+  static const unsigned char id[16] = {0x30, 0x50, 0xf5, 0xd2, 0x98, 0xb5,
+                                      0xcf, 0x11, 0xbb, 0x82, 0x00, 0xaa,
+                                      0x00, 0xbd, 0xce, 0x0b};
+  return id;
+}
 
 #endif // PW153_PLATFORM_EXDISP_H
