@@ -88,7 +88,10 @@ struct DDSURFACEDESC2 {
   DWORD dwHeight;
   DWORD dwWidth;
   union {
-    LONG lPitch;
+    //	The documented Win32 LONG pitch is 32-bit; the C `long` is 64-bit
+    //	on the native LP64 test host and would break the pinned 124-byte
+    //	DDSURFACEDESC2 layout below (it is 4 bytes on the wasm32 target).
+    int lPitch;
     DWORD dwLinearSize;
   };
   union {
@@ -102,7 +105,11 @@ struct DDSURFACEDESC2 {
   };
   DWORD dwAlphaBitDepth;
   DWORD dwReserved;
-  void *lpSurface;
+  //	The documented layout's lpSurface slot: the raw-DDS cast path only
+  //	ever sees the stored 32-bit file value (never a live pointer), and a
+  //	real pointer is 8 bytes on the native LP64 test host, which would
+  //	break the pinned 124-byte layout below.
+  DWORD dwSurfaceSlot;
   union {
     DDCOLORKEY ddckCKDestOverlay;
     DWORD dwEmptyFaceColor;
