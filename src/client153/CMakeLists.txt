@@ -2,6 +2,21 @@
 #	Emscripten ships zlib in its sysroot (link -lz directly); native builds
 #	use the system zlib through CMake's FindZLIB.
 if(EMSCRIPTEN)
+  # Mesa's standalone GLU tessellator supplies polygon triangulation; it does
+  # not provide the other GLU rendering, NURBS, or mipmapping APIs.
+  add_library(client153_glu_tess STATIC
+    thirdparty/mesa-glu-9.0.3/src/libtess/dict.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/geom.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/memalloc.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/mesh.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/normal.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/priorityq.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/render.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/sweep.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/tess.c
+    thirdparty/mesa-glu-9.0.3/src/libtess/tessmono.c)
+  target_include_directories(client153_glu_tess PUBLIC thirdparty/mesa-glu-9.0.3/include
+    PRIVATE thirdparty/mesa-glu-9.0.3/src/include thirdparty/mesa-glu-9.0.3/src/libtess)
   #	Emscripten's zlib port flags live in the top-level CMakeLists so test
   #	targets outside this directory scope link the port too.
   set(PW153_ZLIB_LINK "")
@@ -18,7 +33,7 @@ add_library(client153_platform STATIC platform/common/clock.cpp platform/common/
 target_include_directories(client153_platform PUBLIC platform/common)
 target_include_directories(client153_platform PUBLIC Angelica2/AngelicaCommon/Header)
 target_compile_features(client153_platform PUBLIC cxx_std_17)
-target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic "$<$<CXX_COMPILER_ID:GNU>:-Wno-template-body>")
+target_compile_options(client153_platform PRIVATE -Wall -Wextra -Werror -pedantic -fno-builtin-wcslen "$<$<CXX_COMPILER_ID:GNU>:-Wno-template-body>")
 add_library(client153_common STATIC
   Angelica2/AngelicaCommon/Source/AWString.cpp
   Angelica2/AngelicaCommon/Source/AString.cpp

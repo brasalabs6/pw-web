@@ -12104,6 +12104,15 @@
   ],
   "thirdPartyUpstreams": [
     {
+      "name": "Mesa GLU tessellator",
+      "version": "9.0.3",
+      "url": "https://archive.mesa3d.org/glu/glu-9.0.3.tar.xz",
+      "sha256": "bd43fe12f374b1192eb15fe20e45ff456b9bc26ab57f0eee919f96ca0f8a330f",
+      "license": "SGI-B-2.0 (see retained source headers)",
+      "vendoredPath": "src/client153/thirdparty/mesa-glu-9.0.3",
+      "reason": "Provide the original GLU tessellation API for client polygon meshes on WASM; other GLU APIs are not included."
+    },
+    {
       "name": "lua",
       "version": "5.1.5",
       "url": "https://lua.org/ftp/lua-5.1.5.tar.gz",

@@ -77,7 +77,7 @@ def main() -> int:
     libraries = []
     for name in ('skeleton', 'animation', 'file', 'math', 'common',
                  'platform', 'formats', 'webgl_caps', 'skinning',
-                 'speedtree_stub', 'middleware_stub', 'lua'):
+                 'speedtree_stub', 'middleware_stub', 'lua', 'glu_tess'):
         archive = pathlib.Path(args.wasm_build) / f'libclient153_{name}.a'
         if archive.exists():
             libraries.append(str(archive))

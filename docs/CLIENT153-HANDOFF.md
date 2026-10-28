@@ -773,3 +773,23 @@ não valida a geração completa de malhas de caracteres. O link com raiz na
 entrada original, após incluir os objetos de malha, reportou 10 símbolos
 indefinidos (9 funções GLU e `FillMeshParam`); continua sendo diagnóstico,
 não execução do jogo. A extração de fontes GDI permanece indisponível.
+
+### Primeiro link e carregamento diagnóstico (2026-10-28)
+
+A tesselação da Mesa GLU 9.0.3 foi incluída em `client153_glu_tess`, com
+cabeçalhos de licença preservados e proveniência em `source-manifest.json`.
+O teste `client153_glu_tess` executa em WASM/Node a triangulação de um
+polígono com buraco e confere área 12.0. Com a biblioteca compilada, o
+comando do diagnóstico de entrada descrito acima linkou 1146 objetos e 13
+bibliotecas. O resultado depende de objetos de probes locais, não é um target
+completo reproduzível nem implementa o ciclo de vida do browser.
+
+A primeira tentativa de carregar o módulo linkado em Node falhou nos
+construtores globais, por recursão entre `wcslen` e `wide_strlen` otimizada.
+O teste `client153_wide_length_optimized` reproduziu a recursão com `-O3`;
+a plataforma agora é compilada com `-fno-builtin-wcslen` e o teste passou.
+Após reconstruir a biblioteca de plataforma e relinkar com `-g2`, `node
+/tmp/pw-client-debug2.js` terminou com código zero. É apenas a inicialização
+do módulo sem chamada à entrada: login, render, navegador, rede e gameplay
+permanecem não validados. A implementação de GLU adicionada é somente a
+parte de tesselação; `GetGlyphOutline` ainda retorna erro.

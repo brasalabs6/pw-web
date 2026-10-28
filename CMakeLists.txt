@@ -15,6 +15,16 @@ endif()
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   if(EMSCRIPTEN)
+    add_executable(client153_wide_length_optimized_test
+      tests/client153/wide_length_optimized.cpp src/client153/platform/common/widestr.cpp)
+    target_include_directories(client153_wide_length_optimized_test PRIVATE src/client153/platform/common)
+    target_compile_options(client153_wide_length_optimized_test PRIVATE -O3 -fno-builtin-wcslen)
+    target_link_options(client153_wide_length_optimized_test PRIVATE -O3 "-sENVIRONMENT=node")
+    add_test(NAME client153_wide_length_optimized COMMAND client153_wide_length_optimized_test)
+    add_executable(client153_glu_tess_test tests/client153/glu_tessellation.c)
+    target_link_libraries(client153_glu_tess_test PRIVATE client153_glu_tess)
+    target_link_options(client153_glu_tess_test PRIVATE "-sENVIRONMENT=node")
+    add_test(NAME client153_glu_tess COMMAND client153_glu_tess_test)
     add_executable(client153_mesh_shrink_test
       tests/client153/mesh_shrink.cpp
       src/client153/Element/CFWEditorLib/Mesh.cpp
