@@ -75,7 +75,7 @@ app.post('/v1/auth/register',async c=>{
   const exists=await db.query('SELECT 1 FROM users WHERE email=$1',[input.email]);if(exists.rowCount)return fail(c,409,'Email already registered');
   const q=await db.query(
     'INSERT INTO users(email,display_name,password_hash) VALUES($1,$2,$3) RETURNING id,email,display_name,role',
-    [input.email,input.displayName,passwordHash(input.password)]);
+    [input.email,input.displayName,await passwordHash(input.password)]);
   return c.json({user:q.rows[0],message:'Web identity created; game account provisioning is not enabled yet'},201);
 });
 app.post('/v1/auth/login',async c=>{
@@ -83,7 +83,7 @@ app.post('/v1/auth/login',async c=>{
   const throttle=await authThrottle('login',input.email);
   if(!throttle.allowed)return c.json({error:'Too many login attempts. Try again later.'},429);
   const q=await db.query('SELECT * FROM users WHERE email=$1',[input.email.toLowerCase()]);
-  const user=q.rows[0];if(!user||!verifyPassword(input.password,user.password_hash))return fail(c,401,'Invalid credentials');
+  const user=q.rows[0];if(!user||!(await verifyPassword(input.password,user.password_hash)))return fail(c,401,'Invalid credentials');
   const token=randomToken();
   await db.query('INSERT INTO web_sessions(user_id,token_sha256,expires_at) VALUES($1,$2,now()+interval \'7 days\')',[user.id,sha256(token)]);
   await db.query('DELETE FROM auth_rate_buckets WHERE key_sha256=$1',[throttle.key]);
