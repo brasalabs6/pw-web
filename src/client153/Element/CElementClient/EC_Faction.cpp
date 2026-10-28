@@ -18,8 +18,10 @@
 #include "factioninvitejoin.hrp"
 #include "factioninvitearg"
 #include "getplayerfactioninfo.hpp"
-#include "GetPlayerFactionInfo_Re.hpp"
-#include "FactionRename_Re.hpp"
+//	The pinned rpcdata files are lowercase; the original includes relied
+//	on the Windows case-insensitive resolution.
+#include "getplayerfactioninfo_re.hpp"
+#include "factionrename_re.hpp"
 #include "factionchat.hpp"
 #include "factionchangproclaim_re.hpp"
 #include "factionrenameannounce.hpp"
@@ -317,7 +319,9 @@ DWORD CECFactionMan::OnAcceptJoin(const FactionAcceptJoin_Re* p)
 
 		if (dwRet) return dwRet;
 
-		g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_FC_ACCEPT_JOIN, szName, strMemName);
+		//	The string arguments pass through varargs as raw wide pointers
+		//	(non-POD class objects cannot cross the ellipsis).
+		g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_FC_ACCEPT_JOIN, szName, (const wchar_t*)strMemName);
 	}
 	else if (p->retcode == ERR_FC_JOIN_REFUSE)
 	{
@@ -441,7 +445,7 @@ DWORD CECFactionMan::OnDelayExpelMessage(const FactionDelayExpelAnnounce* p)
 			const ACHAR* szOperant = GetMemName(p->expelroleid);
 			if (!szOperant) return FO_OPERANT_UNK;
 			ACString strMsg;
-			strMsg.Format(pStrTab->GetWideString(FIXMSG_FC_DELAYEXPEL), szOperant, pGameUI->GetFormatTime(p->time));
+			strMsg.Format(pStrTab->GetWideString(FIXMSG_FC_DELAYEXPEL), szOperant, (const wchar_t*)pGameUI->GetFormatTime(p->time));
 			pGameUI->MessageBox("", strMsg, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 		}else{
 			DWORD dwRet = 0;
@@ -452,12 +456,12 @@ DWORD CECFactionMan::OnDelayExpelMessage(const FactionDelayExpelAnnounce* p)
 			if (dwRet) return dwRet;
 			if (idHost == p->expelroleid){
 				ACString strMsg;
-				strMsg.Format(pStrTab->GetWideString(FIXMSG_FC_DELAYEXPEL3), szOperant, pGameUI->GetFormatTime(p->time));
+				strMsg.Format(pStrTab->GetWideString(FIXMSG_FC_DELAYEXPEL3), szOperant, (const wchar_t*)pGameUI->GetFormatTime(p->time));
 				pGameUI->MessageBox("", strMsg, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 			}
 			else{
 				ACString strMsg;
-				strMsg.Format(pStrTab->GetWideString(FIXMSG_FC_DELAYEXPEL2), szOperator, szOperant, szOperant, pGameUI->GetFormatTime(p->time));
+				strMsg.Format(pStrTab->GetWideString(FIXMSG_FC_DELAYEXPEL2), szOperator, szOperant, szOperant, (const wchar_t*)pGameUI->GetFormatTime(p->time));
 				pGameUI->AddChatMessage(strMsg, GP_CHAT_BROADCAST);
 			}
 		}
@@ -851,7 +855,7 @@ void CECFactionMan::OnPlayerInfo(const GetPlayerFactionInfo_Re* p)
 			if (delayexpelflag){
 				CECGameUIMan *pGameUI = g_pGame->GetGameRun()->GetUIManager()->GetInGameUIMan();
 				ACString strMsg;
-				strMsg.Format(pGameUI->GetStringFromTable(10383), pGameUI->GetFormatTime(expeltime));
+				strMsg.Format(pGameUI->GetStringFromTable(10383), (const wchar_t*)pGameUI->GetFormatTime(expeltime));
 				pGameUI->MessageBox("", strMsg, MB_OK, A3DCOLORRGBA(255, 255, 255, 160));
 			}
 		}
@@ -892,7 +896,7 @@ DWORD CECFactionMan::OnRename(const FactionRename_Re* p)
 
 			ACString strNickName;
 			_cp_str(strNickName, p->new_name.begin(), p->new_name.size());
-			g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_FC_RENAME, szOperator, szOperant, strNickName);
+			g_pGame->GetGameRun()->AddFixedMessage(FIXMSG_FC_RENAME, szOperator, szOperant, (const wchar_t*)strNickName);
 		}
 
 		CECGameUIMan* pGameUI = g_pGame->GetGameRun()->GetUIManager()->GetInGameUIMan();
