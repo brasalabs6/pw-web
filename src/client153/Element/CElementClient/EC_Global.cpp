@@ -122,7 +122,7 @@ bool glb_CalcFileMD5(const char * szFile, BYTE md5[16])
 	GNET::Octets input(file.GetFileBuffer(), file.GetFileLength());
 	GNET::Octets output = GNET::MD5Hash::Digest(input);
 
-	memcpy(md5, output.begin(), min(16, output.size()));
+	memcpy(md5, output.begin(), min((size_t)16, output.size()));
 
 	return true;
 }
@@ -178,6 +178,8 @@ public:
 void glb_RepairExeInMemory()
 {
 	return;
+// The original function returns unconditionally; its remaining PE-specific code is unreachable.
+#ifndef __EMSCRIPTEN__
 	if( IsDebuggerPresent() )
 		return;
 
@@ -297,6 +299,7 @@ void glb_RepairExeInMemory()
 			}
 		}
 	}
+#endif
 }
 
 void glb_LogURL(const AString &strURL)
@@ -315,7 +318,7 @@ void glb_LogURL(const AString &strURL)
 		else strURL2 += c;
 	}
 
-	a_LogOutput(1, "%s", strURL2);
+	a_LogOutput(1, "%s", (const char*)strURL2);
 }
 
 AString glb_FormatOctets(const GNET::Octets &o)
@@ -407,5 +410,5 @@ int hsv2rgb( float h, float s, float v)
 
 void glb_LogDebugInfo(const AString &str){
 	DWORD t = timeGetTime();
-	g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("%d:%d:%d:%d %s"), t/1000/60/60, t/1000/60%60, t/1000%60, t%1000, AS2AC(str));;
+	g_pGame->RuntimeDebugInfo(RTDCOL_WARNING, _AL("%d:%d:%d:%d %s"), t/1000/60/60, t/1000/60%60, t/1000%60, t%1000, (const ACHAR*)AS2AC(str));;
 }

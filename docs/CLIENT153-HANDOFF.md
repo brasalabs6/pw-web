@@ -638,3 +638,11 @@ relatar as três funções `g_Gfx{Apply,Load,Save}PixelShaderConsts`, mas a nova
 unidade também introduziu dependências ainda não resolvidas (4.867 ocorrências
 no link local com 772 objetos e nove bibliotecas). Build de Gfx e 31 testes
 nativos passaram; estes testes não executam os efeitos ou o jogo no browser.
+
+`EC_Global.cpp`, fonte original de globais e helpers do cliente, compilou para
+WASM após corrigir os tipos em `min` e dois argumentos de string em funções
+variádicas. O código de reparo PE depois de um `return` incondicional da
+referência foi excluído somente da compilação Emscripten. Reproduzir com o
+probe individual `--entry EC_Global.cpp --object-dir ...`; o link diagnóstico
+local com 773 objetos ainda falhou com 4.486 referências indefinidas. O probe
+passou 11 testes; a compilação não valida login ou funcionamento do jogo.
