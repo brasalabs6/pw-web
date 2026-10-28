@@ -8997,6 +8997,94 @@
     {
       "path": "Common/GfxCommon/A3DGFXElement.cpp",
       "sha256": "7e9efb886a84a012974327884b64903f18ad72cf5830043955c806e72e82e7aa"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DDevice.cpp",
+      "sha256": "1a49b8f1708122ad569b2869897cd81dc97a70bc6268826afc3061636755acca"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DCursor.cpp",
+      "sha256": "274b2ee3be242ba7d6c3b8876d5a271f9084aedf037586519a17c53fdbd97908"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DFontMan.cpp",
+      "sha256": "bb095c2e22553a17503a96acaeb79a2baa81f87123c4fba869a60e962ea79dd4"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DWireCollector.cpp",
+      "sha256": "6f43a9c92c04c78cbeb90f1714384bebd92e20b049d022fac0979cc4e2e7935b"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DGDI.cpp",
+      "sha256": "604f3069d40641777a6e56eb94a16286f3d81415641e7bdcf695998389f37a27"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DLitModelRender.cpp",
+      "sha256": "27aeb26b7193ef80a724fbf8f3b1478697f2ffad5a7cc32421f0e38537ae1088"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaState.cpp",
+      "sha256": "e93921ff43b268199c82334a0887cceddf8a5842193b13fa9fd560684b3d4fe1"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaUtil.cpp",
+      "sha256": "62da5ae7cc3df6351258c0fd0822c3ffc96ad6374b991de0775fffab6473a07c"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaMemTbl.cpp",
+      "sha256": "5194040078a025516a2f8aea220233568eeb3bb32a298476110caca303775c71"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaAPI.cpp",
+      "sha256": "373f738204f1b44363c2a402c4d688f3f23f7365270757f6df3589b03b96671f"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebug.h",
+      "sha256": "a2c54c4274d8aec5fdea9f66029c36f69841e5aceaf804345ab749e9c3d26989"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebugMsg.h",
+      "sha256": "345ea7fbf0e363fd1c2a6198bc3b5ba13810b7de01992b4029ae6ee749835773"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebugIPC.h",
+      "sha256": "791166fb7759af64847664a24c1584d6fcfc14d54b77370891519d39e32cd798"
+    },
+    {
+      "path": "Common/LuaWrapper/Debugger.h",
+      "sha256": "60b689eaaaf2324ec8237ec68f3b6a7920ba056a647f9d6e468b72752954ec8e"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaDebugHelper.h",
+      "sha256": "7239fdec12788fbe69bb4f83865bbd4cb3246e70acd0b2447f96cd698750b284"
+    },
+    {
+      "path": "Common/LuaWrapper/ATString.h",
+      "sha256": "762c0f7fdd6698070a3df93fe431648dac137cbfd927d936e05b44aa51a4855c"
+    },
+    {
+      "path": "Common/LuaWrapper/LD_NameValue.h",
+      "sha256": "5f7220ac80f9e03c1a24ee7312582b330f4e0a5e8fe1aec7340b54674aad4672"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaState.h",
+      "sha256": "148e1ec4e30f2928caf6b79814a37e3cc7047546e9df20ffa5680cb1794b644e"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaUtil.h",
+      "sha256": "4ab541b57c28b68e0e5f3bd0d8cb2de71e8a677fb10701990785c411a566585c"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaMemTbl.h",
+      "sha256": "b773cf73b13a5233f3a1108eb6b33c85fa6a90d9d6831957590ba5687fd57c32"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaAPI.h",
+      "sha256": "dce3deea2e8a80a27e6745b8e184490ec40cf81fe63ef2e05c6ba9fcd17283da"
+    },
+    {
+      "path": "Common/LuaWrapper/LuaScript.h",
+      "sha256": "063e6406bcf889b2a87eab4b99a66b11be7ba4b25541e72318918ed64df9f0e1"
     }
   ],
   "adaptations": [
@@ -9232,15 +9320,9 @@
       "path": "src/client153/Common/Output/source/LuaWrapper/ScriptValue.cpp",
       "upstream": "Common/LuaWrapper/ScriptValue.cpp",
       "functions": [
-        "CScriptString (all)",
-        "CScriptValue (all)",
-        "LuaBind::GetStack",
-        "LuaBind::SetStack",
-        "LuaBind::GetScriptValue",
-        "LuaBind::SetScriptValue",
-        "LuaBind::DumpValue"
+        "LuaBind::Call"
       ],
-      "notes": "ported from the real upstream TU; code page from g_LuaStateMan -> CP_UTF8 (LuaState.obj unported; the port's narrow encoding is UTF-8), LUA_DEBUG_INFO -> a_LogOutput (LuaUtil.obj unported), size_t width, LuaBind::Call deferred to the LuaUtil.cpp port."
+      "notes": "UPDATE of the existing entry: LuaBind::Call (vector form) restored verbatim from upstream now that the 5-arg Call it forwards to exists in the LuaUtil.cpp port; the 5-arg declaration is spelled locally because the port drops the LuaUtil.h include (the original saw it via the project PCH); code-page and debug-sink divergences unchanged."
     },
     {
       "path": "src/client153/Common/Output/source/Gfx/EC_Model.cpp",
@@ -9252,6 +9334,119 @@
         "InitECMApi"
       ],
       "notes": "ported from the real upstream TU; StdAfx -> direct includes (the A3DMultiPlaneEmitter aggregate has an MSVC-laxity ambiguity), afi.h/scriptvalue.h case fixes, _isnan -> isnan, seven AString varargs casts, size_t luatab cast, std::auto_ptr -> std::unique_ptr."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DDevice.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DDevice.cpp",
+      "functions": [
+        "A3DDevice device core: Init/InitAsHWI/Release/ConfigDevice/Reset",
+        "A3DDevice frame: BeginRender/EndRender/Present/Clear/HandleDeviceLost",
+        "A3DDevice render state: SetFaceCull/SetFillMode/SetAmbient/SetLight*/SetMaterial/SetZ*/SetAlpha*/SetFog*/SetGammaLevel/SetTexture*/SetDeviceRenderState/SetDeviceTextureStageState/GetDeviceRenderState/GetDeviceTextureStageState",
+        "A3DDevice draw: DrawPrimitive/DrawIndexedPrimitive/DrawPrimitiveUP/DrawIndexedPrimitiveUP/ClearVertexShader/ClearPixelShader/SetDeviceVertexShader/SetDevicePixelShader/ClearTexture/ClearStreamSource",
+        "A3DDevice targets: CreateViewport/CreateRenderTarget/SetRenderTarget/RestoreRenderTarget/SetDefaultRestoreToRenderTarget/SetRestoreToRenderTarget/CopyToBack/ExportColorToFile/ExportDepthToFile",
+        "A3DDevice misc: EnumDisplayModes/GetDisplayMode/SetDisplayMode/GetProperDisplayFreq/AddUnmanagedDevObject/RemoveUnmanagedDevObject/SetCursor/ShowCursor/SetAutoResetFlag/SetNeedResetFlag/GetCanResetFlag/TestVertexShaderVersion/TestPixelShaderVersion/Set*Constants/SetIndexedVertexBlend*/SetVertexBlendFlag/SetDeviceWnd/SetPoint*/SetSoftwareVertexProcessing/DetermineSkinModelRenderMethod/IsDetailMethodSupported/GetFormatString"
+      ],
+      "notes": [
+        "verbatim GB18030-to-UTF-8 transcode of the pinned upstream file; the upstream file carries no in-file copyright header (none removed)",
+        "single adaptation: hoisted the for-loop counter declaration in EnumDisplayModes (original read the counter after the loop via the MSVC for-scoping extension); documented in-file"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DCursor.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DCursor.cpp",
+      "functions": [
+        "A3DHardCursor: ctor/dtor/Load/Release/Draw/TickAnimation/SetHotSpot/ShowCursor/OnSysSetCursor",
+        "A3DSysCursor: ctor/dtor/Load/TickAnimation/Draw/ShowCursor/OnSysSetCursor"
+      ],
+      "notes": [
+        "verbatim GB18030-to-UTF-8 transcode; no code adaptations",
+        "copyright header preserved exactly"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DFontMan.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DFontMan.cpp",
+      "functions": [
+        "A3DFontMan: ctor/dtor/Init/Release/RegisterFontType(x2)/SearchFontType/GetTextExtent/BeginGetTextExtent/EndGetTextExtent/GetTextExtentBE/CaluOutputFont/CreateA3DFont/ReleaseA3DFont/RemoveUnrenderedChars"
+      ],
+      "notes": [
+        "verbatim GB18030-to-UTF-8 transcode; no code adaptations",
+        "copyright header preserved exactly"
+      ]
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DWireCollector.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DWireCollector.cpp",
+      "functions": [
+        "A3DWireCollector (all out-of-line methods: Init/Release/BeforeDeviceReset, LockStream_3D/LockStream_2D, AddRenderData_3D/AddRenderData_2D, Flush_3D/Flush_2D, Add3DLine, Add3DBox, AddAABB, AddOBB, AddSphere, AddCapsule, AddCylinder, AddLine_2D, AddRect_2D)"
+      ],
+      "notes": "GB18030 comments to UTF-8; two AArray::Add call sites take named locals (Add copies the element into storage; the original bound a temporary to the non-const ARG_T reference — AddCapsule top/bottom hemisphere apex); <vector.h> resolves to the abase vector in Output/acsdk/include."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DGDI.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DGDI.cpp",
+      "functions": [
+        "A3DGDI (all: Init/Release, DrawTriangle, DrawRectangle, ChangeTexture, Draw2DRectangle, Draw2DRectWithEdge, Draw2DZRectWithEdge, Draw2DLine, Draw3DLine, DrawBox(A3DAABB), DrawBox(A3DOBB), Draw2DPoint, Draw3DPoint, Draw2DTriangle)",
+        "global g_pA3DGDI"
+      ],
+      "notes": "compiles verbatim, zero adaptations; the upstream file carries no copyright header (starts at the includes)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DLitModelRender.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DLitModelRender.cpp",
+      "functions": [
+        "A3DLitModelRender (all out-of-line methods: ctor/Init/Release, CreateStream/ReleaseStream, CaculateShadowMapRadius, InitShadowResource/ReleaseShadowResource, RenderShadowMap, SetLitModelShadowVSConst, RenderLitModelWithShadow, RenderLitModelAlphaMeshes, FillShadowReceiverStream/FillShadowCasterStream, RegisterRenderShadowMapMesh/FillShadowMapSlots/ClipShadowMapMeshes, RegisterRenderMesh/RegisterLightMapMesh/RegisterVertLitMesh, Render/RenderAlpha, ResetRenderInfo, RenderLightPass/RenderVertLitPass/RenderWithLightMap, SetDNFactor, RenderForRefract)"
+      ],
+      "notes": "header comment GB18030 to UTF-8; two MSVC for-scoping leaks adapted (RenderShadowMap second loop declares its own i; RegisterRenderMesh hoists i for the trailing size check); LM_BUMP_ENABLE is defined by A3DLitModel.h so the bump path compiles in; D3DVSD_* declarators come from the d3dx8.h seam."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/WikiSearchCommand.cpp",
+      "upstream": "Element/CElementClient/WikiSearchCommand.cpp",
+      "functions": [
+        "WikiElementDataProvider::Next",
+        "WikiSearchEquipmentByName::GetSearchName",
+        "WikiSearchMonsterByName::GetSearchName",
+        "WikiSearchRecipeByName::GetSearchName",
+        "WikiSearchItemByName::GetSearchName",
+        "WikiSearchFeatureByName::GetSearchName"
+      ],
+      "notes": "failure-return 'false' -> NULL at 6 sites; the original relied on the C++03 rule that reads false as a null pointer constant (MSVC), C++17 does not; NULL reproduces the exact MSVC value (empty AWString via the null-pointer ctor, null WikiEntityPtr)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/WikiDataReader.cpp",
+      "upstream": "Element/CElementClient/WikiDataReader.cpp",
+      "functions": [
+        "WikiFileInterfaceImpl<AScriptFile>::Token",
+        "WikiFileInterfaceImpl<AWScriptFile>::Token"
+      ],
+      "notes": "out-of-line member definitions of class template specializations gained template<> explicit-specialization form (MSVC permissive accepted the bare form); declared before first instantiation."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaMemTbl.cpp",
+      "upstream": "Common/LuaWrapper/LuaMemTbl.cpp",
+      "functions": [
+        "CLuaMemTbl::AddMethod",
+        "CLuaMemTbl::RemoveMethod"
+      ],
+      "notes": "AString arguments cast to (const char*) at 5 AString::Format varargs call sites (non-POD varargs is a hard clang error; AString has operator const char*)."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaUtil.cpp",
+      "upstream": "Common/LuaWrapper/LuaUtil.cpp",
+      "functions": [],
+      "notes": "include luastate.h resolved to LuaState.h (case-sensitive host)."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaState.cpp",
+      "upstream": "Common/LuaWrapper/LuaState.cpp",
+      "functions": [],
+      "notes": "verbatim TU; supporting headers (LuaDebug family, ATString, LD_NameValue) copied alongside; platform seams Mmsystem.h case variant and tchar.h _TCHAR typedef added."
+    },
+    {
+      "path": "src/client153/Common/Output/source/LuaWrapper/LuaAPI.cpp",
+      "upstream": "Common/LuaWrapper/LuaAPI.cpp",
+      "functions": [],
+      "notes": "verbatim port."
     }
   ],
   "additionalCopyrights": [

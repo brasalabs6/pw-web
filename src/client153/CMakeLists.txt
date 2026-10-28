@@ -70,6 +70,12 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DShader.cpp
     Angelica2/Angelica3D/Source/A3DShaderMan.cpp
     Angelica2/Angelica3D/Source/A3DControl.cpp
+    Angelica2/Angelica3D/Source/A3DDevice.cpp
+    Angelica2/Angelica3D/Source/A3DCursor.cpp
+    Angelica2/Angelica3D/Source/A3DFontMan.cpp
+    Angelica2/Angelica3D/Source/A3DWireCollector.cpp
+    Angelica2/Angelica3D/Source/A3DGDI.cpp
+    Angelica2/Angelica3D/Source/A3DLitModelRender.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
@@ -109,7 +115,11 @@ if(EMSCRIPTEN)
     Common/Output/source/Gfx/EC_ModelMan.cpp
     Common/Output/source/Gfx/EC_ModelLua.cpp
     Common/Output/source/Gfx/GfxEditorUtil.cpp
-    Common/Output/source/LuaWrapper/ScriptValue.cpp)
+    Common/Output/source/LuaWrapper/ScriptValue.cpp
+    Common/Output/source/LuaWrapper/LuaState.cpp
+    Common/Output/source/LuaWrapper/LuaUtil.cpp
+    Common/Output/source/LuaWrapper/LuaMemTbl.cpp
+    Common/Output/source/LuaWrapper/LuaAPI.cpp)
   target_include_directories(client153_gfx_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
