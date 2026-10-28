@@ -33,7 +33,7 @@
 //------------------------------------------------------------------------
 ACString WikiSearchTaskByName::GetSearchName(WikiEntityPtr p) const
 {
-	CONVERT_ENTITY_PTR(WikiTaskDataProvider::Entity, p, false);
+	CONVERT_ENTITY_PTR(WikiTaskDataProvider::Entity, p, NULL);
 	
 	ATaskTempl *pTempl = ptr->GetIterator()->second;
 	//return pTempl->GetName();
@@ -355,7 +355,7 @@ bool WikiSearchTaskByClassLimit::operator()(WikiEntityPtr p) const
 	CONVERT_ENTITY_PTR(WikiTaskDataProvider::Entity, p, false);
 	ATaskTempl *pTempl = ptr->GetIterator()->second;
 	// check by class limitation
-	unsigned long ulOccupation = min(MAX_OCCUPATIONS, pTempl->m_ulOccupations);
+	unsigned long ulOccupation = min((unsigned long)MAX_OCCUPATIONS, pTempl->m_ulOccupations);
 	unsigned long* pOccupations = pTempl->m_Occupations;
 	if(!pTempl->m_bShowByOccup || ulOccupation == 0)
 	{

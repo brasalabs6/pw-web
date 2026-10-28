@@ -46,6 +46,8 @@
 constexpr unsigned int D3DCOLOR_RGBA(unsigned int r, unsigned int g, unsigned int b, unsigned int a) {
   return ((a & 0xffu) << 24) | ((r & 0xffu) << 16) | ((g & 0xffu) << 8) | (b & 0xffu);
 }
+//	The opaque color token (the documented d3d8types.h typedef).
+typedef DWORD D3DCOLOR;
 
 #include "Windows.h"
 #include "unknwn.h"	//	GUID (D3DADAPTER_IDENTIFIER8's DeviceIdentifier).
@@ -370,6 +372,7 @@ typedef struct _D3DSURFACE_DESC {
 #define D3DVS_VERSION(major, minor) (0xFFFE0000 | ((major) << 8) | (minor))
 
 struct IDirect3DBaseTexture8;
+struct IDirect3DTexture8;	//	used by CreateTexture below, defined below.
 struct D3DCAPS8;	//	declared below (the device hands the caps record out).
 
 // Port interface only; this subset is not a native Direct3D COM vtable.
@@ -393,6 +396,11 @@ struct IDirect3DDevice8 : IUnknownD3D {
                                      D3DMULTISAMPLE_TYPE multiSample,
                                      BOOL lockable,
                                      IDirect3DSurface8 **surface) = 0;
+  //	Texture creation (the documented d3d8.h signature; the WebGL2
+  //	renderer adapter implements it in the renderer cycle).
+  virtual HRESULT CreateTexture(UINT width, UINT height, UINT levels,
+                                DWORD usage, D3DFORMAT format, D3DPOOL pool,
+                                IDirect3DTexture8 **texture) = 0;
   //	The scene/frame and state surface the device core drives (the
   //	documented d3d8.h signatures; the WebGL2 renderer adapter
   //	implements them in the renderer cycle).
@@ -481,11 +489,16 @@ struct IDirect3DBaseTexture8 : IDirect3DResource8 {
 //	umbrella owns it).
 
 struct IDirect3DTexture8 : IDirect3DBaseTexture8 {
+  virtual HRESULT GetLevelDesc(UINT level, D3DSURFACE_DESC *description) = 0;
   virtual HRESULT GetSurfaceLevel(UINT level, IDirect3DSurface8 **ppSurface) = 0;
   virtual HRESULT LockRect(UINT level, D3DLOCKED_RECT *pLockedRect,
                            const RECT *pRect, DWORD flags) = 0;
   virtual HRESULT UnlockRect(UINT level) = 0;
 };
+
+//	The documented d3d8.h interface pointer typedefs.
+typedef IDirect3DDevice8 *LPDIRECT3DDEVICE8;
+typedef IDirect3DTexture8 *LPDIRECT3DTEXTURE8;
 
 //	The cube texture (the documented d3d8 interface).
 typedef struct _D3DLOCKED_BOX {
