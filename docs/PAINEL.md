@@ -1429,7 +1429,7 @@ Estas referências são informativas. **Nenhum código externo foi copiado neste
 | MV-004 | Versionamento independente | versões do shell, WASM, assets, dados do servidor, gateway e binários servidor têm IDs próprios e não devem avançar implicitamente juntos |
 | MV-005 | Compatibilidade explícita | resolver pares aceitos por evidências homologadas, não apenas igualdade de string `1.5.3` |
 | MV-006 | Asset pinning | a seleção fixa um **release digest + asset set digest**; nenhum fetch `latest`, fallback silencioso nem mistura de arquivos |
-| MV-007 | Seleção no launcher | jogador autorizado pode escolher realm, canal, cliente permitido, idioma e preset gráfico; não pode fornecer endpoints/versões arbitrárias |
+| MV-007 | Seleção no launcher | jogador escolhe **apenas o realm**; versão/release/assetSet/protocolo do cliente são **resolvidos automaticamente** pelo canal/pairing homologado daquele servidor; idioma e gráficos podem ser preferências do jogador |
 | MV-008 | Preview de cliente | PR produz build de shell/runtime/assets de teste, URL com isolamento, smoke browser e expiração; sem credenciais de prod |
 | MV-009 | Preview de servidor | PR produz imagem testável, WDB próprio/descartável, dados autorizados de fixture e probes GNET/realm; **não** aponta para DB prod |
 | MV-010 | Preview combinado | executar um candidato de cliente contra um candidato de servidor em ambiente de integração e registrar resultado do pareamento |
@@ -1626,39 +1626,48 @@ Aplicação pequena e estável que roda **antes** de qualquer cliente C++/WASM. 
 
 O shell não conhece os caminhos internos `assets/xxx.pck` de cada versão. Cada adapter e manifest publicados definem a árvore de arquivos lógica e o loader responsável pela versão. O shell conhece somente **contratos genéricos e plugin interfaces**.
 
-### 29.2 Layout de interface sugerido
+### 29.2 Layout de interface sugerido — sem escolha manual de versão
+
+**Política final de produto, decisão 2026-10-28:** a tela pública do launcher
+**não oferece seletor de cliente ou versão**. O jogador escolhe o servidor e faz
+login. O control plane determina a release do cliente, a configuração e a árvore
+de assets apropriadas, com base no canal estável (ou acesso antecipado autorizado)
+do realm. Versões são administradas **somente no painel**.
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│ PW WEB                  Minha conta  Downloads/Cache  Configurações │
+│ PW WEB                              Conta  Cache  Configurações      │
 ├──────────────────────────────────────────────────────────────────────┤
-│ Selecionar servidor                                                  │
-│  [Brasil PWBR]  Online ✓   173/500  Versão preferida 1.5.3          │
-│  [Classic 1.4.4]  Em desenvolvimento      Preview não habilitado     │
-│  [Oldschool 1.3.6] Indisponível                                     │
+│ Selecione seu servidor                                              │
 │                                                                      │
-│ Cliente para este servidor                                           │
-│  [1.5.3 v145] [Beta 1.5.3...]     (somente versões compatíveis)      │
+│  [PW Brasil 1.5.3]       Offline       [SELECIONAR]                 │
+│  [Clássico 1.4.4]       Em desenvolvimento                           │
+│  [Oldschool 1.3.6]     Em desenvolvimento                           │
 │                                                                      │
-│ Canal: [Estável]    Idioma: [pt-BR]   Gráficos: [Automático]          │
+│ Após selecionar:                                                     │
+│  Servidor: PW Brasil 1.5.3                                           │
+│  [FAZER LOGIN / CRIAR CONTA]                                         │
 │                                                                      │
-│ Conteúdo inicial: 125 MB estimados (valor ilustrativo, não medido)   │
-│ Dados aproveitados do cache: —                                       │
-│ [Instalar/Atualizar]   [JOGAR]                                       │
+│  Cliente detectado automaticamente: 1.5.3 v145 (informativo)        │
+│  [VERIFICAR / ATUALIZAR CLIENTE]  [JOGAR quando pronto]              │
 │                                                                      │
-│ Avançado (para testers autorizados): [Preview PR #123]               │
+│  Idioma: pt-BR    Qualidade: Automática                              │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-Os números da tela acima são **mock**, não métricas do servidor. Views reais: `Home`, `Realms`, `Select Client`, `Version Details`, `Downloads/Cache`, `Settings`, `Preview Access`, `Error Recovery` e `Launch/Loading`.
+Rótulos e estados acima são **mock**, não comprovam servidores online. Views
+principais: Home/Servers, Account/Login, Downloads/Cache, Settings e Launch.
+Versions/Releases/Compatibility Matrix são telas do **admin-console**, não do
+launcher público. Canais beta/preview podem aparecer somente para testers com
+permissão e pairing aprovado, sem permitir escolha manual de binários arbitrários.
 
 ### 29.3 Fluxo de inicialização
 
 1. Browser recebe HTML/JS do shell com CSP e headers seguros; versão do shell independe do runtime do jogo.
 2. Shell detecta WebAssembly, WebGL2, WebGPU opcional, memória aproximada, SIMD/threads se apropriado, storage disponível, idioma, conectividade e política do ambiente.
 3. Requisita `GET /v1/catalog/realms`; mostra realms com disponibilidade real, gate de convite/teste e canal padrão.
-4. Escolhe realm → `GET /v1/catalog/realms/{id}/clients` retorna somente releases homologadas para aquele realm, canal e navegador.
-5. Usuário escolhe versão compatível (ou política do realm restringe a uma). Persistir preferência por usuário/dispositivo, nunca presumir que preferência sobrevive a incompatibilidade.
+4. Jogador escolhe realm e autentica sua identidade web; **não há seletor de cliente**. `realm_channels` e `pairings` resolvem automaticamente o client release fixado do canal autorizado.
+5. A API valida a release do cliente selecionada pelo servidor, sua matriz de compatibilidade com protocolo/dados/gateway, sua assinatura, suas capacidades e o estado do deployment. Se incompatível, negar o jogo (não sugerir downgrade/versão manual).
 6. `POST /v1/launcher/sessions` valida identidade, direitos, compatibilidade, região, maintenance e capacidade; devolve `session bootstrap` assinada e de curta duração.
 7. Shell verifica o manifesto release **por hash e assinatura**, confirma protocolos, runtime capability, URLs HTTPS/WSS allowlisted e autorização para executar aquele código.
 8. Loader `ClientAdapterRegistry` escolhe adaptador de versão pelo `family+schema`, valida seu módulo/runtime, inicializa VFS/engine; **nenhum script arbitrário indicado pelo usuário pode ser importado**.
@@ -1695,7 +1704,7 @@ Fazer double-click em `Jogar` é idempotente: uma única instância do runtime p
 
 ### 29.6 Carregamento condicionado à versão
 
-**Requisito central:** ao escolher `client 1.5.3` baixar `runtime/assetSet` 1.5.3 e ao escolher versão diferente, resolver outro conjunto de manifests. Mesmo caminho lógico de arquivo entre versões **não** significa conteúdo igual. Dedupe só por hash validado.
+**Requisito central:** ao selecionar um **realm** que determina client `1.5.3`, baixar runtime/assetSet `1.5.3`; se outro realm determinar versão diferente, resolver seu próprio conjunto de manifests. Mesmo caminho lógico de arquivo entre versões **não** significa conteúdo igual. Dedupe só por hash validado.
 
 ```typescript
 interface ClientAdapter {
@@ -2247,7 +2256,7 @@ Por `clientReleaseId`/`serverReleaseId`/`pairingId`/`realmId`:
 | ID | Teste | Expectativa |
 | --- | --- | --- |
 | MV-T01 | Dois realms com configs/DBs diferentes em paralelo | sem cross-zone, usuários separados e status independente |
-| MV-T02 | Selecionar `1.5.3` no shell | somente release/assetSet pinado 1.5.3; SHA e assinatura verificados |
+| MV-T02 | Selecionar realm configurado com cliente `1.5.3` | resolução automática de release/assetSet 1.5.3, sem seletor de versão, SHA e assinatura verificados |
 | MV-T03 | Registrar segunda versão em fixture sintética | shell escolhe adapter específico e não mistura assets de caminho igual |
 | MV-T04 | Matriz marca client/server incompatible | `Jogar` desabilitado; nenhuma conexão GNET |
 | MV-T05 | Modo diagnostic | realm/gateway nulos e login de jogo não executado |
@@ -2393,7 +2402,7 @@ Teremos o painel certo quando um operador autorizado puder, com segurança:
 - vender gold de forma auditável, idempotente e conciliada;
 - manter direitos de acesso e auditoria mesmo com equipe grande;
 - aumentar capacidade **com base em medições** de CPU/RSS/tick/latência por mapa e jogador;
-- escolher no **PW Shell** diferentes realms, versões de cliente e canais, sempre com compatibilidade homologada;
+- escolher **somente o realm** no PW Shell; receber automaticamente a release cliente definida pelo servidor, com compatibilidade homologada e atualização verificada;
 - publicar previews isolados de cliente, servidor e pares integrados, associando PR, digest, TTL e evidência;
 - gerenciar releases, catalogar assets, promover e reverter versões separadamente, sem misturar WDB, runtime, dados ou sessões.
 
