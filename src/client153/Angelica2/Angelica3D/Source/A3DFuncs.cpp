@@ -16,6 +16,7 @@
 #include "A3DTypes.h"
 #include "A3DMacros.h"
 #include "A3DFuncs.h"
+#include "d3dx8.h"
 #include "AAssist.h"
 
 
@@ -856,6 +857,135 @@ bool a3d_GetCubeMapDirAndUp(int nFaceIndex, A3DVECTOR3 * pDir, A3DVECTOR3 * pUp)
 		return false;
 	}
 	return true;
+}
+
+//	Build standard vertex shader declarator from vertex type
+void a3d_MakeVSDeclarator(A3DVERTEXTYPE VertexType, int iStreamIdx, DWORD* pDecl)
+{
+	int iCnt = 0;
+
+	pDecl[iCnt++] = D3DVSD_STREAM(iStreamIdx);
+
+	switch (VertexType)
+	{
+	case A3DVT_VERTEX:
+
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_NORMAL, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		break;
+
+	case A3DVT_LVERTEX:
+
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_SPECULAR, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		break;
+
+	case A3DVT_TLVERTEX:
+
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT4);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_SPECULAR, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		break;
+
+	case A3DVT_IBLVERTEX:
+
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_SPECULAR, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD1, D3DVSDT_FLOAT2);
+		break;
+
+	case A3DVT_BVERTEX1:
+
+		//	It's said that GeForce3 doesn't support D3DVSDT_UBYTE4, using
+		//	D3DVSDT_D3DCOLOR instead. According to D3D document D3DVSDT_D3DCOLOR
+		//	means 4-D packed unsigned bytes mapped to 0.0 to 1.0 range.
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT, D3DVSDT_FLOAT1);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_BLENDINDICES, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_NORMAL, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		break;
+
+	case A3DVT_BVERTEX2:
+
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT, D3DVSDT_FLOAT2);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_BLENDINDICES, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_NORMAL, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		break;
+
+	case A3DVT_BVERTEX3:
+
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_POSITION, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_BLENDWEIGHT, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_BLENDINDICES, D3DVSDT_D3DCOLOR);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_NORMAL, D3DVSDT_FLOAT3);
+		pDecl[iCnt++] = D3DVSD_REG(D3DVSDE_TEXCOORD0, D3DVSDT_FLOAT2);
+		break;
+
+	default:
+		ASSERT(0);
+		return;
+	}
+
+	pDecl[iCnt++] = D3DVSD_END();
+}
+
+/*	Build vertex shader declarator used by morph meshes. Because declarator's size
+	is limited by MAX_FVF_DECL_SIZE (20 in DX8.x), the maximum number of iNumChannel
+	is 4.
+
+	Note: iNumChannel should be > 0, if you want to create a vertex shader used
+		  when morph channel = 0, use a3d_MakeVSDeclarator instead of this function
+*/
+void a3d_MakeMorphVSDeclarator(A3DVERTEXTYPE VertexType, int iNumChannel, DWORD* pDecl)
+{
+	int iCnt=0, iReg=0;
+
+	pDecl[iCnt++] = D3DVSD_STREAM(0);
+
+	//	Only A3DVT_VERTEX and A3DVT_BVERTEX3 are supported for morph meshes now
+	switch (VertexType)
+	{
+	case A3DVT_VERTEX:
+
+		pDecl[iCnt++] = D3DVSD_REG(0, D3DVSDT_FLOAT3);		//	Position
+		pDecl[iCnt++] = D3DVSD_REG(1, D3DVSDT_FLOAT3);		//	Normal
+		pDecl[iCnt++] = D3DVSD_REG(2, D3DVSDT_FLOAT2);		//	Texture coordinates
+		iReg = 3;
+		break;
+
+	case A3DVT_BVERTEX3:
+
+		pDecl[iCnt++] = D3DVSD_REG(0, D3DVSDT_FLOAT3);		//	Position
+		pDecl[iCnt++] = D3DVSD_REG(1, D3DVSDT_FLOAT3);		//	Blend weight
+		pDecl[iCnt++] = D3DVSD_REG(2, D3DVSDT_D3DCOLOR);	//	Blend matrix indices
+		pDecl[iCnt++] = D3DVSD_REG(3, D3DVSDT_FLOAT3);		//	Normal
+		pDecl[iCnt++] = D3DVSD_REG(4, D3DVSDT_FLOAT2);		//	Texture coordinates
+		iReg = 5;
+		break;
+
+	default:
+		ASSERT(0);
+		return;
+	}
+
+	//	Declare channel information
+	for (int i=0; i < iNumChannel; i++, iReg+=2)
+	{
+		pDecl[iCnt++] = D3DVSD_STREAM(i+1);
+		pDecl[iCnt++] = D3DVSD_REG(iReg+0, D3DVSDT_FLOAT3);	//	Position delta
+		pDecl[iCnt++] = D3DVSD_REG(iReg+1, D3DVSDT_FLOAT3);	//	Normal delta
+	}
+
+	pDecl[iCnt++] = D3DVSD_END();
 }
 
 A3DMATRIX3 a3d_Matrix3Rotate(float fRad)

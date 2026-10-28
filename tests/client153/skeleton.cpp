@@ -306,8 +306,27 @@ static void test_counter() {
   CHECK(counter.Release());
 }
 
+static void test_vertex_shader_declarations() {
+  DWORD decl[20] = {};
+  a3d_MakeVSDeclarator(A3DVT_VERTEX, 2, decl);
+  const DWORD vertex[] = {0x20000002u, 0x40020000u, 0x40020003u,
+                          0x40010007u, 0xffffffffu};
+  for (unsigned i = 0; i < sizeof(vertex) / sizeof(vertex[0]); ++i)
+    CHECK(decl[i] == vertex[i]);
+
+  a3d_MakeMorphVSDeclarator(A3DVT_BVERTEX3, 4, decl);
+  CHECK(decl[0] == 0x20000000u);
+  CHECK(decl[1] == 0x40020000u);
+  CHECK(decl[6] == 0x20000001u);
+  CHECK(decl[15] == 0x20000004u);
+  CHECK(decl[16] == 0x4002000bu);
+  CHECK(decl[17] == 0x4002000cu);
+  CHECK(decl[18] == 0xffffffffu);
+}
+
 int main() {
   try {
+    test_vertex_shader_declarations();
     test_assist_ids();
     test_point_rect();
     test_color_values();

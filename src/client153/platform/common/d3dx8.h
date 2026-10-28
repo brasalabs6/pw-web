@@ -27,7 +27,16 @@
   (D3DVSD_MAKETOKENTYPE(D3DVSD_TOKEN_STREAMDATA) | \
    ((Type) << D3DVSD_DATATYPESHIFT) | (VertexRegister))
 #define D3DVSD_END() 0xFFFFFFFF
+#define D3DVSDT_FLOAT1 0x00
 #define D3DVSDT_FLOAT2 0x01
+#define D3DVSDE_POSITION 0
+#define D3DVSDE_BLENDWEIGHT 1
+#define D3DVSDE_BLENDINDICES 2
+#define D3DVSDE_NORMAL 3
+#define D3DVSDE_DIFFUSE 5
+#define D3DVSDE_SPECULAR 6
+#define D3DVSDE_TEXCOORD0 7
+#define D3DVSDE_TEXCOORD1 8
 
 //	The image header record (the documented D3DXIMAGE_INFO layout; the
 //	format fields carry the enum values as unsigned ints until the

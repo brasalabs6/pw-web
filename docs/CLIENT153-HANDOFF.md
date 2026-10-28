@@ -543,3 +543,10 @@ Reprodução: `cmake --build build/client153-wasm --target client153_engine_orig
 `cmake --build build/client153-native -j 4 && ctest --test-dir build/client153-native --output-on-failure`.
 Resultado: objeto WASM compilado e 31 testes nativos passaram. Esta etapa não
 comprova link completo, execução de shaders nem jogo no navegador.
+
+Os dois construtores originais de declarações para tipo de vértice e morph
+foram restaurados em `A3DFuncs.cpp`; testes nativo e WASM verificam os tokens.
+O overload por FVF continua pendente de `D3DXDeclaratorFromFVF`, assim como a
+execução gráfica das declarações. O diagnóstico `python3 scripts/link-client153-full.py
+--error-limit 0` ainda falhou com 7.264 ocorrências de símbolos indefinidos;
+esta contagem inclui referências repetidas e não representa funcionalidades.
