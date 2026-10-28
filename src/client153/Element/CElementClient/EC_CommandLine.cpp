@@ -244,7 +244,8 @@ bool CECCommandLine::SearchConfig(const ACHAR *szKey, bool &bKeyOnly, ACString &
 				{
 					//	程序错误，SearchNextItem 处理不当导致，直接返回 false
 					ASSERT(false);
-					a_LogOutput(1, "CECCommandLine::SearchConfig(), Unexpected parse result: cmdline = \"%s\", key = \"%s\"", AC2AS(szCommandLine), AC2AS(strTempKey));
+					//	The AString results cross the varargs boundary as raw char pointers.
+					a_LogOutput(1, "CECCommandLine::SearchConfig(), Unexpected parse result: cmdline = \"%s\", key = \"%s\"", (const char*)AC2AS(szCommandLine), (const char*)AC2AS(strTempKey));
 					return false;
 				}
 
@@ -269,7 +270,7 @@ bool CECCommandLine::SearchConfig(const ACHAR *szKey, bool &bKeyOnly, ACString &
 					{
 						//	程序错误，SearchNextItem 处理不当导致，直接返回 false
 						ASSERT(false);
-						a_LogOutput(1, "CECCommandLine::SearchConfig(), Unexpected parse result: cmdline = \"%s\", pCmd = \"%s\"", AC2AS(szCommandLine), AC2AS(pCmd));
+						a_LogOutput(1, "CECCommandLine::SearchConfig(), Unexpected parse result: cmdline = \"%s\", pCmd = \"%s\"", (const char*)AC2AS(szCommandLine), (const char*)AC2AS(pCmd));
 						return false;
 					}
 
