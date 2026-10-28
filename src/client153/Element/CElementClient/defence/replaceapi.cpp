@@ -6,6 +6,52 @@
 #include <stdio.h>
 using namespace Collector;
 
+//	The original's un-suffixed GetModuleHandle maps to the W variant under
+//	UNICODE (LPCTSTR is wide here); the seam exposes only the A/W pair.
+#define GetModuleHandle GetModuleHandleW
+
+//	The seam's PE types stop before the export/IAT directory entries (the
+//	port's module handles are NULL, so ReplaceAPI returns before the walk
+//	below can ever run); local extensions restore the directory surface so
+//	the original code still type-checks.
+#define IMAGE_DIRECTORY_ENTRY_EXPORT 0
+#define IMAGE_DIRECTORY_ENTRY_IAT 12
+#define PAGE_READWRITE 0x04
+typedef struct _PW153_IMAGE_DATA_DIRECTORY { DWORD VirtualAddress; DWORD Size; } PW153_IMAGE_DATA_DIRECTORY;
+struct PW153_IMAGE_OPTIONAL_HEADER32 : IMAGE_OPTIONAL_HEADER32
+{
+	PW153_IMAGE_DATA_DIRECTORY DataDirectory[16];
+};
+struct PW153_IMAGE_NT_HEADERS32
+{
+	DWORD Signature;
+	IMAGE_FILE_HEADER FileHeader;
+	PW153_IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+};
+typedef PW153_IMAGE_NT_HEADERS32 * PW153_PIMAGE_NT_HEADERS32;
+#define PIMAGE_NT_HEADERS32 PW153_PIMAGE_NT_HEADERS32
+typedef struct _PW153_IMAGE_EXPORT_DIRECTORY {
+	DWORD Characteristics;
+	DWORD TimeDateStamp;
+	WORD MajorVersion;
+	WORD MinorVersion;
+	DWORD Name;
+	DWORD Base;
+	DWORD NumberOfFunctions;
+	DWORD NumberOfNames;
+	DWORD AddressOfFunctions;
+	DWORD AddressOfNames;
+	DWORD AddressOfNameOrdinals;
+} PW153_IMAGE_EXPORT_DIRECTORY, * PW153_PIMAGE_EXPORT_DIRECTORY;
+#define PIMAGE_EXPORT_DIRECTORY PW153_PIMAGE_EXPORT_DIRECTORY
+inline BOOL VirtualProtect(LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, LPDWORD lpflOldProtect)
+{
+	//	WASM has no page protection; like the real API, failure leaves
+	//	*lpflOldProtect untouched. Unreachable: the module handles are NULL.
+	(void)lpAddress; (void)dwSize; (void)flNewProtect; (void)lpflOldProtect;
+	return FALSE;
+}
+
 DWORD ReplaceAPI(LPCTSTR dllName, LPCSTR apiName, DWORD newEntry)
 {
 	PIMAGE_DOS_HEADER mz_header;

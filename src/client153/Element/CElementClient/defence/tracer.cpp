@@ -13,6 +13,20 @@
 #include "defence.h"
 //#include "log.h"
 
+//	FAR is an empty macro on 32-bit Windows; the seam does not define it.
+#define FAR
+//	The seam's WSAStartup takes the data block as void*; the original's
+//	WSADATA layout is only used as that opaque block.
+typedef struct tagPW153_WSADATA {
+	WORD wVersion;
+	WORD wHighVersion;
+	char szDescription[257];
+	char szSystemStatus[129];
+	WORD iMaxSockets;
+	WORD iMaxUdpDg;
+	char *lpVendorInfo;
+} WSADATA;
+
 #define TABLESIZE 256
 static DWORD table[TABLESIZE];
 static DWORD init_tracer();
@@ -77,20 +91,19 @@ void stack_trace(LPCVOID sv0, LPCVOID sv1)
 
 	DWORD frame_ptr = hi;
 	DWORD frame_cur, caller, pattern;
-	__asm
-	{
-		mov frame_cur, ebp
-	}
+	//	The original read the frame pointer with MSVC inline assembly;
+	//	WASM exposes no EBP register to walk, so the tracer reports zero
+	//	and stack_trace returns early below (the RDTSC precedent).
+	frame_cur = 0;
 	if( frame_cur >= hi || frame_cur <lo ) return;
 
 	if ( !IsBadReadPtr((LPVOID)(4+frame_cur),4) && !IsBadReadPtr( (LPVOID)(-4+*(DWORD*)(frame_cur+4)),8 ) )
 	{
-		__asm {
-			mov eax, [ebp+4]
-			mov caller, eax
-			mov	eax, [eax-4]
-			mov pattern, eax
-		}
+		//	The original read the return address and the DWORD before it
+		//	with MSVC inline assembly; the port reports zero (unreachable:
+		//	frame_cur is zero and the read check above fails closed).
+		caller = 0;
+		pattern = 0;
 	}
 	else
 	{
@@ -324,7 +337,9 @@ static DWORD init_tracer()
 	srand(time(NULL));
 
 	WORD wVersionRequested;
-	WSADATA wsaData;
+	//	The seam's WSAStartup does not fill the block; zero keeps the
+	//	version check deterministic (the guarded body is a no-op anyway).
+	WSADATA wsaData = { 0 };
 	wVersionRequested = MAKEWORD( 2, 2 );
 	if( 0 == WSAStartup( wVersionRequested, &wsaData )
 		&& LOBYTE( wsaData.wVersion ) == 2 && HIBYTE( wsaData.wVersion ) == 2 )

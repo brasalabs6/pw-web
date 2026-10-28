@@ -1255,7 +1255,7 @@ BOOL CExplorerMan::AddDownloadUrl(WCHAR *FileUrl)
 	case WAIT_OBJECT_0:
 	case WAIT_ABANDONED:
 		WCHAR *name;
-		name = wcsrchr(FileUrl,_T('/'));
+		name = const_cast<WCHAR *>(pw153::platform::wide_strrchr(FileUrl,_T('/')));	//	the port scanner (the libc wcsrchr reads 32-bit units).
 		if(name==NULL)
 		{
 			

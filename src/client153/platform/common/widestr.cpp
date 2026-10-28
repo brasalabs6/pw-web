@@ -712,4 +712,57 @@ int wide_sscanf(const wchar_t *text, const wchar_t *format, ...) {
   return converted;
 }
 
+wchar_t *wide_strcpy(wchar_t *destination, const wchar_t *source) {
+  wchar_t *out = destination;
+  while ((*out++ = *source++) != L'\0') {
+  }
+  return destination;
+}
+
+wchar_t *wide_strncpy(wchar_t *destination, const wchar_t *source,
+                      int count) {
+  wchar_t *out = destination;
+  int copied = 0;
+  while (copied < count && (*out++ = *source++) != L'\0')
+    ++copied;
+  // The wcsncpy contract: a short source is padded with terminators.
+  while (copied++ < count)
+    *out++ = L'\0';
+  return destination;
+}
+
+wchar_t *wide_strcat(wchar_t *destination, const wchar_t *source) {
+  wchar_t *out = destination;
+  while (*out)
+    ++out;
+  while ((*out++ = *source++) != L'\0') {
+  }
+  return destination;
+}
+
+wchar_t *wide_strncat(wchar_t *destination, const wchar_t *source, int count) {
+  wchar_t *out = destination;
+  while (*out)
+    ++out;
+  int copied = 0;
+  while (copied < count && *source) {
+    *out++ = *source++;
+    ++copied;
+  }
+  *out = L'\0';
+  return destination;
+}
+
+wchar_t *wide_strchr(const wchar_t *text, wchar_t character) {
+  while (*text) {
+    if (*text == character)
+      return const_cast<wchar_t *>(text);
+    ++text;
+  }
+  // The wcschr contract: the terminator itself is findable.
+  if (character == L'\0')
+    return const_cast<wchar_t *>(text);
+  return nullptr;
+}
+
 } // namespace pw153::platform

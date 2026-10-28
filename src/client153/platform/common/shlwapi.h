@@ -12,6 +12,7 @@
 
 #include "Windows.h"
 #include <cstring>
+#include "AChar.h"	//	wide_toi for StrToIntW.
 #include <sys/stat.h>
 
 inline LPSTR PathFindFileNameA(const char *path) {
@@ -30,6 +31,20 @@ inline void PathStripPathA(char *path) {
   LPSTR name = PathFindFileNameA(path);
   if (name != path)
     std::memmove(path, name, std::strlen(name) + 1);
+}
+
+//	The extension: the pointer to the last '.' inside the final path
+//	segment, or to the terminating null when the name has none (the
+//	documented semantics; the returned pointer stays inside the input).
+inline LPSTR PathFindExtensionA(const char *path) {
+  if (!path)
+    return const_cast<LPSTR>(path);
+  LPSTR name = PathFindFileNameA(path);
+  const char *lastDot = nullptr;
+  for (const char *p = name; *p; ++p)
+    if (*p == '.')
+      lastDot = p;
+  return const_cast<LPSTR>(lastDot ? lastDot : name + std::strlen(name));
 }
 
 //	File existence: the real filesystem check (the documented semantics).
@@ -72,5 +87,19 @@ inline BOOL PathAppendW(wchar_t *path, const wchar_t *more) {
   std::memcpy(path + length, more, (extra + 1) * sizeof(wchar_t));
   return TRUE;
 }
+
+inline int StrToIntA(const char *text) {
+  return text ? std::atoi(text) : 0;
+}
+
+inline int StrToIntW(const wchar_t *text) {
+  return pw153::platform::wide_toi(text);
+}
+
+#ifdef UNICODE
+#define StrToInt StrToIntW
+#else
+#define StrToInt StrToIntA
+#endif
 
 #endif // PW153_PLATFORM_SHLWAPI_H

@@ -82,8 +82,6 @@ inline const void *CLSID_WebBrowser() {
   return id;
 }
 
-#endif // PW153_PLATFORM_EXDISP_H
-
 ///////////////////////////////////////////////////////////////////////////
 //
 //	The URL moniker surface (the documented async download interfaces the
@@ -95,12 +93,20 @@ struct IBinding : IUnknown {
   virtual HRESULT Abort() = 0;
 };
 
-struct IBindStatusCallback : IUnknown {
+struct BINDINFO;
+
+struct PW153_COM_UUID("{79EAC9C1-BAF9-11CE-8C82-00AA004BA90B}")
+IBindStatusCallback : IUnknown {
   virtual HRESULT OnStartBinding(DWORD reserved, IBinding *binding) = 0;
   virtual HRESULT GetPriority(LONG *priority) = 0;
-  virtual HRESULT OnStopBinding(HRESULT result, BSTR errorText) = 0;
+  virtual HRESULT OnLowResource(DWORD reserved) = 0;
+  virtual HRESULT OnProgress(ULONG progress, ULONG progressMax,
+                             ULONG statusCode, LPCWSTR statusText) = 0;
+  virtual HRESULT OnStopBinding(HRESULT result, LPCWSTR errorText) = 0;
+  virtual HRESULT GetBindInfo(DWORD *flags, BINDINFO *info) = 0;
   virtual HRESULT OnDataAvailable(DWORD flags, DWORD size, FORMATETC *format,
                                   STGMEDIUM *medium) = 0;
+  virtual HRESULT OnObjectAvailable(const void *riid, IUnknown *object) = 0;
 };
 
 typedef const void *REFIID;
@@ -195,3 +201,5 @@ inline const void *DIID_DWebBrowserEvents2() {
 //	The form input surface (the documented MSHTML interfaces).
 struct IHTMLElementCollection : IDispatch {};
 struct IHTMLInputElement : IHTMLElement {};
+
+#endif // PW153_PLATFORM_EXDISP_H

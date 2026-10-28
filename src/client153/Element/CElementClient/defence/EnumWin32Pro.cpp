@@ -79,6 +79,9 @@ BOOL WINAPI EnumProcs(PROCENUMPROC lpProc, LPARAM lParam) {
          }
 
       }
+      //	The original's __finally became the cleanup below; the bare try
+      //	left by the SEH conversion needs a catch to be valid C++.
+      catch (...) { }
       //	__finally -> scope-exit cleanup (runs on both paths, matching the
       //	original's semantics).
       if( hSnapShot )
@@ -98,11 +101,18 @@ BOOL WINAPI EnumProcs(PROCENUMPROC lpProc, LPARAM lParam) {
 
             lpdwPIDs = (LPDWORD) HeapAlloc(GetProcessHeap(), 0, 
                   dwSize2);
-            if (lpdwPIDs == NULL)
-               __leave;
+            //	__leave -> a zero PID count skips the loop below exactly
+            //	like the original's jump out of __try.
+            if (lpdwPIDs == NULL) {
+               dwSize = 0;
+               break;
+            }
             
-            if (!Engine::GetInstance().EnumProcesses(lpdwPIDs, dwSize2, &dwSize))
-               __leave;
+            if (!Engine::GetInstance().EnumProcesses(lpdwPIDs, dwSize2, &dwSize)) {
+               //	__leave -> same skip as above.
+               dwSize = 0;
+               break;
+            }
 
          } while (dwSize == dwSize2);
 
@@ -159,6 +169,9 @@ BOOL WINAPI EnumProcs(PROCENUMPROC lpProc, LPARAM lParam) {
          }
 
       }
+      //	The original's __finally became the cleanup below; the bare try
+      //	left by the SEH conversion needs a catch to be valid C++.
+      catch (...) { }
       //	__finally -> scope-exit cleanup (runs on both paths, matching the
       //	original's semantics).
       if (lpdwPIDs)
@@ -177,7 +190,9 @@ BOOL WINAPI Enum16(DWORD dwThreadId, WORD hMod16, WORD hTask16,
 
    EnumInfoStruct *psInfo = (EnumInfoStruct *)lpUserDefined;
 
-   bRet = psInfo->lpProc(psInfo->dwPID, hTask16, pszFileName,
+   //	The seam's PSZ is const; the original's callback type is LPSTR and
+   //	the callback only reads the name.
+   bRet = psInfo->lpProc(psInfo->dwPID, hTask16, (LPSTR)pszFileName,
       psInfo->lParam);
 
    if (!bRet) 

@@ -257,6 +257,11 @@ public:
       pointer_ = nullptr;
     }
   }
+  T *Detach() {
+    T *result = pointer_;
+    pointer_ = nullptr;
+    return result;
+  }
 };
 
 //	The ATL declaration macros (no-op expansions of the MSVC attributes).
@@ -398,6 +403,17 @@ inline HRESULT DispEventUnadvise(IUnknown *unknown) {
 //	CComModule: the ATL module root (the original declared _Module).
 //
 ///////////////////////////////////////////////////////////////////////////
+
+//	The ATL 3.0 object map: the static descriptor of the module's COM
+//	classes. The port's activation registry (atlcom_registry.cpp)
+//	resolves classes; the map entries carry the class id pointer.
+typedef struct _ATL_OBJMAP_ENTRY {
+  const void *pclsid;
+} _ATL_OBJMAP_ENTRY;
+
+#define BEGIN_OBJECT_MAP(x) static _ATL_OBJMAP_ENTRY x[] = {
+#define END_OBJECT_MAP() \
+  {nullptr}};
 
 class CComModule {
 public:

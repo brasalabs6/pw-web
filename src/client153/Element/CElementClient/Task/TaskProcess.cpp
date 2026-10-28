@@ -887,7 +887,8 @@ void ATaskTempl::RecursiveCheckTimeLimit(
 	// 超过任务失效日期
 	if (m_bAbsFail)
 	{
-		tm cur = *localtime((long*)&ulCurTime);
+		time_t curTimeValue = (time_t)ulCurTime;	//	time_t is 64-bit here; the 32-bit stamp widens.
+		tm cur = *localtime(&curTimeValue);
 
 		if(m_tmAbsFailTime.before(&cur))
 		{
@@ -2165,9 +2166,10 @@ void TaskInterface::InitActiveTaskList()
 			if ((long)(his_time) < 0)
 				his_time = 0;
 
-			tm t = *gmtime((time_t*)&his_time);
+			time_t hisTimeValue = (time_t)his_time;	//	time_t is 64-bit here; the 32-bit stamp widens.
+			tm t = *gmtime(&hisTimeValue);
 			wchar_t buf[256];
-			swprintf(buf, L"%d-%02d-%02d-%02d-%02d-%02d", t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+			swprintf(buf, 256, L"%d-%02d-%02d-%02d-%02d-%02d", t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);	//	C99 swprintf takes the buffer size (MSVC's 2-arg form is nonstandard).
 
 			fwprintf(
 				fp,
@@ -2379,7 +2381,8 @@ bool TaskInterface::CanDoMining(unsigned long ulTaskId)
 	{
 		unsigned long ulCurTime = TaskInterface::GetCurTime();
 
-		tm cur = *localtime((long*)&ulCurTime);
+		time_t curTimeValue = (time_t)ulCurTime;	//	time_t is 64-bit here; the 32-bit stamp widens.
+		tm cur = *localtime(&curTimeValue);
 		if(pTempl->m_tmAbsFailTime.before(&cur))
 		{
 			return false;
@@ -2606,7 +2609,7 @@ bool ATaskTempl::RecursiveCheck(ATaskTempl::TaskRecursiveChecker *pChecker)const
 
 #ifdef _TASK_CLIENT
 
-time_t TaskInterface::m_tmFinishDlgShown = 0;
+long TaskInterface::m_tmFinishDlgShown = 0;	//	keeps the header's long contract (MSVC _USE_32BIT_TIME_T: time_t was long).
 
 #ifndef TASK_TEMPL_EDITOR
 void RecursiveCheckPunchMonster(const ATaskTempl* pTempl)

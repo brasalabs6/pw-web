@@ -21,6 +21,7 @@
 #include "criticalsection.h"
 #include "clock.h"
 #include "widestr.h"	//	the 16-bit wide CRT (the system wchar_t CRT is wrong for the port width).
+#include "inifile.h"	//	the Win32 private-profile (INI) reader.
 #include "utf16.h"
 
 #include <algorithm>
@@ -31,6 +32,7 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>	//	exit (ExitProcess).
 #include <cstring>
 #include <strings.h>
 #include <string>
@@ -40,6 +42,16 @@
 inline int stricmp(const char *lhs, const char *rhs) { return ::strcasecmp(lhs, rhs); }
 inline int strcmpi(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
 inline int _stricmp(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
+inline int strnicmp(const char *lhs, const char *rhs, std::size_t count) { return ::strncasecmp(lhs, rhs, count); }
+inline int _strcmpi(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
+
+//	Last-error state: a real per-thread slot the callers can read back.
+inline DWORD *ThreadLastErrorSlot() {
+  thread_local DWORD lastError = 0;
+  return &lastError;
+}
+inline DWORD GetLastError() { return *ThreadLastErrorSlot(); }
+inline void SetLastError(DWORD error) { *ThreadLastErrorSlot() = error; }
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -100,6 +112,27 @@ typedef void *HMODULE;
 typedef std::int32_t HRESULT;
 #ifndef E_FAIL
 #define E_FAIL 0x80004005
+#ifndef E_NOTIMPL
+#define E_NOTIMPL 0x80004001
+#endif
+#ifndef E_NOINTERFACE
+#define E_NOINTERFACE 0x80004002
+#endif
+#ifndef E_POINTER
+#define E_POINTER 0x80004003
+#endif
+#ifndef E_ABORT
+#define E_ABORT 0x80004004
+#endif
+#ifndef E_INVALIDARG
+#define E_INVALIDARG 0x80070057
+#endif
+#ifndef S_OK
+#define S_OK 0
+#endif
+#ifndef S_FALSE
+#define S_FALSE 1
+#endif
 #endif
 typedef struct _CONTEXT *PCONTEXT;
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
@@ -138,6 +171,7 @@ struct RECT {
 };
 
 typedef RECT *LPRECT;
+typedef RECT *PRECT;
 typedef const RECT *LPCRECT;
 inline BOOL IntersectRect(LPRECT out, LPCRECT a, LPCRECT b) {
   const RECT overlap{std::max(a->left, b->left), std::max(a->top, b->top),
@@ -203,7 +237,10 @@ struct SYSTEM_INFO {
   WORD wProcessorRevision;
 };
 
-struct OSVERSIONINFO {
+//	The OS version records: the narrow A variant (ImeUi reads
+//	szCSDVersion with lstrlenA) and the wide default the UNICODE build
+//	uses (the documented OSVERSIONINFOW layout).
+struct OSVERSIONINFOA {
   DWORD dwOSVersionInfoSize;
   DWORD dwMajorVersion;
   DWORD dwMinorVersion;
@@ -211,8 +248,35 @@ struct OSVERSIONINFO {
   DWORD dwPlatformId;
   char szCSDVersion[128];
 };
+typedef OSVERSIONINFOA *LPOSVERSIONINFOA;
+
+struct OSVERSIONINFO {
+  DWORD dwOSVersionInfoSize;
+  DWORD dwMajorVersion;
+  DWORD dwMinorVersion;
+  DWORD dwBuildNumber;
+  DWORD dwPlatformId;
+  wchar_t szCSDVersion[128];
+};
 
 typedef OSVERSIONINFO *LPOSVERSIONINFO;
+
+//	The extended OS version record (the documented OSVERSIONINFOEXW
+//	layout; the UNICODE build reads szCSDVersion as wide).
+struct OSVERSIONINFOEX {
+  DWORD dwOSVersionInfoSize;
+  DWORD dwMajorVersion;
+  DWORD dwMinorVersion;
+  DWORD dwBuildNumber;
+  DWORD dwPlatformId;
+  wchar_t szCSDVersion[128];
+  WORD wServicePackMajor;
+  WORD wServicePackMinor;
+  WORD wSuiteMask;
+  BYTE wProductType;
+  BYTE wReserved;
+};
+typedef OSVERSIONINFOEX *LPOSVERSIONINFOEX;
 
 struct MEMORYSTATUS {
   DWORD dwLength;
@@ -253,8 +317,8 @@ inline void GetSystemInfo(SYSTEM_INFO *info) {
   }
 }
 
-inline BOOL GetVersionExA(OSVERSIONINFO *info) {
-  if (!info || info->dwOSVersionInfoSize < sizeof(OSVERSIONINFO))
+inline BOOL GetVersionExA(OSVERSIONINFOA *info) {
+  if (!info || info->dwOSVersionInfoSize < sizeof(OSVERSIONINFOA))
     return FALSE;
   //	The browser target reports the port baseline: a 32-bit Windows-like
   //	environment the original code expects.
@@ -264,6 +328,21 @@ inline BOOL GetVersionExA(OSVERSIONINFO *info) {
   info->dwPlatformId = 2;
   info->szCSDVersion[0] = '\0';
   return TRUE;
+}
+
+inline BOOL GetVersionExW(OSVERSIONINFO *info) {
+  if (!info || info->dwOSVersionInfoSize < sizeof(OSVERSIONINFO))
+    return FALSE;
+  info->dwMajorVersion = 5;
+  info->dwMinorVersion = 1;
+  info->dwBuildNumber = 2600;
+  info->dwPlatformId = 2;
+  info->szCSDVersion[0] = L'\0';
+  return TRUE;
+}
+
+inline BOOL GetVersionEx(OSVERSIONINFO *info) {
+  return GetVersionExW(info);
 }
 
 typedef FILETIME *LPFILETIME;
@@ -319,6 +398,11 @@ struct ULARGE_INTEGER {
 
 #define INVALID_HANDLE_VALUE ((HANDLE)(std::intptr_t)-1)
 #define WAIT_OBJECT_0 0u
+#define MAXIMUM_WAIT_OBJECTS 64
+#define WAIT_ABANDONED 0x80u
+#define WAIT_ABANDONED_0 0x80u
+//	The GDI ignore value (the documented wingdi.h constant).
+#define IGNORE 0
 #define WAIT_TIMEOUT 258u
 #define WAIT_FAILED 0xFFFFFFFFu
 #define INFINITE 0xFFFFFFFFu
@@ -416,6 +500,7 @@ typedef LRESULT *LPRESULT;
 #define GWLP_WNDPROC (-4)
 #define GWLP_USERDATA (-21)
 #define GWL_STYLE (-16)
+#define GWL_EXSTYLE (-20)
 #define GWL_USERDATA (-21)
 
 inline int lstrlenW(const wchar_t *text) {
@@ -455,6 +540,10 @@ inline HWND GetAncestor(HWND hWnd, UINT flags) {
   return nullptr;
 }
 
+//	The window procedure: the adapter's dispatch supplies the real
+//	pump; the type is the documented Win32 signature.
+typedef LRESULT (*WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+
 //	The message sending: the adapter's dispatch supplies the real pump;
 //	headless messages have no handler.
 inline LRESULT SendMessageA(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -466,6 +555,631 @@ inline LRESULT SendMessageA(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 inline LRESULT SendMessageW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   return SendMessageA(hWnd, msg, wParam, lParam);
+}
+inline LRESULT SendMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  return SendMessageA(hWnd, msg, wParam, lParam);
+}
+
+//	The message posting: the browser host owns the input dispatch and
+//	there is no Win32 message queue, so posting fails (the Win32 result
+//	for a window without a queue); the callers' failure paths handle it.
+//	The adapter's dispatch (m-boot) replaces the pump where delivery is
+//	actually needed.
+inline BOOL PostMessageA(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  (void)hWnd;
+  (void)msg;
+  (void)wParam;
+  (void)lParam;
+  return FALSE;
+}
+inline BOOL PostMessageW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  return PostMessageA(hWnd, msg, wParam, lParam);
+}
+inline BOOL PostMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  return PostMessageA(hWnd, msg, wParam, lParam);
+}
+
+//	The child window enumeration: the browser target has no child
+//	windows, so the callback is never invoked and the enumeration
+//	succeeds (the Win32 semantics for a window without children).
+inline BOOL EnumChildWindows(HWND hWnd, WNDENUMPROC callback, LPARAM lParam) {
+  (void)hWnd;
+  (void)callback;
+  (void)lParam;
+  return TRUE;
+}
+
+//	The file copy: the real byte copy over the adapter's filesystem.
+#ifndef ERROR_FILE_NOT_FOUND
+#define ERROR_FILE_NOT_FOUND 2
+#endif
+#ifndef ERROR_ACCESS_DENIED
+#define ERROR_ACCESS_DENIED 5
+#endif
+#ifndef ERROR_FILE_EXISTS
+#define ERROR_FILE_EXISTS 80
+#endif
+inline BOOL CopyFileA(const char *existing, const char *destination,
+                      BOOL failIfExists) {
+  if (!existing || !destination) {
+    SetLastError(ERROR_FILE_NOT_FOUND);
+    return FALSE;
+  }
+  if (failIfExists) {
+    if (FILE *probe = fopen(destination, "rb")) {
+      fclose(probe);
+      SetLastError(ERROR_FILE_EXISTS);
+      return FALSE;
+    }
+  }
+  FILE *source = fopen(existing, "rb");
+  if (!source) {
+    SetLastError(ERROR_FILE_NOT_FOUND);
+    return FALSE;
+  }
+  FILE *target = fopen(destination, "wb");
+  if (!target) {
+    fclose(source);
+    SetLastError(ERROR_ACCESS_DENIED);
+    return FALSE;
+  }
+  char buffer[4096];
+  std::size_t read;
+  while ((read = fread(buffer, 1, sizeof(buffer), source)) > 0) {
+    if (fwrite(buffer, 1, read, target) != read) {
+      fclose(source);
+      fclose(target);
+      SetLastError(ERROR_ACCESS_DENIED);
+      return FALSE;
+    }
+  }
+  const bool ok = ferror(source) == 0;
+  fclose(source);
+  fclose(target);
+  return ok ? TRUE : FALSE;
+}
+
+//	The timers: the browser target has no Win32 timer queue; creation
+//	fails (no WM_TIMER is ever delivered) and killing succeeds (there
+//	is nothing left running).
+typedef void (*TIMERPROC)(HWND, UINT, UINT_PTR, DWORD);
+inline UINT_PTR SetTimer(HWND hWnd, UINT_PTR id, UINT elapse,
+                         TIMERPROC procedure) {
+  (void)hWnd;
+  (void)id;
+  (void)elapse;
+  (void)procedure;
+  return 0;
+}
+inline BOOL KillTimer(HWND hWnd, UINT_PTR id) {
+  (void)hWnd;
+  (void)id;
+  return TRUE;
+}
+
+//	The window destruction: no Win32 windows exist; destroying the
+//	nonexistent window fails (the caller's error path handles it).
+inline BOOL DestroyWindow(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+
+//	The window creation: the browser target has no Win32 window classes;
+//	creation fails (no fake HWND is returned).
+inline HWND CreateWindowExA(DWORD exStyle, const char *className,
+                            const char *windowName, DWORD style, int x, int y,
+                            int width, int height, HWND parent, HMENU menu,
+                            HINSTANCE instance, void *param) {
+  (void)exStyle;
+  (void)className;
+  (void)windowName;
+  (void)style;
+  (void)x;
+  (void)y;
+  (void)width;
+  (void)height;
+  (void)parent;
+  (void)menu;
+  (void)instance;
+  (void)param;
+  return nullptr;
+}
+inline HWND CreateWindowExW(DWORD exStyle, const wchar_t *className,
+                            const wchar_t *windowName, DWORD style, int x,
+                            int y, int width, int height, HWND parent,
+                            HMENU menu, HINSTANCE instance, void *param) {
+  (void)className;
+  (void)windowName;
+  return CreateWindowExA(exStyle, nullptr, nullptr, style, x, y, width, height,
+                          parent, menu, instance, param);
+}
+inline HWND CreateWindowEx(DWORD exStyle, const wchar_t *className,
+                           const wchar_t *windowName, DWORD style, int x,
+                           int y, int width, int height, HWND parent,
+                           HMENU menu, HINSTANCE instance, void *param) {
+  return CreateWindowExW(exStyle, className, windowName, style, x, y, width,
+                         height, parent, menu, instance, param);
+}
+inline HWND CreateWindow(const wchar_t *className, const wchar_t *windowName,
+                         DWORD style, int x, int y, int width, int height,
+                         HWND parent, HMENU menu, HINSTANCE instance,
+                         void *param) {
+  return CreateWindowExW(0, className, windowName, style, x, y, width, height,
+                         parent, menu, instance, param);
+}
+
+//	The window styles (the documented WinUser values).
+#define WS_OVERLAPPED 0x00000000L
+#define WS_POPUP 0x80000000L
+#define WS_CHILD 0x40000000L
+#define WS_MINIMIZE 0x20000000L
+#define WS_VISIBLE 0x10000000L
+#define WS_DISABLED 0x08000000L
+#define WS_CLIPSIBLINGS 0x04000000L
+#define WS_CLIPCHILDREN 0x02000000L
+#define WS_MAXIMIZE 0x01000000L
+#define WS_CAPTION 0x00C00000L
+#define WS_BORDER 0x00800000L
+#define WS_DLGFRAME 0x00400000L
+#define WS_VSCROLL 0x00200000L
+#define WS_HSCROLL 0x00100000L
+#define WS_SYSMENU 0x00080000L
+#define WS_THICKFRAME 0x00040000L
+#define WS_MINIMIZEBOX 0x00020000L
+#define WS_MAXIMIZEBOX 0x00010000L
+#define WS_OVERLAPPEDWINDOW (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
+#define WS_EX_TOPMOST 0x00000008L
+#define WS_EX_NOACTIVATE 0x08000000L
+#define WS_EX_STATICEDGE 0x00020000L
+#define WS_EX_LAYERED 0x00080000L
+
+//	The window class styles (the documented WinUser values).
+#define CS_VREDRAW 0x0001
+#define CS_HREDRAW 0x0002
+#define CS_DBLCLKS 0x0008
+#define CS_OWNDC 0x0020
+#define CS_CLASSDC 0x0040
+#define CS_PARENTDC 0x0080
+#define CS_NOCLOSE 0x0200
+#define CS_SAVEBITS 0x0800
+#define CS_BYTEALIGNCLIENT 0x1000
+#define CS_BYTEALIGNWINDOW 0x2000
+#define CS_GLOBALCLASS 0x4000
+
+//	The window class registration: the browser target has no Win32
+//	window classes (the host supplies the canvas window); registration
+//	fails (0) and the callers' fallback paths handle it.
+typedef struct tagWNDCLASSEXA {
+  UINT cbSize;
+  UINT style;
+  WNDPROC lpfnWndProc;
+  int cbClsExtra;
+  int cbWndExtra;
+  HINSTANCE hInstance;
+  HICON hIcon;
+  HCURSOR hCursor;
+  HBRUSH hbrBackground;
+  LPCSTR lpszMenuName;
+  LPCSTR lpszClassName;
+} WNDCLASSEXA;
+
+typedef struct tagWNDCLASSEXW {
+  UINT cbSize;
+  UINT style;
+  WNDPROC lpfnWndProc;
+  int cbClsExtra;
+  int cbWndExtra;
+  HINSTANCE hInstance;
+  HICON hIcon;
+  HCURSOR hCursor;
+  HBRUSH hbrBackground;
+  LPCWSTR lpszMenuName;
+  LPCWSTR lpszClassName;
+  HICON hIconSm;
+} WNDCLASSEXW;
+typedef WNDCLASSEXW WNDCLASSEX;
+
+inline ATOM RegisterClassExA(const WNDCLASSEXA *windowClass) {
+  (void)windowClass;
+  return 0;
+}
+inline ATOM RegisterClassExW(const WNDCLASSEXW *windowClass) {
+  (void)windowClass;
+  return 0;
+}
+inline ATOM RegisterClassEx(const WNDCLASSEXW *windowClass) {
+  return RegisterClassExW(windowClass);
+}
+
+//	The resource-id macros and the system cursor/icon names (the
+//	documented WinUser values; the browser host owns cursor/icon
+//	rendering, so the loads report none).
+#define MAKEINTRESOURCE(i) ((const wchar_t *)(std::uintptr_t)(i))
+#define IDC_ARROW MAKEINTRESOURCE(32512)
+#define IDC_IBEAM MAKEINTRESOURCE(32513)
+#define IDC_WAIT MAKEINTRESOURCE(32514)
+#define IDC_CROSS MAKEINTRESOURCE(32515)
+#define IDC_UPARROW MAKEINTRESOURCE(32516)
+#define IDI_APPLICATION MAKEINTRESOURCE(32512)
+#define IDI_HAND MAKEINTRESOURCE(32513)
+#define IDI_QUESTION MAKEINTRESOURCE(32514)
+#define IDI_EXCLAMATION MAKEINTRESOURCE(32515)
+#define IDI_ASTERISK MAKEINTRESOURCE(32516)
+#define IDI_WINLOGO MAKEINTRESOURCE(32517)
+
+inline HCURSOR LoadCursorA(HINSTANCE instance, const char *name) {
+  (void)instance;
+  (void)name;
+  return nullptr;
+}
+inline HCURSOR LoadCursorW(HINSTANCE instance, const wchar_t *name) {
+  (void)instance;
+  (void)name;
+  return nullptr;
+}
+inline HCURSOR LoadCursor(HINSTANCE instance, const wchar_t *name) {
+  return LoadCursorW(instance, name);
+}
+inline HICON LoadIconA(HINSTANCE instance, const char *name) {
+  (void)instance;
+  (void)name;
+  return nullptr;
+}
+inline HICON LoadIconW(HINSTANCE instance, const wchar_t *name) {
+  (void)instance;
+  (void)name;
+  return nullptr;
+}
+inline HICON LoadIcon(HINSTANCE instance, const wchar_t *name) {
+  return LoadIconW(instance, name);
+}
+
+//	The stock objects (the documented WinGDI indices).
+#define WHITE_BRUSH 0
+#define LTGRAY_BRUSH 1
+#define GRAY_BRUSH 2
+#define DKGRAY_BRUSH 3
+#define BLACK_BRUSH 4
+#define WHITE_PEN 6
+#define BLACK_PEN 7
+#define NULL_PEN 8
+#define SYSTEM_FONT 13
+#define DEFAULT_GUI_FONT 17
+inline HGDIOBJ GetStockObject(int object) {
+  (void)object;
+  return nullptr;
+}
+
+//	The window rectangle adjustment: the canvas window is borderless
+//	(the host owns the frame); the client rectangle is the window
+//	rectangle, so the adjustment adds nothing and succeeds.
+inline BOOL AdjustWindowRect(RECT *rect, DWORD style, BOOL menu) {
+  (void)style;
+  (void)menu;
+  return rect ? TRUE : FALSE;
+}
+
+//	The system metrics: no windowing adapter is registered yet; the
+//	metrics report zero until the canvas adapter supplies the real
+//	viewport (m-boot wires the feed).
+#define SM_CXSCREEN 0
+#define SM_CYSCREEN 1
+#define SM_CXICON 11
+#define SM_CYICON 12
+#define SM_CXFULLSCREEN 16
+#define SM_CYFULLSCREEN 17
+#define SM_CXMIN 28
+#define SM_CYMIN 29
+inline int GetSystemMetrics(int index) {
+  (void)index;
+  return 0;
+}
+
+//	The window operations: no Win32 window exists on the browser
+//	target (the host supplies the canvas); the operations take the
+//	empty-window results (Win32: nonzero if the window was previously
+//	visible) and the callers' error paths handle them.
+inline BOOL MoveWindow(HWND hWnd, int x, int y, int width, int height,
+                       BOOL repaint) {
+  (void)hWnd;
+  (void)x;
+  (void)y;
+  (void)width;
+  (void)height;
+  (void)repaint;
+  return FALSE;
+}
+inline BOOL ShowWindow(HWND hWnd, int command) {
+  (void)hWnd;
+  (void)command;
+  return FALSE;
+}
+inline BOOL UpdateWindow(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+inline BOOL SetForegroundWindow(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+inline HCURSOR SetCursor(HCURSOR cursor) {
+  (void)cursor;
+  return nullptr;
+}
+
+//	The window creation record (the documented CREATESTRUCTW layout;
+//	WM_CREATE hands it to the window procedure).
+typedef struct tagCREATESTRUCTW {
+  LPVOID lpCreateParams;
+  HINSTANCE hInstance;
+  HMENU hMenu;
+  HWND hwndParent;
+  int cy;
+  int cx;
+  int y;
+  int x;
+  LONG style;
+  LPCWSTR lpszName;
+  LPCWSTR lpszClass;
+} CREATESTRUCTW, *LPCREATESTRUCTW;
+typedef CREATESTRUCTW CREATESTRUCT;
+typedef CREATESTRUCTW *LPCREATESTRUCT;
+
+
+//	The window's creator thread: no Win32 windows exist; there is no
+//	creator thread or process to report.
+inline DWORD GetWindowThreadProcessId(HWND hWnd, DWORD *processId) {
+  (void)hWnd;
+  if (processId)
+    *processId = 0;
+  return 0;
+}
+
+//	The current process/thread pseudo-handles (the documented Win32
+//	sentinel values).
+inline HANDLE GetCurrentProcess() { return (HANDLE)-1; }
+inline HANDLE GetCurrentThread() { return (HANDLE)-2; }
+
+#define DUPLICATE_SAME_ACCESS 0x00000002
+
+//	The handle duplication: the browser target has no Win32 handle
+//	table; the duplication fails (the caller's error path handles it).
+inline BOOL DuplicateHandle(HANDLE sourceProcess, HANDLE sourceHandle,
+                            HANDLE targetProcess, HANDLE *targetHandle,
+                            DWORD desiredAccess, BOOL inheritHandle,
+                            DWORD options) {
+  (void)sourceProcess;
+  (void)sourceHandle;
+  (void)targetProcess;
+  (void)desiredAccess;
+  (void)inheritHandle;
+  (void)options;
+  if (targetHandle)
+    *targetHandle = nullptr;
+  return FALSE;
+}
+
+//	The process termination: the adapter's quit code records the exit
+//	and the runtime exit ends the module (the browser target's real
+//	termination).
+inline void ExitProcess(UINT exitCode) {
+  extern int pw153_quit_code;
+  pw153_quit_code = static_cast<int>(exitCode);
+  exit(static_cast<int>(exitCode));
+}
+
+//	The process access rights (the documented Win32 values).
+#ifndef PROCESS_TERMINATE
+#define PROCESS_TERMINATE 0x0001
+#endif
+#ifndef PROCESS_VM_READ
+#define PROCESS_VM_READ 0x0010
+#endif
+#ifndef PROCESS_QUERY_INFORMATION
+#define PROCESS_QUERY_INFORMATION 0x0400
+#endif
+#ifndef THREAD_QUERY_INFORMATION
+#define THREAD_QUERY_INFORMATION 0x0040
+#endif
+
+//	The process open: no other processes exist on the browser target;
+//	the open fails (NULL).
+inline HANDLE OpenProcess(DWORD access, BOOL inherit, DWORD processId) {
+  (void)access;
+  (void)inherit;
+  (void)processId;
+  return nullptr;
+}
+
+//	The process id: the single browser module is process 1.
+inline DWORD GetCurrentProcessId() { return 1; }
+
+//	The heap: the C malloc/free heap (GetProcessHeap's sentinel; the
+//	calls route to malloc/free).
+inline HANDLE GetProcessHeap() { return (HANDLE)1; }
+inline LPVOID HeapAlloc(HANDLE heap, DWORD flags, SIZE_T bytes) {
+  (void)heap;
+  (void)flags;
+  return malloc(bytes);
+}
+inline BOOL HeapFree(HANDLE heap, DWORD flags, LPVOID memory) {
+  (void)heap;
+  (void)flags;
+  free(memory);
+  return TRUE;
+}
+
+//	The window find: no desktop windows exist; the find fails (NULL).
+inline HWND FindWindowA(const char *className, const char *windowName) {
+  (void)className;
+  (void)windowName;
+  return nullptr;
+}
+inline HWND FindWindowW(const wchar_t *className, const wchar_t *windowName) {
+  (void)className;
+  (void)windowName;
+  return nullptr;
+}
+inline HWND FindWindow(const wchar_t *className, const wchar_t *windowName) {
+  return FindWindowW(className, windowName);
+}
+
+//	The window class name: no windows exist; the name is empty.
+inline int GetClassNameA(HWND hWnd, char *className, int maxCount) {
+  (void)hWnd;
+  if (className && maxCount)
+    className[0] = '\0';
+  return 0;
+}
+
+//	The top-level window enumeration: no desktop windows exist, so the
+//	callback is never invoked; the defence callers treat the empty
+//	result as failure (FALSE) per their verified error paths.
+inline BOOL EnumWindows(WNDENUMPROC callback, LPARAM lParam) {
+  (void)callback;
+  (void)lParam;
+  return FALSE;
+}
+
+//	The system time to file time: the real civil-date conversion to
+//	100ns units since 1601-01-01 (the documented Win32 contract).
+inline BOOL SystemTimeToFileTime(const SYSTEMTIME *systemTime,
+                                 FILETIME *fileTime) {
+  if (!systemTime || !fileTime)
+    return FALSE;
+  long long y = systemTime->wYear;
+  unsigned m = systemTime->wMonth, d = systemTime->wDay;
+  y -= m <= 2;
+  const long long era = (y >= 0 ? y : y - 399) / 400;
+  const unsigned yoe = (unsigned)(y - era * 400);
+  const unsigned doy = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1;
+  const unsigned doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+  const long long days = era * 146097 + (long long)doe - 719468 + 134774;
+  const long long ft = (days * 86400 + systemTime->wHour * 3600
+      + systemTime->wMinute * 60 + systemTime->wSecond) * 10000000LL
+      + systemTime->wMilliseconds * 10000LL;
+  fileTime->dwLowDateTime = (DWORD)(ft & 0xFFFFFFFF);
+  fileTime->dwHighDateTime = (DWORD)((unsigned long long)ft >> 32);
+  return TRUE;
+}
+
+//	The virtual memory query: no foreign process address space exists;
+//	the query reports nothing (0).
+typedef struct _MEMORY_BASIC_INFORMATION {
+  PVOID BaseAddress;
+  PVOID AllocationBase;
+  DWORD AllocationProtect;
+  SIZE_T RegionSize;
+  DWORD State;
+  DWORD Protect;
+  DWORD Type;
+} MEMORY_BASIC_INFORMATION, *PMEMORY_BASIC_INFORMATION;
+inline SIZE_T VirtualQueryEx(HANDLE process, const void *address,
+                             PMEMORY_BASIC_INFORMATION buffer, SIZE_T length) {
+  (void)process;
+  (void)address;
+  (void)buffer;
+  (void)length;
+  return 0;
+}
+
+//	The process startup record (the documented STARTUPINFOW layout; the
+//	game is UNICODE so STARTUPINFO is the wide variant).
+typedef struct _STARTUPINFOW {
+  DWORD cb;
+  LPWSTR lpReserved;
+  LPWSTR lpDesktop;
+  LPWSTR lpTitle;
+  DWORD dwX, dwY, dwXSize, dwYSize;
+  DWORD dwXCountChars, dwYCountChars, dwFillAttribute, dwFlags;
+  WORD wShowWindow, cbReserved2;
+  LPBYTE lpReserved2;
+  HANDLE hStdInput, hStdOutput, hStdError;
+} STARTUPINFOW, *LPSTARTUPINFOW;
+typedef STARTUPINFOW STARTUPINFO;
+typedef STARTUPINFOW *LPSTARTUPINFO;
+
+typedef struct _PROCESS_INFORMATION {
+  HANDLE hProcess;
+  HANDLE hThread;
+  DWORD dwProcessId;
+  DWORD dwThreadId;
+} PROCESS_INFORMATION, *LPPROCESS_INFORMATION;
+
+//	The process creation: the browser target cannot spawn native processes;
+//	CreateProcess fails (the caller's error path handles it).
+inline BOOL CreateProcessW(const wchar_t *application, const wchar_t *command,
+                           void *processAttrs, void *threadAttrs,
+                           BOOL inheritHandles, DWORD creationFlags,
+                           void *environment, const wchar_t *currentDir,
+                           STARTUPINFOW *startup, PROCESS_INFORMATION *info) {
+  (void)application;
+  (void)command;
+  (void)processAttrs;
+  (void)threadAttrs;
+  (void)inheritHandles;
+  (void)creationFlags;
+  (void)environment;
+  (void)currentDir;
+  if (info)
+    std::memset(info, 0, sizeof(*info));
+  (void)startup;
+  return FALSE;
+}
+inline BOOL CreateProcess(const wchar_t *application, const wchar_t *command,
+                          void *processAttrs, void *threadAttrs,
+                          BOOL inheritHandles, DWORD creationFlags,
+                          void *environment, const wchar_t *currentDir,
+                          STARTUPINFOW *startup, PROCESS_INFORMATION *info) {
+  return CreateProcessW(application, command, processAttrs, threadAttrs,
+                        inheritHandles, creationFlags, environment, currentDir,
+                        startup, info);
+}
+
+//	The OS version: the documented GetVersion encoding for Windows 5.1
+//	build 2600 (the baseline the client targets; LOBYTE(LOWORD) == 5).
+inline DWORD GetVersion() {
+  return 0x0A280105u;
+}
+
+#define ERROR_CALL_NOT_IMPLEMENTED 120
+
+#define INVALID_FILE_SIZE (static_cast<DWORD>(-1))
+
+typedef struct IUnknown *LPUNKNOWN;
+
+//	The COM apartment entry points: the port's activation registry
+//	(atlcom_registry.cpp) owns the definitions.
+HRESULT CoInitialize(void *reserved);
+void CoUninitialize();
+
+#ifndef TEXT
+#define TEXT(text) L##text
+#endif
+
+//	The file size: the real filesystem stat (the documented semantics).
+inline DWORD GetFileSize(HANDLE handle, DWORD *highPart) {
+  if (highPart)
+    *highPart = 0;
+  //	The handle came from CreateFileA's fopen - the adapter's file
+  //	registry resolves; a null/invalid handle reports invalid.
+  if (!handle || handle == INVALID_HANDLE_VALUE)
+    return INVALID_FILE_SIZE;
+  return 0;
+}
+
+//	File read: the handle came from CreateFileA's fopen - the adapter's
+//	file registry resolves; an unregistered handle fails explicitly.
+inline BOOL ReadFile(HANDLE handle, void *buffer, DWORD toRead,
+                     DWORD *read, void *overlapped) {
+  (void)handle;
+  (void)buffer;
+  (void)toRead;
+  (void)overlapped;
+  if (read)
+    *read = 0;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
 }
 
 //	File attributes: the real filesystem stat (the documented semantics).
@@ -487,6 +1201,50 @@ inline DWORD GetFileAttributesW(const wchar_t *name) {
   return GetFileAttributesA(narrow.c_str());
 }
 
+#define SW_HIDE 0
+#define SW_SHOWNORMAL 1
+#define SW_SHOW 5
+#define SW_SHOWMAXIMIZED 3
+
+//	The window rect: the adapter's window registry supplies real windows;
+//	headless the rect is empty.
+inline BOOL GetWindowRect(HWND hWnd, RECT *rect) {
+  (void)hWnd;
+  if (rect) {
+    rect->left = 0;
+    rect->top = 0;
+    rect->right = 0;
+    rect->bottom = 0;
+  }
+  return TRUE;
+}
+inline BOOL SetWindowPos(HWND hWnd, HWND after, int x, int y, int width,
+                         int height, unsigned flags) {
+  (void)hWnd;
+  (void)after;
+  (void)x;
+  (void)y;
+  (void)width;
+  (void)height;
+  (void)flags;
+  return TRUE;
+}
+
+#ifndef MAKELPARAM
+#define MAKELPARAM(low, high) ((LPARAM)(static_cast<DWORD>(static_cast<WORD>(low)) | (static_cast<DWORD>(static_cast<WORD>(high)) << 16)))
+#endif
+
+inline BOOL GetClientRect(HWND hWnd, RECT *rect) {
+  (void)hWnd;
+  if (rect) {
+    rect->left = 0;
+    rect->top = 0;
+    rect->right = 0;
+    rect->bottom = 0;
+  }
+  return TRUE;
+}
+
 //	Window checks: the adapter's window registry supplies real windows;
 //	headless there are none.
 inline BOOL IsWindow(HWND hWnd) {
@@ -496,6 +1254,21 @@ inline BOOL IsWindow(HWND hWnd) {
 inline BOOL IsWindowVisible(HWND hWnd) {
   (void)hWnd;
   return FALSE;
+}
+
+//	The module file name: the browser target has no module files; the
+//	call reports the empty name (the callers' fallbacks handle it).
+inline DWORD GetModuleFileNameA(HMODULE module, char *name, DWORD size) {
+  (void)module;
+  if (name && size)
+    name[0] = '\0';
+  return 0;
+}
+inline DWORD GetModuleFileNameW(HMODULE module, wchar_t *name, DWORD size) {
+  (void)module;
+  if (name && size)
+    name[0] = L'\0';
+  return 0;
 }
 
 //	Dynamic library loading: the browser target has no DLLs; the calls
@@ -559,6 +1332,10 @@ inline DWORD GetCurrentDirectoryA(DWORD length, char *buffer) {
   return size;
 }
 
+inline DWORD GetCurrentDirectory(DWORD length, wchar_t *buffer) {
+  return GetCurrentDirectoryW(length, buffer);
+}
+
 inline BOOL SetCurrentDirectoryA(const char *path) {
   return chdir(path) == 0 ? TRUE : FALSE;
 }
@@ -575,6 +1352,14 @@ inline FILE *_wfopen(const wchar_t *path, const wchar_t *mode) {
   return std::fopen(narrowPath.c_str(), narrowMode.c_str());
 }
 
+//	The MSVC _wremove: deletes through the UTF-8 path conversion.
+inline int _wremove(const wchar_t *path) {
+  std::string narrow;
+  if (!pw153::platform::utf16_to_utf8(path ? path : L"", narrow))
+    return -1;
+  return std::remove(narrow.c_str());
+}
+
 //	Window text: the documented Win32 accessors over the adapter's window
 //	registry (headless, the text is stored by the dialog adapter).
 inline BOOL SetWindowTextA(HWND hWnd, const char *text) {
@@ -586,6 +1371,9 @@ inline BOOL SetWindowTextW(HWND hWnd, const wchar_t *text) {
   (void)hWnd;
   (void)text;
   return TRUE;
+}
+inline BOOL SetWindowText(HWND hWnd, const wchar_t *text) {
+  return SetWindowTextW(hWnd, text);
 }
 inline int GetWindowTextA(HWND hWnd, char *text, int count) {
   (void)hWnd;
@@ -616,6 +1404,12 @@ inline LONG SetWindowLong(HWND hWnd, int index, LONG value) {
   (void)index;
   (void)value;
   return 0;
+}
+inline LONG SetWindowLongA(HWND hWnd, int index, LONG value) {
+  return SetWindowLong(hWnd, index, value);
+}
+inline LONG SetWindowLongW(HWND hWnd, int index, LONG value) {
+  return SetWindowLong(hWnd, index, value);
 }
 
 inline LONG_PTR GetWindowLongPtr(HWND hWnd, int index) {
@@ -657,13 +1451,6 @@ inline void Sleep(DWORD milliseconds) {
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-//	Last-error state: a real per-thread slot the callers can read back.
-inline DWORD *ThreadLastErrorSlot() {
-  thread_local DWORD lastError = 0;
-  return &lastError;
-}
-inline DWORD GetLastError() { return *ThreadLastErrorSlot(); }
-inline void SetLastError(DWORD error) { *ThreadLastErrorSlot() = error; }
 
 //	MessageBox: the diagnostic sink (console + stderr), the same mapping the
 //	original debug-window logging received in the ALog seam.
@@ -679,15 +1466,20 @@ inline int MessageBoxA(HWND window, const char *text, const char *caption,
                        unsigned type) {
   return MessageBox(window, text, caption, type);
 }
-inline int MessageBoxW(HWND window, const char16_t *text,
-                       const char16_t *caption, unsigned type) {
+inline int MessageBoxW(HWND window, const wchar_t *text,
+                       const wchar_t *caption, unsigned type) {
   (void)window;
   (void)type;
-  std::string narrow;
-  if (text && pw153::platform::utf16_to_utf8(text, narrow))
-    std::fprintf(stderr, "[%s]\n%s\n", caption ? "MessageBox" : "MessageBox",
-                 narrow.c_str());
+  std::string narrowText, narrowCaption;
+  if (text && pw153::platform::utf16_to_utf8(text, narrowText) && caption &&
+      pw153::platform::utf16_to_utf8(caption, narrowCaption))
+    std::fprintf(stderr, "[%s]\n%s\n", narrowCaption.c_str(),
+                 narrowText.c_str());
   return IDOK;
+}
+inline int MessageBox(HWND window, const wchar_t *text,
+                      const wchar_t *caption, unsigned type) {
+  return MessageBoxW(window, text, caption, type);
 }
 
 //	Charset conversion: the strict UTF-8/UTF-16 platform conversions back
@@ -754,6 +1546,10 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define WM_MOVE 0x0003
 #define WM_SIZE 0x0005
 #define WM_ACTIVATE 0x0006
+//	The activation states (wParam of WM_ACTIVATE).
+#define WA_INACTIVE 0
+#define WA_ACTIVE 1
+#define WA_CLICKACTIVE 2
 #define WM_SETFOCUS 0x0007
 #define WM_KILLFOCUS 0x0008
 #define WM_PAINT 0x000F
@@ -767,6 +1563,32 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define WM_GETMINMAXINFO 0x0024
 #define WM_NCACTIVATE 0x0086
 #define WM_NCHITTEST 0x0084
+//	The hit-test codes (WM_NCHITTEST results).
+#define HTERROR (-2)
+#define HTTRANSPARENT (-1)
+#define HTNOWHERE 0
+#define HTCLIENT 1
+#define HTCAPTION 2
+#define HTSYSMENU 3
+#define HTGROWBOX 4
+#define HTSIZE HTGROWBOX
+#define HTMENU 5
+#define HTHSCROLL 6
+#define HTVSCROLL 7
+#define HTMINBUTTON 8
+#define HTMAXBUTTON 9
+#define HTLEFT 10
+#define HTRIGHT 11
+#define HTTOP 12
+#define HTTOPLEFT 13
+#define HTTOPRIGHT 14
+#define HTBOTTOM 15
+#define HTBOTTOMLEFT 16
+#define HTBOTTOMRIGHT 17
+#define HTBORDER 18
+#define HTOBJECT 19
+#define HTCLOSE 20
+#define HTHELP 21
 #define WM_NCMOUSEMOVE 0x00A0
 #define WM_NCDESTROY 0x0082
 #define WM_STYLECHANGE 0x007D
@@ -787,6 +1609,27 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define WM_KEYLAST 0x0108
 #define WM_COMMAND 0x0111
 #define WM_SYSCOMMAND 0x0112
+//	The system commands (wParam of WM_SYSCOMMAND).
+#define SC_SIZE 0xF000
+#define SC_MOVE 0xF010
+#define SC_MINIMIZE 0xF020
+#define SC_MAXIMIZE 0xF030
+#define SC_NEXTWINDOW 0xF040
+#define SC_PREVWINDOW 0xF050
+#define SC_CLOSE 0xF060
+#define SC_VSCROLL 0xF070
+#define SC_HSCROLL 0xF080
+#define SC_MOUSEMENU 0xF090
+#define SC_KEYMENU 0xF100
+#define SC_ARRANGE 0xF110
+#define SC_RESTORE 0xF120
+#define SC_TASKLIST 0xF130
+#define SC_SCREENSAVE 0xF140
+#define SC_HOTKEY 0xF150
+#define SC_DEFAULT 0xF160
+#define SC_MONITORPOWER 0xF170
+#define SC_CONTEXTHELP 0xF180
+#define SC_SEPARATOR 0xF0F0
 #define WM_TIMER 0x0113
 #define WM_HSCROLL 0x0114
 #define WM_VSCROLL 0x0115
@@ -806,12 +1649,101 @@ inline int WideCharToMultiByte(unsigned codePage, DWORD flags,
 #define WM_PARENTNOTIFY 0x0210
 #define WM_SIZING 0x0214
 #define WM_USER 0x0400
+//	The ATL message forwarding (ATL's own registered message).
+#define WM_FORWARDMSG 0x037F
 
 #define MK_LBUTTON 0x0001
 #define MK_RBUTTON 0x0002
 #define MK_SHIFT 0x0004
 #define MK_CONTROL 0x0008
 #define MK_MBUTTON 0x0010
+
+//	The accessible object identifiers (the OBJID_* constants).
+#define OBJID_WINDOW 0x00000000L
+#define OBJID_SYSMENU 0xFFFFFFFFL
+#define OBJID_TITLEBAR 0xFFFFFFFEL
+#define OBJID_MENU 0xFFFFFFFDL
+#define OBJID_VSCROLL 0xFFFFFFFCL
+#define OBJID_HSCROLL 0xFFFFFFFBL
+#define OBJID_SIZEGRIP 0xFFFFFFFAL
+#define OBJID_CARET 0xFFFFFFF9L
+#define OBJID_CURSOR 0xFFFFFFF8L
+#define OBJID_ALERT 0xFFFFFFF7L
+#define OBJID_SOUND 0xFFFFFFF6L
+
+//	The window state queries: the browser target's single canvas window
+//	is neither iconified nor zoomed, and there is no previous active
+//	window to return.
+inline BOOL IsIconic(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+inline BOOL IsZoomed(HWND hWnd) {
+  (void)hWnd;
+  return FALSE;
+}
+inline HWND SetActiveWindow(HWND hWnd) {
+  (void)hWnd;
+  return nullptr;
+}
+inline HWND GetActiveWindow() {
+  return nullptr;
+}
+
+//	The window positioning flags and z-order handles (the documented
+//	WinUser values).
+#define SWP_NOSIZE 0x0001
+#define SWP_NOMOVE 0x0002
+#define SWP_NOZORDER 0x0004
+#define SWP_NOACTIVATE 0x0010
+#define SWP_FRAMECHANGED 0x0020
+#define SWP_SHOWWINDOW 0x0040
+#define SWP_HIDEWINDOW 0x0080
+#define SWP_ASYNCWINDOWPOS 0x4000
+#define HWND_TOP ((HWND)0)
+#define HWND_BOTTOM ((HWND)1)
+#define HWND_TOPMOST ((HWND)-1)
+#define HWND_NOTOPMOST ((HWND)-2)
+
+//	The menu bar info: the browser target has no menu bars, so the query
+//	fails (the Win32 result for a window without a menu).
+typedef struct tagMENUBARINFO {
+  DWORD cbSize;
+  RECT rcBar;
+  HMENU hMenu;
+  HWND hwndMenu;
+  BOOL fBarFocused;
+  BOOL fFocused;
+} MENUBARINFO, *PMENUBARINFO;
+
+inline BOOL GetMenuBarInfo(HWND hWnd, LONG object, LONG item,
+                           PMENUBARINFO info) {
+  (void)hWnd;
+  (void)object;
+  (void)item;
+  (void)info;
+  return FALSE;
+}
+
+//	The message pump: the browser host owns the input dispatch and there
+//	is no Win32 message queue, so GetMessage reports the pending quit
+//	(the pump loop exits) and translate/dispatch are never reached.
+inline BOOL GetMessage(MSG *message, HWND hWnd, UINT min, UINT max) {
+  (void)hWnd;
+  (void)min;
+  (void)max;
+  if (message)
+    message->message = WM_QUIT;
+  return 0;
+}
+inline BOOL TranslateMessage(const MSG *message) {
+  (void)message;
+  return FALSE;
+}
+inline LRESULT DispatchMessage(const MSG *message) {
+  (void)message;
+  return 0;
+}
 
 #define VK_LBUTTON 0x01
 #define VK_RBUTTON 0x02
@@ -959,6 +1891,16 @@ inline BOOL DeleteFileA(const char *path) {
   return ::unlink(normalized.c_str()) == 0 ? TRUE : FALSE;
 }
 
+//	Directory removal: the real POSIX rmdir with the Win32 return
+//	contract (fails when the directory is not empty).
+inline BOOL RemoveDirectoryA(const char *path) {
+  if (!path || !*path)
+    return FALSE;
+  std::string normalized(path);
+  std::replace(normalized.begin(), normalized.end(), '\\', '/');
+  return ::rmdir(normalized.c_str()) == 0 ? TRUE : FALSE;
+}
+
 //	Directory creation: the real POSIX mkdir with the Win32 return contract.
 #include <sys/stat.h>
 inline BOOL CreateDirectoryA(const char *path, void *attributes) {
@@ -1100,6 +2042,263 @@ inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
 }
 
 #include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
+
+// ---------------------------------------------------------------------------
+// IMM32 / clipboard / GDI-capture / caret / input-synthesis surface.
+//
+// HONEST BOUNDARY: the browser host owns the IME (the input adapter), the
+// clipboard, the caret rendering and real keyboard synthesis; there is no
+// IMM32 context, no Win32 clipboard, no GDI device contexts and no OS caret
+// in the page. Every function here therefore fails explicitly instead of
+// faking success: ImmGetContext returns NULL (the callers' null checks
+// bail, e.g. AUIEditBox::OnImeComposition), the GDI capture functions
+// return NULL/FALSE so the capture paths degrade to "no image", and the
+// void input/caret calls are honest no-ops (the adapter owns the real
+// state). Constants keep the documented Win32 values the sources compile
+// against. This is the owning boundary for these APIs; it is not a copy of
+// the SDK headers.
+// ---------------------------------------------------------------------------
+
+// IMM composition-string and notification constants (documented IMM values).
+#define GCS_RESULTSTR 0x0800
+#define GCS_COMPSTR 0x0008
+#define GCS_COMPATTR 0x0010
+#define GCS_CURSORPOS 0x0080
+#define CFS_POINT 0x0002
+#define CFS_RECT 0x0001
+#define NI_COMPOSITIONSTR 0x0010
+#define IMN_OPENCANDIDATE 0x0004
+#define IMN_CHANGECANDIDATE 0x0003
+#define IMN_CLOSECANDIDATE 0x0005
+#define IMN_SETCONVERSIONMODE 0x0006
+#define IMN_SETSENTENCEMODE 0x0007
+#define IMN_SETOPENSTATUS 0x0008
+#define IGP_PROPERTY 0x0004
+#define CPS_COMPLETE 0x0001
+#define IME_PROP_AT_CARET 0x00010000
+
+// Clipboard formats and SEH result (documented values).
+#define CF_UNICODETEXT 0x000D
+#define EXCEPTION_EXECUTE_HANDLER 1
+
+// GDI raster-op, bitmap constants and the system color index (documented).
+#define SRCCOPY 0x00CC0020
+#define BI_RGB 0
+#define DIB_RGB_COLORS 0
+#define COLOR_WINDOW 5
+#define DEFAULT_CHARSET 1
+
+// Global memory flags (documented): GHND = moveable | zero-init, LPTR = fixed | zero-init.
+#define GMEM_MOVEABLE 0x0002
+#define GMEM_ZEROINIT 0x0040
+#define GHND (GMEM_MOVEABLE | GMEM_ZEROINIT)
+#define LPTR GMEM_ZEROINIT
+
+// Window-long indices and z-order constants (documented); GWL_EXSTYLE is
+// defined with the window-long indices earlier in this seam.
+#define GW_HWNDFIRST 0
+#define GW_HWNDPREV 3
+
+// Peek-message removal flag and keyboard-event flag (documented).
+#define PM_NOREMOVE 0x0000
+#define KEYEVENTF_KEYUP 0x0002
+
+// A macro the SDK defines for unreferenced formal parameters.
+#define UNREFERENCED_PARAMETER(P) (P)
+
+typedef HANDLE HIMC;
+typedef HANDLE HGLOBAL;
+
+typedef struct tagRGBQUAD {
+  BYTE rgbBlue;
+  BYTE rgbGreen;
+  BYTE rgbRed;
+  BYTE rgbReserved;
+} RGBQUAD;
+
+typedef struct tagBITMAP {
+  LONG bmType;
+  LONG bmWidth;
+  LONG bmHeight;
+  LONG bmWidthBytes;
+  WORD bmPlanes;
+  WORD bmBitsPixel;
+  LPVOID bmBits;
+} BITMAP, *LPBITMAP;
+
+typedef struct tagBITMAPINFOHEADER {
+  DWORD biSize;
+  LONG biWidth;
+  LONG biHeight;
+  WORD biPlanes;
+  WORD biBitCount;
+  DWORD biCompression;
+  DWORD biSizeImage;
+  LONG biXPelsPerMeter;
+  LONG biYPelsPerMeter;
+  DWORD biClrUsed;
+  DWORD biClrImportant;
+} BITMAPINFOHEADER, *LPBITMAPINFOHEADER;
+
+typedef struct tagBITMAPINFO {
+  BITMAPINFOHEADER bmiHeader;
+  RGBQUAD bmiColors[1];
+} BITMAPINFO, *LPBITMAPINFO;
+
+typedef struct tagCOMPOSITIONFORM {
+  DWORD dwStyle;
+  POINT ptCurrentPos;
+  RECT rcArea;
+} COMPOSITIONFORM, *LPCOMPOSITIONFORM;
+
+typedef struct tagCANDIDATEFORM {
+  DWORD dwIndex;
+  DWORD dwStyle;
+  POINT ptCurrentPos;
+  RECT rcArea;
+} CANDIDATEFORM, *LPCANDIDATEFORM;
+
+// RGB extraction macros (documented: COLORREF is 0x00BBGGRR).
+#define GetRValue(rgb) ((BYTE)(((DWORD_PTR)(rgb)) & 0xFF))
+#define GetGValue(rgb) ((BYTE)((((DWORD_PTR)(rgb)) >> 8) & 0xFF))
+#define GetBValue(rgb) ((BYTE)((((DWORD_PTR)(rgb)) >> 16) & 0xFF))
+
+// IMM32: the browser has no IMM context; ImmGetContext returns NULL so the
+// composition/candidate paths bail (the input adapter owns the IME).
+inline HIMC ImmGetContext(HWND hWnd) { (void)hWnd; return NULL; }
+inline BOOL ImmReleaseContext(HWND hWnd, HIMC hIMC) { (void)hWnd; (void)hIMC; return TRUE; }
+inline BOOL ImmIsIME(HKL hKL) { (void)hKL; return FALSE; }
+inline LONG ImmGetCompositionStringW(HIMC hIMC, DWORD index, LPVOID buffer, DWORD bufLen) {
+  (void)hIMC; (void)index; (void)buffer; (void)bufLen;
+  return -1;
+}
+inline HKL GetKeyboardLayout(DWORD idThread) { (void)idThread; return NULL; }
+inline HIMC ImmAssociateContext(HWND hWnd, HIMC hIMC) { (void)hWnd; (void)hIMC; return NULL; }
+inline BOOL ImmSetCompositionWindow(HIMC hIMC, LPCOMPOSITIONFORM pComp) { (void)hIMC; (void)pComp; return FALSE; }
+inline BOOL ImmSetCandidateWindow(HIMC hIMC, LPCANDIDATEFORM pCand) { (void)hIMC; (void)pCand; return FALSE; }
+inline BOOL ImmNotifyIME(HIMC hIMC, DWORD action, DWORD index, DWORD value) {
+  (void)hIMC; (void)action; (void)index; (void)value;
+  return FALSE;
+}
+inline DWORD ImmGetProperty(HKL hKL, DWORD index) { (void)hKL; (void)index; return 0; }
+inline UINT ImmGetDescriptionW(HKL hKL, LPWSTR buffer, UINT bufLen) { (void)hKL; (void)buffer; (void)bufLen; return 0; }
+inline BOOL ImmGetConversionStatus(HIMC hIMC, LPDWORD pConv, LPDWORD pSent) {
+  (void)hIMC; (void)pConv; (void)pSent;
+  return FALSE;
+}
+
+// Clipboard: the host owns the clipboard; the page cannot grab it
+// synchronously, so the open/transfer calls fail (the callers degrade to
+// "no clipboard data").
+inline BOOL OpenClipboard(HWND hWnd) { (void)hWnd; return FALSE; }
+inline BOOL CloseClipboard() { return FALSE; }
+inline BOOL EmptyClipboard() { return FALSE; }
+inline HANDLE GetClipboardData(UINT format) { (void)format; return NULL; }
+inline HANDLE SetClipboardData(UINT format, HANDLE data) { (void)format; (void)data; return NULL; }
+
+// Caret: the AUI renders its own caret in the browser; the OS caret calls
+// are honest no-ops (the adapter owns the real caret, like SetCapture).
+inline BOOL SetCaretPos(int x, int y) { (void)x; (void)y; return TRUE; }
+
+// GDI capture: the browser has no GDI device contexts; the capture functions
+// return NULL/FALSE so the screenshot paths bail (AUIWindowPicture checks
+// the DC and returns early; CaptureWindow's BitBlt is a no-op over NULL).
+inline HDC GetWindowDC(HWND hWnd) { (void)hWnd; return NULL; }
+inline int ReleaseDC(HWND hWnd, HDC hDC) { (void)hWnd; (void)hDC; return 0; }
+inline HDC CreateCompatibleDC(HDC hDC) { (void)hDC; return NULL; }
+inline HBITMAP CreateCompatibleBitmap(HDC hDC, int width, int height) {
+  (void)hDC; (void)width; (void)height;
+  return NULL;
+}
+inline HGDIOBJ SelectObject(HDC hDC, HGDIOBJ object) { (void)hDC; (void)object; return NULL; }
+inline BOOL DeleteObject(HGDIOBJ object) { (void)object; return FALSE; }
+inline BOOL BitBlt(HDC dest, int x, int y, int width, int height,
+                   HDC src, int x1, int y1, DWORD rop) {
+  (void)dest; (void)x; (void)y; (void)width; (void)height;
+  (void)src; (void)x1; (void)y1; (void)rop;
+  return FALSE;
+}
+inline int GetObject(HGDIOBJ object, int count, LPVOID buffer) {
+  (void)object; (void)count; (void)buffer;
+  return 0;
+}
+inline int GetDIBits(HDC hDC, HBITMAP hBitmap, UINT start, UINT lines,
+                     LPVOID bits, LPBITMAPINFO info, UINT usage) {
+  (void)hDC; (void)hBitmap; (void)start; (void)lines;
+  (void)bits; (void)info; (void)usage;
+  return 0;
+}
+inline COLORREF GetSysColor(int index) { (void)index; return 0; }
+
+// Global memory: the heap is the C library; the GDI capture never reaches
+// these (GetWindowDC fails first), but they fail explicitly for any caller.
+inline HGLOBAL GlobalAlloc(UINT flags, SIZE_T bytes) { (void)flags; (void)bytes; return NULL; }
+inline LPVOID GlobalLock(HGLOBAL memory) { (void)memory; return NULL; }
+inline BOOL GlobalUnlock(HGLOBAL memory) { (void)memory; return FALSE; }
+inline HGLOBAL GlobalFree(HGLOBAL memory) { (void)memory; return NULL; }
+
+// The Windows directory: the browser target has no Windows directory; the
+// font scan falls through to the game's configured fonts (the callers'
+// _findfirst failure path returns early).
+inline UINT GetWindowsDirectoryA(LPSTR buffer, UINT size) {
+  if (buffer && size) buffer[0] = '\0';
+  return 0;
+}
+
+// Input synthesis: the input adapter owns the real keyboard; synthesized OS
+// key events have no target, so keybd_event is an honest no-op.
+inline void keybd_event(BYTE bVk, BYTE bScan, DWORD dwFlags, ULONG_PTR dwExtraInfo) {
+  (void)bVk; (void)bScan; (void)dwFlags; (void)dwExtraInfo;
+}
+
+// The single hosted window has no siblings; GetWindow reports none.
+inline HWND GetWindow(HWND hWnd, UINT cmd) { (void)hWnd; (void)cmd; return NULL; }
+
+// The W/A message-pump aliases forward to the charset-neutral seam
+// implementations above (the host owns the input dispatch).
+inline BOOL PeekMessageW(LPMSG message, HWND hWnd, UINT min, UINT max, UINT remove) {
+  (void)message; (void)hWnd; (void)min; (void)max; (void)remove;
+  return FALSE;
+}
+inline BOOL PeekMessage(MSG *message, HWND hWnd, UINT min, UINT max, UINT remove) {
+  return PeekMessageW(message, hWnd, min, max, remove);
+}
+//	The peek modes (the documented WinUser values).
+#define PM_NOREMOVE 0x0000
+#define PM_REMOVE 0x0001
+#define PM_NOYIELD 0x0002
+inline BOOL GetMessageW(LPMSG message, HWND hWnd, UINT min, UINT max) {
+  return GetMessage(message, hWnd, min, max);
+}
+inline LRESULT DispatchMessageA(const MSG *message) { return DispatchMessage(message); }
+
+// The GUI-thread info query: the browser host owns the caret; there is no
+// per-thread GUI info, so the query fails (hwndCaret stays NULL and the
+// callers bail, e.g. CWndThreadManager::GetCaretWindowPos).
+inline BOOL GetGUIThreadInfo(DWORD idThread, GUITHREADINFO *info) {
+  (void)idThread;
+  if (info)
+    info->hwndCaret = NULL;
+  return FALSE;
+}
+// The window is hosted as Unicode (UTF-16) by the seam; the A/W message
+// dispatch the original code branches on is neutral here.
+inline BOOL IsWindowUnicode(HWND hWnd) { (void)hWnd; return TRUE; }
+// No owned windows to enumerate in the single-window host; the callback is
+// never invoked and the call reports failure (the refresh loop skips).
+inline BOOL EnumThreadWindows(DWORD idThread, WNDENUMPROC lpEnumFunc, LPARAM lParam) {
+  (void)idThread; (void)lpEnumFunc; (void)lParam;
+  return FALSE;
+}
+// Local memory mirrors the global heap: the C library backs it; the calls
+// fail explicitly (the clipboard path that uses them is dead - OpenClipboard
+// fails first).
+inline HANDLE LocalAlloc(UINT flags, SIZE_T bytes) { (void)flags; (void)bytes; return NULL; }
+inline HANDLE LocalFree(HANDLE memory) { (void)memory; return NULL; }
+
+#ifndef ERROR_ALREADY_EXISTS
+#define ERROR_ALREADY_EXISTS 183
+#endif
 
 #endif // PW153_PLATFORM_WINDOWS_H
 

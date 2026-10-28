@@ -262,3 +262,55 @@ int a_Random(int iMin, int iMax)
 	int iRand	= rand() % (iDelta + 1);
 	return iRand + iMin;
 }
+
+/*	Wide/narrow conversions (the Win32 WideCharToMultiByte contract over the
+	platform's UTF-16/UTF-8 converters; the code page argument is the Win32
+	legacy and the port always converts UTF-16 to UTF-8). Returns the number
+	of output characters written, or the required size when the output
+	buffer is absent; a negative input length means null-terminated input.
+*/
+
+int a_WideCharToMultiByte(const wchar_t* wszWideChar, int iWideChar, char* szMultiByte, int iMultiByte)
+{
+	if (!wszWideChar) return 0;
+	std::string out;
+	if (iWideChar < 0)
+	{
+		if (!pw153::platform::utf16_to_utf8(wszWideChar, out)) return 0;
+	}
+	else
+	{
+		std::u16string_view view(reinterpret_cast<const char16_t*>(wszWideChar), (size_t)iWideChar);
+		if (!pw153::platform::utf16_to_utf8(view, out)) return 0;
+	}
+	if (!szMultiByte || iMultiByte <= 0) return (int)out.size();
+	size_t copy = out.size() < (size_t)iMultiByte ? out.size() : (size_t)iMultiByte;
+	std::memcpy(szMultiByte, out.data(), copy);
+	return (int)copy;
+}
+
+int a_WideCharToMultiByte(int iCodePage, const wchar_t* wszWideChar, int iWideChar, char* szMultiByte, int iMultiByte)
+{
+	(void)iCodePage;	//	the port always converts UTF-16 to UTF-8.
+	return a_WideCharToMultiByte(wszWideChar, iWideChar, szMultiByte, iMultiByte);
+}
+
+int a_MultiByteToWideChar(const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar)
+{
+	if (!szMultiByte) return 0;
+	std::string_view in = iMultiByte < 0
+		? std::string_view(szMultiByte)
+		: std::string_view(szMultiByte, (size_t)iMultiByte);
+	std::wstring out;
+	if (!pw153::platform::utf8_to_utf16(in, out)) return 0;
+	if (!wszWideChar || iWideChar <= 0) return (int)out.size();
+	size_t copy = out.size() < (size_t)iWideChar ? out.size() : (size_t)iWideChar;
+	std::memcpy(wszWideChar, out.data(), copy * sizeof(wchar_t));
+	return (int)copy;
+}
+
+int a_MultiByteToWideChar(int iCodePage, const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar)
+{
+	(void)iCodePage;	//	the port always converts UTF-8 to UTF-16.
+	return a_MultiByteToWideChar(szMultiByte, iMultiByte, wszWideChar, iWideChar);
+}

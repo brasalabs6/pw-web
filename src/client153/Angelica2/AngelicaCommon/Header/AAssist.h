@@ -10,15 +10,25 @@
  * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.
  *
  * Adapted from original AAssist.h, revision and hashes in source-manifest.json.
- * The wide-character conversion surface (AWString, a_MultiByteToWideChar,
- * a_WideCharToMultiByte, AS2WC, WC2AS and the ACString/UNICODE macros) and the
- * custom memory-statistic surface are omitted until a port consumer needs them;
- * no skeleton consumer uses them. Templates, macros, string IDs and the random
- * generator keep the original behavior.
+ * The wide-character conversion entry points (a_MultiByteToWideChar,
+ * a_WideCharToMultiByte) are declared here and implemented over the
+ * platform's UTF-16/UTF-8 converters in AAssist.cpp (ElementClient.cpp is
+ * the consumer). AWString's own conversion helpers and the custom
+ * memory-statistic surface remain omitted until a port consumer needs them.
+ * Templates, macros, string IDs and the random generator keep the original
+ * behavior.
  */
 
 #ifndef _AASSIST_H_
 #define _AASSIST_H_
+
+//	Wide/narrow conversions (the Win32 WideCharToMultiByte contract; a
+//	negative input length means null-terminated input). Implemented in
+//	AAssist.cpp over the platform's UTF-16/UTF-8 converters.
+int a_WideCharToMultiByte(const wchar_t* wszWideChar, int iWideChar, char* szMultiByte, int iMultiByte);
+int a_WideCharToMultiByte(int iCodePage, const wchar_t* wszWideChar, int iWideChar, char* szMultiByte, int iMultiByte);
+int a_MultiByteToWideChar(const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar);
+int a_MultiByteToWideChar(int iCodePage, const char* szMultiByte, int iMultiByte, wchar_t* wszWideChar, int iWideChar);
 
 #include "ABaseDef.h"
 #include "AString.h"

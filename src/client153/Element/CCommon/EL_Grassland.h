@@ -74,7 +74,8 @@ private:
 	float			m_f;
 
 public:
-	inline void SetWindForce(A3DVECTOR3 &vecForce) { m_vecWindForce = vecForce; }
+//	MSVC bound the temporary to the non-const reference; the standard form.
+	inline void SetWindForce(const A3DVECTOR3 &vecForce) { m_vecWindForce = vecForce; }
 	inline const A3DVECTOR3 & GetPos() { return m_vecPos; }
 
 protected:

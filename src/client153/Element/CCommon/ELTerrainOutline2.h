@@ -23,6 +23,9 @@ class A3DTerrain2;
 class A3DStream;
 class A3DViewport;
 class TerrainBlockInfo;
+//	MSVC injected the friend name into the namespace; the member below
+//	needs the type declared at namespace scope.
+class CELOutlineTextureCache;
 
 #define OUTLINE_MAX_LEVEL   5
 

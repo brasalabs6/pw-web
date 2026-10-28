@@ -4,7 +4,8 @@
 
 #include <windows.h>
 #include <tchar.h>
-#include <winsvc.h>
+//	winsvc.h is not in the platform seam; no service API is used here.
+//#include <winsvc.h>
 #include <vector>
 #include <string>
 

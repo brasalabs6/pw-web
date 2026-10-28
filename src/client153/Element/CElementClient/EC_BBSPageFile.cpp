@@ -227,7 +227,7 @@ HTMLLabel* CECBBSPageFile::LoadFile(AString lFileName,AString url)
 	hFile = CreateFileA(lFileName,GENERIC_READ,FILE_SHARE_READ,NULL, 
                      OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 	if(hFile==INVALID_HANDLE_VALUE)
-		return false;
+		return NULL;	//	original returned false into a HTMLLabel* (MSVC null pun).
 	DWORD iSize=GetFileSize(hFile,NULL);
 	if(iSize<=0)
 	{

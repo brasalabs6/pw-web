@@ -9,7 +9,11 @@
 #include <algorithm>
 #include "Psapi.h"
 #include "gnmarshal.h"
-
+//	The Win32 process/window/heap surface (OpenProcess, GetProcessHeap,
+//	HeapAlloc/HeapFree, FindWindowA, GetWindowThreadProcessId,
+//	GetCurrentProcessId, GetClassNameA, EnumWindows, SystemTimeToFileTime,
+//	VirtualQueryEx, MEMORY_BASIC_INFORMATION) is provided by the platform
+//	umbrella (Windows.h) - the contract owner.
 #ifdef UNICODE
 #undef Process32First
 #undef Process32Next

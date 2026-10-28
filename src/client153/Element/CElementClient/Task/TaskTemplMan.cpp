@@ -942,7 +942,7 @@ bool ATaskTemplMan::SaveDynTasksToPack(const char* szPath, bool bMarshalAll)
 		if (!bMarshalAll && !pTop->m_DynTaskType)
 			continue;
 
-		if (wcsstr(pTop->m_szName, L"测试任务_") != 0)
+		if (pw153::platform::wide_strstr(pTop->m_szName, L"测试任务_") != 0)	//	the port scanner (the libc wcsstr reads 32-bit units).
 			continue;
 
 		int sz = pTop->MarshalDynTask(buf);
@@ -1149,7 +1149,7 @@ bool ATaskTemplMan::SaveDynTasksToPack2(const char* szPath, bool bMarshalAll)
 		if (!bMarshalAll && !(it->second).m_DynTaskType)
 			continue;
 		
-		if (wcsstr((it->second).GetName(), L"测试任务_") != 0)
+		if (pw153::platform::wide_strstr((it->second).GetName(), L"测试任务_") != 0)	//	the port scanner (the libc wcsstr reads 32-bit units).
 			continue;
 		
 		int sz = 0;

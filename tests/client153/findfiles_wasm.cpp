@@ -8,6 +8,11 @@
 
 #define CHECK(condition) do { if (!(condition)) throw std::runtime_error(#condition); } while (false)
 int main() {
+  //	Idempotent re-runs: a previous run leaves logs/ behind (the Win32
+  //	CreateDirectory fails on the existing directory).
+  DeleteFileA("logs\\plain");
+  DeleteFileA("logs\\OLD.LOG");
+  RemoveDirectoryA("logs");
   CHECK(CreateDirectoryA("logs", nullptr));
   FILE *log = std::fopen("logs/OLD.LOG", "wb");
   CHECK(log); CHECK(std::fputs("log", log) >= 0); CHECK(std::fclose(log) == 0);

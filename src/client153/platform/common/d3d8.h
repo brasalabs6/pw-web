@@ -29,6 +29,7 @@
 #define D3DTSS_BORDERCOLOR 15
 
 #include "Windows.h"
+#include "unknwn.h"	//	GUID (D3DADAPTER_IDENTIFIER8's DeviceIdentifier).
 
 //	D3DX math aliases: the ported A3D math carries the same layouts and the
 //	original D3DX headers wrap them.
@@ -115,6 +116,9 @@ struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT GetRenderState(DWORD state, DWORD *value) = 0;
   virtual HRESULT Clear(DWORD count, const D3DRECT *pRects, DWORD flags,
                         DWORD color, float z, DWORD stencil) = 0;
+  //	User clip planes (the grass land render reads and rewrites them).
+  virtual HRESULT GetClipPlane(DWORD index, float *pPlane) = 0;
+  virtual HRESULT SetClipPlane(DWORD index, const float *pPlane) = 0;
 };
 
 struct IDirect3DSwapChain8 : IUnknownD3D {
@@ -184,6 +188,27 @@ struct ID3DXBuffer : IUnknownD3D {
 };
 typedef ID3DXBuffer *LPD3DXBUFFER;
 
+//	The adapter identification (the documented D3DADAPTER_IDENTIFIER8
+//	layout; the driver strings feed the defence collector's description).
+#define MAX_DEVICE_IDENTIFIER_STRING 512
+
+typedef struct _D3DADAPTER_IDENTIFIER8 {
+  char Driver[MAX_DEVICE_IDENTIFIER_STRING];
+  char Description[MAX_DEVICE_IDENTIFIER_STRING];
+  char DeviceName[32];
+  DWORD DriverVersionHighPart;
+  DWORD DriverVersionLowPart;
+  DWORD VendorId;
+  DWORD DeviceId;
+  DWORD SubSysId;
+  DWORD Revision;
+  GUID DeviceIdentifier;
+  DWORD WHQLLevel;
+} D3DADAPTER_IDENTIFIER8;
+
+#define D3DADAPTER_DEFAULT 0
+#define D3DENUM_NO_WHQL_LEVEL 0x00000002L
+
 struct IDirect3D8 : IUnknownD3D {
   virtual HRESULT CheckDeviceType(UINT adapter, DWORD checkType,
                                   DWORD displayFormat, DWORD backBufferFormat,
@@ -192,6 +217,8 @@ struct IDirect3D8 : IUnknownD3D {
                                DWORD behaviorFlags,
                                D3DPRESENT_PARAMETERS *pPresentationParameters,
                                IDirect3DDevice8 **ppDevice) = 0;
+  virtual HRESULT GetAdapterIdentifier(UINT adapter, DWORD flags,
+                                       D3DADAPTER_IDENTIFIER8 *identifier) = 0;
 };
 
 #endif // PW153_PLATFORM_D3D8_H

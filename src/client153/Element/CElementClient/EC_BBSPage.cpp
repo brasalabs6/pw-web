@@ -341,9 +341,9 @@ UINT _DownloadPageImpl(LPVOID pParam)
 	CECBBSFileDownloader downloader;
 	AString a;
 	if(threaddata->bGet)
-		a.Format("DownloadingPage: %s to %s",threaddata->pageinfo->url+threaddata->parm,threaddata->pageinfo->localfn);
+		a.Format("DownloadingPage: %s to %s",(const char*)(threaddata->pageinfo->url+threaddata->parm),(const char*)threaddata->pageinfo->localfn);
 	else
-		a.Format("DownloadingPage: %s to %s",threaddata->pageinfo->url,threaddata->pageinfo->localfn);
+		a.Format("DownloadingPage: %s to %s",(const char*)threaddata->pageinfo->url,(const char*)threaddata->pageinfo->localfn);	//	explicit conversions in varargs.
 	writelog(a);
 	if(threaddata->parm=="")
 		downloader.DownloadByUrl(threaddata->pageinfo->url,
@@ -388,7 +388,7 @@ UINT _ParsePageImpl(CECBBSPage* page, DownloadedPagesInfo* pageinfo)
 			return 1;
 	}
 	AString a;
-	a.Format("LoadingLocalFile: %s",pageinfo->localfn);
+	a.Format("LoadingLocalFile: %s",(const char*)pageinfo->localfn);	//	explicit conversion in varargs.
 	writelog(a);
 	if( !page->LoadFile(pageinfo->localfn,pageinfo->url) )
 	{
@@ -398,33 +398,33 @@ UINT _ParsePageImpl(CECBBSPage* page, DownloadedPagesInfo* pageinfo)
 	}
 	if(page->m_bStop)
 	{
-		a.Format("LoadingLocalFile: %s stopped",pageinfo->localfn);
+		a.Format("LoadingLocalFile: %s stopped",(const char*)pageinfo->localfn);	//	explicit conversion in varargs.
 		writelog(a);
 		return 1;
 	}
-	a.Format("LoadingLocalFile: %s finished",pageinfo->localfn);
+	a.Format("LoadingLocalFile: %s finished",(const char*)pageinfo->localfn);	//	explicit conversion in varargs.
 	writelog(a);
 	while(!page->m_hFile.ImgNodeList.IsFinishLoadingImg())
 	{
 		if(page->m_bStop)
 		{
-			a.Format("LoadingPage: %s stopped",pageinfo->url);
+			a.Format("LoadingPage: %s stopped",(const char*)pageinfo->url);	//	explicit conversion in varargs.
 			writelog(a);
 			return 1;
 		}
 		Sleep(20);
 	}
-	a.Format("LoadingPage: %s",pageinfo->url);
+	a.Format("LoadingPage: %s",(const char*)pageinfo->url);	//	explicit conversion in varargs.
 	writelog(a);
 	page->m_aNewURL=pageinfo->url;
 	page->LoadPage();
 	if(page->m_bStop)
 	{
-		a.Format("LoadingPage: %s stopped",pageinfo->url);
+		a.Format("LoadingPage: %s stopped",(const char*)pageinfo->url);	//	explicit conversion in varargs.
 		writelog(a);
 		return 1;
 	}
-	a.Format("LoadingPage: %s finished",pageinfo->url);
+	a.Format("LoadingPage: %s finished",(const char*)pageinfo->url);	//	explicit conversion in varargs.
 	writelog(a);
 	return 0;
 }
@@ -533,7 +533,7 @@ void CECBBSPage::AddParamFile(ObjectNode *node)
 {
 	char cfname[1000];
 	HTMLLabel *hLabel=node->label;
-	WideCharToMultiByte(m_iCodePage,0,node->obj->GetText(),-1,cfname,1000,NULL,false);
+	WideCharToMultiByte(m_iCodePage,0,node->obj->GetText(),-1,cfname,1000,NULL,NULL);	//	NULL for the BOOL* out-param (MSVC accepted false as null here).
 	HANDLE hFile;
 	hFile = CreateFileA(cfname,GENERIC_READ,FILE_SHARE_READ,NULL, 
                      OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
@@ -593,8 +593,8 @@ void CECBBSPage::AddParam(ACHAR *name,ACHAR *value)
 	else
 	{
 		char cname[1000],cvalue[3000];
-		WideCharToMultiByte(m_iCodePage,0,name,-1,cname,1000,NULL,false);
-		WideCharToMultiByte(m_iCodePage,0,value,-1,cvalue,3000,NULL,false);
+		WideCharToMultiByte(m_iCodePage,0,name,-1,cname,1000,NULL,NULL);	//	NULL for the BOOL* out-param (MSVC accepted false as null here).
+		WideCharToMultiByte(m_iCodePage,0,value,-1,cvalue,3000,NULL,NULL);	//	NULL for the BOOL* out-param (MSVC accepted false as null here).
 		AString p;
 		p="--";
 		p+=MultiPartBoundary;
@@ -1047,7 +1047,7 @@ bool CECBBSPage::UseNewPage(bool bStop,bool &bNewHistoryPage)
 				DownloadedPages.SaveParm(m_iPageNumber,this);
 				DownloadedPages.LoadParm(m_iNewPageNumber,this);
 				AString a;
-				a.Format("Page %d: UpdatePage %s",this,m_aNewURL);
+				a.Format("Page %d: UpdatePage %s",this,(const char*)m_aNewURL);	//	explicit conversion in varargs.
 				writelog(a);
 				m_iDefaultFontSize=m_iNewDefaultFontSize;
 				m_iNewDefaultFontSize=-1;

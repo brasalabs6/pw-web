@@ -31,16 +31,30 @@ typedef LRESULT *LPRESULT;
 #ifndef LPCTSTR
 #define LPCTSTR const wchar_t *
 #endif
-#define WS_OVERLAPPEDWINDOW 0x00CF0000L
-#define WS_POPUP 0x80000000L
-#define WS_CHILD 0x40000000L
-#define WS_VISIBLE 0x10000000L
+//	The WS_/WS_EX_ window styles live in Windows.h (the umbrella owns
+//	the Win32 surface; this header includes it).
 
 class CWindow {
 public:
   CWindow() : m_hWnd(nullptr) {}
   CWindow(HWND hWnd) : m_hWnd(hWnd) {}
   operator HWND() const { return m_hWnd; }
+  BOOL IsWindow() const { return ::IsWindow(m_hWnd); }
+  BOOL DestroyWindow() { return ::DestroyWindow(m_hWnd); }
+  LONG GetWindowLong(int index) const { return ::GetWindowLong(m_hWnd, index); }
+  LONG SetWindowLong(int index, LONG value) {
+    return ::SetWindowLong(m_hWnd, index, value);
+  }
+  BOOL SetWindowPos(HWND after, LPCRECT bounds, UINT flags) {
+    return bounds ? ::SetWindowPos(m_hWnd, after, bounds->left, bounds->top,
+                                   bounds->right - bounds->left,
+                                   bounds->bottom - bounds->top, flags)
+                  : FALSE;
+  }
+  UINT_PTR SetTimer(UINT_PTR id, UINT elapse) {
+    return ::SetTimer(m_hWnd, id, elapse, nullptr);
+  }
+  BOOL KillTimer(UINT_PTR id) { return ::KillTimer(m_hWnd, id); }
   HWND m_hWnd;
 };
 
@@ -60,7 +74,7 @@ public: \
 #define DECLARE_WND_CLASS(className) \
   static LPCTSTR GetWndClassName() { return className; }
 
-typedef LRESULT (*WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+//	WNDPROC lives in Windows.h (the umbrella owns the Win32 surface).
 
 //\tThe ATL control traits (the documented defaults).
 class CControlWinTraits {
@@ -90,12 +104,15 @@ template <class T, class Base = CWindow, class Traits = CControlWinTraits>
 class CWindowImpl : public Base {
 public:
   HWND Create(HWND parent, RECT &bounds, LPCTSTR title = (LPCTSTR)0,
-              DWORD style = 0, DWORD exStyle = 0) {
+              DWORD style = 0, DWORD exStyle = 0, UINT id = 0,
+              void *createParam = nullptr) {
     (void)parent;
     (void)bounds;
     (void)title;
     (void)style;
     (void)exStyle;
+    (void)id;
+    (void)createParam;
     //\tThe browser-dialog adapter supplies the real window; until it
     //\tregisters, creation fails explicitly (no fake HWND).
     m_hWnd = nullptr;

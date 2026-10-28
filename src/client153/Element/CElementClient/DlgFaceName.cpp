@@ -91,7 +91,7 @@ bool CDlgFaceName::CheckValid()
 {
 	for (int i = 0; i<=8; i++)
 	{
-		if(NULL != wcschr(m_AStrName, m_wLawlessWChar[i]))
+		if(NULL != pw153::platform::wide_strchr(m_AStrName, m_wLawlessWChar[i]))	//	the port scanner (the libc wcschr reads 32-bit units).
 			return false;
 	}
 	return true;

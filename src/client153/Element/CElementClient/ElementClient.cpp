@@ -946,28 +946,28 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	g_hExitGame = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_hRenderEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 
-	NetDLL::Register(-1, static_cast<LPVOID>(ShowAntiHackerMsg));
-	NetDLL::Register(-2, static_cast<LPVOID>(StackTrace));
-	NetDLL::Register(-3, static_cast<LPVOID>(connect_tcpudp));
-	NetDLL::Register(-4, static_cast<LPVOID>(send_tcpudp));
-	NetDLL::Register(-5, static_cast<LPVOID>(recv_tcpudp));
-	NetDLL::Register(-6, static_cast<LPVOID>(close_tcpudp));
-	NetDLL::Register(-7, static_cast<LPVOID>(ioctl_tcpudp));
-	NetDLL::Register(-8, static_cast<LPVOID>(ip_socket));
-	NetDLL::Register(-9, static_cast<LPVOID>(send_ip));
-	NetDLL::Register(-10, static_cast<LPVOID>(send_tcp));
-	NetDLL::Register(-11, static_cast<LPVOID>(send_udp));
-	NetDLL::Register(-12, static_cast<LPVOID>(send_sync));
-	NetDLL::Register(-13, static_cast<LPVOID>(send_ping));
-	NetDLL::Register(-14, static_cast<LPVOID>(GetBestSourceIP));
-	NetDLL::Register(-15, static_cast<LPVOID>(GetCodeSegment));
-	NetDLL::Register(-16, static_cast<LPVOID>(alloc_mem));
-	NetDLL::Register(-17, static_cast<LPVOID>(free_mem));
-	NetDLL::Register(-18, static_cast<LPVOID>(NetDLL::AppendSpyInfo));
-	NetDLL::Register(-19, static_cast<LPVOID>(CheaterKiller::AppendCheatInfo));
-	NetDLL::Register(-20, static_cast<LPVOID>(StackChecker::GetStackCheckData));
-	NetDLL::Register(-21, static_cast<LPVOID>(StackChecker::UpdateStackCheckCode));
-	NetDLL::Register(-22, static_cast<LPVOID>(ImageChecker::UpdateImageChecker));
+	NetDLL::Register(-1, reinterpret_cast<LPVOID>(ShowAntiHackerMsg));
+	NetDLL::Register(-2, reinterpret_cast<LPVOID>(StackTrace));
+	NetDLL::Register(-3, reinterpret_cast<LPVOID>(connect_tcpudp));
+	NetDLL::Register(-4, reinterpret_cast<LPVOID>(send_tcpudp));
+	NetDLL::Register(-5, reinterpret_cast<LPVOID>(recv_tcpudp));
+	NetDLL::Register(-6, reinterpret_cast<LPVOID>(close_tcpudp));
+	NetDLL::Register(-7, reinterpret_cast<LPVOID>(ioctl_tcpudp));
+	NetDLL::Register(-8, reinterpret_cast<LPVOID>(ip_socket));
+	NetDLL::Register(-9, reinterpret_cast<LPVOID>(send_ip));
+	NetDLL::Register(-10, reinterpret_cast<LPVOID>(send_tcp));
+	NetDLL::Register(-11, reinterpret_cast<LPVOID>(send_udp));
+	NetDLL::Register(-12, reinterpret_cast<LPVOID>(send_sync));
+	NetDLL::Register(-13, reinterpret_cast<LPVOID>(send_ping));
+	NetDLL::Register(-14, reinterpret_cast<LPVOID>(GetBestSourceIP));
+	NetDLL::Register(-15, reinterpret_cast<LPVOID>(GetCodeSegment));
+	NetDLL::Register(-16, reinterpret_cast<LPVOID>(alloc_mem));
+	NetDLL::Register(-17, reinterpret_cast<LPVOID>(free_mem));
+	NetDLL::Register(-18, reinterpret_cast<LPVOID>(NetDLL::AppendSpyInfo));
+	NetDLL::Register(-19, reinterpret_cast<LPVOID>(CheaterKiller::AppendCheatInfo));
+	NetDLL::Register(-20, reinterpret_cast<LPVOID>(StackChecker::GetStackCheckData));
+	NetDLL::Register(-21, reinterpret_cast<LPVOID>(StackChecker::UpdateStackCheckCode));
+	NetDLL::Register(-22, reinterpret_cast<LPVOID>(ImageChecker::UpdateImageChecker));
 
 #ifdef USING_DEFENCE
 #ifdef ANGELICA_2_2
@@ -1178,7 +1178,7 @@ static void _OutputSystemVersion()
 		AString str;
 		str.Format("OS=%u.%u.%u, Platform=%u", osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber, osvi.dwPlatformId);
 		if (wcslen(osvi.szCSDVersion) > 0)
-			str += AString().Format(", CSDVersion=%s", AC2AS(ACString(osvi.szCSDVersion)));
+			str += AString().Format(", CSDVersion=%s", (const char*)AC2AS(ACString(osvi.szCSDVersion)));	//	explicit conversion in varargs.
 		a_LogOutput(1, str);
 	}
 }

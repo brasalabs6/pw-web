@@ -56,4 +56,10 @@ inline HRESULT AtlAxCreateControl(const wchar_t *name, HWND parent, RECT *bounds
   return E_FAIL;
 }
 
+//	The AxWin host window class init: the browser target has no Win32
+//	window classes to register, so the ActiveX host init fails.
+inline BOOL AtlAxWinInit() {
+  return FALSE;
+}
+
 #endif // PW153_PLATFORM_ATLHOST_H

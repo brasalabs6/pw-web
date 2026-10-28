@@ -1,5 +1,8 @@
 //#include "stdafx.h"
-#include "process.h"
+//	The original's "process.h" resolved to this directory's Process.h on the
+//	case-insensitive Windows build; the case-sensitive port must ask for it
+//	by its real name (the seam's process.h is the POSIX CRT shim).
+#include "Process.h"
 #include "EnumWin32Pro.h"
 #include "infocollection.h"
 #include <windows.h>

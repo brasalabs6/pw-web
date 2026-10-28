@@ -54,6 +54,14 @@ void wide_strlwr(wchar_t *text);
 void narrow_strupr(char *text);
 void narrow_strlwr(char *text);
 
+// The copy/concatenate/scan primitives the wcs* names below wrap (the
+// standard CRT semantics over 16-bit wchar_t).
+wchar_t *wide_strcpy(wchar_t *destination, const wchar_t *source);
+wchar_t *wide_strncpy(wchar_t *destination, const wchar_t *source, int count);
+wchar_t *wide_strcat(wchar_t *destination, const wchar_t *source);
+wchar_t *wide_strncat(wchar_t *destination, const wchar_t *source, int count);
+wchar_t *wide_strchr(const wchar_t *text, wchar_t character);
+
 // MSVC swprintf/vswprintf aliases over the formatter.
 int wide_sprintf(wchar_t *out, const wchar_t *format, ...);
 int wide_vsprintf(wchar_t *out, const wchar_t *format, va_list args);
@@ -67,5 +75,76 @@ wchar_t *wide_itow(int value, wchar_t *buffer, int radix);
 wchar_t *wide_i64tow(long long value, wchar_t *buffer, int radix);
 
 } // namespace pw153::platform
+
+// The wide CRT names: wchar_t is 16-bit here (-fshort-wchar) and the
+// system libc's wcs* scan 32-bit units, so the port owns the names. The
+// standard names are extern "C" inline so the libc declarations (any
+// <wchar.h> pulled later) are compatible redeclarations and every call
+// site binds to these 16-bit implementations. The MSVC-only names
+// (wcsicmp, wcslwr, wcsupr) have no libc counterpart and are plain
+// inline. Defined here because Windows.h includes this header before
+// any libc wide header can be pulled in.
+//	The exception-specification follows the host libc's declarations
+//	(glibc declares the names __THROW/noexcept; musl declares them
+//	unspecified) so the redeclarations stay compatible on both.
+#ifdef __THROW
+#define PW153_WCS_THROW __THROW
+#else
+#define PW153_WCS_THROW
+#endif
+
+extern "C" {
+inline std::size_t wcslen(const wchar_t *text) PW153_WCS_THROW {
+  return static_cast<std::size_t>(pw153::platform::wide_strlen(text));
+}
+inline wchar_t *wcscpy(wchar_t *destination, const wchar_t *source)
+    PW153_WCS_THROW {
+  return pw153::platform::wide_strcpy(destination, source);
+}
+inline wchar_t *wcsncpy(wchar_t *destination, const wchar_t *source,
+                        std::size_t count) PW153_WCS_THROW {
+  return pw153::platform::wide_strncpy(destination, source,
+                                       static_cast<int>(count));
+}
+inline wchar_t *wcscat(wchar_t *destination, const wchar_t *source)
+    PW153_WCS_THROW {
+  return pw153::platform::wide_strcat(destination, source);
+}
+inline wchar_t *wcsncat(wchar_t *destination, const wchar_t *source,
+                        std::size_t count) PW153_WCS_THROW {
+  return pw153::platform::wide_strncat(destination, source,
+                                       static_cast<int>(count));
+}
+inline int wcscmp(const wchar_t *a, const wchar_t *b) PW153_WCS_THROW {
+  return pw153::platform::wide_strcmp(a, b);
+}
+inline int wcsncmp(const wchar_t *a, const wchar_t *b, std::size_t count)
+    PW153_WCS_THROW {
+  return pw153::platform::wide_strncmp(a, b, static_cast<int>(count));
+}
+inline std::size_t wcscspn(const wchar_t *text, const wchar_t *set)
+    PW153_WCS_THROW {
+  return static_cast<std::size_t>(pw153::platform::wide_strcspn(text, set));
+}
+} // extern "C"
+
+//	The scan trio (wcschr/wcsrchr/wcsstr) is NOT aliased here: glibc's
+//	C++ <wchar.h> declares a const-preserving overload pair sharing
+//	one asm name, which the port cannot redefine without a duplicate
+//	symbol. The game's call sites use wide_strchr/wide_strrchr/
+//	wide_strstr directly (the 16-bit scanners).
+
+// The MSVC-only wide CRT names.
+inline int wcsicmp(const wchar_t *a, const wchar_t *b) {
+  return pw153::platform::wide_casecmp(a, b);
+}
+inline wchar_t *wcslwr(wchar_t *text) {
+  pw153::platform::wide_strlwr(text);
+  return text;
+}
+inline wchar_t *wcsupr(wchar_t *text) {
+  pw153::platform::wide_strupr(text);
+  return text;
+}
 
 #endif // PW153_PLATFORM_WIDESTR_H
