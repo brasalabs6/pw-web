@@ -111,8 +111,8 @@ A3DBoneBodyTurnController * CECPlayerBodyController::CreateBoneController(const 
 		A3DBone* pBone = m_pPlayerModel->GetA3DSkinModel()->GetSkeleton()->GetBone(szBoneName, &iBoneIdx);
 		if (!pBone){
 			a_LogOutput(1, "CECPlayerBodyController::CreateBoneController, Failed to get bone %s", szBoneName);
-			return false;
-		}		
+			return NULL;
+		}
 		result = new A3DBoneBodyTurnController(pBone);
 		pBone->SetFirstController(result);
 		result->SetTurnDeg(0.0f);
