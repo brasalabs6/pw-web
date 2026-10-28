@@ -85,6 +85,24 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DTexture.cpp
     Angelica2/Angelica3D/Source/A3DSkinMan.cpp
     Angelica2/Angelica3D/Source/A3DSkinModelAux.cpp
+    Angelica2/Angelica3D/Source/A3DAbsTrackMaker.cpp
+    Angelica2/Angelica3D/Source/A3DGFXCollector.cpp
+    Angelica2/Angelica3D/Source/A3DLamp.cpp
+    Angelica2/Angelica3D/Source/A3DMesh.cpp
+    Angelica2/Angelica3D/Source/A3DMorphRigidMesh.cpp
+    Angelica2/Angelica3D/Source/A3DMorphSkinMesh.cpp
+    Angelica2/Angelica3D/Source/A3DMuscleMesh.cpp
+    Angelica2/Angelica3D/Source/A3DModel.cpp
+    Angelica2/Angelica3D/Source/A3DGraphicsFX.cpp
+    Angelica2/Angelica3D/Source/A3DPlants.cpp
+    Angelica2/Angelica3D/Source/A3DRigidMesh.cpp
+    Angelica2/Angelica3D/Source/A3DSkinMesh.cpp
+    Angelica2/Angelica3D/Source/A3DSky.cpp
+    Angelica2/Angelica3D/Source/A3DSuppleMesh.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain.cpp
+    Angelica2/AngelicaCommon/Source/AList.cpp
+    Angelica2/AngelicaFile/Source/AWIniFile.cpp
+    Angelica2/AngelicaFile/Source/AWScriptFile.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
@@ -121,6 +139,11 @@ if(EMSCRIPTEN)
     Angelica2/AngelicaMedia/Source/AMSoundDevice.cpp
     Angelica2/AngelicaMedia/Source/AM3DSoundBuffer.cpp
     Angelica2/AngelicaMedia/Source/AM3DSoundDevice.cpp
+    Angelica2/AngelicaMedia/Source/AMOggFile.cpp
+    Angelica2/AngelicaMedia/Source/AMMp3File.cpp
+    Angelica2/AngelicaMedia/Source/AMWaveFile.cpp
+    Angelica2/AngelicaMedia/Source/FFT.cpp
+    Angelica2/ImmWrapper/Source/AMImmEffect.cpp
     Angelica2/ImmWrapper/Source/AMImmWrapper.cpp)
   target_include_directories(client153_engine_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
@@ -266,7 +289,9 @@ if(EMSCRIPTEN)
     thirdparty/fmod/FAudioEngine_stub.cpp
     thirdparty/teamspeak/clientlib_stub.cpp
     thirdparty/defence/defence_stub.cpp
-    thirdparty/immersion/ifc_stub.cpp)
+    thirdparty/immersion/ifc_stub.cpp
+    thirdparty/xiph/vorbisfile_stub.cpp
+    thirdparty/mpg123/mpg123_stub.cpp)
   target_include_directories(client153_middleware_stub PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
@@ -312,7 +337,8 @@ if(EMSCRIPTEN)
     Common/Output/source/Gfx/RandStringContainer.cpp
     Element/CFWEditorLib/FWFlatCollector.cpp
     Element/CFWEditorLib/FWManager.cpp
-    Element/CFWEditorLib/FWTemplate.cpp)
+    Element/CFWEditorLib/FWTemplate.cpp
+    Element/CFWEditorLib/FWAssemblySet.cpp)
   target_include_directories(client153_game_original PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
@@ -323,7 +349,7 @@ if(EMSCRIPTEN)
     Common/Output/include/aaudio Common/Output/include/cd
     Common/Output/include/PropDlg Common/Output/include
     Element/Output/include Element/CCommon Element/CElementClient
-    Element/CElementSkill Element/AutoPFImp/AutoMoveImp Common/CHBasedCD)
+    Element/Output/include/fw Element/CElementSkill Element/AutoPFImp/AutoMoveImp Common/CHBasedCD)
   target_compile_features(client153_game_original PRIVATE cxx_std_17)
   target_compile_definitions(client153_game_original PRIVATE WIN32 NDEBUG _WINDOWS UNICODE _ANGELICA2 _CRT_SECURE_NO_WARNINGS)
   target_compile_options(client153_game_original PRIVATE -fms-extensions -fshort-wchar -fexceptions

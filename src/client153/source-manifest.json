@@ -9764,6 +9764,94 @@
     {
       "path": "Angelica2/ImmWrapper/Source/AMImmWrapper.cpp",
       "sha256": "af5aa091c737d3d0a5be4e4b594aabc88f35adaccf414903064a03ead53f7d02"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DModel.cpp",
+      "sha256": "60cea27983cd137235152a4f07ad80cf251594a692cd950c4cefaa9ea147b079"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DGraphicsFX.cpp",
+      "sha256": "5b65cc2399419d955fe79277962e67b170f63617b71e0a4fde6d0fc46e6f6b00"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DPlants.cpp",
+      "sha256": "27610d37d8cadd55a9fdde83a19391ff43542306b0902e1a0f4f295346e4ef28"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain.cpp",
+      "sha256": "463ad97d7b3e01ff8eb38681e63d0457ffb13a90a38f0b05e0aacfe22059b7ba"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DGFXCollector.cpp",
+      "sha256": "3e42ed38d577b224b71220791be7a9e36e3937a4842cc167c47695ba615ec3ba"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DLamp.cpp",
+      "sha256": "f78ab4b2f5a68e5af7c3112c75b9bf7a7a67be9da991d7df556e2f54ebb0cbb0"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DRigidMesh.cpp",
+      "sha256": "8b831fcead5f7f29536314697508a2df1b93f9c4a5d276736806f6ac7c638bc2"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMorphSkinMesh.cpp",
+      "sha256": "2bda431d90a6c8305d2d4ae3b8f114d5ce6db2b052fae938e69589567ee27519"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMorphRigidMesh.cpp",
+      "sha256": "33fef9604111326294f00cd0cb4cb5e5a3c951d444a81efb28851310f3f9a7ea"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSuppleMesh.cpp",
+      "sha256": "b61058ecfea4eef7c34ae107e2afe453bf01aa97b45c81758f48e13081b87502"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DMuscleMesh.cpp",
+      "sha256": "4173bef0395a984daf908b7b110fe1a73f40ed56b91c33bc341b6e780352bbc5"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSky.cpp",
+      "sha256": "c7b524362619fb41221952598b3d7b96ba1daa0c9c117981f8c548a6c5780520"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DAbsTrackMaker.cpp",
+      "sha256": "a4b982e8b0b75cec701ed254bf201c79d6335ecd72b4cbc3131ab3fa889671e1"
+    },
+    {
+      "path": "Angelica2/AngelicaCommon/Source/AList.cpp",
+      "sha256": "faeef1661523f4cefb6e4ae066a0a2933335218b43deb5b5df28e7cb4e910b6e"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AWIniFile.cpp",
+      "sha256": "ba59706cfd40f5190d6674b6b2a0fc6254948bca25531c8396dd5d31ef89fac9"
+    },
+    {
+      "path": "Angelica2/AngelicaFile/Source/AWScriptFile.cpp",
+      "sha256": "338c59aef0bfd5fe3745433ae6cc739fc4f61ecbbff178820cd494edd03711d1"
+    },
+    {
+      "path": "Element/CFWEditorLib/FWAssemblySet.cpp",
+      "sha256": "67e692facf5461c1914a5a44154eb0567c8eacdac43f97bd7f4caa31551a0ea3"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMOggFile.cpp",
+      "sha256": "b3e90de4b924bbb52f35d78bb83e2c6124ddd3c9525bf687cd218fc65b45fa06"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMMp3File.cpp",
+      "sha256": "e66a54d952f559a6bbad9e2c2b930ad4d0cfe8aaa6a41ee8e0a2a175385a69ed"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/AMWaveFile.cpp",
+      "sha256": "53e16abada8180ad84ece9ce7354d23415cbc1bde1b8ca2039ad1eb8ad02e659"
+    },
+    {
+      "path": "Angelica2/AngelicaMedia/Source/FFT.cpp",
+      "sha256": "a944c7f6eeea0f8b9a6e405a86638eeed9640ddcb258e111b62f7d5564f04b94"
+    },
+    {
+      "path": "Angelica2/ImmWrapper/Source/AMImmEffect.cpp",
+      "sha256": "15dedb0d396fae10e12622afbfeaa18ed7e85a8c029b84363229b9c1ec3b5509"
     }
   ],
   "adaptations": [
@@ -10857,6 +10945,91 @@
       "upstream": "Angelica2/ImmWrapper/Source/AMImmWrapper.cpp",
       "functions": [],
       "notes": "the <ifc.h> include resolves to the explicit failing seam (platform/common/ifc.h + thirdparty/immersion/ifc_stub.cpp); force feedback is a declared browser limitation."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaFile/Source/AWIniFile.cpp",
+      "upstream": "Angelica2/AngelicaFile/Source/AWIniFile.cpp",
+      "functions": [
+        "AWIniFile::Save"
+      ],
+      "notes": "the system fwprintf scans 32-bit wchar_t units, wrong for the port's 16-bit width; Save() writes through pw153::platform::wide_fprintf_utf16le (the same UTF-16LE stream MSVC produced) and the AWString varargs get explicit (const wchar_t*) casts."
+    },
+    {
+      "path": "src/client153/Element/CFWEditorLib/FWAssemblySet.cpp",
+      "upstream": "Element/CFWEditorLib/FWAssemblySet.cpp",
+      "functions": [
+        "FWAssemblySet (all out-of-line symbols)"
+      ],
+      "notes": "GB18030 string literals transcoded to UTF-8; #include <A3DTypes.h> added first because the original resolved <A3DQuaternion.h> to the SDK copy (which includes A3DTypes.h) while the port's adapted engine quaternion does not, leaving GfxCommonTypes.h without A3DCOLORVALUE."
+    },
+    {
+      "path": "src/client153/Element/CCommon/EL_CloudSprite.cpp",
+      "upstream": "Element/CCommon/EL_CloudSprite.cpp",
+      "functions": [
+        "CELCloudSprite::RefreshColor"
+      ],
+      "notes": "upstream declared a local named `max`, shadowing the max() call (MSVC allowed it); renamed to fMax so the calls stay callable."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/WikiEquipmentProp.cpp",
+      "upstream": "Element/CElementClient/WikiEquipmentProp.cpp",
+      "functions": [
+        "EssenceExtractor::GetDesc/GetIconFile",
+        "EXTRACTOR_TYPE(WEAPON) specializations"
+      ],
+      "notes": "the lazy initializers assigned through a const_cast rvalue inside const getters (MSVC loophole); the member is mutable now and assigns directly. The WEAPON GetRandPropSize specialization moved above GetRandPropID because that body calls it; after the implicit instantiation clang rejects the later specialization."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/ECParamList.h",
+      "upstream": "Element/CElementClient/ECParamList.h",
+      "functions": [
+        "CECParamList::Param<unsigned int>"
+      ],
+      "notes": "the port's DWORD is unsigned int (MSVC's was unsigned long); added the Param<unsigned int> specialization with the same ToInt conversion contract so DWORD params keep instantiating."
+    },
+    {
+      "path": "src/client153/Angelica2/AngelicaMedia/Source/AMMp3File.cpp",
+      "upstream": "Angelica2/AngelicaMedia/Source/AMMp3File.cpp",
+      "functions": [
+        "AMMp3File (all out-of-line symbols)"
+      ],
+      "notes": "upstream include \"MP3Lib.h\" relies on Win32 case-insensitive resolution; corrected to the real Mp3Lib.h (case-variant include)."
+    },
+    {
+      "path": "src/client153/Angelica2/Output/3rdsdk/include/ogg/config_types.h",
+      "upstream": null,
+      "functions": [
+        "ogg integer types (generated-header seam)"
+      ],
+      "notes": "the per-platform header libogg's build generates from config_types.h.in; the pinned tree ships the ogg/vorbis SDK as headers + prebuilt Windows libraries only and never checked the generated header in; canonical LP64 instantiation (stdint typedefs)."
+    },
+    {
+      "path": "src/client153/thirdparty/xiph/vorbisfile_stub.cpp",
+      "upstream": null,
+      "functions": [
+        "ov_open_callbacks",
+        "ov_clear",
+        "ov_info",
+        "ov_pcm_seek",
+        "ov_pcm_total",
+        "ov_read"
+      ],
+      "notes": "explicit-failing seam: the pinned tree ships libvorbisfile as a prebuilt Windows library only (3rdsdk/oggvorbis holds vcproj files without codec source); ov_open_callbacks reports OV_EIMPL so AMOggFile::Open fails and the game continues without Ogg audio."
+    },
+    {
+      "path": "src/client153/thirdparty/mpg123/mpg123_stub.cpp",
+      "upstream": null,
+      "functions": [
+        "CMpg123::CMpg123",
+        "CMpg123::~CMpg123",
+        "CMpg123::mpg123_open",
+        "CMpg123::mpg123_close",
+        "CMpg123::mpg123_seek",
+        "CMpg123::mpg123_read",
+        "CMpg123::mpg123_get_total_sample",
+        "CMpg123::mpg123_getinfo"
+      ],
+      "notes": "explicit-failing seam: the pinned tree ships the MP3 decoder as Mp3Lib.h + mpg123lib.lib only; mpg123_open fails (0) so AMMp3File::Open fails and the game continues without MP3 audio."
     }
   ],
   "additionalCopyrights": [
