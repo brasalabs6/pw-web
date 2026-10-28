@@ -1,3 +1,8 @@
+//	A3DCombinedAction.h uses the name at its line 195 relying on the friend
+//	declaration at its line 156 (MSVC friend-name-injection). Declare the
+//	class here so the header parses without -fms-compatibility.
+class A3DCombinedAction;
+
 #include "StdAfx.h"
 #include "A3DGFXEx.h"
 #include "A3DGFXExMan.h"

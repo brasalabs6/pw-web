@@ -23,6 +23,11 @@
 #include "A3DGFXExMan.h"
 #include "GfxCommonTypes.h"
 
+//	The original relied on MSVC's friend-name injection (the friend
+//	declaration inside ACTION_INFO also declared the global name);
+//	standard C++ needs the forward declaration for EVENT_INFO's use.
+class A3DCombinedAction;
+
 #define		EVENT_TYPE_NONE		-1
 #define		EVENT_TYPE_BASE		100
 #define		EVENT_TYPE_GFX		(EVENT_TYPE_BASE + 0)

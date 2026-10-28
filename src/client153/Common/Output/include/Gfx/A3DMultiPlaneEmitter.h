@@ -101,7 +101,12 @@ public:
 		{
 		case ID_GFXOP_EMITTER_REF_MOX:
 		case ID_GFXOP_EMITTER_REF_SMD:
-			m_strRefModel = prop;
+			//\tAString = const GFX_PROPERTY& is ambiguous under standard
+			//\toverload resolution (operator=(const AString&) via
+			//\tGFX_PROPERTY::operator AString() vs operator=(char) via the
+			//\tscalar conversions); MSVC's lax ranking accepted it. Select
+			//\tthe AString overload explicitly.
+			m_strRefModel = (const AString&)prop;
 			ClearOldVertAndPlaneData();
 			m_bInit = false;
 			LoadRefModelData();

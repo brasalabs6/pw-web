@@ -466,6 +466,17 @@ typedef struct tagLOGFONTW {
   wchar_t lfFaceName[32];
 } LOGFONTW, *LPLOGFONTW;
 
+//	The high-resolution performance counter: the real monotonic clock
+//	(the documented Win32 contract; the functions live below with the
+//	LARGE_INTEGER layout they reference).
+
+//	The color composition macro (the documented wingdi form; the seam's
+//	COLORREF layout is 0x00BBGGRR - the extraction macros live below).
+#ifndef RGB
+#define RGB(r, g, b) \
+  ((COLORREF)((BYTE)(r) | ((BYTE)(g) << 8) | ((BYTE)(b) << 16)))
+#endif
+
 //	The IME composition/candidate context handle (the documented imm
 //	handle; the browser IME belongs to the input adapter).
 typedef HANDLE HIMCC;
@@ -591,6 +602,23 @@ struct ULARGE_INTEGER {
 #endif
 
 typedef ULARGE_INTEGER *PULARGE_INTEGER;
+
+//	The high-resolution performance counter: the real monotonic clock
+//	(the documented Win32 contract: the frequency is ticks/second,
+//	the counter ticks; the port's tick is the nanosecond clock).
+inline BOOL QueryPerformanceFrequency(LARGE_INTEGER *frequency) {
+  if (!frequency)
+    return FALSE;
+  frequency->QuadPart = 1000000000;	//	nanoseconds.
+  return TRUE;
+}
+inline BOOL QueryPerformanceCounter(LARGE_INTEGER *counter) {
+  if (!counter)
+    return FALSE;
+  counter->QuadPart = static_cast<std::int64_t>(
+      std::chrono::steady_clock::now().time_since_epoch().count());
+  return TRUE;
+}
 typedef LARGE_INTEGER *PLARGE_INTEGER;
 
 #define WINAPI

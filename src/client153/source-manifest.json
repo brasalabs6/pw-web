@@ -8925,6 +8925,42 @@
     {
       "path": "Common/GfxCommon/EC_Model.cpp",
       "sha256": "a542004af203f82ce70cfd41c55ef0039d1b0df88e2f10ceb8e4a877e6b67149"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2.cpp",
+      "sha256": "27c61a80d2c7b0caabe82f458515035fcfa969c576f3346f6a5cd82774765fc3"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2Trace.cpp",
+      "sha256": "9ec5de0c18712c30448bd622c2e51acb6237d4fa298ff4ad0bdf3fe9c9e6789c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrainWater.cpp",
+      "sha256": "0116607f500fb748e0dd556f91eedf249e7004ff526bd49f5eb8f4600ef36835"
+    },
+    {
+      "path": "Common/GfxCommon/A3DGFXEx.cpp",
+      "sha256": "078a99d59a7b3e25072a85ae6d53b392ce35fb75c6e7e4873e619bf427743fed"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DEngine.cpp",
+      "sha256": "e110508c3534909d93515c24207375280d02cf4ba4f2b6805e66b716d18efdfb"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A2DSpriteItem.cpp",
+      "sha256": "752fbf28a913fb31c888a15c9b6675b7a5e2d7f7a3d6cbd94ae93e1e955e6696"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A2DSpriteBuffer.cpp",
+      "sha256": "9cd376c91d28b75c6826b45b8d260086dbb8f257f128e4cf34ab4e8904f4d860"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A2DSpriteTexMan.cpp",
+      "sha256": "2c719c2cf4754935d27f7c202a6b376a2743a99d334e7fb6f235c8910c2e4769"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A2DSpriteTextures.cpp",
+      "sha256": "ce4352e11b146671473168e094606cb79517f805f9a0b516a301ea83c0097780"
     }
   ],
   "adaptations": [

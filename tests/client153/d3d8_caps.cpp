@@ -7,6 +7,7 @@ static_assert(D3DFVF_TEX3 == 0x0300 && D3DFVF_TEX5 == 0x0500, "D3D texture coord
 static_assert(D3DFVF_XYZ == 0x002, "D3D position vertex format");
 static_assert(D3DRS_ZWRITEENABLE == 14, "D3D depth write state");
 static_assert(D3D_OK == 0, "D3D success code");
+static_assert(D3DLOCK_NOOVERWRITE == 0x1000, "D3D streaming lock flag");
 static_assert(D3DLOCK_READONLY == 0x0010, "D3D read-only lock flag");
 static_assert(D3DTSS_BORDERCOLOR == 15, "D3D border color state");
 static_assert(D3DCLEAR_TARGET == 1 && D3DCLEAR_ZBUFFER == 2, "D3D clear flags");

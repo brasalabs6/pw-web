@@ -253,7 +253,10 @@ bool A3DEngine::Init(HINSTANCE hInstance, HWND hDeviceWnd, A3DDEVFMT* pA3DDevFmt
 			return false;
 		}
 
-		if (!m_pMotionBlurRenderTarget->Init(m_pA3DDevice, m_pA3DDevice->GetDevFormat(), true, false))
+		//	Named local: the original bound the GetDevFormat() temporary to
+		//	the non-const A3DDEVFMT& parameter (MSVC extension).
+		A3DDEVFMT devFmt = m_pA3DDevice->GetDevFormat();
+		if (!m_pMotionBlurRenderTarget->Init(m_pA3DDevice, devFmt, true, false))
 		{
 			g_A3DErrLog.Log("A3DEngine::Init() Init motion blur render target fail!");
 			return false;
@@ -691,7 +694,7 @@ bool A3DEngine::EndRender()
 		m_aPerformances[i].dwTimeUsed = 0;
 	}
 
-	for (i=0; i < NUM_FRAMECNT; i++)
+	for (int i=0; i < NUM_FRAMECNT; i++)
 		m_aFrameCnts[i].iCounter = 0;
 	
 	if (g_pA3DConfig->RT_GetShowFPSFlag())

@@ -30,6 +30,9 @@ def main() -> int:
     parser.add_argument('--engine-objects', default=str(
         ROOT / 'build/client153-wasm/src/client153/CMakeFiles/'
         'client153_engine_original.dir'))
+    parser.add_argument('--gfx-objects', default=str(
+        ROOT / 'build/client153-wasm/src/client153/CMakeFiles/'
+        'client153_gfx_original.dir'))
     parser.add_argument('--output', default=str(
         ROOT / 'build/client153-full-link/client153-full-probe.js'))
     parser.add_argument('--error-limit', type=int, default=60)
@@ -40,6 +43,9 @@ def main() -> int:
     engine_dir = pathlib.Path(args.engine_objects)
     if engine_dir.exists():
         objects += sorted(engine_dir.rglob('*.o'))
+    gfx_dir = pathlib.Path(args.gfx_objects)
+    if gfx_dir.exists():
+        objects += sorted(gfx_dir.rglob('*.o'))
     libraries = []
     for name in ('skeleton', 'animation', 'file', 'math', 'common',
                  'platform', 'formats', 'webgl_caps', 'skinning'):

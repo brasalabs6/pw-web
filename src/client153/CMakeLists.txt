@@ -50,10 +50,18 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DViewport.cpp
     Angelica2/Angelica3D/Source/A3DGeometry.cpp
     Angelica2/Angelica3D/Source/A2DSprite.cpp
+    Angelica2/Angelica3D/Source/A2DSpriteItem.cpp
+    Angelica2/Angelica3D/Source/A2DSpriteBuffer.cpp
+    Angelica2/Angelica3D/Source/A2DSpriteTexMan.cpp
+    Angelica2/Angelica3D/Source/A2DSpriteTextures.cpp
     Angelica2/Angelica3D/Source/A3DSkinModel.cpp
     Angelica2/Angelica3D/Source/A3DSkin.cpp
     Angelica2/Angelica3D/Source/A3DLight.cpp
     Angelica2/Angelica3D/Source/A3DFlatCollector.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2Trace.cpp
+    Angelica2/Angelica3D/Source/A3DTerrainWater.cpp
+    Angelica2/Angelica3D/Source/A3DEngine.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
@@ -71,6 +79,52 @@ if(EMSCRIPTEN)
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+  target_compile_features(client153_engine_original PRIVATE cxx_std_17)
+  target_compile_definitions(client153_engine_original PRIVATE WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
+  target_compile_options(client153_engine_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+endif()
+
+# Original GfxCommon component TUs (the model/GFX wrapper layer the game
+# links; the sources live under Common/Output/source/Gfx).
+if(EMSCRIPTEN)
+  add_library(client153_gfx_original OBJECT EXCLUDE_FROM_ALL
+    Common/Output/source/Gfx/A3DGFXEx.cpp
+    Common/Output/source/Gfx/A3DCombinedAction.cpp
+    Common/Output/source/Gfx/A3DGFXExMan.cpp
+    Common/Output/source/Gfx/EC_Model.cpp
+    Common/Output/source/Gfx/EC_ModelHook.cpp
+    Common/Output/source/Gfx/EC_ModelMan.cpp
+    Common/Output/source/Gfx/EC_ModelLua.cpp
+    Common/Output/source/Gfx/GfxEditorUtil.cpp
+    Common/Output/source/LuaWrapper/ScriptValue.cpp)
+  target_include_directories(client153_gfx_original PRIVATE
+    platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
+    Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
+    Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
+    Angelica2/Output/afsdk/include Angelica2/Output/amsdk/include
+    Angelica2/Output/3rdsdk/include
+    Common/Output/include/Gfx Common/Output/include/LuaWrapper
+    Common/Output/include/aaudio Common/Output/include/cd
+    Common/Output/include/PropDlg Common/Output/include
+    Element/Output/include Element/CCommon Element/CElementClient
+    Angelica2/Output/3rdsdk/include/lua)
+  target_compile_features(client153_gfx_original PRIVATE cxx_std_17)
+  target_compile_definitions(client153_gfx_original PRIVATE WIN32 NDEBUG _WINDOWS UNICODE _ANGELICA2 _CRT_SECURE_NO_WARNINGS)
+  target_compile_options(client153_gfx_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+  #	The AUI widget prelude (the probe's forced list): pulling the
+  #	adapted AString.h/AArray.h first dedupes the prebuilt SDK copies
+  #	(the acsdk headers carry the original's undeclared-member bugs).
+  foreach(widget AUIListBox AUIComboBox AUIEditBox AUILabel AUIStillImageButton AUICheckBox AUIImagePicture AUIDialog)
+    target_compile_options(client153_gfx_original PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Common/AUInterface2/${widget}.h")
+  endforeach()
 endif()
 
 # Build the original UI sources already supported by the browser port.

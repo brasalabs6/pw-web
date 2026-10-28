@@ -16,6 +16,7 @@
 
 #define D3D_OK 0
 #define D3DLOCK_READONLY 0x0010
+#define D3DLOCK_NOOVERWRITE 0x1000
 #define D3DCLEAR_TARGET 0x00000001
 #define D3DCLEAR_ZBUFFER 0x00000002
 #define D3DFVF_XYZ 0x002
@@ -121,9 +122,16 @@ struct IDirect3DIndexBuffer8 : IUnknownD3D {
 };
 
 constexpr DWORD D3DRS_ZWRITEENABLE = 14;
-//	The render states the UI/media surfaces name (the documented
+//	The render states the UI/media/engine surfaces name (the documented
 //	d3d8types.h values).
 constexpr DWORD D3DRS_ZENABLE = 8;
+constexpr DWORD D3DRS_ZFUNC = 23;
+constexpr DWORD D3DRS_ALPHAFUNC = 25;
+constexpr DWORD D3DRS_ALPHAREF = 24;
+constexpr DWORD D3DRS_ALPHATESTENABLE = 15;
+constexpr DWORD D3DRS_ALPHABLENDENABLE = 27;
+constexpr DWORD D3DRS_SRCBLEND = 19;
+constexpr DWORD D3DRS_DESTBLEND = 20;
 constexpr DWORD D3DRS_COLORWRITEENABLE = 168;
 constexpr DWORD D3DCOLORWRITEENABLE_RED = 1;
 constexpr DWORD D3DCOLORWRITEENABLE_GREEN = 2;
@@ -205,6 +213,44 @@ struct IDirect3DTexture8 : IDirect3DBaseTexture8 {
   virtual HRESULT LockRect(UINT level, D3DLOCKED_RECT *pLockedRect,
                            const RECT *pRect, DWORD flags) = 0;
   virtual HRESULT UnlockRect(UINT level) = 0;
+};
+
+//	The cube texture (the documented d3d8 interface).
+typedef struct _D3DLOCKED_BOX {
+  int RowPitch;
+  int SlicePitch;
+  void *pBits;
+} D3DLOCKED_BOX;
+
+//	The cube map faces (the documented d3d8types enumeration).
+typedef enum _D3DCUBEMAP_FACES {
+  D3DCUBEMAP_FACE_POSITIVE_X = 0,
+  D3DCUBEMAP_FACE_NEGATIVE_X = 1,
+  D3DCUBEMAP_FACE_POSITIVE_Y = 2,
+  D3DCUBEMAP_FACE_NEGATIVE_Y = 3,
+  D3DCUBEMAP_FACE_POSITIVE_Z = 4,
+  D3DCUBEMAP_FACE_NEGATIVE_Z = 5
+} D3DCUBEMAP_FACES;
+
+typedef struct _D3DSURFACE_DESC_CUBE {
+  D3DFORMAT Format;
+  D3DMULTISAMPLE_TYPE MultiSampleType;
+  DWORD MultiSampleQuality;
+  UINT Width;
+  UINT Height;
+} D3DSURFACE_DESC_CUBE;
+
+struct IDirect3DCubeTexture8 : IDirect3DBaseTexture8 {
+  virtual HRESULT GetLevelDesc(UINT level,
+                               D3DSURFACE_DESC_CUBE *description) = 0;
+  virtual HRESULT GetCubeMapSurface(D3DCUBEMAP_FACES faceType, UINT level,
+                                    IDirect3DSurface8 **cubeMapSurface) = 0;
+  virtual HRESULT LockBox(D3DCUBEMAP_FACES faceType, UINT level,
+                          D3DLOCKED_BOX *lockedBox, const RECT *box,
+                          DWORD flags) = 0;
+  virtual HRESULT UnlockBox(D3DCUBEMAP_FACES faceType, UINT level) = 0;
+  virtual HRESULT AddDirtyRect(D3DCUBEMAP_FACES faceType,
+                               const RECT *dirtyRect) = 0;
 };
 
 struct IDirect3DSwapChain8 : IUnknownD3D {
