@@ -564,3 +564,13 @@ pixel, de modo que executar a engine requer uma estratégia real para seus
 programas e recursos no WebGL, não apenas acrescentar assinaturas para o build.
 A conversão do overload FVF continua pendente de comportamento Direct3D 8
 verificado.
+
+O inventário de assembly executado contra `element/shaders.pck` do cliente
+local com `python3 tools/assets/shader_inventory.py <caminho>/shaders.pck`
+identificou 155 entradas `vs.1.1`, uma `vs.1.0`, 74 `ps.1.1`, 91 `ps.1.4`
+e cinco `ps.2.0`. São contagens de entradas, não programas únicos; o scanner
+considera extensões `.txt`, `.vsh` e `.psh` e não prova que todas as entradas
+sejam carregadas em gameplay. O inventário revela instruções de textura,
+modificadores, coissue, `phase` e declarações que uma tradução real precisa
+tratar. Nenhum conteúdo proprietário é extraído nem incluído no repositório.
+Reproduzir testes: `python3 -m unittest discover -s tests/assets`.
