@@ -418,6 +418,40 @@ inline DWORD WaitForMultipleObjects(DWORD count, const HANDLE *handles,
   return WAIT_TIMEOUT;
 }
 
+//	SignalObjectAndWait: signals one object, then waits on another. The
+//	signal completes (state change plus wake) before the wait begins, so
+//	a rendezvous partner observes it even though the two steps are not
+//	one atomic scheduler operation. Signaling covers the three signalable
+//	kinds (event, semaphore, mutex); the wait side is the single-object
+//	wait above. Alertable waits (APCs) do not exist on this target, so
+//	bAlertable is accepted and ignored.
+inline DWORD SignalObjectAndWait(HANDLE hObjectToSignal,
+                                 HANDLE hObjectToWaitOn,
+                                 DWORD dwMilliseconds, BOOL bAlertable) {
+  (void)bAlertable;
+  auto *signal = static_cast<pw153::platform::SyncObject *>(hObjectToSignal);
+  if (!signal)
+    return WAIT_FAILED;
+  switch (signal->kind) {
+  case pw153::platform::SyncObject::Kind::Event:
+    if (!SetEvent(hObjectToSignal))
+      return WAIT_FAILED;
+    break;
+  case pw153::platform::SyncObject::Kind::Semaphore:
+    if (!ReleaseSemaphore(hObjectToSignal, 1, nullptr))
+      return WAIT_FAILED;
+    break;
+  case pw153::platform::SyncObject::Kind::Mutex:
+    if (!ReleaseMutex(hObjectToSignal))
+      return WAIT_FAILED;
+    break;
+  default:
+    //\tThreads are not signalable (the Win32 contract).
+    return WAIT_FAILED;
+  }
+  return WaitForSingleObject(hObjectToWaitOn, dwMilliseconds);
+}
+
 //	The thread exit code: the entry records the start routine's return;
 //	a live thread reports STILL_ACTIVE (the Win32 contract).
 #define STILL_ACTIVE 259
@@ -509,6 +543,15 @@ inline HANDLE CreateThread(void *security, unsigned stackSize, Start start,
 inline BOOL SetThreadPriority(HANDLE handle, int priority) {
   (void)handle;
   (void)priority;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
+
+//	The priority boost toggle rides on the scheduler priorities that do
+//	not exist on this target; it fails like SetThreadPriority above.
+inline BOOL SetThreadPriorityBoost(HANDLE handle, BOOL disable) {
+  (void)handle;
+  (void)disable;
   SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
   return FALSE;
 }
