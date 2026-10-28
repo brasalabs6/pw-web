@@ -706,6 +706,15 @@ inline LONG InterlockedCompareExchange(volatile LONG *value, LONG exchange,
   return compare;
 }
 
+//	The `long`-spelled variants: the game code casts member addresses to
+//	`volatile long *` (the Win32 LONG spelling); `long` is a distinct
+//	32-bit type on this target, so the exchange needs its own overload.
+inline long InterlockedExchange(volatile long *value, long exchange) {
+  return std::atomic_exchange_explicit(
+      reinterpret_cast<volatile std::atomic<long> *>(value), exchange,
+      std::memory_order_seq_cst);
+}
+
 //	Time: the platform clock backs the tick counters (same source as ATime).
 //	The message loop's quit signal: the browser loop adapter consumes the
 //	quit flag; the seam records it.
@@ -1811,6 +1820,103 @@ inline HRESULT CoCreateInstance(const GUID &classId, void *outer,
 #ifndef TEXT
 #define TEXT(text) L##text
 #endif
+
+//	The overlapped-I/O record (the documented OVERLAPPED layout; the
+//	named-pipe callers memset it and set hEvent).
+typedef struct _OVERLAPPED {
+  ULONG_PTR Internal;
+  ULONG_PTR InternalHigh;
+  union {
+    struct {
+      DWORD Offset;
+      DWORD OffsetHigh;
+    };
+    PVOID Pointer;
+  };
+  HANDLE hEvent;
+} OVERLAPPED, *LPOVERLAPPED;
+
+//	The named-pipe open/mode flags (the documented Win32 values).
+#define PIPE_ACCESS_INBOUND 0x00000001
+#define PIPE_ACCESS_OUTBOUND 0x00000002
+#define PIPE_ACCESS_DUPLEX 0x00000003
+#define FILE_FLAG_OVERLAPPED 0x40000000
+#define PIPE_WAIT 0x00000000
+#define PIPE_NOWAIT 0x00000001
+#define PIPE_READMODE_BYTE 0x00000000
+#define PIPE_READMODE_MESSAGE 0x00000002
+#define PIPE_TYPE_BYTE 0x00000000
+#define PIPE_TYPE_MESSAGE 0x00000004
+
+//	The overlapped operation queued (the documented Win32 value; the
+//	pipe callers compare GetLastError against it).
+#define ERROR_IO_PENDING 997
+
+//	The named pipe server: the browser target has no named-pipe
+//	filesystem; creation fails explicitly (the caller's error path
+//	logs and disables the downloader integration). The signature is
+//	the documented CreateNamedPipe contract.
+inline HANDLE CreateNamedPipeW(const wchar_t *name, DWORD openMode,
+                               DWORD pipeMode, DWORD maxInstances,
+                               DWORD outBufferSize, DWORD inBufferSize,
+                               DWORD defaultTimeout, void *security) {
+  (void)name;
+  (void)openMode;
+  (void)pipeMode;
+  (void)maxInstances;
+  (void)outBufferSize;
+  (void)inBufferSize;
+  (void)defaultTimeout;
+  (void)security;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return INVALID_HANDLE_VALUE;
+}
+inline HANDLE CreateNamedPipeA(const char *name, DWORD openMode,
+                               DWORD pipeMode, DWORD maxInstances,
+                               DWORD outBufferSize, DWORD inBufferSize,
+                               DWORD defaultTimeout, void *security) {
+  (void)name;
+  (void)openMode;
+  (void)pipeMode;
+  (void)maxInstances;
+  (void)outBufferSize;
+  (void)inBufferSize;
+  (void)defaultTimeout;
+  (void)security;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return INVALID_HANDLE_VALUE;
+}
+inline HANDLE CreateNamedPipe(const wchar_t *name, DWORD openMode,
+                              DWORD pipeMode, DWORD maxInstances,
+                              DWORD outBufferSize, DWORD inBufferSize,
+                              DWORD defaultTimeout, void *security) {
+  return CreateNamedPipeW(name, openMode, pipeMode, maxInstances,
+                          outBufferSize, inBufferSize, defaultTimeout,
+                          security);
+}
+
+//	The named-pipe connect: no pipe instance exists (creation fails
+//	above); the wait fails explicitly.
+inline BOOL ConnectNamedPipe(HANDLE pipe, LPOVERLAPPED overlapped) {
+  (void)pipe;
+  (void)overlapped;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
+
+//	File write: the handle came from CreateFileA's fopen - the adapter's
+//	file registry resolves; an unregistered handle fails explicitly.
+inline BOOL WriteFile(HANDLE handle, const void *buffer, DWORD toWrite,
+                      DWORD *written, void *overlapped) {
+  (void)handle;
+  (void)buffer;
+  (void)toWrite;
+  (void)overlapped;
+  if (written)
+    *written = 0;
+  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+  return FALSE;
+}
 
 //	The file size: the real filesystem stat (the documented semantics).
 inline DWORD GetFileSize(HANDLE handle, DWORD *highPart) {

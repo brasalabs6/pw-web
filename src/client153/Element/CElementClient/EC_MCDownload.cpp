@@ -21,6 +21,10 @@
 #include "EC_GameUIMan.h"
 #include "EC_MsgDef.h"
 
+//	The critical-section guard is included directly (the upstream chain
+//	resolved it through a header this port does not shadow).
+#include "ACSWrapper.h"
+
 #include "DlgInfo.h"
 
 #include <A3DEngine.h>
