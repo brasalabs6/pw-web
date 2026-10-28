@@ -28,6 +28,10 @@
 #include "EC_AutoPolicy.h"
 #include "EC_PlayerWrapper.h"
 
+//	The critical-section guard is included directly (the upstream chain
+//	resolved it through a header this port does not shadow).
+#include "ACSWrapper.h"
+
 #include "A3DCollision.h"
 #include "A3DFuncs.h"
 #include "A3DSkinMan.h"
