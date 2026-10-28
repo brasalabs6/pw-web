@@ -197,17 +197,21 @@ if(EMSCRIPTEN)
 
   # Proprietary-middleware browser-build boundaries: FMOD (the AudioEngine
   # wrapper) and TeamSpeak ship headers + prebuilt Windows libraries only in
-  # the pinned tree; the referenced entry points are defined once with
-  # explicit failure semantics. See thirdparty/fmod/FAudioEngine_stub.cpp
-  # and thirdparty/teamspeak/clientlib_stub.cpp.
+  # the pinned tree; the defence (anti-cheat) API cannot run in a browser
+  # sandbox. The referenced entry points are defined once with explicit
+  # failure semantics. See thirdparty/fmod/FAudioEngine_stub.cpp,
+  # thirdparty/teamspeak/clientlib_stub.cpp and
+  # thirdparty/defence/defence_stub.cpp.
   add_library(client153_middleware_stub STATIC
     thirdparty/fmod/FAudioEngine_stub.cpp
-    thirdparty/teamspeak/clientlib_stub.cpp)
+    thirdparty/teamspeak/clientlib_stub.cpp
+    thirdparty/defence/defence_stub.cpp)
   target_include_directories(client153_middleware_stub PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
     Angelica2/Output/amsdk/include Angelica2/AngelicaMedia/Header Angelica2/Output/3rdsdk/include
-    Common/Output/include/aaudio Element/Output/include)
+    Common/Output/include/aaudio Element/Output/include Element/CElementClient/defence
+    Element/CElementClient/Network/IOLib)
   target_compile_features(client153_middleware_stub PRIVATE cxx_std_17)
   target_compile_options(client153_middleware_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
