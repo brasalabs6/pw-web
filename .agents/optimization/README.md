@@ -135,3 +135,11 @@ Inspeção no SHA `c86bb95a0cb37d45d31b81a6c7a27d3afe1f6a24`. Distinto de PW23-0
 | [OPT-041](OPT-041-vertex-collector-single-batch-capacity-bounds.md) | P1 | Angelica / buffers de geometria | Verificar capacidade de um push individual antes de copiar vértices e índices; hardening estático sem reprodução |
 
 Inspeção no SHA `d3ebee66b6a1de165a0f5eba28f62cbbe81d24f8`. Distinto de OPT-040 e OPT-015; somente pós-port, sem benchmark, testes mobile ou alteração de código.
+
+## Auditoria incremental — loader binário de cenas (2026-10-28; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-042](OPT-042-scene-binary-counts-reads-and-string-bounds.md) | P1 | Angelica / A3DScene binary loader | Validar contagens, multiplicações, leituras completas e limites de strings antes de alocar/parsear cenas |
+
+Inspeção estática no SHA `97dfe0d423494ee35178c082c518a66659cfd0d2`. Diferente de OPT-013 (água), OPT-014 (DDS) e OPT-036 (PCK). Sem crash reproduzido, benchmark, teste mobile ou mudança de código; somente fase post-browser-port. IDs históricos PW23-021…037 preservados.
