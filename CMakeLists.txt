@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(pw_web_client153 LANGUAGES CXX)
+project(pw_web_client153 LANGUAGES C CXX)
 include(CTest)
 #	Emscripten's zlib port must be requested for every compile and link,
 #	includings test executables defined in this file.

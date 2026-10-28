@@ -9093,6 +9093,189 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DShadowMap.cpp",
       "sha256": "d5a5c63ecdbd94f2a33074eb5f8926da145b65c071ed50dc2daa2a8432054cf5"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DLitModel.cpp",
+      "sha256": "05517196770f9f92ce4e5d0ab1ff5e7e67ffb038a2bbbfc1cd72f7f5c445af5f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DStream.cpp",
+      "sha256": "97118427a51d1b97131d19f335331fdda34db82138d54b7f2e0adadd08cd222e"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTexture.cpp",
+      "sha256": "dcbf25b341beb4e9476b5e902ccf5c997819d5f50661d7bf6a9b447017a596f5"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinMan.cpp",
+      "sha256": "2fd4246aaa37af92804dddfe0a4dc98f269e917ee8205d4da7196e9ebab3c51c"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DSkinModelAux.cpp",
+      "sha256": "528715f35b8f4bcb0abe712b9fbdd4438bb6ab4467001433ee33bcb66a1bb391"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2Render.cpp",
+      "sha256": "7735924cac9ea617199929dc466f8507206f8e799b1309abe13855410516410e"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DTerrain2Blk.cpp",
+      "sha256": "fcf6d7f020220377ad5b91a8c1b07a037f4662baef6234440e03c22a323d7e22"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DWaterArea.cpp",
+      "sha256": "10e4195b9d4c65bc0b0b269bd5e1081b1f9210d04a3fd877c644401f5145e612"
+    },
+    {
+      "path": "Element/CElementSkill/ElementSkill.cpp",
+      "sha256": "e6cb21a58e3962f931214c0dadf10cb2e2860965487d5f19fcbacaca723d5577",
+      "adapted": "src/client153/Element/CElementSkill/ElementSkill.cpp",
+      "adaptations": [
+        "include StdAfx.h with the real header case"
+      ]
+    },
+    {
+      "path": "Element/CElementSkill/ElementSkill.h",
+      "sha256": "dfa9a1bc5c94b48a5899bd4c941eaa0e18ddd2fb128ca0754e3411616e4b7e7e",
+      "adapted": "src/client153/Element/CElementSkill/ElementSkill.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/CElementSkill/skill.h",
+      "sha256": "8df8cb290bb4562fc3eb6588d73ae344e773588b1ef148a58d2125baafc3477b",
+      "adapted": "src/client153/Element/CElementSkill/skill.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/CElementSkill/skillwrapper.h",
+      "sha256": "b021ff108c438ffe622df3a7573859830c6f152e117898ca3c6590b18c1ebace",
+      "adapted": "src/client153/Element/CElementSkill/skillwrapper.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/CElementSkill/playerwrapper.h",
+      "sha256": "c3f1446b341c66d24f6a8818abb6d06536a050c62309f3b3b21d415277964b30",
+      "adapted": "src/client153/Element/CElementSkill/playerwrapper.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/CElementSkill/gnstring.h",
+      "sha256": "9b4b8d9040e34c4322f5cb3ce9148af22b119765bd442ce0fca2206126c92336",
+      "adapted": "src/client153/Element/CElementSkill/gnstring.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/CElementSkill/StdAfx.h",
+      "sha256": "3fabc90e29a0909d082e024734f3d349a8e9ea55c9b15093a02a4fa02438ed23",
+      "adapted": "src/client153/Element/CElementSkill/StdAfx.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp",
+      "sha256": "dbd9d624c3d36cb1436afd902cc7caa5bf3d07be069fa6be2ee061f7c0635246",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp",
+      "adaptations": [
+        "named local for the APointF temporary bound to CLine::Init"
+      ]
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MoveAgent.h",
+      "sha256": "08a758d979493aca48659d39333fd5916c61e4eb2cd0b3707659fc8fb7b9ef44",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/MoveAgent.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/MoveMap.h",
+      "sha256": "27573398c381e34b590f1310acf1f452275981805caa416aea9052b737745e6e",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/MoveMap.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/PfClu.h",
+      "sha256": "c2c34bf845f0ae9a725e021d83caa07986f28b0c2df7b4b6cb02736984595fb6",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/PfClu.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/OptimizePath.h",
+      "sha256": "f2af846058fc16785362758aeabde76becfe5d7a67a6301ff492a5909bf86e37",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/OptimizePath.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/bitimage.h",
+      "sha256": "2a9a01995e96c4b82eb9be3c8cc56079bf406437e8f42795854c03fc40ba08ae",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/bitimage.h",
+      "adaptations": [
+        "forward-declare SetUCharBit before CBitImage (MSVC deferred lookup)",
+        "DWORD readlen for the AFileImage::Read out-parameter"
+      ]
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/blockimage.h",
+      "sha256": "5f71efe9e80138b79fa7ce802e51bd3845d51a3fb10c3beba08ab3c3d6a6bd7d",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/blockimage.h",
+      "adaptations": [
+        "DWORD readlen for the AFileImage::Read out-parameter"
+      ]
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/LayerMap.h",
+      "sha256": "712502ed86c590662e101e1a010f07eb3433125d054e3e3d664ee13a69dbc24e",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/LayerMap.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/Island.h",
+      "sha256": "8d749c22edbcd7efe6b05d24215b2d656d9d62fc56b22e320528057c5b89d133",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/Island.h",
+      "adaptations": []
+    },
+    {
+      "path": "Element/AutoPFImp/AutoMoveImp/PfConstant.h",
+      "sha256": "dcea41fcbd7e15867a90a00329b782138181792336c677a6cc5c0709dda6c7d9",
+      "adapted": "src/client153/Element/AutoPFImp/AutoMoveImp/PfConstant.h",
+      "adaptations": []
+    },
+    {
+      "path": "Common/CHBasedCD/ConvexHullData.cpp",
+      "sha256": "a05ab5104133d9a25952855268641f02c0217b5a2ec405ea894d7439d01dbe7b",
+      "adapted": "src/client153/Common/CHBasedCD/ConvexHullData.cpp",
+      "adaptations": [
+        "std::isnan via <cmath> (portable MSVC _isnan)"
+      ]
+    },
+    {
+      "path": "Common/CHBasedCD/aabbcd.cpp",
+      "sha256": "806e604c15e012ecff65244d34bc7e02b7b03773b443ef4ba425a764937e66f3",
+      "adapted": "src/client153/Common/CHBasedCD/aabbcd.cpp",
+      "adaptations": [
+        "include AFile.h with the real header case"
+      ]
+    },
+    {
+      "path": "Common/CHBasedCD/HalfSpace.cpp",
+      "sha256": "6fef35a8a785fd1563e6068f66ba9c05a1169151610783f6043e25a916170709",
+      "adapted": "src/client153/Common/CHBasedCD/HalfSpace.cpp",
+      "adaptations": []
+    },
+    {
+      "path": "Common/CHBasedCD/CDWithCH.cpp",
+      "sha256": "b2d32ce7735e451c1d20d9b02fb8d184204205bf2de7c1afd3e06ed15423228c",
+      "adapted": "src/client153/Common/CHBasedCD/CDWithCH.cpp",
+      "adaptations": []
+    },
+    {
+      "path": "Common/CHBasedCD/Face.cpp",
+      "sha256": "b17b2fdeef883bc3461cdfa7388a8a64390349ee72dd2d5554fe65a9d0c5eb82"
+    },
+    {
+      "path": "Element/CElementSkill/skill.cpp",
+      "sha256": "49970649f30ec81bd91b90914c4b2210d38d94db6964220cec5ad7d46c49e9a9"
+    },
+    {
+      "path": "Element/CElementSkill/skillwrapper.cpp",
+      "sha256": "e9c46a85c220ae1f3fe7056c6df2dcea1a7982f527bd0ca1ac2089d8706f445d"
     }
   ],
   "adaptations": [
@@ -9587,9 +9770,391 @@
         "global A3D::g_pShadowMap"
       ],
       "notes": "ASCII upstream file; verbatim port, zero adaptations; copyright header preserved exactly."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DLitModel.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DLitModel.cpp",
+      "functions": [],
+      "notes": "the AF.h include is not resolvable with the engine-target include set; it is replaced by the AFI.h/AFile.h/AFileImage.h headers that provide the af_*/AFile/AFileImage helpers this unit actually uses (the established A3DSkeleton.cpp include-omission pattern)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DSkinModelAux.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DSkinModelAux.cpp",
+      "functions": [
+        "A3DGFXHanger::LoadHangerObject",
+        "A3DSkinModelHanger::LoadHangerObject"
+      ],
+      "notes": "two g_A3DErrLog.Log varargs sites passed AString objects through the format (UB in the original); cast to (const char*) per the established varargs treatment."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_CommandLine.cpp",
+      "upstream": "Element/CElementClient/EC_CommandLine.cpp",
+      "functions": [
+        "CECCommandLine::SearchConfig"
+      ],
+      "notes": "the AC2AS results cross the a_LogOutput varargs boundary as raw char pointers (non-POD AString cannot pass the ellipsis)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_ManOrnament.cpp",
+      "upstream": "Element/CElementClient/EC_ManOrnament.cpp",
+      "functions": [
+        "CECOrnamentMan::LoadOrnament",
+        "CECOrnamentMan::LoadHomeOrnament",
+        "CECOrnamentMan::LoadSoundFromFile"
+      ],
+      "notes": "the pointer-returning loaders returned false on failure (MSVC accepted the bool-to-pointer conversion); they return NULL, and the sound log passes its AString as a raw char pointer."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_PlayerBodyController.cpp",
+      "upstream": "Element/CElementClient/EC_PlayerBodyController.cpp",
+      "functions": [
+        "CECPlayerBodyController::CreateBoneController"
+      ],
+      "notes": "the bone-not-found path returned false in a pointer-returning function; it returns NULL."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_SunMoon.cpp",
+      "upstream": "Element/CElementClient/EC_SunMoon.cpp",
+      "functions": [
+        "CECSunMoon::RenderSolarFlare"
+      ],
+      "notes": "CLAMPVECTOR gained a const-reference overload returning by value: the flare render passes temporaries and MSVC bound them to the non-const reference overload, which standard C++ cannot; the clamping arithmetic is unchanged."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/WikiSearchTask.cpp",
+      "upstream": "Element/CElementClient/WikiSearchTask.cpp",
+      "functions": [
+        "WikiSearchTaskByName::GetSearchName",
+        "WikiSearchTaskByName::IsSearchPatternValid"
+      ],
+      "notes": "the CONVERT_ENTITY_PTR failure value is NULL (same treatment as WikiSearchCommand.cpp), and the occupation clamp casts MAX_OCCUPATIONS to unsigned long to select the min overload the original matched."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_ManAttacks.h",
+      "upstream": "Element/CElementClient/EC_ManAttacks.h",
+      "functions": [],
+      "notes": "forward declaration of CECAttacksMan added before CECAttackEvent: MSVC accepted the friend declaration as introducing the name for the later pointer member and constructor parameter; standard C++ does not."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_ManAttacks.cpp",
+      "upstream": "Element/CElementClient/EC_ManAttacks.cpp",
+      "functions": [
+        "CECAttackEvent::DoDamage",
+        "CECAttacksMan::Tick"
+      ],
+      "notes": "EC_pet.h resolved to the real EC_Pet.h spelling; the damage-time clamp literal matches the 32-bit DWORD (10u, not 10ul); the fixed-channel messages pass their wide strings as raw pointers through the varargs."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgGeneralCardRespawn.cpp",
+      "upstream": "Element/CElementClient/DlgGeneralCardRespawn.cpp",
+      "functions": [
+        "CDlgGenCardRespawn::GenerateTargetCart"
+      ],
+      "notes": "the pointer-returning generator returned false on the null-card path; it returns NULL."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_NativeAPI.h",
+      "upstream": "Element/CElementClient/EC_NativeAPI.h",
+      "functions": [],
+      "notes": "ACCESS_MASK is owned by the platform Windows.h (the ULONG redefinition MSVC accepted is dropped) and the _IO_COUNTERS record (six 64-bit counters) is defined next to the existing _VM_COUNTERS; NtQuerySystemInformation's PULONG return-length pointer comes from the Windows.h seam."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/Home/HomeTrnMask.cpp",
+      "upstream": "Element/CElementClient/Home/HomeTrnMask.cpp",
+      "functions": [],
+      "notes": "A3DTerrain2.h is included first: A3DTerrain2Blk.h references A3DTerrain2 without declaring it, and the original resolved the name through the project's include order."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgCustomizePaint.cpp",
+      "upstream": "Element/CElementClient/DlgCustomizePaint.cpp",
+      "functions": [
+        "CPaletteControl::GetColorFromPt",
+        "CPaletteControl::ClampPointToPane"
+      ],
+      "notes": "the a_Clamp explicit template argument is LONG (the port's 32-bit LONG that POINT::x uses), not long."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgCustomizeThirdEye.cpp",
+      "upstream": "Element/CElementClient/DlgCustomizeThirdEye.cpp",
+      "functions": [
+        "CDlgCustomizeThirdEye::CDlgCustomizeThirdEye"
+      ],
+      "notes": "the MSVC-only qualified base-constructor call in the constructor body is removed; the base default constructor runs implicitly with identical semantics."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgHelp.cpp",
+      "upstream": "Element/CElementClient/DlgHelp.cpp",
+      "functions": [
+        "CDlgHelp::BuildHelp"
+      ],
+      "notes": "AStack.h (APtrStack) is included directly and the help-path sprintf calls pass their AString operands as raw char pointers."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_SceneLoader.cpp",
+      "upstream": "Element/CElementClient/EC_SceneLoader.cpp",
+      "functions": [
+        "LoaderThreadModul::Suspend",
+        "LoaderThreadModul::Resume",
+        "LoaderThreadFunc"
+      ],
+      "notes": "verbatim port; SignalObjectAndWait (real signal-then-wait over the winsync seam) and SetThreadPriorityBoost (explicit failing seam, no scheduler priorities) come from the winsync.h seam."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_InputCtrl.cpp",
+      "upstream": "Element/CElementClient/EC_InputCtrl.cpp",
+      "functions": [
+        "CECInputCtrl::CaptureMouse",
+        "CECInputCtrl::IsMouseCaptured"
+      ],
+      "notes": "verbatim port; GetCapture joins the SetCapture/ReleaseCapture capture tracking in the Windows.h seam (shared single-window state; the JS host owns the real pointer capture)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_UseUniversalToken.cpp",
+      "upstream": "Element/CElementClient/EC_UseUniversalToken.cpp",
+      "functions": [],
+      "notes": "verbatim port; the MMSystem.h case-forwarder seam resolves the original's include spelling."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/AMiniDump.cpp",
+      "upstream": "Element/CElementClient/AMiniDump.cpp",
+      "functions": [
+        "AMiniDump::Create",
+        "DumpMemoryCodeIfNeed",
+        "AMiniDump::EnablePriv"
+      ],
+      "notes": "verbatim port; the minidump write fails explicitly on the browser target (no dbghelp.dll: LoadLibrary fails, and the token/privilege queries are failing seams), so the writer's null checks skip the dump; the PE reader surface (IMAGE_OPTIONAL_HEADER, IMAGE_SECTION_HEADER, signatures) comes from the Windows.h seam."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_LoginCG.cpp",
+      "upstream": "Element/CElementClient/EC_LoginCG.cpp",
+      "functions": [],
+      "notes": "verbatim port; the DirectShow filter-graph surface (IMediaEvent/IMediaEventEx, IBaseFilter, IPin, IEnumPins, FILTER_INFO, PIN_DIRECTION) comes from the dshow.h seam for the media cycle's adapter."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgCWindow.cpp",
+      "upstream": "Element/CElementClient/DlgCWindow.cpp",
+      "functions": [
+        "EnumWindowsProc"
+      ],
+      "notes": "verbatim port; IsWindowEnabled, GWL_HWNDPARENT, GetClassName and GetWindowText (wide forms) come from the Windows.h seam (headless: no windows enumerate, the callback never runs)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgCustomizePre.cpp",
+      "upstream": "Element/CElementClient/DlgCustomizePre.cpp",
+      "functions": [
+        "CDlgCustomizePre::OnBnClickButtonSave"
+      ],
+      "notes": "verbatim port; _mkdir is the real directory creation over the UTF-8 path conversion in the direct.h seam."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_HPWorkSpell.cpp",
+      "upstream": "Element/CElementClient/EC_HPWorkSpell.cpp",
+      "functions": [],
+      "notes": "verbatim port; compiles once EC_ManAttacks.h declares CECAttacksMan (consumed via EC_World.h)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DTerrain2Render.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DTerrain2Render.cpp",
+      "functions": [
+        "A3DTerrain2Render (all out-of-line methods)"
+      ],
+      "notes": "GB18030 to UTF-8; the &A3DCOLORVALUE(...) address-of-temporary sites take named locals; SetPixelShaderConstants consumes the constant buffer synchronously (semantics unchanged)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DTerrain2Blk.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DTerrain2Blk.cpp",
+      "functions": [
+        "A3DTerrain2Blk/A3DTerrain2Mask (all out-of-line methods)"
+      ],
+      "notes": "class A3DTerrain2 forward declaration before the a3dsdk include, which uses the type without declaring it (the established A3DTerrain2Env.cpp pattern)."
+    },
+    {
+      "path": "src/client153/Angelica2/Angelica3D/Source/A3DWaterArea.cpp",
+      "upstream": "Angelica2/Angelica3D/Source/A3DWaterArea.cpp",
+      "functions": [
+        "A3DWaterArea (all out-of-line methods)"
+      ],
+      "notes": "verbatim port, zero adaptations."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/Network/gameclient.cpp",
+      "upstream": "Element/CElementClient/Network/gameclient.cpp",
+      "functions": [],
+      "notes": "named locals for Octets temporaries bound to Update(Octets&)"
+    },
+    {
+      "path": "src/client153/Element/CElementClient/Network/IOLib/sha256.h",
+      "upstream": "Element/CElementClient/Network/IOLib/sha256.h",
+      "functions": [],
+      "notes": "endianness selection: LITTLE_ENDIAN for the port's little-endian targets (wasm32/x86-64)"
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/ElementSkill.cpp",
+      "upstream": "Element/CElementSkill/ElementSkill.cpp",
+      "functions": [],
+      "notes": "include StdAfx.h with the real header case"
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/ElementSkill.h",
+      "upstream": "Element/CElementSkill/ElementSkill.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/skill.h",
+      "upstream": "Element/CElementSkill/skill.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/skillwrapper.h",
+      "upstream": "Element/CElementSkill/skillwrapper.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/playerwrapper.h",
+      "upstream": "Element/CElementSkill/playerwrapper.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/gnstring.h",
+      "upstream": "Element/CElementSkill/gnstring.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/StdAfx.h",
+      "upstream": "Element/CElementSkill/StdAfx.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp",
+      "functions": [],
+      "notes": "named local for the APointF temporary bound to CLine::Init"
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/MoveAgent.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/MoveAgent.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/MoveMap.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/MoveMap.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/PfClu.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/PfClu.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/OptimizePath.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/OptimizePath.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/bitimage.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/bitimage.h",
+      "functions": [],
+      "notes": "forward-declare SetUCharBit before CBitImage (MSVC deferred lookup); DWORD readlen for the AFileImage::Read out-parameter"
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/blockimage.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/blockimage.h",
+      "functions": [],
+      "notes": "DWORD readlen for the AFileImage::Read out-parameter"
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/LayerMap.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/LayerMap.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/Island.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/Island.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/AutoPFImp/AutoMoveImp/PfConstant.h",
+      "upstream": "Element/AutoPFImp/AutoMoveImp/PfConstant.h",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Common/CHBasedCD/ConvexHullData.cpp",
+      "upstream": "Common/CHBasedCD/ConvexHullData.cpp",
+      "functions": [],
+      "notes": "std::isnan via <cmath> (portable MSVC _isnan)"
+    },
+    {
+      "path": "src/client153/Common/CHBasedCD/aabbcd.cpp",
+      "upstream": "Common/CHBasedCD/aabbcd.cpp",
+      "functions": [],
+      "notes": "include AFile.h with the real header case"
+    },
+    {
+      "path": "src/client153/Common/CHBasedCD/HalfSpace.cpp",
+      "upstream": "Common/CHBasedCD/HalfSpace.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Common/CHBasedCD/CDWithCH.cpp",
+      "upstream": "Common/CHBasedCD/CDWithCH.cpp",
+      "functions": [],
+      "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Common/CHBasedCD/Face.cpp",
+      "upstream": "Common/CHBasedCD/Face.cpp",
+      "functions": [
+        "CHBasedCD::CFace (all out-of-line methods: ctor/copy-ctor/ComputeExtraHS/LoadFromStream/SaveToStream)"
+      ],
+      "notes": "GB18030 to UTF-8; otherwise verbatim."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/skill.cpp",
+      "upstream": "Element/CElementSkill/skill.cpp",
+      "functions": [
+        "GNET::SkillStub",
+        "GNET::TeamStateImp",
+        "GNET::VisibleStateImp (all out-of-line methods)"
+      ],
+      "notes": "GB18030 to UTF-8; otherwise verbatim."
+    },
+    {
+      "path": "src/client153/Element/CElementSkill/skillwrapper.cpp",
+      "upstream": "Element/CElementSkill/skillwrapper.cpp",
+      "functions": [
+        "GNET::SkillWrapper (all out-of-line methods incl. LoadData/instance)"
+      ],
+      "notes": "ASCII upstream file; verbatim port."
     }
   ],
   "additionalCopyrights": [
     "Copyright (c) 2003 Epie Entertainment, All Rights Reserved. (A3DQuaternion)"
+  ],
+  "thirdPartyUpstreams": [
+    {
+      "name": "lua",
+      "version": "5.1.5",
+      "url": "https://lua.org/ftp/lua-5.1.5.tar.gz",
+      "sha256": "2640fc56a795f29d28ef15e13c34a47e223960b0240e8cb0a82d9b0738695333",
+      "license": "MIT",
+      "copyright": "Copyright (C) 1994-2012 Lua.org, PUC-Rio.",
+      "vendoredPath": "src/client153/thirdparty/lua-5.1.5",
+      "reason": "The original 1.5.3 client links Lua 5.1; the pinned tree ships headers + import lib only (no lua .c source). This restores the same runtime from the canonical upstream source. luaconf.h is byte-identical to the vendored 3rdsdk lua headers (5.1.4), so the default emscripten config matches the game's TUs with no extra defines.",
+      "authorization": "docs/LEGAL.md: operator decision 2026-10-25"
+    }
   ]
 }

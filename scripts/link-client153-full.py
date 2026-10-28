@@ -33,6 +33,9 @@ def main() -> int:
     parser.add_argument('--gfx-objects', default=str(
         ROOT / 'build/client153-wasm/src/client153/CMakeFiles/'
         'client153_gfx_original.dir'))
+    parser.add_argument('--game-objects', default=str(
+        ROOT / 'build/client153-wasm/src/client153/CMakeFiles/'
+        'client153_game_original.dir'))
     parser.add_argument('--output', default=str(
         ROOT / 'build/client153-full-link/client153-full-probe.js'))
     parser.add_argument('--error-limit', type=int, default=60)
@@ -46,10 +49,13 @@ def main() -> int:
     gfx_dir = pathlib.Path(args.gfx_objects)
     if gfx_dir.exists():
         objects += sorted(gfx_dir.rglob('*.o'))
+    game_dir = pathlib.Path(args.game_objects)
+    if game_dir.exists():
+        objects += sorted(game_dir.rglob('*.o'))
     libraries = []
     for name in ('skeleton', 'animation', 'file', 'math', 'common',
                  'platform', 'formats', 'webgl_caps', 'skinning',
-                 'speedtree_stub', 'middleware_stub'):
+                 'speedtree_stub', 'middleware_stub', 'lua'):
         archive = pathlib.Path(args.wasm_build) / f'libclient153_{name}.a'
         if archive.exists():
             libraries.append(str(archive))

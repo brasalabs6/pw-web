@@ -65,6 +65,9 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DTerrain2Env.cpp
     Angelica2/Angelica3D/Source/A3DTerrain2Trace.cpp
     Angelica2/Angelica3D/Source/A3DTerrainWater.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2Render.cpp
+    Angelica2/Angelica3D/Source/A3DTerrain2Blk.cpp
+    Angelica2/Angelica3D/Source/A3DWaterArea.cpp
     Angelica2/Angelica3D/Source/A3DEngine.cpp
     Angelica2/Angelica3D/Source/A3DTextureMan.cpp
     Angelica2/Angelica3D/Source/A3DShader.cpp
@@ -77,6 +80,11 @@ if(EMSCRIPTEN)
     Angelica2/Angelica3D/Source/A3DGDI.cpp
     Angelica2/Angelica3D/Source/A3DLitModelRender.cpp
     Angelica2/Angelica3D/Source/A3DShadowMap.cpp
+    Angelica2/Angelica3D/Source/A3DLitModel.cpp
+    Angelica2/Angelica3D/Source/A3DStream.cpp
+    Angelica2/Angelica3D/Source/A3DTexture.cpp
+    Angelica2/Angelica3D/Source/A3DSkinMan.cpp
+    Angelica2/Angelica3D/Source/A3DSkinModelAux.cpp
     Angelica2/AngelicaMedia/Source/AMSoundBufferMan.cpp
     Angelica2/AngelicaMedia/Source/AMConfig.cpp
     Angelica2/AngelicaMedia/Source/AMPI.cpp
@@ -164,6 +172,29 @@ if(EMSCRIPTEN)
   target_compile_features(client153_speedtree_stub PRIVATE cxx_std_17)
   target_compile_options(client153_speedtree_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
+  # Official Lua 5.1.5 runtime (MIT). The original 1.5.3 client links
+  # Lua 5.1 as a prebuilt lib; the pinned tree ships headers + import
+  # lib only, so this restores the same runtime from canonical source.
+  # luaconf.h is byte-identical to the vendored 3rdsdk headers, so the
+  # default config (no LUA_USE_*) matches the game's TUs.
+  set(_lua_src ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lua-5.1.5/src)
+  add_library(client153_lua STATIC
+    ${_lua_src}/lapi.c    ${_lua_src}/lcode.c   ${_lua_src}/ldebug.c
+    ${_lua_src}/ldo.c     ${_lua_src}/ldump.c   ${_lua_src}/lfunc.c
+    ${_lua_src}/lgc.c     ${_lua_src}/llex.c    ${_lua_src}/lmem.c
+    ${_lua_src}/lobject.c ${_lua_src}/lopcodes.c ${_lua_src}/lparser.c
+    ${_lua_src}/lstate.c  ${_lua_src}/lstring.c ${_lua_src}/ltable.c
+    ${_lua_src}/ltm.c     ${_lua_src}/lundump.c ${_lua_src}/lvm.c
+    ${_lua_src}/lzio.c    ${_lua_src}/lauxlib.c ${_lua_src}/lbaselib.c
+    ${_lua_src}/ldblib.c  ${_lua_src}/liolib.c  ${_lua_src}/lmathlib.c
+    ${_lua_src}/loslib.c  ${_lua_src}/ltablib.c ${_lua_src}/lstrlib.c
+    ${_lua_src}/linit.c   ${_lua_src}/loadlib.c)
+  target_include_directories(client153_lua PUBLIC ${_lua_src})
+  set_target_properties(client153_lua PROPERTIES
+    LINKER_LANGUAGE C
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/client153)
+  target_compile_options(client153_lua PRIVATE -std=gnu89 -O2)
+
   # Proprietary-middleware browser-build boundaries: FMOD (the AudioEngine
   # wrapper) and TeamSpeak ship headers + prebuilt Windows libraries only in
   # the pinned tree; the referenced entry points are defined once with
@@ -180,6 +211,38 @@ if(EMSCRIPTEN)
   target_compile_features(client153_middleware_stub PRIVATE cxx_std_17)
   target_compile_options(client153_middleware_stub PRIVATE -fms-extensions -fshort-wchar -fexceptions
     "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h")
+  # Original game-adjacent TUs outside ElementClient.vcproj: the skill data
+  # layer, the AutoMove pathfinding agent and the CHBasedCD collision core.
+  # They compile with the game-project environment (the same include set and
+  # definitions the probe uses for the game project).
+  add_library(client153_game_original OBJECT EXCLUDE_FROM_ALL
+    Element/CElementSkill/ElementSkill.cpp
+    Element/AutoPFImp/AutoMoveImp/MoveAgent.cpp
+    Common/CHBasedCD/ConvexHullData.cpp
+    Common/CHBasedCD/aabbcd.cpp
+    Common/CHBasedCD/HalfSpace.cpp
+    Common/CHBasedCD/CDWithCH.cpp
+    Common/CHBasedCD/Face.cpp
+    Element/CElementSkill/skill.cpp
+    Element/CElementSkill/skillwrapper.cpp)
+  target_include_directories(client153_game_original PRIVATE
+    platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
+    Angelica2/Angelica3D/Header Angelica2/AngelicaMedia/Header
+    Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include
+    Angelica2/Output/afsdk/include Angelica2/Output/amsdk/include
+    Angelica2/Output/3rdsdk/include Angelica2/Output/3rdsdk/include/lua
+    Common/Output/include/Gfx Common/Output/include/LuaWrapper
+    Common/Output/include/aaudio Common/Output/include/cd
+    Common/Output/include/PropDlg Common/Output/include
+    Element/Output/include Element/CCommon Element/CElementClient
+    Element/CElementSkill Element/AutoPFImp/AutoMoveImp Common/CHBasedCD)
+  target_compile_features(client153_game_original PRIVATE cxx_std_17)
+  target_compile_definitions(client153_game_original PRIVATE WIN32 NDEBUG _WINDOWS UNICODE _ANGELICA2 _CRT_SECURE_NO_WARNINGS)
+  target_compile_options(client153_game_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
 endif()
 
 # Build the original UI sources already supported by the browser port.
