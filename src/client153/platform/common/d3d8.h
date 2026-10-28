@@ -406,6 +406,7 @@ typedef struct _D3DSURFACE_DESC {
 
 struct IDirect3DBaseTexture8;
 struct IDirect3DTexture8;	//	used by CreateTexture below, defined below.
+struct IDirect3DCubeTexture8;	//	used by CreateCubeTexture below, defined below.
 struct D3DCAPS8;	//	declared below (the device hands the caps record out).
 
 // Port interface only; this subset is not a native Direct3D COM vtable.
@@ -440,6 +441,12 @@ struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT CreateTexture(UINT width, UINT height, UINT levels,
                                 DWORD usage, D3DFORMAT format, D3DPOOL pool,
                                 IDirect3DTexture8 **texture) = 0;
+  //	Cube-texture creation (the documented d3d8.h signature; the WebGL2
+  //	renderer adapter implements it in the renderer cycle - A3DCubeTexture
+  //	uses it for the normalization cube map).
+  virtual HRESULT CreateCubeTexture(UINT edgeLength, UINT levels, DWORD usage,
+                                    D3DFORMAT format, D3DPOOL pool,
+                                    IDirect3DCubeTexture8 **cubeTexture) = 0;
   //	System-memory image surface creation (the documented d3d8.h
   //	signature; the WebGL2 renderer adapter implements it in the
   //	renderer cycle).
@@ -572,23 +579,25 @@ typedef enum _D3DCUBEMAP_FACES {
   D3DCUBEMAP_FACE_NEGATIVE_Z = 5
 } D3DCUBEMAP_FACES;
 
-typedef struct _D3DSURFACE_DESC_CUBE {
-  D3DFORMAT Format;
-  D3DMULTISAMPLE_TYPE MultiSampleType;
-  DWORD MultiSampleQuality;
-  UINT Width;
-  UINT Height;
-} D3DSURFACE_DESC_CUBE;
+//	The documented d3d8.h interface pointer typedefs.
+typedef IDirect3DCubeTexture8 *LPDIRECT3DCUBETEXTURE8;
 
+//	The cube map level description follows the documented d3d8.h
+//	IDirect3DCubeTexture8::GetLevelDesc, which takes the plain
+//	D3DSURFACE_DESC (no CUBE variant exists in the DX8 SDK).
 struct IDirect3DCubeTexture8 : IDirect3DBaseTexture8 {
   virtual HRESULT GetLevelDesc(UINT level,
-                               D3DSURFACE_DESC_CUBE *description) = 0;
+                               D3DSURFACE_DESC *description) = 0;
   virtual HRESULT GetCubeMapSurface(D3DCUBEMAP_FACES faceType, UINT level,
                                     IDirect3DSurface8 **cubeMapSurface) = 0;
-  virtual HRESULT LockBox(D3DCUBEMAP_FACES faceType, UINT level,
-                          D3DLOCKED_BOX *lockedBox, const RECT *box,
-                          DWORD flags) = 0;
-  virtual HRESULT UnlockBox(D3DCUBEMAP_FACES faceType, UINT level) = 0;
+  //	The DX8 SDK documents LockBox/UnlockBox with D3DLOCKED_BOX, but the
+  //	1.5.3 engine's own A3DCubeTexture.cpp calls LockRect/UnlockRect with
+  //	a D3DLOCKED_RECT; the port interface follows the engine's call
+  //	surface (the renderer adapter implements it in the renderer cycle).
+  virtual HRESULT LockRect(D3DCUBEMAP_FACES faceType, UINT level,
+                           D3DLOCKED_RECT *lockedRect, const RECT *rect,
+                           DWORD flags) = 0;
+  virtual HRESULT UnlockRect(D3DCUBEMAP_FACES faceType, UINT level) = 0;
   virtual HRESULT AddDirtyRect(D3DCUBEMAP_FACES faceType,
                                const RECT *dirtyRect) = 0;
 };
