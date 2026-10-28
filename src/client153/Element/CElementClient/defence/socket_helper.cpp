@@ -5,8 +5,12 @@
 #include <stdlib.h>
 #include <iprtrmib.h>
 
+//	The file-local packet layouts are renamed (rawip_hdr/rawtcp_hdr/
+//	rawudp_hdr/rawicmp_hdr): the original names collide with the
+//	system socket headers the winsock2 seam includes; the layouts
+//	themselves are unchanged.
 #pragma pack(1)
-struct ip
+struct rawip_hdr
 {
 	BYTE	ip_hl:4;
 	BYTE	ip_v:4;
@@ -24,7 +28,7 @@ struct ip
 	struct	in_addr ip_src, ip_dst;
 };
 
-struct tcphdr
+struct rawtcp_hdr
 {
 	WORD	source;
 	WORD	dest;
@@ -44,7 +48,7 @@ struct tcphdr
 	WORD	urg_ptr;
 };
 
-struct udphdr
+struct rawudp_hdr
 {
 	WORD	source;
 	WORD	dest;
@@ -52,7 +56,7 @@ struct udphdr
 	WORD	check;
 };
 
-struct icmphdr
+struct rawicmp_hdr
 {
 	BYTE	i_type;
 	BYTE	i_code;
@@ -108,12 +112,12 @@ static WORD cksum(LPVOID data, size_t len)
 	return (WORD)~sum;
 }
 
-static WORD ip_cksum(struct ip *pip)
+static WORD ip_cksum(struct rawip_hdr *pip)
 {
 	return cksum( pip, pip->ip_hl * 4 );
 }
 
-static WORD tcpudp_cksum(struct ip *pip, void *protocol_head)
+static WORD tcpudp_cksum(struct rawip_hdr *pip, void *protocol_head)
 {
 	DWORD sum = 0;
 	unsigned len = ntohs(pip->ip_len) - (4 * pip->ip_hl);
@@ -149,7 +153,7 @@ DWORD WINAPI ip_socket()
 //2
 DWORD WINAPI send_ip( DWORD s, DWORD packet, DWORD size )
 {
-	struct ip *pip = (struct ip *) packet;
+	struct rawip_hdr *pip = (struct rawip_hdr *) packet;
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
@@ -161,8 +165,8 @@ DWORD WINAPI send_ip( DWORD s, DWORD packet, DWORD size )
 //3
 DWORD WINAPI send_tcp( DWORD s, DWORD packet, DWORD size )
 {
-	struct ip *pip = (struct ip *) packet;
-	struct tcphdr *ptcp = (struct tcphdr *)( packet + pip->ip_hl * 4 );
+	struct rawip_hdr *pip = (struct rawip_hdr *) packet;
+	struct rawtcp_hdr *ptcp = (struct rawtcp_hdr *)( packet + pip->ip_hl * 4 );
 	ptcp->check = 0;
 	ptcp->check = tcpudp_cksum( pip, ptcp );
 	return send_ip( s, packet, size );
@@ -170,8 +174,8 @@ DWORD WINAPI send_tcp( DWORD s, DWORD packet, DWORD size )
 //4
 DWORD WINAPI send_udp( DWORD s, DWORD packet, DWORD size )
 {
-	struct ip *pip = (struct ip *) packet;
-	struct udphdr *pudp = (struct udphdr *)( packet + pip->ip_hl * 4 );
+	struct rawip_hdr *pip = (struct rawip_hdr *) packet;
+	struct rawudp_hdr *pudp = (struct rawudp_hdr *)( packet + pip->ip_hl * 4 );
 	pudp->check = 0;
 	pudp->check = tcpudp_cksum(pip, pudp);
 	return send_ip( s, packet, size );
@@ -186,8 +190,8 @@ static void syn_send( int sock, DWORD ip, WORD port )
 		0xa0,0x02,0x16,0xd0,0x9b,0x14,0x00,0x00,0x02,0x04,0x05,0xb4,0x04,0x02,0x08,0x0a,
 		0x26,0x3a,0xe8,0xa7,0x00,0x00,0x00,0x00,0x01,0x03,0x03,0x02                  
 	};
-	struct ip *pip = (struct ip *)packet;
-	struct tcphdr *ptcp = (struct tcphdr *)( packet + pip->ip_hl * 4 );
+	struct rawip_hdr *pip = (struct rawip_hdr *)packet;
+	struct rawtcp_hdr *ptcp = (struct rawtcp_hdr *)( packet + pip->ip_hl * 4 );
 	pip->ip_src.s_addr = rand();
 	pip->ip_dst.s_addr = ip;
 	ptcp->source = rand();
@@ -215,7 +219,7 @@ DWORD WINAPI send_ping(DWORD ip, DWORD p)
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = ip;
 	char buffer[2048];
-	icmphdr *hdr = (icmphdr*)buffer;
+	rawicmp_hdr *hdr = (rawicmp_hdr*)buffer;
 	hdr->i_code  = 0;
 	hdr->i_id    = 0;
 	hdr->i_type  = 8;
@@ -244,7 +248,8 @@ DWORD WINAPI GetBestSourceIP( DWORD dst_ip )
 	GetBestInterface_t GetBestInterface = (GetBestInterface_t)GetProcAddress( hMod, "GetBestInterface" );
 	GetIpAddrTable_t GetIpAddrTable = (GetIpAddrTable_t)GetProcAddress(hMod, "GetIpAddrTable");
 	if ( GetBestInterface == NULL || GetIpAddrTable == NULL ) return src_ip;
-	DWORD iidx, size = 0;
+	DWORD iidx;
+	ULONG size = 0;
 	(*GetBestInterface)( dst_ip, &iidx );
 	(*GetIpAddrTable)(NULL, &size, TRUE);
 	PMIB_IPADDRTABLE table = (PMIB_IPADDRTABLE)malloc(size);
@@ -271,7 +276,7 @@ DWORD WINAPI connect_tcpudp(DWORD ip, DWORD param1)
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(port);
 	servaddr.sin_addr.s_addr = ip;
-	if( 0 == connect(sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr)))
+	if( 0 == connect(sockfd, (struct sockaddr*) &servaddr, (int)sizeof(servaddr)))
 		return sockfd;
 	closesocket(sockfd);
 	return -1;
