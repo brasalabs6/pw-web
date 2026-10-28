@@ -132,8 +132,10 @@ target_compile_options(client153_formats PRIVATE -Wall -Wextra -Werror -pedantic
 if(EMSCRIPTEN)
   target_compile_options(client153_formats PUBLIC -fexceptions)
   target_link_options(client153_formats INTERFACE -fexceptions)
+  add_library(client153_webgl_caps STATIC platform/web/webgl_caps.cpp)
+  target_compile_features(client153_webgl_caps PUBLIC cxx_std_17)
   add_executable(client153 platform/web/runtime.cpp)
-  target_link_libraries(client153 PRIVATE client153_formats client153_file client153_math)
+  target_link_libraries(client153 PRIVATE client153_formats client153_file client153_math client153_webgl_caps)
   target_compile_options(client153 PRIVATE -Wall -Wextra -Werror)
   set_target_properties(client153 PROPERTIES CXX_EXTENSIONS ON)
   target_link_options(client153 PRIVATE

@@ -41,6 +41,9 @@
 #include "EC_TimeSafeChecker.h"
 #include "EC_WinAPI.h"
 #include "log_cleanup.h"
+#ifdef __EMSCRIPTEN__
+#include "../../platform/web/webgl_caps.h"
+#endif
 
 #ifdef _PROFILE_MEMORY
 #include "Memory\EC_HookMemory.h"
@@ -218,6 +221,9 @@ bool prepare_file_structures()
 
 bool CheckHardwareCaps(const char *& pszInfo)
 {
+#ifdef __EMSCRIPTEN__
+	return pw153_check_webgl_capabilities(&pszInfo);
+#else
 	pszInfo = "未知的错误";
 
 	// first see if NetMeeting is running, if so just pop up a warning.
@@ -378,6 +384,7 @@ bool CheckHardwareCaps(const char *& pszInfo)
 
 	glb_RepairExeInMemory();
 	return true;
+#endif
 }
 
 bool CheckImportantFiles(const char *& pszInfo)
