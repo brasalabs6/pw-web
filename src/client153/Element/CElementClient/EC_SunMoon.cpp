@@ -506,6 +506,19 @@ inline A3DVECTOR3& CLAMPVECTOR(A3DVECTOR3& v, int minx, int maxx, int miny, int 
 	return v;
 }
 
+//	The flare render passes temporaries to CLAMPVECTOR; MSVC binds them to
+//	the non-const reference above, but standard C++ cannot. This const
+//	overload clamps a copy and returns by value, preserving the original.
+inline A3DVECTOR3 CLAMPVECTOR(const A3DVECTOR3& v, int minx, int maxx, int miny, int maxy)
+{
+	A3DVECTOR3 r = v;
+	if( r.x < minx ) r.x = minx + 0.5f;
+	else if( r.x > maxx ) r.x = (float)maxx - 0.5f;
+	if( r.y < miny ) r.y = miny + 0.5f;
+	else if( r.y > maxy ) r.y = (float)maxy - 0.5f;
+	return r;
+}
+
 bool CECSunMoon::RenderSolarFlare(CECViewport * pViewport)
 {
 	// see if not set time yet.
