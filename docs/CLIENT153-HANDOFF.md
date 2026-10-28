@@ -798,9 +798,10 @@ parte de tesselação; `GetGlyphOutline` ainda retorna erro.
 
 O diagnóstico agora pode chamar `wWinMain` com linha de comando vazia,
 sem montar a instalação original nem escrever nela. `PW153_PROBE_FILES` é
-um array JSON de caminhos locais para pacotes PCK/PKX; o script copia os
-arquivos para o filesystem virtual, portanto consome memória proporcional ao
-tamanho dos pacotes. Não incluir dados ou caminhos privados no repositório.
+um array JSON de caminhos locais para pacotes PCK/PKX; o probe cria nós virtuais
+que abrem os arquivos de origem somente para leitura e leem trechos sob demanda.
+Também aceita objetos com `source` e `virtualName` para caminhos Windows de
+pacotes. Não incluir dados ou caminhos privados no repositório.
 
 ```sh
 python3 scripts/link-client153-full.py --error-limit 5000 \
@@ -817,3 +818,16 @@ retorna status não zero quando a entrada falha. Isso não valida todos os
 dados dos pacotes, inicialização gráfica, login ou execução no browser.
 Os objetos de entrada ainda são produzidos pelo probe local, não por um build
 limpo completo; o transporte eficiente de assets permanece pendente.
+
+### Pacotes sob demanda e próximo bloqueio de rede
+
+O teste `client153_readonly_package` verifica leitura, seek, tamanho e rejeição
+de escrita sem alterar o arquivo de origem. No probe Node com os pacotes
+originais disponíveis e `help\\script.pck` mapeado explicitamente, o bootstrap
+avançou até `_InitNetwork`, onde `PollIO::Init` usa um socket UDP local como
+mecanismo de wakeup. O runtime Node do Emscripten tentou carregar `ws` ao
+executar `bind` e falhou porque esse pacote não estava instalado. Essa evidência
+não prova que o socket UDP funcione no navegador: a adaptação do polling e do
+transporte WebSocket continua necessária. O crescimento de memória está
+habilitado apenas para o probe; o consumo completo de memória não foi medido.
+O acesso Node sob demanda não implementa o streaming de produção no navegador.

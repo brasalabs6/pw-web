@@ -28,7 +28,9 @@ wasm-ld: error: /tmp/c.o: undefined symbol: foo(int, double), referenced by z
 
     def test_node_probe_flags_export_malloc_and_preserve_js_path(self):
         self.assertEqual(link.node_probe_flags("/tmp/probe.js"),
-                         ["--pre-js", "/tmp/probe.js", "-sEXPORTED_FUNCTIONS=_malloc"])
+                         ["--pre-js", str(link.ROOT / 'scripts/client153-readonly-node.js'),
+                          "--pre-js", "/tmp/probe.js", "-sEXPORTED_FUNCTIONS=_malloc",
+                          "-sALLOW_MEMORY_GROWTH=1"])
         self.assertEqual(link.node_probe_flags(None), [])
 
     def test_unexpected_linker_failure_is_reported(self):

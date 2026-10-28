@@ -15,6 +15,13 @@ endif()
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   if(EMSCRIPTEN)
+    add_executable(client153_readonly_package_test tests/client153/readonly_package.c)
+    target_link_options(client153_readonly_package_test PRIVATE "-sENVIRONMENT=node" "-sFORCE_FILESYSTEM=1"
+      "SHELL:--pre-js ${PROJECT_SOURCE_DIR}/scripts/client153-readonly-node.js"
+      "SHELL:--pre-js ${PROJECT_SOURCE_DIR}/tests/client153/readonly_package_pre.js")
+    add_test(NAME client153_readonly_package COMMAND client153_readonly_package_test)
+    set_tests_properties(client153_readonly_package PROPERTIES
+      ENVIRONMENT "PW153_FIXTURE=${PROJECT_SOURCE_DIR}/tests/client153/readonly_fixture.txt")
     add_executable(client153_wide_length_optimized_test
       tests/client153/wide_length_optimized.cpp src/client153/platform/common/widestr.cpp)
     target_include_directories(client153_wide_length_optimized_test PRIVATE src/client153/platform/common)

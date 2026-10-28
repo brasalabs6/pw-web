@@ -40,7 +40,9 @@ def retention_flags(entry_symbol: str | None) -> list[str]:
 
 
 def node_probe_flags(pre_js: str | None) -> list[str]:
-    return ['--pre-js', pre_js, '-sEXPORTED_FUNCTIONS=_malloc'] if pre_js else []
+    return ['--pre-js', str(ROOT / 'scripts/client153-readonly-node.js'),
+            '--pre-js', pre_js, '-sEXPORTED_FUNCTIONS=_malloc',
+            '-sALLOW_MEMORY_GROWTH=1'] if pre_js else []
 
 
 def main() -> int:

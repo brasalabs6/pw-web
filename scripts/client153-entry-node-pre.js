@@ -1,13 +1,14 @@
-// Node-only diagnostic. Assets are copied into MEMFS; source files are never mounted.
+// Node-only diagnostic. Source packages are opened read-only and read on demand.
 var Module = {
   onRuntimeInitialized: function () {
-    const fs = require('fs');
     const path = require('path');
     const assets = JSON.parse(process.env.PW153_PROBE_FILES || '[]');
-    for (const filename of assets) {
-      const name = path.basename(filename);
-      if (!/^[a-z0-9_-]+\.(pck|pkx)$/i.test(name)) throw new Error('Invalid package name');
-      FS.writeFile('/' + name, fs.readFileSync(filename));
+    for (const asset of assets) {
+      const filename = typeof asset === 'string' ? asset : asset.source;
+      const name = typeof asset === 'string' ? path.basename(filename) : asset.virtualName;
+      if (typeof name !== 'string' || !/^[a-z0-9_-]+(?:\\[a-z0-9_-]+)*\.(pck|pkx)$/i.test(name))
+        throw new Error('Invalid package name');
+      pw153MapReadonlyFile(filename, name);
     }
     console.error('PW_ENTRY_PROBE_BEGIN');
     const empty = Module._malloc(2);
