@@ -7,6 +7,22 @@
   "mode": "adapted; upstream Win32 translation units are not compiled unchanged",
   "upstreamFiles": [
     {
+      "path": "Element/CFWEditorLib/CharVerticesBuffer.cpp",
+      "sha256": "1341d8c089aae9f41f3452c34e8efe307868041421039f2a3a938fd08a8a5f7c"
+    },
+    {
+      "path": "Element/CFWEditorLib/GLUContour.h",
+      "sha256": "dff645434ea964efb0e3b25c02b2e8da013f1ac157217974e9888d6dc599210a"
+    },
+    {
+      "path": "Element/CFWEditorLib/GLUPolygon.cpp",
+      "sha256": "d541a29041cca116e9e7178121633526b643a068de6ac7848f1fd3376188fadb"
+    },
+    {
+      "path": "Element/CFWEditorLib/GLUTess.cpp",
+      "sha256": "f8607a3449c9493e924accc9ec2d81c65959d91246e79c83087102695b2616dd"
+    },
+    {
       "path": "Angelica2/Angelica3D/Source/A3DESPMove.cpp",
       "sha256": "e7e7979ffac70152fdff55260201d9de1ac3d17f75c4c8ab2a851cb57fdae91f"
     },
