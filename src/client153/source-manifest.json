@@ -9122,7 +9122,7 @@
       "changes": [
         "D3DXMatrixLookAtLH replaced by the scalar left-handed formula laid out like a3d_ViewMatrix in the same file",
         "memset-on-class replaced by explicit member zeroing with identical results",
-        "DirectX FVF vertex-shader declarator builders and the dead _KeepOrthogonal helper omitted; no port consumer yet",
+        "Original type and morph vertex-shader declarator builders restored; the FVF overload and dead _KeepOrthogonal helper remain omitted",
         "A3DCoordinate child-position handle widened from DWORD to ALISTPOSITION (original assumed 32-bit pointers)",
         "pure-virtual A3DController destructor defined out-of-line; the original never defined it",
         "A3DAABB initializer order fixed to declaration order; A3DSPLANE copy ctor initializes its base",

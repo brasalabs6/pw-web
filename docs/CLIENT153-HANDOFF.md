@@ -550,3 +550,17 @@ O overload por FVF continua pendente de `D3DXDeclaratorFromFVF`, assim como a
 execução gráfica das declarações. O diagnóstico `python3 scripts/link-client153-full.py
 --error-limit 0` ainda falhou com 7.264 ocorrências de símbolos indefinidos;
 esta contagem inclui referências repetidas e não representa funcionalidades.
+
+### Dependências reais dos shaders
+
+A compilação isolada das fontes originais `A3DVertexShader.cpp` e
+`A3DPixelShader.cpp` com o mesmo comando de `client153_engine_original` e o
+include adicional `Angelica2/Output/afsdk/include` falhou em APIs ainda não
+portadas: criação e destruição de shaders em `IDirect3DDevice8`,
+`D3DXCreateBuffer` e `D3DXAssembleShader`; a fonte de vértice também requer
+`D3DUSAGE_SOFTWAREPROCESSING`. O gerenciador compilado não oferece essas
+implementações. Os shaders do cliente incluem código Direct3D de vértice e
+pixel, de modo que executar a engine requer uma estratégia real para seus
+programas e recursos no WebGL, não apenas acrescentar assinaturas para o build.
+A conversão do overload FVF continua pendente de comportamento Direct3D 8
+verificado.
