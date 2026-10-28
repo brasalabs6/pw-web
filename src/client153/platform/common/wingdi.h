@@ -16,6 +16,23 @@ typedef struct _FIXED {
   short value;
 } FIXED;
 
+typedef struct tagPOINTFX { FIXED x; FIXED y; } POINTFX, *LPPOINTFX;
+typedef struct tagTTPOLYCURVE {
+  WORD wType;
+  WORD cpfx;
+  POINTFX apfx[1];
+} TTPOLYCURVE, *LPTTPOLYCURVE;
+typedef struct tagTTPOLYGONHEADER {
+  DWORD cb;
+  DWORD dwType;
+  POINTFX pfxStart;
+} TTPOLYGONHEADER, *LPTTPOLYGONHEADER;
+#define TT_PRIM_LINE 1
+#define TT_PRIM_QSPLINE 2
+#define TT_PRIM_CSPLINE 3
+#define GGO_NATIVE 2
+#define GDI_ERROR (~0u)
+
 typedef struct _MAT2 {
   FIXED eM11;
   FIXED eM12;
@@ -32,6 +49,12 @@ typedef struct _GLYPHMETRICS {
   short gmCellIncX;
   short gmCellIncY;
 } GLYPHMETRICS, *LPGLYPHMETRICS;
+
+// No browser GDI font handle exists; callers must handle GDI_ERROR.
+inline DWORD GetGlyphOutline(HDC, UINT, UINT, LPGLYPHMETRICS, DWORD,
+                             void *, const MAT2 *) {
+  return GDI_ERROR;
+}
 
 //	The font-object creation: no GDI fonts exist in a browser page, so
 //	every request fails (NULL = documented failure; the callers check the
