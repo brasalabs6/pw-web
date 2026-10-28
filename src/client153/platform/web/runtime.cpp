@@ -3,6 +3,7 @@
 #include "AFile.h"
 #include "dds.h"
 #include "mox.h"
+#include "webgl_caps.h"
 #include <GLES3/gl3.h>
 #include <algorithm>
 #include <array>
@@ -95,9 +96,9 @@ int client_init() {
   emscripten_set_webglcontextlost_callback("#canvas", nullptr, true, on_lost);
   emscripten_set_webglcontextrestored_callback("#canvas", nullptr, true,
                                                on_restored);
-  if (!emscripten_webgl_enable_extension(context,
-                                         "WEBGL_compressed_texture_s3tc"))
-    return fail("S3TC extension required for original DXT textures");
+  const char *capabilityError = nullptr;
+  if (!pw153_check_webgl_capabilities(&capabilityError))
+    return fail(capabilityError);
   const char *vs = R"(#version 300 es
  precision highp float;
  layout(location=0) in vec3 position;
