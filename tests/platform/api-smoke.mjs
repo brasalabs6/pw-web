@@ -10,6 +10,14 @@ const json=async(path,method='GET',body,cookie,headers={})=>{
  return {status:r.status,data,cookie:r.headers.get('set-cookie')?.split(';')[0]};
 };
 for(let i=0;i<30;i++){try{const r=await fetch(API+'/readyz');if(r.ok)break}catch{} await new Promise(r=>setTimeout(r,500))}
+// Browser preflight: allow explicit trusted origins and deny unknown origins.
+let preflight=await fetch(API+'/v1/catalog/realms',{method:'OPTIONS',
+  headers:{Origin:'http://localhost:5173','Access-Control-Request-Method':'POST'}});
+assert.equal(preflight.status,204);
+assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),'http://localhost:5173');
+preflight=await fetch(API+'/v1/catalog/realms',{method:'OPTIONS',
+  headers:{Origin:'https://untrusted.example.invalid','Access-Control-Request-Method':'POST'}});
+assert.equal(preflight.status,403);
 let r=await json('/v1/auth/register','POST',{email:mail,password:'A-reasonably-long-test-password-123!',displayName:'Platform QA'});
 assert.equal(r.status,201);
 r=await json('/v1/auth/login','POST',{email:mail,password:'A-reasonably-long-test-password-123!'});

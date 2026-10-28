@@ -60,7 +60,7 @@ export default function App(){
   };
   return <Layout title="Escolha seu mundo." subtitle="Selecione um servidor, entre com sua conta e o PW Web selecionará e atualizará o cliente compatível automaticamente."
     actions={<div className="actions">{user&&<span className="muted small">{user.displayName}</span>}
-      <a href="http://localhost:5174" className="muted small">Minha conta</a>
+      <a href={import.meta.env.VITE_PORTAL_URL||'http://localhost:5174'} className="muted small">Minha conta</a>
       {user&&<button className="secondary" onClick={async()=>{invalidateUpdate();await api.logout();setUser(null);setStage('login')}}>Sair</button>}</div>}>
     <p className="kicker">01 / Servidores disponíveis <button className="text-button" onClick={refresh}>Atualizar lista</button></p>
     <section className="grid" aria-label="Lista de servidores">

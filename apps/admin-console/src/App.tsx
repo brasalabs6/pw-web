@@ -14,7 +14,7 @@ export default function App(){
   useEffect(()=>{api.me().then(r=>{setUser(r.user);if(r.user.role!=='player')refresh()}).catch(()=>{})},[]);
   const send=async(fn:()=>Promise<unknown>)=>{setInfo('');setError('');try{await fn();setInfo('Operação registrada. Verifique o estado atualizado.');refresh()}catch(e){setError(String(e))}};
   return <Layout title="Controle PW Web" subtitle="Administre realms, versões, servidores e previews. Operações são registradas e auditadas."
-  actions={<div className="actions"><a className="muted small" href="http://localhost:5173">Launcher</a>
+  actions={<div className="actions"><a className="muted small" href={import.meta.env.VITE_SHELL_URL||'http://localhost:5173'}>Launcher</a>
      {user&&<button className="secondary" onClick={async()=>{await api.logout();setUser(null);setData(null)}}>Sair</button>}</div>}>
   {!user?<AuthPanel onLogin={u=>{setUser(u);if(u.role!=='player')refresh()}}/>:user.role==='player'?
     <div className="panel error">Acesso restrito a operadores. Uma conta nova não recebe papel administrativo automaticamente.</div>:

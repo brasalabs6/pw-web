@@ -5,7 +5,7 @@ export default function App(){
  const [user,setUser]=useState<AuthUser|null>(null),[error,setError]=useState('');
  useEffect(()=>{api.me().then(r=>setUser(r.user)).catch(()=>{})},[]);
  return <Layout title="Minha conta PW Web" subtitle="Gerencie sua identidade web e acesse os servidores disponíveis."
-   actions={<a href="http://localhost:5173" className="muted">Voltar ao launcher</a>}>
+   actions={<a href={import.meta.env.VITE_SHELL_URL||'http://localhost:5173'} className="muted">Voltar ao launcher</a>}>
    {!user?<AuthPanel onLogin={setUser}/>:<div className="panel" style={{maxWidth:650}}>
      <span className="kicker">Conta autenticada</span><h2>{user.displayName}</h2>
      <p><strong>E-mail:</strong> {user.email}</p>

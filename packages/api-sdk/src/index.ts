@@ -50,4 +50,4 @@ export class PwApi {
   }
   jobs(){return this.request<{jobs:any[]}>('/v1/admin/jobs')}
 }
-export const api=new PwApi();
+export const api=new PwApi(import.meta.env?.VITE_API_BASE_URL||'');

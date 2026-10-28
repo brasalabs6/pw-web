@@ -17,7 +17,19 @@ const json=async <T extends z.ZodType>(c:any,schema:T):Promise<z.output<T>|null>
 
 app.use('/v1/*',async(c,next)=>{
   const origin=c.req.header('origin')??null;
-  if(c.req.method!=='GET'&&c.req.method!=='HEAD'&&!safeOrigin(origin)) return fail(c,403,'Origin not allowed');
+  if(origin&&!safeOrigin(origin))return fail(c,403,'Origin not allowed');
+  // Strict origin allowlist; never use wildcard with credentialed sessions.
+  if(origin){
+    c.header('Access-Control-Allow-Origin',origin);
+    c.header('Access-Control-Allow-Credentials','true');
+    c.header('Vary','Origin');
+  }
+  if(c.req.method==='OPTIONS'){
+    c.header('Access-Control-Allow-Methods','GET, POST, PATCH, DELETE, OPTIONS');
+    c.header('Access-Control-Allow-Headers','Content-Type, Idempotency-Key');
+    c.header('Access-Control-Max-Age','300');
+    return c.body(null,204);
+  }
   c.header('Cache-Control','no-store');
   c.header('X-Content-Type-Options','nosniff');
   const token=getCookie(c,'pw_session');
