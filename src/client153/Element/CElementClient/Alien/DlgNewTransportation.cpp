@@ -11,7 +11,11 @@
 #include "EC_ElsePlayer.h"
 #include "EC_GameRun.h"
 #include "DlgWorldMap.h"
-#include "../ccommon/exptypes.h"
+//	The original relative include "../ccommon/exptypes.h" never matched a real
+//	directory (CCommon lives two levels up); the original build resolved it
+//	case-insensitively through the include path. The port uses the same
+//	ExpTypes.h forwarder the other game TUs include.
+#include "ExpTypes.h"
 
 #define new A_DEBUG_NEW
 
