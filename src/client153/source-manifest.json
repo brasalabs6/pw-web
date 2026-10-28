@@ -9447,6 +9447,119 @@
       "upstream": "Common/LuaWrapper/LuaAPI.cpp",
       "functions": [],
       "notes": "verbatim port."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_MCDownload.cpp",
+      "upstream": "Element/CElementClient/EC_MCDownload.cpp",
+      "functions": [
+        "CECMCDownload::StartDownloader",
+        "CECMCDownload::SendData",
+        "CECMCDownload::OnPipeData",
+        "CECMCDownload::ProcessPipeData"
+      ],
+      "notes": "ACSWrapper.h included directly (the upstream chain resolved it through a header the port does not shadow); the named-pipe/process Win32 surface lives in the platform seams and fails explicitly on the browser target (the caller's own error path disables the downloader integration)."
+    },
+    {
+      "path": "src/client153/Element/CCommon/EL_BackMusic.cpp",
+      "upstream": "Element/CCommon/EL_BackMusic.cpp",
+      "functions": [],
+      "notes": "the dead 'IO.h' include is dropped: the file does not exist in the pinned tree and no symbol from it is used."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_ShadowRender.cpp",
+      "upstream": "Element/CElementClient/EC_ShadowRender.cpp",
+      "functions": [
+        "CECShadowRender::RenderShadow"
+      ],
+      "notes": "the 8 D3DXVECTOR3(float[3]) constructions use the copy constructor (the A3DVECTOR3 alias has no array constructor; the same three floats are copied); D3DXMatrixShadow/D3DXVec3TransformCoord/D3DXVECTOR4 come from the d3dx8 seam (published Microsoft formulas)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_PortraitRender.cpp",
+      "upstream": "Element/CElementClient/EC_PortraitRender.cpp",
+      "functions": [
+        "CECPortraitRender::AfterDeviceReset"
+      ],
+      "notes": "verbatim port; IDirect3DDevice8::CreateRenderTarget declared in the d3d8 seam (pure virtual; the WebGL backend owns the real surface)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_SoundCache.cpp",
+      "upstream": "Element/CElementClient/EC_SoundCache.cpp",
+      "functions": [
+        "CECSoundCache::AllocFileCacheItem"
+      ],
+      "notes": "failure-return 'false' -> NULL; the original relied on the MSVC rule that reads false as a null pointer constant, C++17 does not."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_Faction.cpp",
+      "upstream": "Element/CElementClient/EC_Faction.cpp",
+      "functions": [
+        "CECFactionMan::OnFactionMsg"
+      ],
+      "notes": "case-variant includes corrected to the real lowercase rpcdata filenames (getplayerfactioninfo_re.hpp, factionrename_re.hpp); 6 varargs sites pass (const wchar_t*) casts instead of AWString objects (AddFixedMessage/AWString::Format)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_GFXCaster.cpp",
+      "upstream": "Element/CElementClient/EC_GFXCaster.cpp",
+      "functions": [
+        "CECGFXCaster::LoadFWTemplate"
+      ],
+      "notes": "failure-return 'false' -> NULL; the original relied on the MSVC rule that reads false as a null pointer constant, C++17 does not."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_ManNPC.cpp",
+      "upstream": "Element/CElementClient/EC_ManNPC.cpp",
+      "functions": [
+        "CECNPCMan::CreateNPC"
+      ],
+      "notes": "include corrected to the real ECScriptCheckState.h (the original 'ECSCriptCheckState.h' relied on Windows case-insensitive resolution); failure-return 'false' -> NULL in CreateNPC (MSVC-only acceptance)."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_ManMatter.cpp",
+      "upstream": "Element/CElementClient/EC_ManMatter.cpp",
+      "functions": [],
+      "notes": "ACSWrapper.h included directly (the upstream chain resolved it through a header the port does not shadow)."
+    },
+    {
+      "path": "src/client153/Element/CCommon/globaldataman.cpp",
+      "upstream": "Element/CCommon/globaldataman.cpp",
+      "functions": [
+        "GlobalData_Load",
+        "GlobalData_Save"
+      ],
+      "notes": "verbatim port; GetCommandLineA (empty string, no process arguments on the browser target) and SetFileAttributesA (real chmod for the read-only bit) come from the Windows.h seam."
+    },
+    {
+      "path": "src/client153/Element/CCommon/itemdataman.h",
+      "upstream": "Element/CCommon/itemdataman.h",
+      "functions": [
+        "itemdataman::generate_equipment_addon"
+      ],
+      "notes": "the declaration's third parameter is aligned with the definition (unsigned int addon_id, not size_t): the original matched only because Win32 size_t is unsigned int; the definition and all call sites treat the parameter as an addon id."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/DlgLoginOther.cpp",
+      "upstream": "Element/CElementClient/DlgLoginOther.cpp",
+      "functions": [
+        "CDlgLoginOther::DocumentComplete"
+      ],
+      "notes": "get_all's collection pointer passes through an explicit reinterpret_cast to IDispatch** (the original relied on an MSVC-only lax conversion); the interface ids are accessor functions on this target (IID_IHTMLInputElement()); 2 varargs sites pass (const wchar_t*) casts; the MSHTML collection/input surface and VARIANT::intVal come from the exdisp/wtypes seams."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/Task/TaskTempl.cpp",
+      "upstream": "Element/CElementClient/Task/TaskTempl.cpp",
+      "functions": [
+        "save_talk_text",
+        "save_task"
+      ],
+      "notes": "the TU-local CSafeString (byte-identical to the AVariant.h copy the AUI prelude chain pulls in) is guarded on _AVARIANT_H__: with the prelude the identical AVariant copy is used, standalone the local copy compiles as upstream."
+    },
+    {
+      "path": "src/client153/Element/CElementClient/EC_PlayerWrapper.cpp",
+      "upstream": "Element/CElementClient/EC_PlayerWrapper.cpp",
+      "functions": [
+        "AP_GetActionName"
+      ],
+      "notes": "the CONVERT_TYPE_TO_TEXT macro drops the invalid ::##iAction token paste (an MSVC traditional-preprocessor laxity); the parameter expands without it and the stringization is unchanged."
     }
   ],
   "additionalCopyrights": [
