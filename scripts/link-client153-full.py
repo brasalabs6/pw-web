@@ -45,6 +45,15 @@ def node_probe_flags(pre_js: str | None) -> list[str]:
             '-sALLOW_MEMORY_GROWTH=1'] if pre_js else []
 
 
+def browser_probe_flags(pre_js: str | None) -> list[str]:
+    # The browser entry probe: the pre-js maps the client packages as
+    # Range-request-backed read-only MEMFS streams inside a worker and
+    # drives the original wWinMain through pw153_browser_probe. Unlike the
+    # Node probe it must not pull the Node-only readonly mapper.
+    return ['--pre-js', pre_js, '-sEXPORTED_FUNCTIONS=_malloc,_pw153_browser_probe',
+            '-sALLOW_MEMORY_GROWTH=1', '-sMAX_WEBGL_VERSION=2'] if pre_js else []
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--emxx', default=str(
@@ -68,6 +77,8 @@ def main() -> int:
     parser.add_argument('--error-limit', type=int, default=60)
     parser.add_argument('--entry-symbol', help='retain this mangled symbol and its reachable sections')
     parser.add_argument('--node-probe-pre-js', help='Node-only entry probe script')
+    parser.add_argument('--browser-probe-pre-js', help='browser entry probe pre-js (worker context)')
+    parser.add_argument('--extra-objects', help='comma-separated extra object files to link')
     parser.add_argument('--list-only', action='store_true')
     args = parser.parse_args()
 
@@ -81,6 +92,8 @@ def main() -> int:
     game_dir = pathlib.Path(args.game_objects)
     if game_dir.exists():
         objects += sorted(game_dir.rglob('*.o'))
+    if args.extra_objects:
+        objects += [pathlib.Path(p) for p in args.extra_objects.split(',')]
     libraries = []
     for name in ('skeleton', 'animation', 'file', 'math', 'common',
                  'platform', 'formats', 'webgl_caps', 'skinning',
@@ -97,7 +110,9 @@ def main() -> int:
     output = pathlib.Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     command = [
-        args.emxx, '--no-entry', '-fexceptions', '-sUSE_ZLIB=1', *node_probe_flags(args.node_probe_pre_js),
+        args.emxx, '--no-entry', '-fexceptions', '-sUSE_ZLIB=1',
+        *node_probe_flags(args.node_probe_pre_js),
+        *browser_probe_flags(args.browser_probe_pre_js),
         *retention_flags(args.entry_symbol), f'-Wl,--error-limit={args.error_limit}',
         *objects, *libraries, '-o', str(output),
     ]

@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- The browser entry probe page (m-boot): transfers the canvas to the
+     worker so the module's synchronous package reads (Range XHR) run off
+     the main thread, and surfaces every worker message as the probe
+     report. -->
+<canvas id="canvas" width="1024" height="768"></canvas>
+<pre id="status">starting</pre>
+<script>
+const worker = new Worker('/worker.js');
+worker.onmessage = e => {
+  document.querySelector('#status').textContent += '\n' + JSON.stringify(e.data);
+};
+worker.onerror = e => {
+  document.querySelector('#status').textContent += '\nWORKER ERROR ' + e.message;
+};
+const canvas = document.querySelector('#canvas').transferControlToOffscreen();
+worker.postMessage(canvas, [canvas]);
+</script>
