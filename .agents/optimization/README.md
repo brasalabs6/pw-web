@@ -111,3 +111,11 @@ Os novos candidatos usam `OPT-NNN`, sequenciais; preservar IDs, SHA e links file
 | [OPT-036](OPT-036-pck-read-short-read-integrity-contract.md) | P1 | PCK / hardening preventivo | Verificar leitura completa e limites de payload no leitor PCK legado |
 | [OPT-037](OPT-037-pck-replacement-append-fragmentation.md) | P2 | PCK / tamanho de release | Evitar crescimento histórico de PCK por substituições append-only no pipeline de build |
 | [OPT-038](OPT-038-asset-inventory-non-pck-coverage.md) | P2 | Inventory / scope/coverage | Incluir assets fora de element/*.pck na análise de peso e prioridades de download |
+
+## Auditoria incremental — GFX original (2026-10-28; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-039](OPT-039-gfx-shared-texture-cache-lru-and-locked-load.md) | P2 | GFX / cache de textura original | Medir cache LRU de 16 entradas, duas aquisições de referência e mutex durante segunda carga; preservar refcounts |
+
+Baseline de inspeção: `4bd108b30650647d1c510db252442de764b27dd1`. Candidato estático, sem benchmark e sem bloqueio do port; distinto de OPT-001/002/011/016. O port WebAssembly jogável em desktop e mobile continua sendo o gate anterior a qualquer tuning.
