@@ -4151,6 +4151,23 @@ inline HBITMAP CreateCompatibleBitmap(HDC hDC, int width, int height) {
 }
 inline HGDIOBJ SelectObject(HDC hDC, HGDIOBJ object) { (void)hDC; (void)object; return NULL; }
 inline BOOL DeleteObject(HGDIOBJ object) { (void)object; return FALSE; }
+
+//	Brush/rect/pixel drawing: the browser has no GDI device contexts; the
+//	brush is none and the draws fail (the A3DTerrain debug cell-level
+//	overlay is the only caller; GetDC already returns NULL so the draws
+//	never had a real target, like BitBlt above).
+inline HBRUSH CreateSolidBrush(COLORREF color) {
+  (void)color;
+  return NULL;
+}
+inline int FillRect(HDC hDC, const RECT *rect, HBRUSH brush) {
+  (void)hDC; (void)rect; (void)brush;
+  return 0;
+}
+inline COLORREF SetPixel(HDC hDC, int x, int y, COLORREF color) {
+  (void)hDC; (void)x; (void)y; (void)color;
+  return CLR_INVALID;
+}
 inline BOOL BitBlt(HDC dest, int x, int y, int width, int height,
                    HDC src, int x1, int y1, DWORD rop) {
   (void)dest; (void)x; (void)y; (void)width; (void)height;
