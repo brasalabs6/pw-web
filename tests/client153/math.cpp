@@ -13,6 +13,12 @@
   } while (false)
 bool near(float a, float b) { return std::abs(a - b) < .0001f; }
 int main() {
+  D3DXMATRIX ortho;
+  CHECK(D3DXMatrixOrthoOffCenterLH(&ortho, -2.f, 6.f, -3.f, 1.f, 2.f, 12.f) == &ortho);
+  auto lower = A3DVECTOR3(-2.f, -3.f, 2.f) * ortho;
+  auto upper = A3DVECTOR3(6.f, 1.f, 12.f) * ortho;
+  CHECK(near(lower.x, -1.f) && near(lower.y, -1.f) && near(lower.z, 0.f));
+  CHECK(near(upper.x, 1.f) && near(upper.y, 1.f) && near(upper.z, 1.f));
   D3DXMATRIX perspective;
   CHECK(D3DXMatrixPerspectiveFovLH(&perspective, 1.57079632679f, 2.f, 1.f, 11.f) == &perspective);
   CHECK(near(perspective._11, .5f) && near(perspective._22, 1.f));

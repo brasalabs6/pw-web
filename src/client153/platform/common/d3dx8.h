@@ -175,6 +175,18 @@ inline HRESULT D3DXGetImageInfoFromFileA(const char *file,
 #define D3DRS_CLIPPLANEENABLE 152
 #define D3DCLIPPLANE0 (1 << 0)
 
+inline D3DXMATRIX *D3DXMatrixOrthoOffCenterLH(D3DXMATRIX *out, float left,
+                                              float right, float bottom,
+                                              float top, float nearZ, float farZ) {
+  *out = D3DXMATRIX(2.f / (right - left), 0.f, 0.f, 0.f,
+                    0.f, 2.f / (top - bottom), 0.f, 0.f,
+                    0.f, 0.f, 1.f / (farZ - nearZ), 0.f,
+                    (left + right) / (left - right),
+                    (top + bottom) / (bottom - top),
+                    nearZ / (nearZ - farZ), 1.f);
+  return out;
+}
+
 inline D3DXMATRIX *D3DXMatrixPerspectiveFovLH(D3DXMATRIX *out, float fovy,
                                                float aspect, float zn, float zf) {
   const float yscale = 1.0f / std::tan(fovy * 0.5f);

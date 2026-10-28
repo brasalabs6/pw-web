@@ -8981,6 +8981,10 @@
     {
       "path": "Angelica2/Angelica3D/Source/A3DShaderMan.cpp",
       "sha256": "4287cf20d4f857bec5fdba57dbb791a7da1cb41212cf1c124964800e3ff6713f"
+    },
+    {
+      "path": "Angelica2/Angelica3D/Source/A3DOrthoCamera.cpp",
+      "sha256": "92ef639034544b069f5968c98b8286c334bb737c2b5adff790c87798e83058db"
     }
   ],
   "adaptations": [

@@ -45,6 +45,7 @@ if(EMSCRIPTEN)
   add_library(client153_engine_original OBJECT EXCLUDE_FROM_ALL
     Angelica2/Angelica3D/Source/A3DCamera.cpp
     Angelica2/Angelica3D/Source/A3DCameraBase.cpp
+    Angelica2/Angelica3D/Source/A3DOrthoCamera.cpp
     Angelica2/Angelica3D/Source/A3DLightMan.cpp
     Angelica2/Angelica3D/Source/A3DFrustum.cpp
     Angelica2/Angelica3D/Source/A3DViewport.cpp

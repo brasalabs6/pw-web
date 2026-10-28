@@ -596,3 +596,10 @@ reproduzir, executar o probe individual descrito acima com
 falhou com 4.898 ocorrências de símbolos indefinidos; a compilação não valida o
 funcionamento da loja ou do cliente. `EC_MCDownload.cpp` permanece bloqueado
 por APIs Win32 de named pipes e overlapped I/O que não existem no browser.
+
+`A3DOrthoCamera.cpp` original foi incluído na compilação WASM após a
+implementação de `D3DXMatrixOrthoOffCenterLH` conforme a fórmula publicada pela
+Microsoft (https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixorthooffcenterlh).
+Os testes `client153_math` em nativo e WASM verificam os cantos e a faixa de
+profundidade da projeção. O link diagnóstico com a câmera ainda falhou; essa
+compilação não prova renderização ou inicialização do jogo no navegador.
