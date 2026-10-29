@@ -11,6 +11,37 @@ bool usable_context() {
   return emscripten_webgl_get_context_attributes(context, &attributes) == EMSCRIPTEN_RESULT_SUCCESS &&
          attributes.majorVersion >= 2;
 }
+// Check actual framebuffer completeness without changing the caller's bindings.
+bool renderable_color(DWORD format) {
+  GLenum storage = 0;
+  switch (format) {
+    case D3DFMT_R5G6B5: storage = GL_RGB565; break;
+    case D3DFMT_X8R8G8B8:
+    case D3DFMT_A8R8G8B8: storage = GL_RGBA8; break;
+    default: return false;
+  }
+  GLint draw = 0, read = 0, previous = 0;
+  glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw);
+  glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read);
+  glGetIntegerv(GL_RENDERBUFFER_BINDING, &previous);
+  GLuint framebuffer = 0, renderbuffer = 0;
+  glGenFramebuffers(1, &framebuffer);
+  glGenRenderbuffers(1, &renderbuffer);
+  bool supported = false;
+  if (framebuffer && renderbuffer) {
+    glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, storage, 1, 1);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
+    supported = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+  }
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(draw));
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(read));
+  glBindRenderbuffer(GL_RENDERBUFFER, static_cast<GLuint>(previous));
+  glDeleteFramebuffers(1, &framebuffer);
+  glDeleteRenderbuffers(1, &renderbuffer);
+  return supported;
+}
 class Factory final : public IDirect3D8 {
   ULONG references = 1;
 public:
@@ -20,7 +51,11 @@ public:
   }
   ULONG AddRef() override { return ++references; }
   ULONG Release() override { auto count = --references; if (!count) delete this; return count; }
-  HRESULT CheckDeviceType(UINT, DWORD, DWORD, DWORD, BOOL) override { return E_NOTIMPL; }
+  HRESULT CheckDeviceType(UINT adapter, DWORD type, DWORD adapterFormat, DWORD target, BOOL) override {
+    if (adapter != 0 || type != D3DDEVTYPE_HAL || !usable_context()) return E_FAIL;
+    if (adapterFormat != target && !(adapterFormat == D3DFMT_X8R8G8B8 && target == D3DFMT_A8R8G8B8)) return E_FAIL;
+    return renderable_color(target) ? D3D_OK : E_FAIL;
+  }
   HRESULT CheckDeviceFormat(UINT, DWORD, DWORD, DWORD, DWORD, DWORD) override { return E_NOTIMPL; }
   HRESULT CreateDevice(UINT, DWORD, HWND, DWORD, D3DPRESENT_PARAMETERS *, IDirect3DDevice8 **out) override {
     if (out) *out = nullptr;
@@ -39,7 +74,15 @@ public:
     *out = {static_cast<UINT>(viewport[2]), static_cast<UINT>(viewport[3]), 0, D3DFMT_X8R8G8B8};
     return D3D_OK;
   }
-  HRESULT GetDeviceCaps(UINT, DWORD, D3DCAPS8 *) override { return E_NOTIMPL; }
+  HRESULT GetDeviceCaps(UINT adapter, DWORD type, D3DCAPS8 *caps) override {
+    if (adapter != 0 || type != D3DDEVTYPE_HAL || !caps || !usable_context()) return E_FAIL;
+    // Report only implemented adapter capabilities, not the raw WebGL limits.
+    // Texture/shader support is deliberately zero until the device implements it.
+    *caps = {};
+    caps->DeviceType = type;
+    caps->AdapterOrdinal = adapter;
+    return D3D_OK;
+  }
   HRESULT CheckDepthStencilMatch(UINT, DWORD, DWORD, DWORD, DWORD) override { return E_NOTIMPL; }
 };
 }
