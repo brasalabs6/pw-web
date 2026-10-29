@@ -25,9 +25,9 @@ ELEMENT_DIR = os.path.expanduser(
 # Loose files the client expects on its VFS root (fonts are NOT inside
 # fonts.pck — they are individual .ttf files in element/font/).
 LOOSE_FILES = [
-    ('font/fzl2jw.ttf', 'font\\fzl2jw.ttf'),
-    ('font/fzlbjw.ttf', 'font\\fzlbjw.ttf'),
-    ('font/fzxh1jw.ttf', 'font\\fzxh1jw.ttf'),
+    ('font/fzl2jw.ttf', 'font\\FZL2JW.ttf'),
+    ('font/fzlbjw.ttf', 'font\\FZLBJW.ttf'),
+    ('font/fzxh1jw.ttf', 'font\\FZXH1JW.ttf'),
     ('data/fzxh1jw.ttf', 'data\\fzxh1jw.ttf'),
     ('data/fzxh1jw1.ttf', 'data\\fzxh1jw1.ttf'),
     ('data/verdana.ttf', 'data\\verdana.ttf'),
