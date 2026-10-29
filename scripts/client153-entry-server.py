@@ -48,6 +48,7 @@ LOOSE_FILES = [
     ('data/domain2.data', 'Data\\domain2.data'),
     ('data/domain2_cross.data', 'Data\\domain2_cross.data'),
     ('data/elements.data', 'Data\\elements.data'),
+    ('data/elements.data', 'data\\elements.data'),
     ('data/dyn_tasks.data', 'Data\\dyn_tasks.data'),
     ('data/aipolicy.data', 'Data\\aipolicy.data'),
     ('data/gshop.data', 'Data\\gshop.data'),
