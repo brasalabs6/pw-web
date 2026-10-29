@@ -11,6 +11,7 @@ int main() {
   EmscriptenWebGLContextAttributes attributes;
   emscripten_webgl_init_context_attributes(&attributes);
   attributes.majorVersion = 2;
+  attributes.antialias = false;
   auto context = emscripten_webgl_create_context("#canvas", &attributes);
   if (context <= 0 || emscripten_webgl_make_context_current(context)) return 2;
   if (Direct3DCreate8(D3D_SDK_VERSION + 1)) return 3;
@@ -71,6 +72,15 @@ int main() {
       device->GetBackBuffer(0, 0, &back) != D3D_OK || !target || !depth || !back) return 27;
   if (target != back) return 28;
   if (device->Clear(0, nullptr, D3DCLEAR_TARGET, 0xffff0000, 1.0f, 0) != D3D_OK) return 29;
+  if (device->Present(nullptr, nullptr, nullptr, nullptr) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'present-failed'; }); return 60;
+  }
+  unsigned char presented[4]{};
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, presented);
+  if (glGetError() != GL_NO_ERROR || presented[0] < 250 || presented[1] > 2 || presented[2] > 2) {
+    EM_ASM({ document.body.dataset.result = 'present-wrong-pixel'; }); return 61;
+  }
   IDirect3DVertexBuffer8 *vertex = nullptr;
   if (device->CreateVertexBuffer(16, D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &vertex) != D3D_OK || !vertex) {
     EM_ASM({ document.body.dataset.result = 'missing-vertex-buffer'; }); return 35;

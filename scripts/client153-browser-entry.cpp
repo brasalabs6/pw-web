@@ -22,6 +22,9 @@ extern "C" int pw153_browser_probe() {
   EmscriptenWebGLContextAttributes attributes;
   emscripten_webgl_init_context_attributes(&attributes);
   attributes.majorVersion = 2;
+  // WebGL cannot blit a single-sample offscreen framebuffer into a
+  // multisampled default framebuffer. The D3D backbuffer is single-sample.
+  attributes.antialias = false;
   auto context = emscripten_webgl_create_context("#canvas", &attributes);
   printf("pw153_browser_probe: context handle = %d\n", (int)context);
   if (context <= 0)

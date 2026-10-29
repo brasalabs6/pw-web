@@ -94,6 +94,7 @@ public:
   HRESULT BeginScene() override { return D3D_OK; }
   HRESULT EndScene() override { return D3D_OK; }
   HRESULT Present(const RECT *, const RECT *, HWND, const void *) override {
+    if (emscripten_webgl_get_current_context() != context || emscripten_is_webgl_context_lost(context)) return E_FAIL;
     static int presentCount = 0;
     if (presentCount < 3) {
       printf("pw153_browser_probe: Present #%d, blitting %dx%d framebuffer to canvas\n",
@@ -111,14 +112,10 @@ public:
     glBlitFramebuffer(0, 0, backWidth, backHeight,
                       0, 0, backWidth, backHeight,
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    //\tDiagnostic: fill the canvas with dark blue so we can see the Present
-    //\tis connected. This proves the pipeline works; the actual framebuffer
-    //\tcontent depends on the client's Clear and Draw calls.
-    glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    const GLenum error = glGetError();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(previousRead));
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(previousDraw));
-    return D3D_OK;
+    return error == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT Reset(D3DPRESENT_PARAMETERS *) override { return E_NOTIMPL; }
   HRESULT SetTransform(D3DTRANSFORMSTATETYPE state, const D3DMATRIX *matrix) override {
