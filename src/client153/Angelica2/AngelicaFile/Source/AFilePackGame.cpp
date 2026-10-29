@@ -11,6 +11,7 @@
  */
 
 #include <stdexcept>
+#include <cstring>
 #include "AFPI.h"
 #include "AFI.h"
 #include "AFilePackage.h"
