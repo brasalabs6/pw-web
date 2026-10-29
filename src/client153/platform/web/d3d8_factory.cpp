@@ -1,4 +1,5 @@
 #include "d3d8.h"
+#include "d3d8_surface.h"
 #include <GLES3/gl3.h>
 #include <emscripten/html5.h>
 #include <new>
@@ -13,51 +14,37 @@ bool usable_context() {
 }
 // Check actual framebuffer completeness without changing the caller's bindings.
 bool renderable_color(DWORD format, DWORD depth = D3DFMT_UNKNOWN) {
-  GLenum storage = 0;
-  switch (format) {
-    case D3DFMT_R5G6B5: storage = GL_RGB565; break;
-    case D3DFMT_X8R8G8B8:
-    case D3DFMT_A8R8G8B8: storage = GL_RGBA8; break;
-    default: return false;
+  auto *color = pw153_create_surface(1, 1, static_cast<D3DFORMAT>(format));
+  if (!color || format == D3DFMT_D16 || format == D3DFMT_D24X8) {
+    if (color) color->Release();
+    return false;
   }
-  GLenum depthStorage = 0;
-  switch (depth) {
-    case D3DFMT_UNKNOWN: break;
-    case D3DFMT_D16: depthStorage = GL_DEPTH_COMPONENT16; break;
-    case D3DFMT_D24X8: depthStorage = GL_DEPTH_COMPONENT24; break;
-    default: return false;
+  PW153Surface *depthSurface = nullptr;
+  if (depth != D3DFMT_UNKNOWN) {
+    if (depth != D3DFMT_D16 && depth != D3DFMT_D24X8) { color->Release(); return false; }
+    depthSurface = pw153_create_surface(1, 1, static_cast<D3DFORMAT>(depth));
+    if (!depthSurface) { color->Release(); return false; }
   }
-  GLint draw = 0, read = 0, previous = 0;
+  GLint draw = 0, read = 0;
   glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw);
   glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read);
-  glGetIntegerv(GL_RENDERBUFFER_BINDING, &previous);
-  GLuint framebuffer = 0, renderbuffer = 0, depthbuffer = 0;
+  GLuint framebuffer = 0;
   glGenFramebuffers(1, &framebuffer);
-  glGenRenderbuffers(1, &renderbuffer);
   bool supported = false;
-  if (framebuffer && renderbuffer) {
-    glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, storage, 1, 1);
+  if (framebuffer) {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
-    if (depthStorage) {
-      glGenRenderbuffers(1, &depthbuffer);
-      if (depthbuffer) {
-        glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, depthStorage, 1, 1);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
-      }
-    }
-    supported = (!depthStorage || depthbuffer) && glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color->renderbuffer());
+    if (depthSurface) glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthSurface->renderbuffer());
+    supported = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
   }
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(draw));
   glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(read));
-  glBindRenderbuffer(GL_RENDERBUFFER, static_cast<GLuint>(previous));
   glDeleteFramebuffers(1, &framebuffer);
-  glDeleteRenderbuffers(1, &renderbuffer);
-  glDeleteRenderbuffers(1, &depthbuffer);
+  if (depthSurface) depthSurface->Release();
+  color->Release();
   return supported;
 }
+
 class Factory final : public IDirect3D8 {
   ULONG references = 1;
 public:

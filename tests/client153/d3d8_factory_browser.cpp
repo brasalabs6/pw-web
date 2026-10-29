@@ -1,4 +1,5 @@
 #include "d3d8.h"
+#include "d3d8_surface.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>
@@ -11,6 +12,16 @@ int main() {
   auto context = emscripten_webgl_create_context("#canvas", &attributes);
   if (context <= 0 || emscripten_webgl_make_context_current(context)) return 2;
   if (Direct3DCreate8(D3D_SDK_VERSION + 1)) return 3;
+  auto *surface = pw153_create_surface(4, 3, D3DFMT_R5G6B5);
+  if (!surface) { EM_ASM({ document.body.dataset.result = 'missing-surface'; }); return 20; }
+  D3DSURFACE_DESC description{};
+  if (surface->GetDesc(&description) != D3D_OK || description.Width != 4 || description.Height != 3 || description.Format != D3DFMT_R5G6B5) return 21;
+  const GLuint buffer = surface->renderbuffer();
+  if (!glIsRenderbuffer(buffer)) return 22;
+  if (surface->AddRef() != 2 || surface->Release() != 1 || !glIsRenderbuffer(buffer)) return 25;
+  if (surface->Release() != 0) return 26;
+  if (glIsRenderbuffer(buffer)) return 23;
+  if (pw153_create_surface(0, 3, D3DFMT_R5G6B5) || pw153_create_surface(4, 3, D3DFMT_DXT1)) return 24;
   IDirect3D8 *d3d = Direct3DCreate8(D3D_SDK_VERSION);
   if (!d3d) { EM_ASM({ document.body.dataset.result = 'missing-factory'; }); return 4; }
   GLuint framebuffer, renderbuffer;
