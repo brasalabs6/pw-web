@@ -5,6 +5,7 @@ import tempfile
 import threading
 import unittest
 import urllib.request
+import urllib.error
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('entry_server', ROOT / 'scripts/client153-entry-server.py')
@@ -30,6 +31,11 @@ class LooseFontsTest(unittest.TestCase):
                 with urllib.request.urlopen(req) as response:
                     self.assertEqual(response.status, 206)
                     self.assertEqual(response.read(), b'font')
+                (root / 'secret.txt').write_bytes(b'private')
+                with self.assertRaises(urllib.error.HTTPError) as rejected:
+                    urllib.request.urlopen(base + '/loose/secret.txt')
+                self.assertEqual(rejected.exception.code, 404)
+                rejected.exception.close()
             finally:
                 server.shutdown(); server.server_close(); thread.join()
                 server_module.ELEMENT_DIR = original

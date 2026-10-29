@@ -183,8 +183,10 @@ class ProbeHandler(SimpleHTTPRequestHandler):
                 json.dumps({'packages': packages}).encode(),
                 'application/json')
         elif route.startswith('/loose/'):
-            # Serve loose files from the element directory.
             disk_name = urllib.parse.unquote(route[len('/loose/'):])
+            if disk_name not in {disk for disk, _ in LOOSE_FILES}:
+                self.send_error(404)
+                return
             target = os.path.normpath(os.path.join(ELEMENT_DIR, disk_name))
             if not os.path.isfile(target):
                 self.send_error(404)
