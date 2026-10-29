@@ -1,6 +1,7 @@
 #include "d3d8.h"
 #include "d3d8_surface.h"
 #include "d3d8_buffer.h"
+#include "d3d8_texture.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>
@@ -96,8 +97,34 @@ int main() {
   if (!EM_ASM_INT({ const gpu = new Uint8Array(2); GLctx.getBufferSubData(GLctx.ARRAY_BUFFER, 2, gpu); return gpu[0] === 0x34 && gpu[1] === 0x12; })) return 44;
   glBindBuffer(GL_ARRAY_BUFFER, 0); indices->Release();
   if (glIsBuffer(indexName)) return 45;
+  GLuint unpack; glGenBuffers(1, &unpack); glBindBuffer(GL_PIXEL_UNPACK_BUFFER, unpack);
+  glBufferData(GL_PIXEL_UNPACK_BUFFER, 4, nullptr, GL_STATIC_DRAW);
   IDirect3DTexture8 *texture = reinterpret_cast<IDirect3DTexture8 *>(1);
-  if (device->CreateTexture(1, 1, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture) == D3D_OK || texture) return 31;
+  if (device->CreateTexture(1, 1, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &texture) != D3D_OK || !texture) {
+    EM_ASM({ document.body.dataset.result = 'missing-texture'; }); return 31;
+  }
+  D3DSURFACE_DESC textureDesc{};
+  if (texture->GetLevelDesc(0, &textureDesc) != D3D_OK || textureDesc.Type != D3DRTYPE_SURFACE || textureDesc.Width != 1 || textureDesc.Height != 1) return 53;
+  D3DLOCKED_RECT locked{};
+  if (texture->LockRect(0, &locked, nullptr, 0) != D3D_OK || locked.Pitch != 4) return 46;
+  auto *texels = static_cast<unsigned char *>(locked.pBits);
+  texels[0] = 0; texels[1] = 0; texels[2] = 255; texels[3] = 255;
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 3);
+  if (texture->UnlockRect(0) != D3D_OK || texture->UnlockRect(0) == D3D_OK) return 47;
+  GLint unpackRowLength = 0; glGetIntegerv(GL_UNPACK_ROW_LENGTH, &unpackRowLength);
+  if (unpackRowLength != 3) return 50;
+  GLint unpackBinding = 0; glGetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, &unpackBinding);
+  if (unpackBinding != static_cast<GLint>(unpack)) return 52;
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0); glDeleteBuffers(1, &unpack);
+  GLuint textureFrame; glGenFramebuffers(1, &textureFrame); glBindFramebuffer(GL_FRAMEBUFFER, textureFrame);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, static_cast<PW153Texture *>(texture)->texture(), 0);
+  unsigned char texturePixel[4]{}; glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, texturePixel);
+  if (texturePixel[0] < 250 || texturePixel[1] > 2 || texturePixel[2] > 2 || texturePixel[3] < 250) return 48;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0); glDeleteFramebuffers(1, &textureFrame);
+  const GLuint textureName = static_cast<PW153Texture *>(texture)->texture(); texture->Release();
+  if (glIsTexture(textureName)) return 49;
+  if (device->CreateTexture(1, 1, 1, 0, D3DFMT_DXT1, D3DPOOL_MANAGED, &texture) == D3D_OK || texture) return 51;
   if (device->Clear(0, nullptr, 0x4, 0, 1.0f, 0) == D3D_OK) return 32;
   GLuint frame;
   glGenFramebuffers(1, &frame); glBindFramebuffer(GL_FRAMEBUFFER, frame);

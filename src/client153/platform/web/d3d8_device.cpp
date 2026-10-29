@@ -1,5 +1,6 @@
 #include "d3d8_surface.h"
 #include "d3d8_buffer.h"
+#include "d3d8_texture.h"
 #include <emscripten/html5.h>
 #include <new>
 #include <cstdio>
@@ -53,7 +54,13 @@ public:
   HRESULT SetClipPlane(DWORD, const float *) override { return E_NOTIMPL; }
   HRESULT CreateRenderTarget(UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, BOOL, IDirect3DSurface8 **surface) override { if (surface) *surface = nullptr; return E_NOTIMPL; }
   HRESULT CreateDepthStencilSurface(UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, IDirect3DSurface8 **surface) override { if (surface) *surface = nullptr; return E_NOTIMPL; }
-  HRESULT CreateTexture(UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DTexture8 **texture) override { if (texture) *texture = nullptr; return E_NOTIMPL; }
+  HRESULT CreateTexture(UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format, D3DPOOL pool, IDirect3DTexture8 **out) override {
+    if (!out) return E_FAIL;
+    *out = nullptr;
+    if (emscripten_webgl_get_current_context() != context || emscripten_is_webgl_context_lost(context)) return E_FAIL;
+    *out = pw153_create_texture(this, width, height, levels, usage, format, pool);
+    return *out ? D3D_OK : E_FAIL;
+  }
   HRESULT CreateCubeTexture(UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DCubeTexture8 **cubeTexture) override { if (cubeTexture) *cubeTexture = nullptr; return E_NOTIMPL; }
   HRESULT CreateImageSurface(UINT, UINT, D3DFORMAT, IDirect3DSurface8 **surface) override { if (surface) *surface = nullptr; return E_NOTIMPL; }
   HRESULT TestCooperativeLevel() override { return E_NOTIMPL; }
