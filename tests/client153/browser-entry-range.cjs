@@ -49,5 +49,5 @@ context.Module._pw153_browser_probe = () => {
 context.Module.onRuntimeInitialized();
 assert.ok(!messages.some(message => message.type === 'exception'), JSON.stringify(messages));
 assert.deepEqual(requests, [`bytes=${2 ** 31}-${size - 1}`]);
-assert.deepEqual(logReads, ['/Logs/AF.log', '/Logs/EC.log']);
+assert.deepEqual(logReads, ['/Logs/AF.log', '/Logs/EC.log', '/Logs/A3D.log']);
 console.log('PASS: range reads at 2 GiB');

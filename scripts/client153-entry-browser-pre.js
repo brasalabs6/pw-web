@@ -135,7 +135,7 @@ var Module = {
       postMessage({type: 'return', result, blockCache: { requests: totalRequests, bytesFetched: totalBytes }});
       // Dump the client's own logs (the CECConfigs init chain) like the
       // Node probe does, so the boot diagnosis is identical.
-      for (const name of ['AF.log', 'EC.log']) {
+      for (const name of ['AF.log', 'EC.log', 'A3D.log']) {
         try {
           const text = FS.readFile('/Logs/' + name, {encoding: 'utf8'});
           postMessage({type: 'vfslog', name, text: String(text)});
