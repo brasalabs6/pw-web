@@ -247,6 +247,32 @@ int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size)
 	return out;
 }
 
+int a_Gb18030ToUtf8(const char* szGb18030, char* szUtf8, int iUtf8Size)
+{
+	if (!szGb18030 || !szUtf8 || iUtf8Size <= 0) return 0;
+
+	//	musl's iconv supports GB18030 as a SOURCE encoding, so this
+	//	direction needs no generated table. ASCII passes through unchanged.
+	iconv_t cd = iconv_open("UTF-8", "GB18030");
+	if (cd == (iconv_t)-1) return 0;
+
+	size_t inLen = std::strlen(szGb18030);
+	size_t outLen = iUtf8Size - 1;
+	char* inPtr = const_cast<char*>(szGb18030);
+	char* outPtr = szUtf8;
+
+	const size_t result = iconv(cd, &inPtr, &inLen, &outPtr, &outLen);
+	iconv_close(cd);
+
+	if (result == (size_t)-1)
+	{
+		szUtf8[0] = '\0';
+		return 0;
+	}
+	*outPtr = '\0';
+	return (int)(outPtr - szUtf8);
+}
+
 int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize)
 {
 	if (!szGb18030 || iGbLen <= 0) return 0;

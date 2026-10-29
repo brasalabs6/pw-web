@@ -138,6 +138,13 @@ std::function<void()> MakeThreadBody(const std::shared_ptr<ThreadState> &state,
   };
 }
 
+//	The browser target has no native threads (single-threaded WASM):
+//	launching a std::thread throws std::system_error. The seam runs the
+//	body synchronously on the calling thread instead — the work still
+//	happens and the completion state preserves the wait/join contract
+//	(a later WaitForSingleObject observes done and returns immediately).
+inline void RunThreadBodyNow(std::function<void()> body) { body(); }
+
 } // namespace pw153::platform
 
 //	Events: real condition-variable backed flags. The name is not
@@ -259,7 +266,7 @@ inline HANDLE _beginthreadex(void *security, unsigned stackSize,
     std::lock_guard<std::mutex> lock(wrapped->state->mutex);
     wrapped->pending = std::move(body);
   } else {
-    wrapped->thread = std::thread(std::move(body));
+    pw153::platform::RunThreadBodyNow(std::move(body));
   }
   if (threadId)
     *threadId = 0; //\tThread ids are not addressable in this backend.
@@ -496,11 +503,15 @@ inline DWORD ResumeThread(HANDLE handle) {
   if (!object || object->kind != pw153::platform::SyncObject::Kind::Thread)
     return static_cast<DWORD>(-1);
   auto *thread = static_cast<pw153::platform::WinThread *>(object);
-  std::lock_guard<std::mutex> lock(thread->state->mutex);
+  std::unique_lock<std::mutex> lock(thread->state->mutex);
   if (thread->pending) {
     auto run = std::move(thread->pending);
     thread->pending = nullptr;
-    thread->thread = std::thread(std::move(run));
+    //	Browser target: no native threads — run the body synchronously
+	//	(see RunThreadBodyNow). The state mutex must be released first:
+	//	the body's completion write locks it again.
+    lock.unlock();
+    pw153::platform::RunThreadBodyNow(std::move(run));
     return 1;	//	previous suspend count.
   }
   return 0;	//	Win32: resume of a running thread is a no-op returning 0.
@@ -527,7 +538,7 @@ inline HANDLE CreateThread(void *security, unsigned stackSize, Start start,
     std::lock_guard<std::mutex> lock(wrapped->state->mutex);
     wrapped->pending = std::move(body);
   } else {
-    wrapped->thread = std::thread(std::move(body));
+    pw153::platform::RunThreadBodyNow(std::move(body));
   }
   if (threadId)
     *threadId = 0;

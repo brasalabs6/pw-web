@@ -160,7 +160,8 @@ inline HRESULT D3DXLoadSurfaceFromFileInMemory(
       D3DXGetImageInfoFromFileInMemory(srcData, srcDataSize, &image) != D3D_OK ||
       (image.ImageFileFormat != D3DXIFF_TGA && image.ImageFileFormat != D3DXIFF_BMP &&
        !(image.ImageFileFormat == D3DXIFF_DDS &&
-         (image.Format == D3DFMT_DXT3 || image.Format == D3DFMT_A8R8G8B8)))) return D3DERR_INVALIDCALL;
+         (image.Format == D3DFMT_DXT1 || image.Format == D3DFMT_DXT3 || image.Format == D3DFMT_DXT5 ||
+          image.Format == D3DFMT_A8R8G8B8)))) return D3DERR_INVALIDCALL;
   D3DSURFACE_DESC desc{};
   if (destinationSurface->GetDesc(&desc) != D3D_OK) return D3DERR_INVALIDCALL;
   RECT source{0, 0, static_cast<LONG>(image.Width), static_cast<LONG>(image.Height)};
@@ -214,11 +215,19 @@ inline HRESULT D3DXLoadSurfaceFromFileInMemory(
                           (0xff000000u | (colorKey & 0xffffffu))) out[3] = 0;
     }
   } else if (image.ImageFileFormat == D3DXIFF_DDS) {
+    //	Compressed BC1/BC2/BC3 (DXT1/DXT3/DXT5) blocks. DXT1 packs colour
+    //	words and 2-bit indices into 8 bytes with 1-bit alpha (index 3 is
+    //	transparent when c0 <= c1); DXT3 adds explicit 4-bit alpha; DXT5
+    //	interpolates an 8-entry alpha palette from two endpoints.
+    const bool isDXT1 = image.Format == D3DFMT_DXT1;
+    const bool isDXT5 = image.Format == D3DFMT_DXT5;
+    const unsigned blockSize = isDXT1 ? 8 : 16;
     const unsigned blocksX = (image.Width + 3) / 4, blocksY = (image.Height + 3) / 4;
     for (unsigned by = 0; by < blocksY; ++by) for (unsigned bx = 0; bx < blocksX; ++bx) {
-      const unsigned char *block = data + 128 + (size_t(by) * blocksX + bx) * 16;
-      unsigned c0 = unsigned(block[8]) | unsigned(block[9]) << 8;
-      unsigned c1 = unsigned(block[10]) | unsigned(block[11]) << 8;
+      const unsigned char *block = data + 128 + (size_t(by) * blocksX + bx) * blockSize;
+      const unsigned char *colorBlock = isDXT1 ? block : block + 8;
+      unsigned c0 = unsigned(colorBlock[0]) | unsigned(colorBlock[1]) << 8;
+      unsigned c1 = unsigned(colorBlock[2]) | unsigned(colorBlock[3]) << 8;
       unsigned colors[4][3]{};
       for (unsigned i = 0; i < 2; ++i) {
         unsigned c = i ? c1 : c0;
@@ -227,19 +236,43 @@ inline HRESULT D3DXLoadSurfaceFromFileInMemory(
         colors[i][1] = (g << 2) | (g >> 4);
         colors[i][2] = (r << 3) | (r >> 2);
       }
+      const bool fourColor = !isDXT1 || c0 > c1;
       for (unsigned k = 0; k < 3; ++k) {
         colors[2][k] = (2 * colors[0][k] + colors[1][k]) / 3;
-        colors[3][k] = (colors[0][k] + 2 * colors[1][k]) / 3;
+        colors[3][k] = fourColor ? (colors[0][k] + 2 * colors[1][k]) / 3 : 0;
       }
-      unsigned indices = unsigned(block[12]) | unsigned(block[13]) << 8 |
-                         unsigned(block[14]) << 16 | unsigned(block[15]) << 24;
+      unsigned indices = unsigned(colorBlock[4]) | unsigned(colorBlock[5]) << 8 |
+                         unsigned(colorBlock[6]) << 16 | unsigned(colorBlock[7]) << 24;
       for (unsigned y = 0; y < 4; ++y) for (unsigned x = 0; x < 4; ++x) {
         const unsigned pixel = y * 4 + x, px = bx * 4 + x, py = by * 4 + y;
         if (px >= image.Width || py >= image.Height) continue;
         auto *out = bgra.data() + (size_t(py) * image.Width + px) * 4;
-        const unsigned *rgb = colors[(indices >> (pixel * 2)) & 3];
+        const unsigned index = (indices >> (pixel * 2)) & 3;
+        const unsigned *rgb = colors[index];
         out[0] = rgb[0]; out[1] = rgb[1]; out[2] = rgb[2];
-        out[3] = ((block[pixel / 2] >> ((pixel & 1) * 4)) & 15) * 17;
+        if (isDXT1) {
+          out[3] = fourColor || index != 3 ? 255 : 0;
+        } else if (isDXT5) {
+          //	Alpha palette: two endpoints + 48 bits of 3-bit indices
+          //	(block[2..7], little-endian bit stream).
+          const unsigned a0 = block[0], a1 = block[1];
+          unsigned alpha[8] = {a0, a1, 0, 0, 0, 0, 0, 0};
+          if (a0 > a1) {
+            for (unsigned i = 0; i < 6; ++i)
+              alpha[2 + i] = ((6 - i) * a0 + (1 + i) * a1) / 7;
+          } else {
+            for (unsigned i = 0; i < 4; ++i)
+              alpha[2 + i] = ((4 - i) * a0 + (1 + i) * a1) / 5;
+            alpha[6] = 0;
+            alpha[7] = 255;
+          }
+          const unsigned bit = pixel * 3;
+          const unsigned value = (unsigned(block[2 + bit / 8]) >> (bit % 8)) |
+                                 (bit % 8 > 5 ? unsigned(block[3 + bit / 8]) << (8 - bit % 8) : 0);
+          out[3] = alpha[value & 7];
+        } else {
+          out[3] = ((block[pixel / 2] >> ((pixel & 1) * 4)) & 15) * 17;
+        }
       }
     }
   } else {

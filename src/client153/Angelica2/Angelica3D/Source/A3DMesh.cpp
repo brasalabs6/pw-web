@@ -16,6 +16,7 @@
 #include "AFileImage.h"
 #include "AFI.h"
 #include "AMemory.h"
+#include "AAssist.h"
 
 #define new A_DEBUG_NEW
 
@@ -828,6 +829,12 @@ bool A3DMesh::Load(A3DDevice * pDevice, AFile * pFileToLoad)
 				if( strlen(szResult) >= MAX_PATH )
 					return false;
 
+				//	The .ecm asset stores texture names in GB18030; normalize
+				//	to the adapted tree's UTF-8 path encoding (ASCII unchanged).
+				char szUtf8Name[MAX_PATH];
+				if (a_Gb18030ToUtf8(szResult, szUtf8Name, MAX_PATH))
+					strcpy(szResult, szUtf8Name);
+
 				sprintf(m_szDetailTextureMap, "%s\\%s", szTexturePath, szResult);
 
 				if( m_pA3DDevice )
@@ -845,6 +852,12 @@ bool A3DMesh::Load(A3DDevice * pDevice, AFile * pFileToLoad)
 			a_GetStringAfter(szLineBuffer, "TEXTURE: ", szResult);
 			if( strlen(szResult) >= MAX_PATH )
 				return false;
+
+			//	The .ecm asset stores texture names in GB18030; normalize
+			//	to the adapted tree's UTF-8 path encoding (ASCII unchanged).
+			char szUtf8Name[MAX_PATH];
+			if (a_Gb18030ToUtf8(szResult, szUtf8Name, MAX_PATH))
+				strcpy(szResult, szUtf8Name);
 
 			sprintf(m_szTextureMap, "%s\\%s", szTexturePath, szResult);
 

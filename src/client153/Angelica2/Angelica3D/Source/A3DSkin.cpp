@@ -12,6 +12,7 @@
 
 #include "A3DSkin.h"
 #include "A3DPI.h"
+#include "AAssist.h"
 #include "A3DDevice.h"
 #include "A3DTexture.h"
 #include "A3DTextureMan.h"
@@ -265,6 +266,12 @@ bool A3DSkin::Load(AFile* pFile)
 
 				//	Load texture name, try path 2 at first.
 				pFile->ReadString(strTexture);
+				//	The .ski asset stores texture names in GB18030 while the
+				//	adapted tree's paths are UTF-8; normalize here so the
+				//	package lookup hashes one encoding (ASCII passes through).
+				char szUtf8Texture[MAX_PATH];
+				if (a_Gb18030ToUtf8(strTexture, szUtf8Texture, MAX_PATH))
+					strTexture = szUtf8Texture;
 				strPathFile = strTexPath2 + strTexture;
 				if (!pTexMan->LoadTextureFromFile(strPathFile, &pTexture) ||
 					!pTexture->GetD3DTexture())

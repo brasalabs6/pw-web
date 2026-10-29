@@ -3,6 +3,7 @@
 #include "A3DPI.h"
 #include "A3DEngine.h"
 #include "A3DTextureMan.h"
+#include "AAssist.h"
 #include "A3DCDS.h"
 #include "A3DFuncs.h"
 #include "A3DViewport.h"
@@ -712,6 +713,12 @@ A3DGFXElement* A3DGFXElement::LoadElementFromFile(A3DDevice* pDev, A3DGFXEx* pGf
 		pFile->Read(&nCount, sizeof(nCount), &dwRead);
 		pFile->Read(&dwDelay, sizeof(dwDelay), &dwRead);
 		pFile->ReadString(pEle->m_strTexture);
+		//	The .gfx asset stores texture names in GB18030 while the adapted
+		//	tree's paths are UTF-8; normalize here so the package lookup
+		//	hashes one encoding (ASCII passes through).
+		char szUtf8Texture[MAX_PATH];
+		if (a_Gb18030ToUtf8(pEle->m_strTexture, szUtf8Texture, MAX_PATH))
+			pEle->m_strTexture = szUtf8Texture;
 		pFile->ReadString(pEle->m_strBind);
 		pFile->Read(&pEle->m_bZEnable, sizeof(pEle->m_bZEnable), &dwRead);
 		pFile->Read(&pEle->m_nTexRow, sizeof(pEle->m_nTexRow), &dwRead);

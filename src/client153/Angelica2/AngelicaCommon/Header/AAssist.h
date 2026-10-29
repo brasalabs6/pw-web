@@ -122,6 +122,12 @@ int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size);
 //	wide chars written, or 0 on failure. Used by AWScriptFile to handle
 //	non-UTF-16 script files (the original client's data files use GB18030).
 int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize);
+
+//	Convert GB18030 bytes to UTF-8. Returns the number of bytes written, or
+//	0 on failure. The original asset files (.ski/.ecm texture names) store
+//	GB18030 while the adapted tree's paths are UTF-8; the asset-reading
+//	sites normalize with this so package lookups hash one encoding.
+int a_Gb18030ToUtf8(const char* szGb18030, char* szUtf8, int iUtf8Size);
 bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult);
 
 //	Set / Get current character code page

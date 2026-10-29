@@ -71,7 +71,9 @@ HRESULT PW153Texture::UnlockRect(UINT level) {
       rgba[i] = ((v >> 8) & 15) * 17; rgba[i + 1] = ((v >> 4) & 15) * 17;
       rgba[i + 2] = (v & 15) * 17; rgba[i + 3] = ((v >> 12) & 15) * 17;
     } else {
-      rgba[i] = pixels_[i + 2]; rgba[i + 1] = pixels_[i + 1]; rgba[i + 2] = pixels_[i]; rgba[i + 3] = pixels_[i + 3];
+      rgba[i] = pixels_[i + 2]; rgba[i + 1] = pixels_[i + 1]; rgba[i + 2] = pixels_[i];
+      //	X8R8G8B8 has no alpha channel: the X semantics make it opaque.
+      rgba[i + 3] = format_ == D3DFMT_X8R8G8B8 ? 255 : pixels_[i + 3];
     }
   }
   GLint previous = 0, alignment = 0, rowLength = 0, skipRows = 0, skipPixels = 0, unpackBuffer = 0;
@@ -94,7 +96,7 @@ HRESULT PW153Texture::UnlockRect(UINT level) {
 PW153Texture *pw153_create_texture(IDirect3DDevice8 *device, UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format, D3DPOOL pool) {
   auto context = emscripten_webgl_get_current_context();
   if (!device || context <= 0 || emscripten_is_webgl_context_lost(context) || !width || !height ||
-      levels != 1 || (format != D3DFMT_A8R8G8B8 && format != D3DFMT_A4R4G4B4) ||
+      levels != 1 || (format != D3DFMT_A8R8G8B8 && format != D3DFMT_X8R8G8B8 && format != D3DFMT_A4R4G4B4) ||
       !((usage == 0 && pool == D3DPOOL_MANAGED) || (format == D3DFMT_A8R8G8B8 && usage == D3DUSAGE_RENDERTARGET && pool == D3DPOOL_DEFAULT)) ||
       static_cast<uint64_t>(width) * height > INT32_MAX / 4) return nullptr;
   GLint limit = 0, previous = 0, unpackBuffer = 0; glGetIntegerv(GL_MAX_TEXTURE_SIZE, &limit);
