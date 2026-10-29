@@ -743,8 +743,12 @@ bool globaldata_load()
 		GSHOP_ITEM item;
 		if( !gshopFile.Read(&item, sizeof(item), &dwReadLen) )
 		{
-			a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
-			return false;
+			//\tThe gshop2.data in this client distribution is a 219-byte
+			//\tplaceholder; the full GSHOP_ITEM (1436 bytes packed) does not
+			//\tfit. Skip the remaining items instead of aborting the boot —
+			//\tthe shop UI is not needed to reach the login screen.
+			a_LogOutput(1, "GlobalData_Load(), gshop2 item %d/%d unreadable (placeholder data?), skipping remaining", i, size);
+			break;
 		}
 		if( !gshopFile.Read(&retcode, sizeof(int), &dwReadLen) )
 		{
@@ -758,22 +762,24 @@ bool globaldata_load()
 		GSHOP_MAIN_TYPE main_type;
 		if( !gshopFile.Read(&main_type.szName, sizeof(WORD) * 64, &dwReadLen) )
 		{
-			a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
-			return false;
+			//\tNon-fatal: the gshop2 main-type section is not needed to
+			//\treach the login screen.
+			a_LogOutput(1, "GlobalData_Load(), gshop2 main type %d unreadable, skipping remaining", i);
+			break;
 		}
 		int num_sub;
 		if( !gshopFile.Read(&num_sub, sizeof(int), &dwReadLen) )
 		{
-			a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
-			return false;
+			a_LogOutput(1, "GlobalData_Load(), gshop2 main type %d sub-count unreadable, skipping remaining", i);
+			break;
 		}
 		for(j=0; j<num_sub; j++)
 		{
 			WORD szSubName[64];
 			if( !gshopFile.Read(&szSubName, sizeof(WORD) * 64, &dwReadLen) )
 			{
-				a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
-				return false;
+				a_LogOutput(1, "GlobalData_Load(), gshop2 sub type %d unreadable, skipping remaining", j);
+				break;
 			}
 			main_type.sub_types.push_back((WCHAR*)szSubName);
 		}
