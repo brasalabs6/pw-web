@@ -572,8 +572,10 @@ bool CECWorld::LoadWorld(const char* szFile, const A3DVECTOR3& vInitLoadPos)
 	//	Load scene objects
 	if (!LoadSceneObjects(szFile))
 	{
-		glb_ErrorOutput(ECERR_FILEOPERATION, "CECWorld::LoadWorld", __LINE__);
-		return false;
+		//\tThe scene file (Maps\\\\Login\\\\Login.ecwld) fails to open on
+		//\tthe browser build (package index investigation pending).
+		//\tContinue without scene objects so the login UI can render.
+		a_LogOutput(1, "CECWorld::LoadSceneObjects, Failed to load scene file (continuing for login diagnostic)");
 	}
 	char navigateFile[MAX_PATH];
 	sprintf(navigateFile,"%s\\navigate.dat",(const char*)m_strMapPath);	//	explicit conversion in varargs.
