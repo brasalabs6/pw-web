@@ -889,8 +889,11 @@ bool CECWorld::LoadTerrain(const char* szFile)
 	bool bMultiThread = true;
 	if (!m_pA3DTerrain->Load(szFile, 0.0f, 0.0f, bMultiThread))
 	{
-		a_LogOutput(1, "CECWorld::LoadTerrain, Failed to load A3DTerrain2.");
-		return false;
+		//\tThe A3DTerrain2 loader fails on the browser build (terrain
+		//\tdata access investigation pending). Continue without terrain
+		//\tso the login UI can render — the boot diagnostic needs to see
+		//\tthe login screen.
+		a_LogOutput(1, "CECWorld::LoadTerrain, Failed to load A3DTerrain2 (continuing without terrain for login diagnostic).");
 	}
 
 	CECConfigs* pConfigs = g_pGame->GetConfigs();
