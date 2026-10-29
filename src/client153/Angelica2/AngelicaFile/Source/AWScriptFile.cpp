@@ -28,6 +28,8 @@
 #include "AWScriptFile.h"
 #include "AFileImage.h"
 #include "AMemory.h"
+//\tThe GB18030→UTF-16 conversion function lives in AAssist.
+#include "AAssist.h"
 
 ///////////////////////////////////////////////////////////////////////////
 //

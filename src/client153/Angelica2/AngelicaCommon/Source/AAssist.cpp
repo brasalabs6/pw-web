@@ -19,10 +19,13 @@
 
 #include "utf16.h"
 
+#include "gb18030_encoder_table.h"
+
 #include <cassert>
 #include <cstring>
 #include <ctime>
 #include <iconv.h>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -167,31 +170,97 @@ int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size)
 	}
 
 	//	Convert UTF-8 multi-byte sequences to GB18030 (the encoding the
-	//	original .pck package indexes use). iconv is available in the
-	//	Emscripten/musl C library.
-	iconv_t cd = iconv_open("GB18030", "UTF-8");
-	if (cd == (iconv_t)-1) return 0;
-
-	size_t inLen = std::strlen(szUtf8);
-	size_t outLen = iGb18030Size - 1;
-	char* inPtr = const_cast<char*>(szUtf8);
-	char* outPtr = szGb18030;
-
-	size_t result = iconv(cd, &inPtr, &inLen, &outPtr, &outLen);
-	iconv_close(cd);
-
-	if (result == (size_t)-1)
+	//	original .pck package indexes use). musl's iconv supports GB18030
+	//	only as a SOURCE encoding (legacy -> Unicode), so the port owns a
+	//	complete encoder built on the generated standard mapping table
+	//	(tools/gen-gb18030-encoder.py).
+	const unsigned char* in = (const unsigned char*)szUtf8;
+	int out = 0;
+	while (*in)
 	{
-		szGb18030[0] = '\0';
-		return 0;
+		uint32_t cp;
+		int seq;
+		if (*in < 0x80) { cp = *in; seq = 1; }
+		else if ((*in & 0xE0) == 0xC0) { cp = *in & 0x1F; seq = 2; }
+		else if ((*in & 0xF0) == 0xE0) { cp = *in & 0x0F; seq = 3; }
+		else if ((*in & 0xF8) == 0xF0) { cp = *in & 0x07; seq = 4; }
+		else { szGb18030[0] = '\0'; return 0; }	//	invalid UTF-8
+		for (int i = 1; i < seq; ++i)
+		{
+			if ((in[i] & 0xC0) != 0x80) { szGb18030[0] = '\0'; return 0; }
+			cp = (cp << 6) | (in[i] & 0x3F);
+		}
+		//	Reject overlong encodings (multi-byte decoding below U+0080),
+		//	surrogates and out-of-range values. Single-byte ASCII (seq 1)
+		//	is legitimate and handled below.
+		if ((seq > 1 && cp < 0x80) || cp > 0x10FFFF || (cp >= 0xD800 && cp <= 0xDFFF))
+		{ szGb18030[0] = '\0'; return 0; }
+
+		if (cp < 0x80)
+		{
+			if (out + 1 >= iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+			szGb18030[out++] = (char)cp;
+		}
+		else
+		{
+			//	Two-byte (GBK) range: binary search the generated table.
+			constexpr int TWO_BYTE_COUNT = int(sizeof(pw153_gb18030::TWO_BYTE) / sizeof(pw153_gb18030::TWO_BYTE[0]));
+			int lo = 0, hi = TWO_BYTE_COUNT - 1;
+			int found = -1;
+			while (lo <= hi)
+			{
+				const int mid = (lo + hi) / 2;
+				const auto& e = pw153_gb18030::TWO_BYTE[mid];
+				if (e.codepoint == cp) { found = mid; break; }
+				if (e.codepoint < cp) lo = mid + 1; else hi = mid - 1;
+			}
+			if (found >= 0)
+			{
+				if (out + 2 >= iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+				const auto gb = pw153_gb18030::TWO_BYTE[found].gb;
+				szGb18030[out++] = (char)(gb >> 8);
+				szGb18030[out++] = (char)(gb & 0xFF);
+			}
+			else
+			{
+				//	Four-byte range: linear in (cp - segment start).
+				constexpr int FOUR_BYTE_COUNT = int(sizeof(pw153_gb18030::FOUR_BYTE) / sizeof(pw153_gb18030::FOUR_BYTE[0]));
+				int lo2 = 0, hi2 = FOUR_BYTE_COUNT - 1, seg = -1;
+				while (lo2 <= hi2)
+				{
+					const int mid = (lo2 + hi2) / 2;
+					if (pw153_gb18030::FOUR_BYTE[mid].codepoint <= cp) { seg = mid; lo2 = mid + 1; }
+					else hi2 = mid - 1;
+				}
+				if (seg < 0) { szGb18030[0] = '\0'; return 0; }
+				const uint32_t lin = pw153_gb18030::FOUR_BYTE[seg].linear + (cp - pw153_gb18030::FOUR_BYTE[seg].codepoint);
+				if (out + 4 >= iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+				szGb18030[out++] = (char)(0x81 + lin / 12600);
+				szGb18030[out++] = (char)(0x30 + (lin % 12600) / 1260);
+				szGb18030[out++] = (char)(0x81 + (lin % 1260) / 10);
+				szGb18030[out++] = (char)(0x30 + lin % 10);
+			}
+		}
+		in += seq;
 	}
-	*outPtr = '\0';
-	return (int)(outPtr - szGb18030);
+	szGb18030[out] = '\0';
+	return out;
 }
 
 int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize)
 {
-	if (!szGb18030 || iGbLen <= 0 || !szWide || iWideSize <= 0) return 0;
+	if (!szGb18030 || iGbLen <= 0) return 0;
+
+	//	Size query (szWide == nullptr): report the wide length the caller
+	//	must allocate. GB18030 yields at most one UTF-16 unit per input byte
+	//	(1- and 2-byte sequences give one unit; 4-byte sequences give one
+	//	unit or a surrogate pair), so iGbLen + 1 units always suffice.
+	if (!szWide)
+	{
+		std::vector<wchar_t> count(static_cast<size_t>(iGbLen) + 1);
+		return a_Gb18030ToWide(szGb18030, iGbLen, count.data(), static_cast<int>(count.size()));
+	}
+	if (iWideSize <= 0) return 0;
 
 	iconv_t cd = iconv_open("UTF-16LE", "GB18030");
 	if (cd == (iconv_t)-1) return 0;
