@@ -15,8 +15,8 @@
  * game objects reference (the full-closure link worklist):
  * CreateFTManager. It fails explicitly - the documented contract is a
  * NULL return on failure, and A3DFTFontMan::Create handles NULL by
- * returning false, so the FTDriver font path degrades to the engine's
- * existing non-FreeType font rendering.
+ * returning false. The login UI requires this manager and aborts; the
+ * engine's separate non-FreeType font path is not a fallback for it.
  *
  * Declared limitation (never silent): the browser build cannot render
  * fonts through FTDriver until the FreeType 2.1.10 + wrapper chain is
@@ -42,7 +42,7 @@ bool ftdriver_limitation_logged()
 		std::fprintf(stderr,
 			"pw-browser: the FTDriver font DLL (FreeType 2.1.10 cache API) "
 			"is not available in the browser build; CreateFTManager fails "
-			"and the engine falls back to its non-FreeType font path\n");
+			"and the login UI cannot initialize\n");
 	}
 	return logged;
 }
