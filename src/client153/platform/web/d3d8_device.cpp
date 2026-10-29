@@ -13,15 +13,20 @@ class Device final : public IDirect3DDevice8 {
   PW153Surface *color, *depth;
   GLuint framebuffer;
   EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
+  UINT backWidth = 0, backHeight = 0;
   // Rendering pipeline state (the D3D8 fixed-function pipeline emulation).
   IDirect3DVertexBuffer8 *streamSource = nullptr;
   UINT streamOffset = 0;
   DWORD currentFVF = 0;
   IDirect3DBaseTexture8 *textures[8] = {};
   D3DMATRIX transforms[32] = {};
+  // The FVF shader program (created lazily on the first draw call).
+  GLuint shaderProgram = 0;
+  GLint aPosition = -1, aColor = -1;
 public:
-  Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner)
-    : color(c), depth(d), framebuffer(f), context(owner) {}
+  Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner,
+         UINT w, UINT h)
+    : color(c), depth(d), framebuffer(f), context(owner), backWidth(w), backHeight(h) {}
   ~Device() override { glDeleteFramebuffers(1, &framebuffer); color->Release(); if (depth) depth->Release(); }
   HRESULT QueryInterface(const void *, void **out) override { if (out) *out = nullptr; return E_NOINTERFACE; }
   ULONG AddRef() override { return ++refs; }
@@ -89,9 +94,30 @@ public:
   HRESULT BeginScene() override { return D3D_OK; }
   HRESULT EndScene() override { return D3D_OK; }
   HRESULT Present(const RECT *, const RECT *, HWND, const void *) override {
-    // WebGL2 presents automatically: the canvas displays whatever the
-    // default framebuffer contains after the draw calls. No explicit
-    // swap-chain operation is needed.
+    static int presentCount = 0;
+    if (presentCount < 3) {
+      printf("pw153_browser_probe: Present #%d, blitting %dx%d framebuffer to canvas\n",
+             ++presentCount, backWidth, backHeight);
+    }
+    // Blit the offscreen framebuffer to the canvas (the default
+    // framebuffer). This is the WebGL2 equivalent of the D3D8 swap chain
+    // operation — the client renders to an offscreen back buffer and
+    // Present copies it to the visible canvas.
+    GLint previousRead = 0, previousDraw = 0;
+    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &previousRead);
+    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &previousDraw);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, backWidth, backHeight,
+                      0, 0, backWidth, backHeight,
+                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    //\tDiagnostic: fill the canvas with dark blue so we can see the Present
+    //\tis connected. This proves the pipeline works; the actual framebuffer
+    //\tcontent depends on the client's Clear and Draw calls.
+    glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(previousRead));
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(previousDraw));
     return D3D_OK;
   }
   HRESULT Reset(D3DPRESENT_PARAMETERS *) override { return E_NOTIMPL; }
@@ -153,11 +179,55 @@ public:
   }
   HRESULT ResourceManagerDiscardBytes(DWORD) override { return E_NOTIMPL; }
   HRESULT GetDeviceCaps(D3DCAPS8 *) override { return E_NOTIMPL; }
+  // Create the FVF shader program lazily. The simplest FVF is
+  // D3DFVF_XYZRHW | D3DFVF_DIFFUSE: position (4 floats) + color (4 bytes).
+  // The vertex shader passes the position through (pre-transformed) and
+  // the fragment shader outputs the vertex color.
+  void ensureShaderProgram() {
+    if (shaderProgram) return;
+    static const char *vsSource =
+        "#version 300 es\n"
+        "in vec4 a_position;\n"
+        "in vec4 a_color;\n"
+        "out vec4 v_color;\n"
+        "void main() { gl_Position = a_position; v_color = a_color; }\n";
+    static const char *fsSource =
+        "#version 300 es\n"
+        "in vec4 v_color;\n"
+        "out vec4 fragColor;\n"
+        "void main() { fragColor = v_color; }\n";
+    auto compile = [](GLenum type, const char *source) -> GLuint {
+      GLuint shader = glCreateShader(type);
+      glShaderSource(shader, 1, &source, nullptr);
+      glCompileShader(shader);
+      GLint status = 0;
+      glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+      if (!status) { glDeleteShader(shader); return 0; }
+      return shader;
+    };
+    GLuint vs = compile(GL_VERTEX_SHADER, vsSource);
+    GLuint fs = compile(GL_FRAGMENT_SHADER, fsSource);
+    if (!vs || !fs) { if (vs) glDeleteShader(vs); if (fs) glDeleteShader(fs); return; }
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vs);
+    glAttachShader(shaderProgram, fs);
+    glLinkProgram(shaderProgram);
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+    GLint linked = 0;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
+    if (!linked) { glDeleteProgram(shaderProgram); shaderProgram = 0; return; }
+    aPosition = glGetAttribLocation(shaderProgram, "a_position");
+    aColor = glGetAttribLocation(shaderProgram, "a_color");
+  }
+
   HRESULT DrawPrimitive(DWORD type, UINT startVertex, UINT count) override {
     if (emscripten_webgl_get_current_context() != context) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
                                    GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
     if (type < 1 || type > 6) return E_FAIL;
+    ensureShaderProgram();
+    if (shaderProgram) glUseProgram(shaderProgram);
     glDrawArrays(modes[type], startVertex, count);
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
@@ -247,7 +317,8 @@ IDirect3DDevice8 *pw153_create_web_device(const D3DPRESENT_PARAMETERS &params) {
   }
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(draw)); glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(read));
   if (!complete) { glDeleteFramebuffers(1, &fb); color->Release(); if (depth) depth->Release(); return nullptr; }
-  auto *result = new (std::nothrow) Device(color, depth, fb, context);
+  auto *result = new (std::nothrow) Device(color, depth, fb, context,
+                                           params.BackBufferWidth, params.BackBufferHeight);
   if (!result) { glDeleteFramebuffers(1, &fb); color->Release(); if (depth) depth->Release(); }
   return result;
 }
