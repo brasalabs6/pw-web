@@ -56,7 +56,33 @@ int main() {
   if (d3d->GetAdapterDisplayMode(1, &mode) == D3D_OK) return 6;
   IDirect3DDevice8 *device = reinterpret_cast<IDirect3DDevice8 *>(1);
   D3DPRESENT_PARAMETERS params{};
-  if (d3d->CreateDevice(0, D3DDEVTYPE_HAL, nullptr, 0, &params, &device) == D3D_OK || device) return 7;
+  params.BackBufferWidth = 32; params.BackBufferHeight = 16;
+  params.BackBufferFormat = D3DFMT_X8R8G8B8; params.Windowed = TRUE;
+  params.EnableAutoDepthStencil = TRUE; params.AutoDepthStencilFormat = D3DFMT_D24X8;
+  auto invalid = params; invalid.Windowed = FALSE;
+  if (d3d->CreateDevice(0, D3DDEVTYPE_HAL, nullptr, 0, &invalid, &device) == D3D_OK || device) return 33;
+  if (d3d->CreateDevice(0, D3DDEVTYPE_HAL, nullptr, 0, &params, &device) != D3D_OK || !device) {
+    EM_ASM({ document.body.dataset.result = 'missing-device'; }); return 7;
+  }
+  IDirect3DSurface8 *target = nullptr, *depth = nullptr, *back = nullptr;
+  if (device->GetRenderTarget(&target) != D3D_OK || device->GetDepthStencilSurface(&depth) != D3D_OK ||
+      device->GetBackBuffer(0, 0, &back) != D3D_OK || !target || !depth || !back) return 27;
+  if (target != back) return 28;
+  if (device->Clear(0, nullptr, D3DCLEAR_TARGET, 0xffff0000, 1.0f, 0) != D3D_OK) return 29;
+  IDirect3DTexture8 *texture = reinterpret_cast<IDirect3DTexture8 *>(1);
+  if (device->CreateTexture(1, 1, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture) == D3D_OK || texture) return 31;
+  if (device->Clear(0, nullptr, 0x4, 0, 1.0f, 0) == D3D_OK) return 32;
+  GLuint frame;
+  glGenFramebuffers(1, &frame); glBindFramebuffer(GL_FRAMEBUFFER, frame);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
+                            static_cast<PW153Surface *>(target)->renderbuffer());
+  unsigned char pixel[4]{}; glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+  if (pixel[0] < 250 || pixel[1] > 2 || pixel[2] > 2) return 30;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0); glDeleteFramebuffers(1, &frame);
+  auto colorBuffer = static_cast<PW153Surface *>(target)->renderbuffer();
+  auto depthBuffer = static_cast<PW153Surface *>(depth)->renderbuffer();
+  target->Release(); depth->Release(); back->Release(); device->Release();
+  if (glIsRenderbuffer(colorBuffer) || glIsRenderbuffer(depthBuffer)) return 34;
   d3d->Release();
   emscripten_webgl_destroy_context(context);
   EM_ASM({ document.body.dataset.result = 'pass'; });

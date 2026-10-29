@@ -4,6 +4,8 @@
 #include <emscripten/html5.h>
 #include <new>
 
+IDirect3DDevice8 *pw153_create_web_device(const D3DPRESENT_PARAMETERS &params);
+
 namespace {
 bool usable_context() {
   const auto context = emscripten_webgl_get_current_context();
@@ -65,9 +67,12 @@ public:
         format == D3DFMT_UNKNOWN || !usable_context()) return E_FAIL;
     return renderable_color(adapterFormat, format) ? D3D_OK : E_FAIL;
   }
-  HRESULT CreateDevice(UINT, DWORD, HWND, DWORD, D3DPRESENT_PARAMETERS *, IDirect3DDevice8 **out) override {
-    if (out) *out = nullptr;
-    return E_NOTIMPL;
+  HRESULT CreateDevice(UINT adapter, DWORD type, HWND, DWORD, D3DPRESENT_PARAMETERS *params, IDirect3DDevice8 **out) override {
+    if (!out) return E_FAIL;
+    *out = nullptr;
+    if (adapter != 0 || type != D3DDEVTYPE_HAL || !params || !usable_context()) return E_FAIL;
+    *out = pw153_create_web_device(*params);
+    return *out ? D3D_OK : E_FAIL;
   }
   HRESULT GetAdapterIdentifier(UINT, DWORD, D3DADAPTER_IDENTIFIER8 *) override { return E_NOTIMPL; }
   UINT GetAdapterModeCount(UINT adapter) override { return adapter == 0 && usable_context() ? 1 : 0; }
