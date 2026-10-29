@@ -273,6 +273,111 @@ int a_Gb18030ToUtf8(const char* szGb18030, char* szUtf8, int iUtf8Size)
 	return (int)(outPtr - szUtf8);
 }
 
+int a_MixedPathToGb18030(const char* szPath, char* szGb18030, int iGb18030Size)
+{
+	if (!szPath || !szGb18030 || iGb18030Size <= 0) return 0;
+
+	int out = 0;
+	const char* segment = szPath;
+	for (const char* p = szPath; ; ++p)
+	{
+		if (*p != '\\' && *p != '/' && *p != '\0')
+			continue;
+		//	Segment [segment, p): convert when it is valid UTF-8 carrying
+		//	non-ASCII bytes; keep the raw bytes otherwise (already GB18030
+		//	or pure ASCII). The separator itself is copied verbatim.
+		//	NOTE: short GB18030 sequences can also be valid UTF-8, so this
+		//	heuristic can corrupt ambiguous segments; the PCK resolver treats
+		//	its output as one candidate among several and lets the index
+		//	decide (a_LastSegmentToGb18030 covers the dominant pattern).
+		const size_t len = (size_t)(p - segment);
+		if (len >= MAX_PATH) { szGb18030[0] = '\0'; return 0; }
+		char segmentBuf[MAX_PATH];
+		std::memcpy(segmentBuf, segment, len);
+		segmentBuf[len] = '\0';
+
+		bool asciiOnly = true;
+		bool validUtf8 = true;
+		for (size_t i = 0; i < len; ++i)
+		{
+			const unsigned char byte = (unsigned char)segmentBuf[i];
+			if (byte >= 0x80) { asciiOnly = false; }
+		}
+		if (!asciiOnly)
+		{
+			//	Strict UTF-8 validation over the segment bytes.
+			for (size_t i = 0; i < len && validUtf8; )
+			{
+				const unsigned char lead = (unsigned char)segmentBuf[i];
+				int seq = 0;
+				if (lead < 0x80) seq = 1;
+				else if ((lead & 0xE0) == 0xC0) seq = 2;
+				else if ((lead & 0xF0) == 0xE0) seq = 3;
+				else if ((lead & 0xF8) == 0xF0) seq = 4;
+				else validUtf8 = false;
+				for (int k = 1; k < seq && validUtf8; ++k)
+				{
+					if (i + k >= len || ((unsigned char)segmentBuf[i + k] & 0xC0) != 0x80)
+						validUtf8 = false;
+				}
+				i += seq > 0 ? seq : 1;
+			}
+		}
+		if (!asciiOnly && validUtf8)
+		{
+			char converted[MAX_PATH];
+			const int convertedLen = a_Utf8ToGb18030(segmentBuf, converted, MAX_PATH);
+			if (convertedLen > 0 && out + convertedLen < iGb18030Size)
+			{
+				std::memcpy(szGb18030 + out, converted, convertedLen);
+				out += convertedLen;
+			}
+			else { szGb18030[0] = '\0'; return 0; }
+		}
+		else
+		{
+			if (out + (int)len + 1 > iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+			std::memcpy(szGb18030 + out, segmentBuf, len);
+			out += (int)len;
+		}
+		if (*p == '\0')
+			break;
+		if (out + 1 >= iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+		szGb18030[out++] = *p;
+		segment = p + 1;
+	}
+	szGb18030[out] = '\0';
+	return out;
+}
+
+int a_LastSegmentToGb18030(const char* szPath, char* szGb18030, int iGb18030Size)
+{
+	if (!szPath || !szGb18030 || iGb18030Size <= 0) return 0;
+
+	//	The dominant mixed pattern: legacy GB18030 directories from data
+	//	files plus a UTF-8 final segment from the normalized asset reads.
+	//	Convert only the final segment; keep everything else byte-exact.
+	const char* lastSlash = szPath;
+	for (const char* p = szPath; *p; ++p)
+		if (*p == '\\' || *p == '/')
+			lastSlash = p + 1;
+
+	const int headLen = (int)(lastSlash - szPath);
+	if (headLen >= iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+	std::memcpy(szGb18030, szPath, headLen);
+
+	char converted[MAX_PATH];
+	const int convertedLen = a_Utf8ToGb18030(lastSlash, converted, MAX_PATH);
+	if (convertedLen <= 0 || headLen + convertedLen >= iGb18030Size)
+	{
+		szGb18030[0] = '\0';
+		return 0;
+	}
+	std::memcpy(szGb18030 + headLen, converted, convertedLen);
+	szGb18030[headLen + convertedLen] = '\0';
+	return headLen + convertedLen;
+}
+
 int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize)
 {
 	if (!szGb18030 || iGbLen <= 0) return 0;

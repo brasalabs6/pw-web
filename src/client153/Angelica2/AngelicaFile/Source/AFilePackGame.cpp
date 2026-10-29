@@ -585,37 +585,64 @@ AFilePackGame::FILEENTRY* AFilePackGame::GetFileEntry(const char* szFileName)
 {
 	ASSERT((int)m_FileQuickSearchTab.size() + m_aIDCollisionFiles.GetSize() == m_iNumEntry);
 
-	//	The adapted source stores string literals in UTF-8 (the GB18030→
-	//	UTF-8 conversion during porting), but the package indexes store
-	//	file paths in GB18030 (the original Windows encoding). Convert
-	//	the path to GB18030 before hashing so the CRC32 matches the
-	//	index. Pure-ASCII paths pass through unchanged (the fast path
-	//	in a_Utf8ToGb18030).
-	char szGbPath[MAX_PATH];
-	if (!a_Utf8ToGb18030(szFileName, szGbPath, MAX_PATH))
+	//	The PCK indexes store file paths in GB18030 (the original Windows
+	//	encoding) while the adapted tree's paths are UTF-8 — and real lookups
+	//	mix both within one path (legacy GB18030 dirs from data files plus
+	//	UTF-8 names from normalized asset reads). The resolver tries the
+	//	encoding candidates in contract order and hashes whichever matches
+	//	(the index is the oracle — no encoding guessing):
+	//	  1. UTF-8→GB18030 over the whole path (the adapted tree's contract);
+	//	  2. segment-wise normalization for mixed-encoding paths;
+	//	  3. last-segment-only conversion (GB18030 dirs + UTF-8 filename);
+	//	  4. the raw bytes as-is (already GB18030).
+	char candidates[4][MAX_PATH];
+	int candidateCount = 0;
+
+	if (a_Utf8ToGb18030(szFileName, candidates[candidateCount], MAX_PATH))
+		++candidateCount;	//	1: whole-path UTF-8 source
+	if (a_MixedPathToGb18030(szFileName, candidates[candidateCount], MAX_PATH))
 	{
-		//	Conversion failed (no Chinese characters or iconv error) —
-		//	use the original path as-is.
-		strncpy(szGbPath, szFileName, MAX_PATH);
-		szGbPath[MAX_PATH - 1] = '\0';
+		//	Skip the segment-wise candidate when it equals an earlier one.
+		bool duplicate = false;
+		for (int i = 0; i < candidateCount; ++i)
+			if (std::strcmp(candidates[i], candidates[candidateCount]) == 0) { duplicate = true; break; }
+		if (!duplicate) ++candidateCount;	//	2: segment-wise
+	}
+	if (a_LastSegmentToGb18030(szFileName, candidates[candidateCount], MAX_PATH))
+	{
+		bool duplicate = false;
+		for (int i = 0; i < candidateCount; ++i)
+			if (std::strcmp(candidates[i], candidates[candidateCount]) == 0) { duplicate = true; break; }
+		if (!duplicate) ++candidateCount;	//	3: last-segment-only
+	}
+	{
+		strncpy(candidates[candidateCount], szFileName, MAX_PATH - 1);
+		candidates[candidateCount][MAX_PATH - 1] = '\0';
+		bool duplicate = false;
+		for (int i = 0; i < candidateCount; ++i)
+			if (std::strcmp(candidates[i], candidates[candidateCount]) == 0) { duplicate = true; break; }
+		if (!duplicate) ++candidateCount;	//	4: raw bytes
 	}
 
-	//	Normalize file name
-	char szFindName[MAX_PATH];
-	strncpy(szFindName, szGbPath, MAX_PATH);
-	NormalizeFileName(szFindName, m_bUseShortName);
-
-	DWORD idFile = a_MakeIDFromLowString(szFindName);
-	if (!idFile)
+	for (int i = 0; i < candidateCount; ++i)
 	{
-		ASSERT(idFile && "Failed to generate file id");
-		AFERRLOG(("AFilePackGame::GetFileEntry, failed to generate file id for [%s%s] !", m_szFolder, szFindName));
-		return 0;
-	}
+		//	Normalize file name
+		char szFindName[MAX_PATH];
+		strncpy(szFindName, candidates[i], MAX_PATH);
+		NormalizeFileName(szFindName, m_bUseShortName);
 
-	FileEntryTable::pair_type pair = m_FileQuickSearchTab.get((int)idFile);
-	if (pair.second)
-	{
+		DWORD idFile = a_MakeIDFromLowString(szFindName);
+		if (!idFile)
+		{
+			ASSERT(idFile && "Failed to generate file id");
+			AFERRLOG(("AFilePackGame::GetFileEntry, failed to generate file id for [%s%s] !", m_szFolder, szFindName));
+			return 0;
+		}
+
+		FileEntryTable::pair_type pair = m_FileQuickSearchTab.get((int)idFile);
+		if (!pair.second)
+			continue;	//	this encoding candidate missed; try the next one
+
 		FILEENTRY* pFileEntry = *pair.first;
 
 		//	Check file name again to avoid id collision problem
@@ -623,14 +650,11 @@ AFilePackGame::FILEENTRY* AFilePackGame::GetFileEntry(const char* szFileName)
 		{
 			//	There is id collision occurs, search file in candidate array
 		//	ASSERT(0 && "file name collision");
-			pFileEntry = FindIDCollisionFile(szFindName);
-			return pFileEntry;
+			return FindIDCollisionFile(szFindName);
 		}
-		else
-			return pFileEntry;
+		return pFileEntry;
 	}
-	else
-		return NULL;
+	return NULL;
 }
 
 //	Find a file in ID collision candidate array

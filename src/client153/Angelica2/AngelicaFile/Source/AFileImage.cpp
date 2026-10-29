@@ -14,6 +14,7 @@
 
 #include "AFPI.h"
 #include "AMemory.h"	//	a_malloc/a_free/a_malloctemp/a_freetemp macros.
+#include "asset_diag.h"
 #include <cstring>
 #include <stdexcept>
 #include "AFileImage.h"
@@ -106,6 +107,7 @@ bool AFileImage::Init(const char* szFullName, bool bTempMem)
 		if (!(m_dwHandle = m_pPackage->OpenSharedFile(m_szRelativeName, &m_pFileImage, &dwFileLen, bTempMem)))
 		{
 			// can't find it in package, so see if can load from disk.
+			pw153::platform::RecordAssetFailure(pw153::platform::AssetFailReason::PckEntryNotFound, m_szRelativeName);
 			m_pPackage = NULL;
 			goto SEPFILE;
 		}
@@ -143,6 +145,7 @@ SEPFILE:
 	if (!(pFile = fopen(szDiskPath, "rb")))
 	{
 		printf("PWDBG AFileImage::Init [%s] DISK OPEN FAILED path [%s]\n", m_szRelativeName, szDiskPath);
+		pw153::platform::RecordAssetFailure(pw153::platform::AssetFailReason::DiskOpenFailed, m_szRelativeName);
 #ifndef _DEBUG
 		if( !strstr(szFullName, "Textures") && !strstr(szFullName, "Tex_") )
 #endif

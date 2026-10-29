@@ -155,6 +155,9 @@ var Module = {
       log('entry: packages mapped, calling pw153_browser_probe');
       const result = Module._pw153_browser_probe();
       log('return: pw153_browser_probe returned ' + result);
+      // Structured asset-failure taxonomy: unique (reason, path) pairs
+      // counted by the resolver, replacing per-call stack traces.
+      try { Module._pw153_asset_diag_dump(); } catch (e) { log('asset diag dump failed: ' + e.message); }
       // Dump the client's own logs for boot diagnosis. ALog uses the "Logs"
       // directory (capital L, case-sensitive MEMFS) and names A3D.log (engine
       // errlog), AM.log (media), EC.log (element client), AF.log (file system).

@@ -128,6 +128,20 @@ int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWid
 //	GB18030 while the adapted tree's paths are UTF-8; the asset-reading
 //	sites normalize with this so package lookups hash one encoding.
 int a_Gb18030ToUtf8(const char* szGb18030, char* szUtf8, int iUtf8Size);
+
+//	Normalize a path whose segments may mix encodings (GB18030 dirs from
+//	legacy data files + UTF-8 names from normalized asset reads): each
+//	backslash/slash-separated segment that is valid UTF-8 with non-ASCII
+//	bytes is converted to GB18030, the others pass through byte-exact.
+//	Returns the number of bytes written, or 0 on failure. NOTE: short
+//	GB18030 sequences can also be valid UTF-8, so ambiguous segments may
+//	corrupt; the PCK resolver treats this as one candidate among several.
+int a_MixedPathToGb18030(const char* szPath, char* szGb18030, int iGb18030Size);
+
+//	Convert only the FINAL path segment to GB18030 (the dominant mixed
+//	pattern: legacy GB18030 directories plus a UTF-8 filename), keeping
+//	everything else byte-exact. Returns the bytes written, or 0 on failure.
+int a_LastSegmentToGb18030(const char* szPath, char* szGb18030, int iGb18030Size);
 bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult);
 
 //	Set / Get current character code page
