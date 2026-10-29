@@ -76,6 +76,10 @@ static char* l_aErrorMsgs[] =
 
 static void _LogOutput(const char* szMsg)
 {
+	//\tAlways write to stderr so the browser console shows the client's
+	//\tinitialization error chain (the log file may not be writable in
+	//\tthe MEMFS environment).
+	std::fputs(szMsg, stderr);
 	g_Log.Log(szMsg);
 }
 

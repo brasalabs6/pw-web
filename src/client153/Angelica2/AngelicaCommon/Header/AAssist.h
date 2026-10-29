@@ -117,6 +117,11 @@ DWORD a_MakeIDFromLowString(const char* szStr);
 //	original). This is the boundary between the adapted UTF-8 source and
 //	the original GB18030 game data.
 int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size);
+
+//	Convert GB18030 bytes to wide chars (UTF-16). Returns the number of
+//	wide chars written, or 0 on failure. Used by AWScriptFile to handle
+//	non-UTF-16 script files (the original client's data files use GB18030).
+int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize);
 bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult);
 
 //	Set / Get current character code page

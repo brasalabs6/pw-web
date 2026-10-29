@@ -189,6 +189,25 @@ int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size)
 	return (int)(outPtr - szGb18030);
 }
 
+int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize)
+{
+	if (!szGb18030 || iGbLen <= 0 || !szWide || iWideSize <= 0) return 0;
+
+	iconv_t cd = iconv_open("UTF-16LE", "GB18030");
+	if (cd == (iconv_t)-1) return 0;
+
+	size_t inLen = iGbLen;
+	size_t outLen = iWideSize * sizeof(wchar_t);
+	char* inPtr = const_cast<char*>(szGb18030);
+	char* outPtr = reinterpret_cast<char*>(szWide);
+
+	size_t result = iconv(cd, &inPtr, &inLen, &outPtr, &outLen);
+	iconv_close(cd);
+
+	if (result == (size_t)-1) return 0;
+	return (int)((reinterpret_cast<char*>(outPtr) - reinterpret_cast<char*>(szWide)) / sizeof(wchar_t));
+}
+
 /*	Get string after specified tag string
 
 	szBuffer: buffer will be searched.

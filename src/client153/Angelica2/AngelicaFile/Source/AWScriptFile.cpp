@@ -111,6 +111,29 @@ bool AWScriptFile::Open(AFile *pFile)
 	wchar_t wChar = *((wchar_t*)pBuf);
 	if (wChar != 0xfeff)
 	{
+		//\tThe original client's script files are UTF-16 LE with BOM, but
+		//\tsome data files (world_targets.txt etc.) are GB18030 text. The
+		//\tWindows build relied on the precompiled header's conversion;
+		//\tthe browser build converts here: GB18030 bytes → UTF-16 LE with
+		//\tBOM, so the parser can handle both formats.
+		int dwWideLen = a_Gb18030ToWide((const char*)pBuf, dwFileLen, nullptr, 0);
+		if (dwWideLen > 0)
+		{
+			BYTE* pWideBuf = (BYTE*)a_malloc((dwWideLen + 1) * sizeof(wchar_t) + 2);
+			if (pWideBuf)
+			{
+				*((wchar_t*)pWideBuf) = 0xfeff;	//	BOM
+				a_Gb18030ToWide((const char*)pBuf, dwFileLen,
+					(wchar_t*)(pWideBuf + 2), dwWideLen);
+				a_free(pBuf);
+				m_Script.pFileBuf	= pWideBuf;
+				m_Script.pStart		= ((wchar_t*)pWideBuf) + 1;
+				m_Script.pCur		= m_Script.pStart;
+				m_Script.pEnd		= (wchar_t*)(pWideBuf + 2 + dwWideLen * sizeof(wchar_t));
+				m_Script.iLine		= 0;
+				return true;
+			}
+		}
 		a_free(pBuf);
 		AFERRLOG(("AWScriptFile::Open, Couldn't handle non-unicode file !"));
 		return false;

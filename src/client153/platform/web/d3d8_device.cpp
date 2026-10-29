@@ -54,8 +54,11 @@ public:
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer); glDisable(GL_SCISSOR_TEST);
     GLbitfield mask = 0;
     if (flags & D3DCLEAR_TARGET) { glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+      //\tForce alpha to 1 (opaque): the D3D8 back buffer is opaque but the
+      //\tclient passes A=0 in the clear color. Without this, the canvas
+      //\tshows the page background (white) through the transparent pixels.
       glClearColor(((value >> 16) & 255) / 255.0f, ((value >> 8) & 255) / 255.0f,
-                   (value & 255) / 255.0f, ((value >> 24) & 255) / 255.0f); mask |= GL_COLOR_BUFFER_BIT; }
+                   (value & 255) / 255.0f, 1.0f); mask |= GL_COLOR_BUFFER_BIT; }
     if (flags & D3DCLEAR_ZBUFFER) { glDepthMask(GL_TRUE); glClearDepthf(z); mask |= GL_DEPTH_BUFFER_BIT; }
     glClear(mask);
     glClearColor(oldColor[0], oldColor[1], oldColor[2], oldColor[3]); glClearDepthf(oldDepth);
