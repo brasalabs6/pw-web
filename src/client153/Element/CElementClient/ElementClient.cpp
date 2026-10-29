@@ -168,7 +168,7 @@ bool prepare_file_structures()
 	{
 		if( !CreateDirectoryA(szCachePath, NULL) )
 		{
-			MessageBoxA(NULL, "æ— æ³•åˆ›å»ºcacheç›®å½•ï¼Œæ¸¸æˆæ— æ³•è¿è¡Œï¼\nè¯·ç¡®ä¿ç¡¬ç›˜æœ‰è¶³å¤Ÿçš„å‰©ä½™ç©ºé—´å†è¿è¡Œæœ¬æ¸¸æˆï¼", "é”™è¯¯", MB_OK | MB_ICONSTOP);
+			MessageBoxA(NULL, "ÎŞ·¨´´½¨cacheÄ¿Â¼£¬ÓÎÏ·ÎŞ·¨ÔËĞĞ£¡\nÇëÈ·±£Ó²ÅÌÓĞ×ã¹»µÄÊ£Óà¿Õ¼äÔÙÔËĞĞ±¾ÓÎÏ·£¡", "´íÎó", MB_OK | MB_ICONSTOP);
 			return false;
 		}
 	}
@@ -179,7 +179,7 @@ bool prepare_file_structures()
 	{
 		if( !CreateDirectoryA(szScreenShotsPath, NULL) )
 		{
-			MessageBoxA(NULL, "æ— æ³•åˆ›å»ºscreenshotsç›®å½•ï¼Œæ¸¸æˆæ— æ³•è¿è¡Œï¼\nè¯·ç¡®ä¿ç¡¬ç›˜æœ‰è¶³å¤Ÿçš„å‰©ä½™ç©ºé—´å†è¿è¡Œæœ¬æ¸¸æˆï¼", "é”™è¯¯", MB_OK | MB_ICONSTOP);
+			MessageBoxA(NULL, "ÎŞ·¨´´½¨screenshotsÄ¿Â¼£¬ÓÎÏ·ÎŞ·¨ÔËĞĞ£¡\nÇëÈ·±£Ó²ÅÌÓĞ×ã¹»µÄÊ£Óà¿Õ¼äÔÙÔËĞĞ±¾ÓÎÏ·£¡", "´íÎó", MB_OK | MB_ICONSTOP);
 			return false;
 		}
 	}
@@ -190,7 +190,7 @@ bool prepare_file_structures()
 	{
 		if( !CreateDirectoryA(szLogPath, NULL) )
 		{
-			MessageBoxA(NULL, "æ— æ³•åˆ›å»ºlogsç›®å½•ï¼Œæ¸¸æˆæ— æ³•è¿è¡Œï¼\nè¯·ç¡®ä¿ç¡¬ç›˜æœ‰è¶³å¤Ÿçš„å‰©ä½™ç©ºé—´å†è¿è¡Œæœ¬æ¸¸æˆï¼", "é”™è¯¯", MB_OK | MB_ICONSTOP);
+			MessageBoxA(NULL, "ÎŞ·¨´´½¨logsÄ¿Â¼£¬ÓÎÏ·ÎŞ·¨ÔËĞĞ£¡\nÇëÈ·±£Ó²ÅÌÓĞ×ã¹»µÄÊ£Óà¿Õ¼äÔÙÔËĞĞ±¾ÓÎÏ·£¡", "´íÎó", MB_OK | MB_ICONSTOP);
 			return false;
 		}
 	}
@@ -224,14 +224,14 @@ bool CheckHardwareCaps(const char *& pszInfo)
 #ifdef __EMSCRIPTEN__
 	return pw153_check_webgl_capabilities(&pszInfo);
 #else
-	pszInfo = "æœªçŸ¥çš„é”™è¯¯";
+	pszInfo = "Î´ÖªµÄ´íÎó";
 
 	// first see if NetMeeting is running, if so just pop up a warning.
 	if( FindWindow(_AL("MPWClass"), NULL) )
 	{
-		MessageBoxA(NULL, "æ¸¸æˆç¨‹åºæ£€æµ‹åˆ°æ‚¨çš„æœºå™¨ä¸Šæœ‰NetMeetingæ­£åœ¨è¿è¡Œï¼\n"
-			"ç”±äºNetMeetingè¿è¡Œæ—¶å…¶ä»–ç¨‹åºæ— æ³•ä½¿ç”¨æ˜¾å¡çš„ä¸‰ç»´åŠ é€ŸåŠŸèƒ½ï¼Œæ‰€ä»¥è¯·å…ˆå…³é—­NetMeeting åå†è¿›è¡Œæ¸¸æˆï¼", 
-			"è­¦å‘Š", MB_OK | MB_ICONINFORMATION);
+		MessageBoxA(NULL, "ÓÎÏ·³ÌĞò¼ì²âµ½ÄúµÄ»úÆ÷ÉÏÓĞNetMeetingÕıÔÚÔËĞĞ£¡\n"
+			"ÓÉÓÚNetMeetingÔËĞĞÊ±ÆäËû³ÌĞòÎŞ·¨Ê¹ÓÃÏÔ¿¨µÄÈıÎ¬¼ÓËÙ¹¦ÄÜ£¬ËùÒÔÇëÏÈ¹Ø±ÕNetMeeting ºóÔÙ½øĞĞÓÎÏ·£¡", 
+			"¾¯¸æ", MB_OK | MB_ICONINFORMATION);
 	}
 
 	HRESULT hval;
@@ -246,13 +246,13 @@ bool CheckHardwareCaps(const char *& pszInfo)
 #endif // ANGELICA_2_2
 	if( pD3D == NULL )
 	{
-		pszInfo = "æ— æ³•åˆ›å»ºDirect3Då¯¹è±¡ï¼Œè¯·æ£€æŸ¥DirectXç‰ˆæœ¬";
+		pszInfo = "ÎŞ·¨´´½¨Direct3D¶ÔÏó£¬Çë¼ì²éDirectX°æ±¾";
 		return false;
 	}
 	pD3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &g_d3dcaps);
 	if( g_d3dcaps.MaxSimultaneousTextures < 2 || g_d3dcaps.MaxTextureBlendStages < 2 )
 	{
-		pszInfo = "æ˜¾å¡è‡³å°‘è¦æ”¯æŒä¸¤å±‚çº¹ç†çš„å¤šå±‚çº¹ç†æ˜ å°„ï¼";
+		pszInfo = "ÏÔ¿¨ÖÁÉÙÒªÖ§³ÖÁ½²ãÎÆÀíµÄ¶à²ãÎÆÀíÓ³Éä£¡";
 		return false;
 	}
 
@@ -264,7 +264,7 @@ bool CheckHardwareCaps(const char *& pszInfo)
 		hval = pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X1R5G5B5, D3DFMT_X1R5G5B5, false);
 		if( D3D_OK != hval )
 		{
-			pszInfo = "æ— æ³•è·å¾—16ä½æ¨¡å¼çš„æ˜¾ç¤ºæ ¼å¼ï¼Œè¯·æ£€æŸ¥æ‚¨çš„æ˜¾å¡é©±åŠ¨ä»¥åŠDirectXçš„ç‰ˆæœ¬";
+			pszInfo = "ÎŞ·¨»ñµÃ16Î»Ä£Ê½µÄÏÔÊ¾¸ñÊ½£¬Çë¼ì²éÄúµÄÏÔ¿¨Çı¶¯ÒÔ¼°DirectXµÄ°æ±¾";
 			return false;
 		}
 		else
@@ -306,7 +306,7 @@ bool CheckHardwareCaps(const char *& pszInfo)
 	hval = pDD->QueryInterface(IID_IDirectDraw2, (LPVOID *) &pDD2);
 	if( DD_OK != hval )
 	{
-		pszInfo = "æ— æ³•åˆ›å»ºDirectDraw2å¯¹è±¡ï¼Œè¯·æ£€æŸ¥DirectXç‰ˆæœ¬";
+		pszInfo = "ÎŞ·¨´´½¨DirectDraw2¶ÔÏó£¬Çë¼ì²éDirectX°æ±¾";
 		return false;
 	}
 	pDD->Release();
@@ -317,7 +317,7 @@ bool CheckHardwareCaps(const char *& pszInfo)
     hval = pDD2->GetAvailableVidMem(&ddscaps, &dwLocalTotal, &dwLocalFree);
 	if( DD_OK != hval )
 	{
-		pszInfo = "æ— æ³•è·å–æ˜¾å­˜å¤§å°ï¼Œè¯·æ£€æŸ¥DirectXç‰ˆæœ¬";
+		pszInfo = "ÎŞ·¨»ñÈ¡ÏÔ´æ´óĞ¡£¬Çë¼ì²éDirectX°æ±¾";
 		return false;
 	}
 	ddscaps.dwCaps = DDSCAPS_TEXTURE;
@@ -325,13 +325,13 @@ bool CheckHardwareCaps(const char *& pszInfo)
     hval = pDD2->GetAvailableVidMem(&ddscaps, &dwTextureTotal, &dwTextureFree);
 	if( DD_OK != hval )
 	{
-		pszInfo = "æ— æ³•è·å–æ˜¾å­˜å¤§å°ï¼Œè¯·æ£€æŸ¥DirectXç‰ˆæœ¬";
+		pszInfo = "ÎŞ·¨»ñÈ¡ÏÔ´æ´óĞ¡£¬Çë¼ì²éDirectX°æ±¾";
 		return false;
 	}
 
 	pDD2->Release();
 
-	const char * szTexQuality[] = {"é«˜", "ä¸­", "ä½"};
+	const char * szTexQuality[] = {"¸ß", "ÖĞ", "µÍ"};
 	char  szInfo[256];
 
 	int iTexDetail = g_GameCfgs.GetSystemSettings().iTexDetail;
@@ -341,8 +341,8 @@ bool CheckHardwareCaps(const char *& pszInfo)
 	{
 		if( iTexDetail != 2 )
 		{
-			sprintf(szInfo, "æ‚¨çš„æ˜¾å¡çš„æ˜¾å­˜å°äº16Mï¼Œè€Œæ‚¨çš„è´´å›¾ç²¾åº¦é€‰æ‹©äº†[%s]ï¼Œè¿™å°†ä½¿æ‚¨åœ¨æ¸¸æˆä¸­å¾ˆå¡ï¼å»ºè®®æ‚¨å°†è´´å›¾ç²¾åº¦è°ƒä½åå†è¿›è¡Œæ¸¸æˆï¼\n\næ˜¯å¦è®©ç³»ç»Ÿè‡ªåŠ¨é€‰æ‹©åˆé€‚çš„è´´å›¾ç²¾åº¦æ¥è¿›è¡Œæ¸¸æˆï¼Ÿ", szTexQuality[iTexDetail]);
-			if( IDYES == MessageBoxA(NULL, szInfo, "è´´å›¾ç²¾åº¦è¿‡é«˜", MB_YESNO | MB_ICONQUESTION) )
+			sprintf(szInfo, "ÄúµÄÏÔ¿¨µÄÏÔ´æĞ¡ÓÚ16M£¬¶øÄúµÄÌùÍ¼¾«¶ÈÑ¡ÔñÁË[%s]£¬Õâ½«Ê¹ÄúÔÚÓÎÏ·ÖĞºÜ¿¨£¡½¨ÒéÄú½«ÌùÍ¼¾«¶Èµ÷µÍºóÔÙ½øĞĞÓÎÏ·£¡\n\nÊÇ·ñÈÃÏµÍ³×Ô¶¯Ñ¡ÔñºÏÊÊµÄÌùÍ¼¾«¶ÈÀ´½øĞĞÓÎÏ·£¿", szTexQuality[iTexDetail]);
+			if( IDYES == MessageBoxA(NULL, szInfo, "ÌùÍ¼¾«¶È¹ı¸ß", MB_YESNO | MB_ICONQUESTION) )
 			{
 				g_GameCfgs.GetSystemSettingsPtr()->iTexDetail = 2;
 			}
@@ -352,8 +352,8 @@ bool CheckHardwareCaps(const char *& pszInfo)
 	{
 		if( iTexDetail != 2 )
 		{
-			sprintf(szInfo, "æ‚¨çš„æ˜¾å¡åªæœ‰32Mæ˜¾å­˜ï¼Œè€Œæ‚¨çš„è´´å›¾ç²¾åº¦é€‰æ‹©äº†[%s]ï¼Œè¿™å°†ä½¿æ‚¨åœ¨æ¸¸æˆä¸­å¾ˆå¡ï¼å»ºè®®æ‚¨å°†è´´å›¾ç²¾åº¦è°ƒä½åå†è¿›è¡Œæ¸¸æˆï¼\n\næ˜¯å¦è®©ç³»ç»Ÿè‡ªåŠ¨é€‰æ‹©åˆé€‚çš„è´´å›¾ç²¾åº¦æ¥è¿›è¡Œæ¸¸æˆï¼Ÿ", szTexQuality[iTexDetail]);
-			if( IDYES == MessageBoxA(NULL, szInfo, "è´´å›¾ç²¾åº¦è¿‡é«˜", MB_YESNO | MB_ICONQUESTION) )
+			sprintf(szInfo, "ÄúµÄÏÔ¿¨Ö»ÓĞ32MÏÔ´æ£¬¶øÄúµÄÌùÍ¼¾«¶ÈÑ¡ÔñÁË[%s]£¬Õâ½«Ê¹ÄúÔÚÓÎÏ·ÖĞºÜ¿¨£¡½¨ÒéÄú½«ÌùÍ¼¾«¶Èµ÷µÍºóÔÙ½øĞĞÓÎÏ·£¡\n\nÊÇ·ñÈÃÏµÍ³×Ô¶¯Ñ¡ÔñºÏÊÊµÄÌùÍ¼¾«¶ÈÀ´½øĞĞÓÎÏ·£¿", szTexQuality[iTexDetail]);
+			if( IDYES == MessageBoxA(NULL, szInfo, "ÌùÍ¼¾«¶È¹ı¸ß", MB_YESNO | MB_ICONQUESTION) )
 			{
 				g_GameCfgs.GetSystemSettingsPtr()->iTexDetail = 2;
 			}
@@ -363,8 +363,8 @@ bool CheckHardwareCaps(const char *& pszInfo)
 	{
 		if( iTexDetail == 0 )
 		{
-			sprintf(szInfo, "æ‚¨çš„æ˜¾å¡æœ‰64Mæ˜¾å­˜ï¼Œè€Œæ‚¨çš„è´´å›¾ç²¾åº¦é€‰æ‹©äº†[%s]ï¼Œè¿™å°†ä½¿æ‚¨åœ¨æ¸¸æˆä¸­å¾ˆå¡ï¼å»ºè®®æ‚¨å°†è´´å›¾ç²¾åº¦è°ƒä½åå†è¿›è¡Œæ¸¸æˆï¼\n\næ˜¯å¦è®©ç³»ç»Ÿè‡ªåŠ¨é€‰æ‹©åˆé€‚çš„è´´å›¾ç²¾åº¦æ¥è¿›è¡Œæ¸¸æˆï¼Ÿ", szTexQuality[iTexDetail]);
-			if( IDYES == MessageBoxA(NULL, szInfo, "è´´å›¾ç²¾åº¦è¿‡é«˜", MB_YESNO | MB_ICONQUESTION) )
+			sprintf(szInfo, "ÄúµÄÏÔ¿¨ÓĞ64MÏÔ´æ£¬¶øÄúµÄÌùÍ¼¾«¶ÈÑ¡ÔñÁË[%s]£¬Õâ½«Ê¹ÄúÔÚÓÎÏ·ÖĞºÜ¿¨£¡½¨ÒéÄú½«ÌùÍ¼¾«¶Èµ÷µÍºóÔÙ½øĞĞÓÎÏ·£¡\n\nÊÇ·ñÈÃÏµÍ³×Ô¶¯Ñ¡ÔñºÏÊÊµÄÌùÍ¼¾«¶ÈÀ´½øĞĞÓÎÏ·£¿", szTexQuality[iTexDetail]);
+			if( IDYES == MessageBoxA(NULL, szInfo, "ÌùÍ¼¾«¶È¹ı¸ß", MB_YESNO | MB_ICONQUESTION) )
 			{
 				g_GameCfgs.GetSystemSettingsPtr()->iTexDetail = 1;
 			}
@@ -374,10 +374,10 @@ bool CheckHardwareCaps(const char *& pszInfo)
 	DWORD dwMaxTextureNeeded = (DWORD)(16 * 1024 * 1024 * pow(2.0, 2 - g_GameCfgs.GetSystemSettingsPtr()->iTexDetail));
 	if( dwTextureFree < dwMaxTextureNeeded )
 	{
-		sprintf(szInfo, "æ‚¨çš„ç³»ç»Ÿå‰©ä½™çš„å¯ç”¨äºè´´å›¾çš„æ˜¾å­˜å°äº16Mï¼Œåœ¨æ¸¸æˆçš„è¿‡ç¨‹ä¸­å¯èƒ½ä¼šå¯¼è‡´èŠ±å±ã€æ­»æœºç­‰ä¸¥é‡çš„é”™è¯¯ï¼æ‚¨æ˜¯å¦è¿˜è¦è¿›å…¥æ¸¸æˆï¼Ÿ");
-		if( IDYES != MessageBoxA(NULL, szInfo, "è´´å›¾ç²¾åº¦è¿‡é«˜", MB_YESNO | MB_ICONQUESTION) )
+		sprintf(szInfo, "ÄúµÄÏµÍ³Ê£ÓàµÄ¿ÉÓÃÓÚÌùÍ¼µÄÏÔ´æĞ¡ÓÚ16M£¬ÔÚÓÎÏ·µÄ¹ı³ÌÖĞ¿ÉÄÜ»áµ¼ÖÂ»¨ÆÁ¡¢ËÀ»úµÈÑÏÖØµÄ´íÎó£¡ÄúÊÇ·ñ»¹Òª½øÈëÓÎÏ·£¿");
+		if( IDYES != MessageBoxA(NULL, szInfo, "ÌùÍ¼¾«¶È¹ı¸ß", MB_YESNO | MB_ICONQUESTION) )
 		{
-			pszInfo = "ç³»ç»Ÿå‰©ä½™çš„å¯ç”¨äºè´´å›¾çš„æ˜¾å­˜å°äº16Mï¼Œç”¨æˆ·å–æ¶ˆäº†æ¸¸æˆè¿è¡Œã€‚";
+			pszInfo = "ÏµÍ³Ê£ÓàµÄ¿ÉÓÃÓÚÌùÍ¼µÄÏÔ´æĞ¡ÓÚ16M£¬ÓÃ»§È¡ÏûÁËÓÎÏ·ÔËĞĞ¡£";
 			return false;		
 		}		
 	}
@@ -390,16 +390,16 @@ bool CheckHardwareCaps(const char *& pszInfo)
 bool CheckImportantFiles(const char *& pszInfo)
 {
 	const char * szImportantFiles[] = {
-		"Models\\Players\\å½¢è±¡\\ç™½è™\\ç™½è™.ecm",
-		"Models\\Players\\å½¢è±¡\\æ­¦ä¾ ç”·\\èº¯å¹²\\æ­¦ä¾ ç”·.ecm",
-		"Models\\Players\\å½¢è±¡\\æ­¦ä¾ å¥³\\èº¯å¹²\\æ­¦ä¾ å¥³.ecm",
-		"Models\\Players\\å½¢è±¡\\æ³•å¸ˆç”·\\èº¯å¹²\\æ³•å¸ˆç”·.ecm",
-		"Models\\Players\\å½¢è±¡\\æ³•å¸ˆå¥³\\èº¯å¹²\\æ³•å¸ˆå¥³.ecm",
-		"Models\\Players\\å½¢è±¡\\ç¾½çµç”·\\èº¯å¹²\\ç¾½çµç”·.ecm",
-		"Models\\Players\\å½¢è±¡\\ç¾½çµå¥³\\èº¯å¹²\\ç¾½çµå¥³.ecm",
-		"Models\\Players\\å½¢è±¡\\å¦–å…½ç”·\\èº¯å¹²\\å¦–å…½ç”·.ecm",
-		"Models\\Players\\å½¢è±¡\\å‰‘çµç”·\\èº¯å¹²\\å‰‘çµç”·.ecm",
-		"Models\\Players\\å½¢è±¡\\é­…çµå¥³\\èº¯å¹²\\é­…çµå¥³.ecm",
+		"Models\\Players\\ĞÎÏó\\°×»¢\\°×»¢.ecm",
+		"Models\\Players\\ĞÎÏó\\ÎäÏÀÄĞ\\Çû¸É\\ÎäÏÀÄĞ.ecm",
+		"Models\\Players\\ĞÎÏó\\ÎäÏÀÅ®\\Çû¸É\\ÎäÏÀÅ®.ecm",
+		"Models\\Players\\ĞÎÏó\\·¨Ê¦ÄĞ\\Çû¸É\\·¨Ê¦ÄĞ.ecm",
+		"Models\\Players\\ĞÎÏó\\·¨Ê¦Å®\\Çû¸É\\·¨Ê¦Å®.ecm",
+		"Models\\Players\\ĞÎÏó\\ÓğÁéÄĞ\\Çû¸É\\ÓğÁéÄĞ.ecm",
+		"Models\\Players\\ĞÎÏó\\ÓğÁéÅ®\\Çû¸É\\ÓğÁéÅ®.ecm",
+		"Models\\Players\\ĞÎÏó\\ÑıÊŞÄĞ\\Çû¸É\\ÑıÊŞÄĞ.ecm",
+		"Models\\Players\\ĞÎÏó\\½£ÁéÄĞ\\Çû¸É\\½£ÁéÄĞ.ecm",
+		"Models\\Players\\ĞÎÏó\\÷ÈÁéÅ®\\Çû¸É\\÷ÈÁéÅ®.ecm",
 		"font\\FZL2JW.ttf",
 		"font\\FZLBJW.ttf",
 		"font\\FZXH1JW.ttf",
@@ -820,7 +820,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	const char * szInfo = "";
 	if (!CheckHardwareCaps(szInfo))
 	{
-		MessageBoxA(NULL, szInfo, "å¯¹ä¸èµ·ï¼Œç”±äºæ‚¨çš„ç³»ç»Ÿç¡¬ä»¶æˆ–ç³»ç»Ÿè½¯ä»¶çš„é—®é¢˜ï¼Œæ— æ³•è¿è¡Œæœ¬æ¸¸æˆ!", MB_OK | MB_ICONSTOP);
+		MessageBoxA(NULL, szInfo, "¶Ô²»Æğ£¬ÓÉÓÚÄúµÄÏµÍ³Ó²¼ş»òÏµÍ³Èí¼şµÄÎÊÌâ£¬ÎŞ·¨ÔËĞĞ±¾ÓÎÏ·!", MB_OK | MB_ICONSTOP);
 #ifdef ENABLE_UNKNOWN_EXIT_CHECK
 		l_bEnableExitCheck = false;
 #endif
@@ -830,7 +830,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	const char * szMissedFile = "";
 	if (!CheckImportantFiles(szMissedFile))
 	{
-		MessageBoxA(NULL, "å¯¹ä¸èµ·ï¼Œç”±äºæ‚¨æœºå™¨ä¸Šå®‰è£…çš„æ¸¸æˆèµ„æºç¼ºå°‘äº†ä¸€ä¸ªé‡è¦çš„æ–‡ä»¶ï¼Œæ¸¸æˆæ— æ³•è¿è¡Œï¼è¯·é‡æ–°å®‰è£…æ¸¸æˆå®¢æˆ·ç«¯ï¼", szMissedFile, MB_OK | MB_ICONSTOP);
+		MessageBoxA(NULL, "¶Ô²»Æğ£¬ÓÉÓÚÄú»úÆ÷ÉÏ°²×°µÄÓÎÏ·×ÊÔ´È±ÉÙÁËÒ»¸öÖØÒªµÄÎÄ¼ş£¬ÓÎÏ·ÎŞ·¨ÔËĞĞ£¡ÇëÖØĞÂ°²×°ÓÎÏ·¿Í»§¶Ë£¡", szMissedFile, MB_OK | MB_ICONSTOP);
 #ifdef ENABLE_UNKNOWN_EXIT_CHECK
 		l_bEnableExitCheck = false;
 #endif
@@ -986,14 +986,14 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 	{
 		if (g_dwFatalErrorFlag == FATAL_ERROR_LOAD_BUILDING)
 		{
-			MessageBoxA(g_pGame->GetGameInit().hWnd, "åŠ è½½å»ºç­‘å¤±è´¥ï¼Œç¨‹åºå³å°†é€€å‡ºï¼", NULL, MB_OK | MB_ICONERROR);
+			MessageBoxA(g_pGame->GetGameInit().hWnd, "¼ÓÔØ½¨ÖşÊ§°Ü£¬³ÌĞò¼´½«ÍË³ö£¡", NULL, MB_OK | MB_ICONERROR);
 			a_LogOutput(1, "exit process because failed to load building");
 			g_bHookExitProcess = FALSE;
 			::ExitProcess(-2);
 		}
 		else if(g_dwFatalErrorFlag == FATAL_ERROR_WRONG_CONFIGDATA)
 		{
-			MessageBoxA(g_pGame->GetGameInit().hWnd, "è¯»å–èµ„æºæ•°æ®å‡ºé”™ï¼Œç¨‹åºå³å°†é€€å‡ºï¼", NULL, MB_OK | MB_ICONERROR);
+			MessageBoxA(g_pGame->GetGameInit().hWnd, "¶ÁÈ¡×ÊÔ´Êı¾İ³ö´í£¬³ÌĞò¼´½«ÍË³ö£¡", NULL, MB_OK | MB_ICONERROR);
 			a_LogOutput(1, "exit process because wrong config data");
 			g_bHookExitProcess = FALSE;
 			::ExitProcess(-3);
@@ -1212,8 +1212,8 @@ bool _InitGameApp()
 			if (!CECCommandLine::GetSupportSeperateFile())
 			{
 				char szInfo[1024];
-				sprintf(szInfo, "æ–‡ä»¶åŒ… [%s] è¢«æŸåï¼Œæ— æ³•æ‰“å¼€ï¼Œè¯·é‡æ–°å®‰è£…æ¸¸æˆå®¢æˆ·ç«¯ï¼", szPckFile);
-				MessageBoxA(NULL, szInfo, "æ–‡ä»¶åŒ…æ‰“å¼€å¤±è´¥", MB_ICONSTOP | MB_OK);
+				sprintf(szInfo, "ÎÄ¼ş°ü [%s] ±»Ëğ»µ£¬ÎŞ·¨´ò¿ª£¬ÇëÖØĞÂ°²×°ÓÎÏ·¿Í»§¶Ë£¡", szPckFile);
+				MessageBoxA(NULL, szInfo, "ÎÄ¼ş°ü´ò¿ªÊ§°Ü", MB_ICONSTOP | MB_OK);
 				return false;
 			}
 		}

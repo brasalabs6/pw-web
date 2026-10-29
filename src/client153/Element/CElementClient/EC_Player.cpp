@@ -153,8 +153,8 @@ static const char* _hh_bind				= "HH_Bind";
 static const char* _cc_bind				= "CC_Bind";
 
 const char* _cc_fenghuolun				= "CC_feijian";
-const char* _hh_left_foot				= "HH_å·¦è„š";
-const char* _hh_right_foot				= "HH_å³è„š";
+const char* _hh_left_foot				= "HH_×ó½Å";
+const char* _hh_right_foot				= "HH_ÓÒ½Å";
 
 static const char* _hh_left_shoulder_weapon	= "HH_leftsword";	//	äººèƒŒä¸Šçš„æ­¦å™¨æŒ‚ç‚¹ï¼ˆå·¦è‚©ï¼‰
 static const char* _hh_right_shoulder_weapon= "HH_rightsword";	//	äººèƒŒä¸Šçš„æ­¦å™¨æŒ‚ç‚¹ï¼ˆå³è‚©ï¼‰
@@ -170,181 +170,181 @@ static const char* _cc_weapon			=	"CC_weapon";		//	æ­¦å™¨ä¸Šçš„æŒ‚ç‚¹åç§°
 static const char* _cc_qiu				=	"CC_qiu";			//	çƒä¸Šçš„æŒ‚ç‚¹åç§°
 static const char* _hh_qiu_base			=	"HH_base";			//	çƒä¸Šçš„ç‰¹æ•ˆæŒ‚ç‚¹ï¼ˆå³æ‰‹ï¼‰
 
-const char* _multiobject_effect[] = {"ç»¿è‰²è¿çº¿.gfx","çº¢è‰²è¿çº¿.gfx","é»‘è‰²è¿çº¿.gfx",};
+const char* _multiobject_effect[] = {"ÂÌÉ«Á¬Ïß.gfx","ºìÉ«Á¬Ïß.gfx","ºÚÉ«Á¬Ïß.gfx",};
 
 static const char* _head_skin[NUM_PROFESSION*NUM_GENDER] = 
 {
-	"Models\\Players\\å½¢è±¡\\æ­¦ä¾ ç”·\\å¤´\\æ­¦ä¾ ç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\æ­¦ä¾ å¥³\\å¤´\\æ­¦ä¾ å¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\ÎäÏÀÄĞ\\Í·\\ÎäÏÀÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\ÎäÏÀÅ®\\Í·\\ÎäÏÀÅ®Í·",
 
-	"Models\\Players\\å½¢è±¡\\æ³•å¸ˆç”·\\å¤´\\æ³•å¸ˆç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\æ³•å¸ˆå¥³\\å¤´\\æ³•å¸ˆå¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\·¨Ê¦ÄĞ\\Í·\\·¨Ê¦ÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\·¨Ê¦Å®\\Í·\\·¨Ê¦Å®Í·",
 
-	"Models\\Players\\å½¢è±¡\\å·«å¸ˆç”·\\å¤´\\å·«å¸ˆç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\å·«å¸ˆå¥³\\å¤´\\å·«å¸ˆå¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\Î×Ê¦ÄĞ\\Í·\\Î×Ê¦ÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\Î×Ê¦Å®\\Í·\\Î×Ê¦Å®Í·",
 
 	"",
-	"Models\\Players\\å½¢è±¡\\å¦–ç²¾\\å¤´\\å¦–ç²¾å¤´",
-	"Models\\Players\\å½¢è±¡\\å¦–å…½ç”·\\å¤´\\å¦–å…½ç”·å¤´",
+	"Models\\Players\\ĞÎÏó\\Ñı¾«\\Í·\\Ñı¾«Í·",
+	"Models\\Players\\ĞÎÏó\\ÑıÊŞÄĞ\\Í·\\ÑıÊŞÄĞÍ·",
 	"",
-	"Models\\Players\\å½¢è±¡\\åˆºå®¢ç”·\\å¤´\\åˆºå®¢ç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\åˆºå®¢å¥³\\å¤´\\åˆºå®¢å¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\´Ì¿ÍÄĞ\\Í·\\´Ì¿ÍÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\´Ì¿ÍÅ®\\Í·\\´Ì¿ÍÅ®Í·",
 
-	"Models\\Players\\å½¢è±¡\\ç¾½èŠ’ç”·\\å¤´\\ç¾½èŠ’ç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\ç¾½èŠ’å¥³\\å¤´\\ç¾½èŠ’å¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\ÓğÃ¢ÄĞ\\Í·\\ÓğÃ¢ÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\ÓğÃ¢Å®\\Í·\\ÓğÃ¢Å®Í·",
 
-	"Models\\Players\\å½¢è±¡\\ç¾½çµç”·\\å¤´\\ç¾½çµç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\ç¾½çµå¥³\\å¤´\\ç¾½çµå¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\ÓğÁéÄĞ\\Í·\\ÓğÁéÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\ÓğÁéÅ®\\Í·\\ÓğÁéÅ®Í·",
 	
-	"Models\\Players\\å½¢è±¡\\å‰‘çµç”·\\å¤´\\å‰‘çµç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\å‰‘çµå¥³\\å¤´\\å‰‘çµå¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\½£ÁéÄĞ\\Í·\\½£ÁéÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\½£ÁéÅ®\\Í·\\½£ÁéÅ®Í·",
 	
-	"Models\\Players\\å½¢è±¡\\é­…çµç”·\\å¤´\\é­…çµç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\é­…çµå¥³\\å¤´\\é­…çµå¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\÷ÈÁéÄĞ\\Í·\\÷ÈÁéÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\÷ÈÁéÅ®\\Í·\\÷ÈÁéÅ®Í·",
 
-	"Models\\Players\\å½¢è±¡\\å¤œå½±ç”·\\å¤´\\å¤œå½±ç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\å¤œå½±å¥³\\å¤´\\å¤œå½±å¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\Ò¹Ó°ÄĞ\\Í·\\Ò¹Ó°ÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\Ò¹Ó°Å®\\Í·\\Ò¹Ó°Å®Í·",
 	
-	"Models\\Players\\å½¢è±¡\\æœˆä»™ç”·\\å¤´\\æœˆä»™ç”·å¤´",
-	"Models\\Players\\å½¢è±¡\\æœˆä»™å¥³\\å¤´\\æœˆä»™å¥³å¤´",
+	"Models\\Players\\ĞÎÏó\\ÔÂÏÉÄĞ\\Í·\\ÔÂÏÉÄĞÍ·",
+	"Models\\Players\\ĞÎÏó\\ÔÂÏÉÅ®\\Í·\\ÔÂÏÉÅ®Í·",
 };
 
 static const char* _body_skin[NUM_PROFESSION*NUM_GENDER] = 
 {
-	"Models\\Players\\å½¢è±¡\\æ­¦ä¾ ç”·\\èº¯å¹²\\æ­¦ä¾ ç”·",
-	"Models\\Players\\å½¢è±¡\\æ­¦ä¾ å¥³\\èº¯å¹²\\æ­¦ä¾ å¥³",
+	"Models\\Players\\ĞÎÏó\\ÎäÏÀÄĞ\\Çû¸É\\ÎäÏÀÄĞ",
+	"Models\\Players\\ĞÎÏó\\ÎäÏÀÅ®\\Çû¸É\\ÎäÏÀÅ®",
 
-	"Models\\Players\\å½¢è±¡\\æ³•å¸ˆç”·\\èº¯å¹²\\æ³•å¸ˆç”·",
-	"Models\\Players\\å½¢è±¡\\æ³•å¸ˆå¥³\\èº¯å¹²\\æ³•å¸ˆå¥³",
+	"Models\\Players\\ĞÎÏó\\·¨Ê¦ÄĞ\\Çû¸É\\·¨Ê¦ÄĞ",
+	"Models\\Players\\ĞÎÏó\\·¨Ê¦Å®\\Çû¸É\\·¨Ê¦Å®",
 
-	"Models\\Players\\å½¢è±¡\\å·«å¸ˆç”·\\èº¯å¹²\\å·«å¸ˆç”·%d",
-	"Models\\Players\\å½¢è±¡\\å·«å¸ˆå¥³\\èº¯å¹²\\å·«å¸ˆå¥³%d",
+	"Models\\Players\\ĞÎÏó\\Î×Ê¦ÄĞ\\Çû¸É\\Î×Ê¦ÄĞ%d",
+	"Models\\Players\\ĞÎÏó\\Î×Ê¦Å®\\Çû¸É\\Î×Ê¦Å®%d",
 	"",
-	"Models\\Players\\å½¢è±¡\\å¦–ç²¾\\èº¯å¹²\\å¦–ç²¾%d",
-	"Models\\Players\\å½¢è±¡\\å¦–å…½ç”·\\èº¯å¹²\\å¦–å…½ç”·%d",
+	"Models\\Players\\ĞÎÏó\\Ñı¾«\\Çû¸É\\Ñı¾«%d",
+	"Models\\Players\\ĞÎÏó\\ÑıÊŞÄĞ\\Çû¸É\\ÑıÊŞÄĞ%d",
 	"",
-	"Models\\Players\\å½¢è±¡\\åˆºå®¢ç”·\\èº¯å¹²\\åˆºå®¢ç”·%d",
-	"Models\\Players\\å½¢è±¡\\åˆºå®¢å¥³\\èº¯å¹²\\åˆºå®¢å¥³%d",
+	"Models\\Players\\ĞÎÏó\\´Ì¿ÍÄĞ\\Çû¸É\\´Ì¿ÍÄĞ%d",
+	"Models\\Players\\ĞÎÏó\\´Ì¿ÍÅ®\\Çû¸É\\´Ì¿ÍÅ®%d",
 
-	"Models\\Players\\å½¢è±¡\\ç¾½èŠ’ç”·\\èº¯å¹²\\ç¾½èŠ’ç”·",
-	"Models\\Players\\å½¢è±¡\\ç¾½èŠ’å¥³\\èº¯å¹²\\ç¾½èŠ’å¥³",
+	"Models\\Players\\ĞÎÏó\\ÓğÃ¢ÄĞ\\Çû¸É\\ÓğÃ¢ÄĞ",
+	"Models\\Players\\ĞÎÏó\\ÓğÃ¢Å®\\Çû¸É\\ÓğÃ¢Å®",
 
-	"Models\\Players\\å½¢è±¡\\ç¾½çµç”·\\èº¯å¹²\\ç¾½çµç”·",
-	"Models\\Players\\å½¢è±¡\\ç¾½çµå¥³\\èº¯å¹²\\ç¾½çµå¥³",
+	"Models\\Players\\ĞÎÏó\\ÓğÁéÄĞ\\Çû¸É\\ÓğÁéÄĞ",
+	"Models\\Players\\ĞÎÏó\\ÓğÁéÅ®\\Çû¸É\\ÓğÁéÅ®",
 
-	"Models\\Players\\å½¢è±¡\\å‰‘çµç”·\\èº¯å¹²\\å‰‘çµç”·",
-	"Models\\Players\\å½¢è±¡\\å‰‘çµå¥³\\èº¯å¹²\\å‰‘çµå¥³",
+	"Models\\Players\\ĞÎÏó\\½£ÁéÄĞ\\Çû¸É\\½£ÁéÄĞ",
+	"Models\\Players\\ĞÎÏó\\½£ÁéÅ®\\Çû¸É\\½£ÁéÅ®",
 	
-	"Models\\Players\\å½¢è±¡\\é­…çµç”·\\èº¯å¹²\\é­…çµç”·",
-	"Models\\Players\\å½¢è±¡\\é­…çµå¥³\\èº¯å¹²\\é­…çµå¥³",
+	"Models\\Players\\ĞÎÏó\\÷ÈÁéÄĞ\\Çû¸É\\÷ÈÁéÄĞ",
+	"Models\\Players\\ĞÎÏó\\÷ÈÁéÅ®\\Çû¸É\\÷ÈÁéÅ®",
 
-	"Models\\Players\\å½¢è±¡\\å¤œå½±ç”·\\èº¯å¹²\\å¤œå½±ç”·",
-	"Models\\Players\\å½¢è±¡\\å¤œå½±å¥³\\èº¯å¹²\\å¤œå½±å¥³",
+	"Models\\Players\\ĞÎÏó\\Ò¹Ó°ÄĞ\\Çû¸É\\Ò¹Ó°ÄĞ",
+	"Models\\Players\\ĞÎÏó\\Ò¹Ó°Å®\\Çû¸É\\Ò¹Ó°Å®",
 	
-	"Models\\Players\\å½¢è±¡\\æœˆä»™ç”·\\èº¯å¹²\\æœˆä»™ç”·",
-	"Models\\Players\\å½¢è±¡\\æœˆä»™å¥³\\èº¯å¹²\\æœˆä»™å¥³",
+	"Models\\Players\\ĞÎÏó\\ÔÂÏÉÄĞ\\Çû¸É\\ÔÂÏÉÄĞ",
+	"Models\\Players\\ĞÎÏó\\ÔÂÏÉÅ®\\Çû¸É\\ÔÂÏÉÅ®",
 };
 
 static const char* _simple_body_skin[NUM_PROFESSION*NUM_GENDER] = 
 {
-	"Models\\Players\\å½¢è±¡\\æ­¦ä¾ ç”·\\èº¯å¹²\\æ­¦ä¾ ç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\æ­¦ä¾ å¥³\\èº¯å¹²\\æ­¦ä¾ å¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\ÎäÏÀÄĞ\\Çû¸É\\ÎäÏÀÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\ÎäÏÀÅ®\\Çû¸É\\ÎäÏÀÅ®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\æ³•å¸ˆç”·\\èº¯å¹²\\æ³•å¸ˆç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\æ³•å¸ˆå¥³\\èº¯å¹²\\æ³•å¸ˆå¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\·¨Ê¦ÄĞ\\Çû¸É\\·¨Ê¦ÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\·¨Ê¦Å®\\Çû¸É\\·¨Ê¦Å®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\å·«å¸ˆç”·\\èº¯å¹²\\å·«å¸ˆç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\å·«å¸ˆå¥³\\èº¯å¹²\\å·«å¸ˆå¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\Î×Ê¦ÄĞ\\Çû¸É\\Î×Ê¦ÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\Î×Ê¦Å®\\Çû¸É\\Î×Ê¦Å®¼ò»¯",
 	"",
-	"Models\\Players\\å½¢è±¡\\å¦–ç²¾\\èº¯å¹²\\å¦–ç²¾ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\å¦–å…½ç”·\\èº¯å¹²\\å¦–å…½ç”·ç®€åŒ–%d",
+	"Models\\Players\\ĞÎÏó\\Ñı¾«\\Çû¸É\\Ñı¾«¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\ÑıÊŞÄĞ\\Çû¸É\\ÑıÊŞÄĞ¼ò»¯%d",
 	"",
-	"Models\\Players\\å½¢è±¡\\åˆºå®¢ç”·\\èº¯å¹²\\åˆºå®¢ç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\åˆºå®¢å¥³\\èº¯å¹²\\åˆºå®¢å¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\´Ì¿ÍÄĞ\\Çû¸É\\´Ì¿ÍÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\´Ì¿ÍÅ®\\Çû¸É\\´Ì¿ÍÅ®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\ç¾½èŠ’ç”·\\èº¯å¹²\\ç¾½èŠ’ç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\ç¾½èŠ’å¥³\\èº¯å¹²\\ç¾½èŠ’å¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\ÓğÃ¢ÄĞ\\Çû¸É\\ÓğÃ¢ÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\ÓğÃ¢Å®\\Çû¸É\\ÓğÃ¢Å®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\ç¾½çµç”·\\èº¯å¹²\\ç¾½çµç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\ç¾½çµå¥³\\èº¯å¹²\\ç¾½çµå¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\ÓğÁéÄĞ\\Çû¸É\\ÓğÁéÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\ÓğÁéÅ®\\Çû¸É\\ÓğÁéÅ®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\å‰‘çµç”·\\èº¯å¹²\\å‰‘çµç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\å‰‘çµå¥³\\èº¯å¹²\\å‰‘çµå¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\½£ÁéÄĞ\\Çû¸É\\½£ÁéÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\½£ÁéÅ®\\Çû¸É\\½£ÁéÅ®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\é­…çµç”·\\èº¯å¹²\\é­…çµç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\é­…çµå¥³\\èº¯å¹²\\é­…çµå¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\÷ÈÁéÄĞ\\Çû¸É\\÷ÈÁéÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\÷ÈÁéÅ®\\Çû¸É\\÷ÈÁéÅ®¼ò»¯",
 
-	"Models\\Players\\å½¢è±¡\\å¤œå½±ç”·\\èº¯å¹²\\å¤œå½±ç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\å¤œå½±å¥³\\èº¯å¹²\\å¤œå½±å¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\Ò¹Ó°ÄĞ\\Çû¸É\\Ò¹Ó°ÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\Ò¹Ó°Å®\\Çû¸É\\Ò¹Ó°Å®¼ò»¯",
 	
-	"Models\\Players\\å½¢è±¡\\æœˆä»™ç”·\\èº¯å¹²\\æœˆä»™ç”·ç®€åŒ–",
-	"Models\\Players\\å½¢è±¡\\æœˆä»™å¥³\\èº¯å¹²\\æœˆä»™å¥³ç®€åŒ–",
+	"Models\\Players\\ĞÎÏó\\ÔÂÏÉÄĞ\\Çû¸É\\ÔÂÏÉÄĞ¼ò»¯",
+	"Models\\Players\\ĞÎÏó\\ÔÂÏÉÅ®\\Çû¸É\\ÔÂÏÉÅ®¼ò»¯",
 };
 
 static const char* _equipment_skin[NUM_PROFESSION*NUM_GENDER] = 
 {
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
 	"",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¦–ç²¾%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\å¦–å…½%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Ñı¾«%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÑıÊŞ%s",
 	"",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
 	
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç”·é€šç”¨%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¥³é€šç”¨%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÄĞÍ¨ÓÃ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Å®Í¨ÓÃ%s",
 };
 
 static const char* _equipment_default_skin[NUM_PROFESSION*NUM_GENDER] = 
 {
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\æ­¦ä¾ ç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\æ­¦ä¾ å¥³%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\æ³•å¸ˆç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\æ³•å¸ˆå¥³%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÎäÏÀÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\ÎäÏÀÅ®%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\·¨Ê¦ÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\·¨Ê¦Å®%s",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\å·«å¸ˆç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å·«å¸ˆå¥³%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\Î×Ê¦ÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Î×Ê¦Å®%s",
 	"",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¦–ç²¾%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\å¦–å…½%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Ñı¾«%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÑıÊŞ%s",
 	"",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\åˆºå®¢ç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\åˆºå®¢å¥³%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\´Ì¿ÍÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\´Ì¿ÍÅ®%s",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç¾½èŠ’ç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\ç¾½èŠ’å¥³%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\ç¾½çµç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\ç¾½çµå¥³%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÓğÃ¢ÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\ÓğÃ¢Å®%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÓğÁéÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\ÓğÁéÅ®%s",
 	
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\å‰‘çµç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å‰‘çµå¥³%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\é­…çµç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\é­…çµå¥³%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\½£ÁéÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\½£ÁéÅ®%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\÷ÈÁéÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\÷ÈÁéÅ®%s",
 
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\å¤œå½±ç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\å¤œå½±å¥³%s",
-	"Models\\Players\\è£…å¤‡\\ç”·\\%s\\æœˆä»™ç”·%s",
-	"Models\\Players\\è£…å¤‡\\å¥³\\%s\\æœˆä»™å¥³%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\Ò¹Ó°ÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\Ò¹Ó°Å®%s",
+	"Models\\Players\\×°±¸\\ÄĞ\\%s\\ÔÂÏÉÄĞ%s",
+	"Models\\Players\\×°±¸\\Å®\\%s\\ÔÂÏÉÅ®%s",
 };
 
 static const int _skin_alpha_map[] =
@@ -418,7 +418,7 @@ static void _GenDefaultSkinPath(char* szPath, int nProfession, int nGender, cons
 
 static const char* _GenWeaponActionName(char* szAct, int nGender)
 {
-	sprintf(strWeaponActName, "%s_%s", szAct, (nGender==GENDER_MALE) ? "ç”·" : "å¥³");
+	sprintf(strWeaponActName, "%s_%s", szAct, (nGender==GENDER_MALE) ? "ÄĞ" : "Å®");
 	return strWeaponActName;
 }
 
@@ -842,7 +842,7 @@ int CECPlayer::GetLevelUpExp(int iLevel)
 //	Build riding pet file name
 const char* CECPlayer::GetRidingPetFileName(int idPet)
 {
-	static const char* szDef = "Models\\NPCs\\å® ç‰©\\éª‘å® \\éª‘å® é©¬\\éª‘å® é©¬ç™½.ecm";
+	static const char* szDef = "Models\\NPCs\\³èÎï\\Æï³è\\Æï³èÂí\\Æï³èÂí°×.ecm";
 
 	DATA_TYPE DataType;
 	const void* pDataPtr = g_pGame->GetElementDataMan()->get_data_ptr(idPet, ID_SPACE_ESSENCE, DataType);
@@ -1146,7 +1146,7 @@ void CECPlayer::BuildActionList()
 					{
 #ifdef _DEBUG
 						AString strTemp;
-						strTemp.Format("é€šç”¨åŠ¨ä½œåé‡å¤: action_name = %s, åŸid = %d, æ–°id = %d\n", data->action_name, (*(actionMap.find(data->action_name).value()))->id, data->id);
+						strTemp.Format("Í¨ÓÃ¶¯×÷ÃûÖØ¸´: action_name = %s, Ô­id = %d, ĞÂid = %d\n", data->action_name, (*(actionMap.find(data->action_name).value()))->id, data->id);
 						::OutputDebugStringA(strTemp);
 #endif
 					}
@@ -1159,7 +1159,7 @@ void CECPlayer::BuildActionList()
 					{
 #ifdef _DEBUG
 						ACString strTemp;
-						strTemp.Format(_AL("æŠ€èƒ½åŠ¨ä½œåé‡å¤: name = %s, åŸid = %d, æ–°id = %d\n"), data->name, (*(skillActionMap.find(data->name).value()))->id, data->id);
+						strTemp.Format(_AL("¼¼ÄÜ¶¯×÷ÃûÖØ¸´: name = %s, Ô­id = %d, ĞÂid = %d\n"), data->name, (*(skillActionMap.find(data->name).value()))->id, data->id);
 						::OutputDebugString(strTemp);
 #endif
 					}
@@ -1170,7 +1170,7 @@ void CECPlayer::BuildActionList()
 					!(data->name[0] && data->name[0] != '0'))
 				{
 					AString strTemp;
-					strTemp.Format("åŠ¨ä½œé…ç½®è¡¨é”™è¯¯ï¼Œåç§°ä¸ºç©º: id = %d\n", data->id);
+					strTemp.Format("¶¯×÷ÅäÖÃ±í´íÎó£¬Ãû³ÆÎª¿Õ: id = %d\n", data->id);
 					::OutputDebugStringA(strTemp);
 				}
 #endif
@@ -1201,8 +1201,8 @@ void CECPlayer::BuildActionList()
 					{
 						for(int n=0; n<NUM_WEAPON_TYPE; n++)
 						{
-							fprintf(fpActionList, "%s_%sèµ·\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
-							fprintf(fpActionList, "%s_%sè½\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
+							fprintf(fpActionList, "%s_%sÆğ\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
+							fprintf(fpActionList, "%s_%sÂä\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
 						}
 					}
 					else
@@ -1224,7 +1224,7 @@ void CECPlayer::BuildActionList()
 		// å»ºç«‹ç‰¹æ®ŠåŠ¨ä½œæ˜ å°„
 		if(_turning_actions) delete[] _turning_actions;
 		_turning_actions = new PLAYER_ACTION[ACT_MAX];
-		PlayerActionMap::iterator turning = actionMap.find("è‡ªèº«æ—‹è½¬"); // æŸ¥æ‰¾ç‰¹æ®Šçš„åŠ¨ä½œ
+		PlayerActionMap::iterator turning = actionMap.find("×ÔÉíĞı×ª"); // æŸ¥æ‰¾ç‰¹æ®Šçš„åŠ¨ä½œ
 		for(i=0; i<ACT_MAX; i++)
 		{
 			if( (i < ACT_GROUNDDIE ||	// é™†åœ°æ­»äº¡
@@ -1263,9 +1263,9 @@ void CECPlayer::BuildActionList()
 					{
 						if( data->action_weapon_suffix[n].suffix[0] )
 						{
-							fprintf(fpActionList, "%s_åŸå”±_%s\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
-							fprintf(fpActionList, "%s_æ–½æ”¾èµ·_%s\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
-							fprintf(fpActionList, "%s_æ–½æ”¾è½_%s\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
+							fprintf(fpActionList, "%s_Ò÷³ª_%s\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
+							fprintf(fpActionList, "%s_Ê©·ÅÆğ_%s\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
+							fprintf(fpActionList, "%s_Ê©·ÅÂä_%s\n", data->action_prefix, data->action_weapon_suffix[n].suffix);
 						}
 					}
 #endif
@@ -1644,8 +1644,8 @@ bool CECPlayer::LoadPlayerSkin(
 
 	if( szFile )
 	{
-		const char * suffix1[] = {"ä¸€çº§", "äºŒçº§", "ä¸‰çº§"};
-		const char * suffix2[] = {"", "äºŒçº§", "ä¸‰çº§"};
+		const char * suffix1[] = {"Ò»¼¶", "¶ş¼¶", "Èı¼¶"};
+		const char * suffix2[] = {"", "¶ş¼¶", "Èı¼¶"};
 		const char ** pSuffixes;
 
 		if( iIndex == SKIN_BODY_INDEX || iIndex == SKIN_HEAD_INDEX )
@@ -3790,7 +3790,7 @@ bool CECPlayer::PlayActionWithConfig(int iAction, const PLAYER_ACTION &actionCon
 			else if( iAction == ACT_ATTACK_TOSS )
 			{
 				// we use toss second part action as a common action 
-				sprintf(szAct, "%s_%sè½", action.data->action_prefix, action.data->action_weapon_suffix[weapon_type].suffix);
+				sprintf(szAct, "%s_%sÂä", action.data->action_prefix, action.data->action_weapon_suffix[weapon_type].suffix);
 				if( !bQueue ){
 					PlayNonSkillActionWithName(iAction, szAct, bRestart, iTransTime);
 				}else{
@@ -3841,9 +3841,9 @@ bool CECPlayer::PlayActionWithConfig(int iAction, const PLAYER_ACTION &actionCon
 						action = m_PlayerActions[ACT_STAND];
 
 					if( iAction == ACT_TWO_KISS )
-						sprintf(szAct, "ç«™ç«‹_äº²å»_åŒéª‘_é€šç”¨");
+						sprintf(szAct, "Õ¾Á¢_Ç×ÎÇ_Ë«Æï_Í¨ÓÃ");
 					else
-						sprintf(szAct, "%s_%s", action.data->action_prefix, "éª‘ä¹˜_é€šç”¨");
+						sprintf(szAct, "%s_%s", action.data->action_prefix, "Æï³Ë_Í¨ÓÃ");
 
 					const char * szPetAct = NULL;
 					if (iAction == ACT_STAND || iAction == ACT_FIGHTSTAND)
@@ -3875,25 +3875,25 @@ bool CECPlayer::PlayActionWithConfig(int iAction, const PLAYER_ACTION &actionCon
 					if( iAction == ACT_TWO_KISS )
 					{
 						if (m_AttachMode == enumAttachRideOnPlayer)
-							sprintf(szAct, "æŠšæ‘¸_ç»‘å®š_é€šç”¨");
+							sprintf(szAct, "¸§Ãş_°ó¶¨_Í¨ÓÃ");
 						else if (m_AttachMode == enumAttachHugPlayer)
-							sprintf(szAct, "äº²å»_ç»‘å®š_é€šç”¨");
+							sprintf(szAct, "Ç×ÎÇ_°ó¶¨_Í¨ÓÃ");
 						else if (m_AttachMode == enumAttachRideOnPet)
-							sprintf(szAct, "äº²å»_åŒéª‘_é€šç”¨");
+							sprintf(szAct, "Ç×ÎÇ_Ë«Æï_Í¨ÓÃ");
 					}
 					else
 					{
 						if (m_AttachMode == enumAttachRideOnPlayer)
-							sprintf(szAct, "%s_%s", action.data->action_prefix, "åŒéª‘_é€šç”¨");
+							sprintf(szAct, "%s_%s", action.data->action_prefix, "Ë«Æï_Í¨ÓÃ");
 						else if (m_AttachMode == enumAttachHugPlayer)
 						{
 							if( iAction != ACT_RUN )
-								sprintf(szAct, "%s", "ç«™ç«‹_ç»‘å®š_é€šç”¨");
+								sprintf(szAct, "%s", "Õ¾Á¢_°ó¶¨_Í¨ÓÃ");
 							else
-								sprintf(szAct, "%s", "å¥”è·‘_ç»‘å®š_é€šç”¨");
+								sprintf(szAct, "%s", "±¼ÅÜ_°ó¶¨_Í¨ÓÃ");
 						}
 						else if (m_AttachMode == enumAttachRideOnPet)
-							sprintf(szAct, "%s_%s", action.data->action_prefix, "åŒéª‘_é€šç”¨");
+							sprintf(szAct, "%s_%s", action.data->action_prefix, "Ë«Æï_Í¨ÓÃ");
 					}
 					// now weapon wanted.
 					m_bShowWeapon = false;
@@ -3909,12 +3909,12 @@ bool CECPlayer::PlayActionWithConfig(int iAction, const PLAYER_ACTION &actionCon
 					{
 						action = m_PlayerActions[GetMoveStandAction(false, false)];
 						if (m_AttachMode == enumAttachHugPlayer)
-							sprintf(szAct, "%s_%s", action.data->action_prefix, "äº²å»_ç»‘å®š_é€šç”¨");
+							sprintf(szAct, "%s_%s", action.data->action_prefix, "Ç×ÎÇ_°ó¶¨_Í¨ÓÃ");
 						else
-							sprintf(szAct, "%s_%s", action.data->action_prefix, "æŠšæ‘¸_ç»‘å®š_é€šç”¨");
+							sprintf(szAct, "%s_%s", action.data->action_prefix, "¸§Ãş_°ó¶¨_Í¨ÓÃ");
 					}
 					else
-						sprintf(szAct, "%s_%s", action.data->action_prefix, "ç»‘å®š_é€šç”¨");
+						sprintf(szAct, "%s_%s", action.data->action_prefix, "°ó¶¨_Í¨ÓÃ");
 					// now weapon wanted.
 					m_bShowWeapon = false;
 				}
@@ -4034,14 +4034,14 @@ bool CECPlayer::PlaySkillCastAction(int idSkill)
 
 	if( GetMoveEnv() == MOVEENV_GROUND )
 	{
-		sprintf(szAct, "%s_åŸå”±_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_Ò÷³ª_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
 	}
 	else
 	{
 		if( (/*UsingWing()*/m_wingType == WINGTYPE_WING && IsFlying()) || (GetProfession() == PROF_ANGEL) || (GetProfession() == PROF_ARCHOR)  || (GetProfession() == PROF_MONK) || (GetProfession() == PROF_GHOST) )
-			sprintf(szAct, "%s_ç©ºä¸­ç¿…è†€_åŸå”±_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
+			sprintf(szAct, "%s_¿ÕÖĞ³á°ò_Ò÷³ª_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
 		else
-			sprintf(szAct, "%s_ç©ºä¸­é£å‰‘_åŸå”±_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
+			sprintf(szAct, "%s_¿ÕÖĞ·É½£_Ò÷³ª_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
 	}
 	
 	bool bHideFX = !CECOptimize::Instance().GetGFX().CanShowCast(GetCharacterID(), GetClassID());
@@ -4853,7 +4853,7 @@ bool CECPlayer::PlayAttackAction(int nAttackSpeed, int* piAttackTime/* =NULL */,
 	
 	if( GetMoveEnv() == MOVEENV_GROUND )
 	{
-		sprintf(szAct, "%s_%sèµ·", action.data->action_prefix, action.data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_%sÆğ", action.data->action_prefix, action.data->action_weapon_suffix[weapon_type].suffix);
 		PlayNonSkillActionWithName(iAction, szAct, true, 200, bHideFX, pActFlag, COMACT_FLAG_MODE_ONCE_MULTIIGNOREGFX);
 
 		if(pRightHandWeapon && IsUsingMagicWeapon())
@@ -4861,7 +4861,7 @@ bool CECPlayer::PlayAttackAction(int nAttackSpeed, int* piAttackTime/* =NULL */,
 
 		nTime1 = m_pPlayerModel->GetComActTimeSpanByName(szAct);
 
-		sprintf(szAct, "%s_%sè½", action.data->action_prefix, action.data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_%sÂä", action.data->action_prefix, action.data->action_weapon_suffix[weapon_type].suffix);
 		QueueNonSkillActionWithName(iAction, szAct, 0, false, bHideFX);
 
 		if(pRightHandWeapon && IsUsingMagicWeapon())
@@ -4874,11 +4874,11 @@ bool CECPlayer::PlayAttackAction(int nAttackSpeed, int* piAttackTime/* =NULL */,
 		const char *szActionMiddleName = NULL;
 		if( (/*UsingWing()*/m_wingType == WINGTYPE_WING && IsFlying()) || (GetProfession() == PROF_ANGEL) || (GetProfession() == PROF_ARCHOR)  || (GetProfession() == PROF_MONK) || (GetProfession() == PROF_GHOST) )
 		{
-			szActionMiddleName = "ç©ºä¸­ç¿…è†€";
+			szActionMiddleName = "¿ÕÖĞ³á°ò";
 		}else{
-			szActionMiddleName = "ç©ºä¸­é£å‰‘";
+			szActionMiddleName = "¿ÕÖĞ·É½£";
 		}
-		sprintf(szAct, "%s_%s_%sèµ·", action.data->action_prefix, szActionMiddleName, action.data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_%s_%sÆğ", action.data->action_prefix, szActionMiddleName, action.data->action_weapon_suffix[weapon_type].suffix);
 		PlayNonSkillActionWithName(iAction, szAct, true, 200, bHideFX, pActFlag, COMACT_FLAG_MODE_ONCE_MULTIIGNOREGFX);
 		
 		if(pRightHandWeapon && IsUsingMagicWeapon())
@@ -4886,7 +4886,7 @@ bool CECPlayer::PlayAttackAction(int nAttackSpeed, int* piAttackTime/* =NULL */,
 		
 		nTime1 = m_pPlayerModel->GetComActTimeSpanByName(szAct);
 		
-		sprintf(szAct, "%s_%s_%sè½", action.data->action_prefix, szActionMiddleName, action.data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_%s_%sÂä", action.data->action_prefix, szActionMiddleName, action.data->action_weapon_suffix[weapon_type].suffix);
 		QueueNonSkillActionWithName(iAction, szAct, 0, false, bHideFX);
 		
 		if(pRightHandWeapon && IsUsingMagicWeapon())
@@ -4972,7 +4972,7 @@ bool CECPlayer::PlaySkillAttackAction(int idSkill, int nAttackSpeed, int* piAtta
 	
 	if( GetMoveEnv() == MOVEENV_GROUND )
 	{
-		sprintf(szAct, "%s_æ–½æ”¾èµ·_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_Ê©·ÅÆğ_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
 		_GetSkillSectionActionName(szAct,idSkill,nSection);
 		if (!PlaySkillAttackActionWithName(idSkill, szAct, bHideFX, pActFlag, COMACT_FLAG_MODE_ONCE_MULTIIGNOREGFX)){
 			return false;
@@ -4982,7 +4982,7 @@ bool CECPlayer::PlaySkillAttackAction(int idSkill, int nAttackSpeed, int* piAtta
 		pAct = m_pPlayerModel->GetComActByName(szAct);
 		if( pAct )	bInfinite |= pAct->IsInfinite();
 		
-		sprintf(szAct, "%s_æ–½æ”¾è½_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_Ê©·ÅÂä_%s", data->action_prefix, data->action_weapon_suffix[weapon_type].suffix);
 		_GetSkillSectionActionName(szAct,idSkill,nSection);
 		QueueSkillAttackActionWithName(idSkill, szAct, 0, bHideFX);
 				
@@ -4995,12 +4995,12 @@ bool CECPlayer::PlaySkillAttackAction(int idSkill, int nAttackSpeed, int* piAtta
 		const char *szActionMiddleName = NULL;
 		if( (/*UsingWing()*/ m_wingType == WINGTYPE_WING && IsFlying()) || (GetProfession() == PROF_ANGEL) || (GetProfession() == PROF_ARCHOR)  || (GetProfession() == PROF_MONK) || (GetProfession() == PROF_GHOST) )
 		{
-			szActionMiddleName = "ç©ºä¸­ç¿…è†€";
+			szActionMiddleName = "¿ÕÖĞ³á°ò";
 		}else{
-			szActionMiddleName = "ç©ºä¸­é£å‰‘";
+			szActionMiddleName = "¿ÕÖĞ·É½£";
 		}
 		
-		sprintf(szAct, "%s_%s_æ–½æ”¾èµ·_%s", data->action_prefix, szActionMiddleName, data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_%s_Ê©·ÅÆğ_%s", data->action_prefix, szActionMiddleName, data->action_weapon_suffix[weapon_type].suffix);
 		_GetSkillSectionActionName(szAct,idSkill,nSection);
 		if (!PlaySkillAttackActionWithName(idSkill, szAct, bHideFX, pActFlag, COMACT_FLAG_MODE_ONCE_MULTIIGNOREGFX)){
 			return false;
@@ -5013,7 +5013,7 @@ bool CECPlayer::PlaySkillAttackAction(int idSkill, int nAttackSpeed, int* piAtta
 		pAct = m_pPlayerModel->GetComActByName(szAct);
 		if( pAct )	bInfinite |= pAct->IsInfinite();
 		
-		sprintf(szAct, "%s_%s_æ–½æ”¾è½_%s", data->action_prefix, szActionMiddleName, data->action_weapon_suffix[weapon_type].suffix);
+		sprintf(szAct, "%s_%s_Ê©·ÅÂä_%s", data->action_prefix, szActionMiddleName, data->action_weapon_suffix[weapon_type].suffix);
 		_GetSkillSectionActionName(szAct,idSkill,nSection);
 		QueueSkillAttackActionWithName(idSkill, szAct, 0, bHideFX);
 		
@@ -5339,18 +5339,18 @@ bool CECPlayer::ValidateCustomizeData(int nProf, int nGender, PLAYER_CUSTOMIZEDA
 	bool modified(false);
 
 	static const char *s_hairModel[NUM_PROFESSION][2] = {
-		{"facedata\\æ­¦ä¾ ç”·\\é¢„å®šä¹‰\\01æ­¦ä¾ ç”·æ ‡å‡†1.ini", "facedata\\æ³•å¸ˆå¥³\\é¢„å®šä¹‰\\æ­¦ä¾ å¥³æ ‡å‡†1.ini"},  // æ­¦ä¾ 
-		{"facedata\\æ­¦ä¾ ç”·\\é¢„å®šä¹‰\\æ³•å¸ˆç”·æ ‡å‡†1.ini", "facedata\\æ³•å¸ˆå¥³\\é¢„å®šä¹‰\\01æ³•å¸ˆå¥³æ ‡å‡†1.ini"},  // æ³•å¸ˆ
-		{"facedata\\å½±æ—ç”·\\é¢„å®šä¹‰\\å·«å¸ˆç”·æ ‡å‡†01.ini", "facedata\\å½±æ—å¥³\\é¢„å®šä¹‰\\å·«å¸ˆå¥³æ ‡å‡†01.ini"},  // å·«å¸ˆ
-		{"", "facedata\\æ³•å¸ˆå¥³\\é¢„å®šä¹‰\\å¦–ç²¾å¥³æ ‡å‡†1.ini"}, // å¦–ç²¾
-		{"facedata\\å¦–å…½ç”·\\é¢„å®šä¹‰\\å¦–å…½ç”·æ ‡å‡†.ini", ""},  // å¦–å…½
-		{"facedata\\å½±æ—ç”·\\é¢„å®šä¹‰\\åˆºå®¢ç”·æ ‡å‡†01.ini", "facedata\\å½±æ—å¥³\\é¢„å®šä¹‰\\åˆºå®¢å¥³æ ‡å‡†01.ini"},  // åˆºå®¢
-		{"facedata\\æ­¦ä¾ ç”·\\é¢„å®šä¹‰\\ç¾½çµç”·æ ‡å‡†1.ini", "facedata\\æ³•å¸ˆå¥³\\é¢„å®šä¹‰\\ç¾½èŠ’å¥³æ ‡å‡†1.ini"},	   // ç¾½èŠ’
-		{"facedata\\æ­¦ä¾ ç”·\\é¢„å®šä¹‰\\ç¾½çµç”·æ ‡å‡†1.ini", "facedata\\æ³•å¸ˆå¥³\\é¢„å®šä¹‰\\ç¾½çµå¥³æ ‡å‡†1.ini"},    // ç¾½çµ
-		{"facedata\\çµæ—ç”·\\é¢„å®šä¹‰\\å‰‘çµç”·æ ‡å‡†01.ini", "facedata\\çµæ—å¥³\\é¢„å®šä¹‰\\å‰‘çµå¥³æ ‡å‡†01.ini"},  // å‰‘çµ
-		{"facedata\\çµæ—ç”·\\é¢„å®šä¹‰\\é­…çµç”·æ ‡å‡†01.ini", "facedata\\çµæ—å¥³\\é¢„å®šä¹‰\\é­…çµå¥³æ ‡å‡†01.ini"},  // é­…çµ
-		{"facedata\\èƒ§æ—ç”·\\é¢„å®šä¹‰\\å¤œå½±ç”·æ ‡å‡†01.ini", "facedata\\èƒ§æ—å¥³\\é¢„å®šä¹‰\\å¤œå½±å¥³æ ‡å‡†01.ini"},  // å¤œå½±
-		{"facedata\\èƒ§æ—ç”·\\é¢„å®šä¹‰\\æœˆä»™ç”·æ ‡å‡†01.ini", "facedata\\èƒ§æ—å¥³\\é¢„å®šä¹‰\\æœˆä»™å¥³æ ‡å‡†01.ini"},  // æœˆä»™
+		{"facedata\\ÎäÏÀÄĞ\\Ô¤¶¨Òå\\01ÎäÏÀÄĞ±ê×¼1.ini", "facedata\\·¨Ê¦Å®\\Ô¤¶¨Òå\\ÎäÏÀÅ®±ê×¼1.ini"},  // æ­¦ä¾ 
+		{"facedata\\ÎäÏÀÄĞ\\Ô¤¶¨Òå\\·¨Ê¦ÄĞ±ê×¼1.ini", "facedata\\·¨Ê¦Å®\\Ô¤¶¨Òå\\01·¨Ê¦Å®±ê×¼1.ini"},  // æ³•å¸ˆ
+		{"facedata\\Ó°×åÄĞ\\Ô¤¶¨Òå\\Î×Ê¦ÄĞ±ê×¼01.ini", "facedata\\Ó°×åÅ®\\Ô¤¶¨Òå\\Î×Ê¦Å®±ê×¼01.ini"},  // å·«å¸ˆ
+		{"", "facedata\\·¨Ê¦Å®\\Ô¤¶¨Òå\\Ñı¾«Å®±ê×¼1.ini"}, // å¦–ç²¾
+		{"facedata\\ÑıÊŞÄĞ\\Ô¤¶¨Òå\\ÑıÊŞÄĞ±ê×¼.ini", ""},  // å¦–å…½
+		{"facedata\\Ó°×åÄĞ\\Ô¤¶¨Òå\\´Ì¿ÍÄĞ±ê×¼01.ini", "facedata\\Ó°×åÅ®\\Ô¤¶¨Òå\\´Ì¿ÍÅ®±ê×¼01.ini"},  // åˆºå®¢
+		{"facedata\\ÎäÏÀÄĞ\\Ô¤¶¨Òå\\ÓğÁéÄĞ±ê×¼1.ini", "facedata\\·¨Ê¦Å®\\Ô¤¶¨Òå\\ÓğÃ¢Å®±ê×¼1.ini"},	   // ç¾½èŠ’
+		{"facedata\\ÎäÏÀÄĞ\\Ô¤¶¨Òå\\ÓğÁéÄĞ±ê×¼1.ini", "facedata\\·¨Ê¦Å®\\Ô¤¶¨Òå\\ÓğÁéÅ®±ê×¼1.ini"},    // ç¾½çµ
+		{"facedata\\Áé×åÄĞ\\Ô¤¶¨Òå\\½£ÁéÄĞ±ê×¼01.ini", "facedata\\Áé×åÅ®\\Ô¤¶¨Òå\\½£ÁéÅ®±ê×¼01.ini"},  // å‰‘çµ
+		{"facedata\\Áé×åÄĞ\\Ô¤¶¨Òå\\÷ÈÁéÄĞ±ê×¼01.ini", "facedata\\Áé×åÅ®\\Ô¤¶¨Òå\\÷ÈÁéÅ®±ê×¼01.ini"},  // é­…çµ
+		{"facedata\\ëÊ×åÄĞ\\Ô¤¶¨Òå\\Ò¹Ó°ÄĞ±ê×¼01.ini", "facedata\\ëÊ×åÅ®\\Ô¤¶¨Òå\\Ò¹Ó°Å®±ê×¼01.ini"},  // å¤œå½±
+		{"facedata\\ëÊ×åÄĞ\\Ô¤¶¨Òå\\ÔÂÏÉÄĞ±ê×¼01.ini", "facedata\\ëÊ×åÅ®\\Ô¤¶¨Òå\\ÔÂÏÉÅ®±ê×¼01.ini"},  // æœˆä»™
 	};
 
 	static int s_idHairModel[NUM_PROFESSION][2] = {0};
@@ -6855,7 +6855,7 @@ void CECPlayer::ShowExtendStates(int start, const DWORD* pData, int count, bool 
 		!CECOptimize::Instance().GetGFX().CanShowState(GetCharacterID(), GetClassID()))
 		return;
 
-	static const char* szBasePath = "ç­–åˆ’è”å…¥\\çŠ¶æ€æ•ˆæœ\\";
+	static const char* szBasePath = "²ß»®ÁªÈë\\×´Ì¬Ğ§¹û\\";
 	
 	const int bitSize = sizeof(DWORD) * 8;
 	for(int index = 0; index<count; index++)
@@ -6945,7 +6945,7 @@ void CECPlayer::SetExtendStatesToWeapon()
 	//	é¿å…å› æ­¦å™¨æ›´æ¢ç­‰åŸå› å¯¼è‡´ä¸èƒ½æ­£ç¡®æŒ‡ç¤ºçŠ¶æ€
 	//
 
-	static const char* szBasePath = "ç­–åˆ’è”å…¥\\çŠ¶æ€æ•ˆæœ\\";
+	static const char* szBasePath = "²ß»®ÁªÈë\\×´Ì¬Ğ§¹û\\";
 
 	const int bitSize = sizeof(DWORD) * 8;
 	if (IsAllResReady() && GetMajorModel())
@@ -7721,8 +7721,8 @@ void PlayerRenderPortrait(const A3DRECT &rc, DWORD param1, DWORD param2, DWORD p
 
 	float vHeadScale = 1.0f;
 	A3DSkinModel * pFaceModel = pPlayer->GetFaceModel()->GetA3DSkinModel();
-	A3DBone * pBoneUp = pFaceModel->GetSkeleton()->GetBone("è„¸ç›˜010", NULL);
-	A3DBone * pBoneLow = pFaceModel->GetSkeleton()->GetBone("è„¸ç›˜120", NULL);
+	A3DBone * pBoneUp = pFaceModel->GetSkeleton()->GetBone("Á³ÅÌ010", NULL);
+	A3DBone * pBoneLow = pFaceModel->GetSkeleton()->GetBone("Á³ÅÌ120", NULL);
 
 	float vDis = Magnitude(pBoneUp->GetAbsoluteTM().GetRow(3) - pBoneLow->GetAbsoluteTM().GetRow(3));
 	vHeadScale = vDis / headsize[index] * pPlayer->GetPortraitCameraScale();
@@ -9107,27 +9107,27 @@ AString CECPlayer::GetSharpenerGfx(WORD status)
 	{
 		static const char * szGFXFile[] =
 		{
-			"æ— ",
-			"ç‰©ç†æ”»å‡»1çº§",
-			"ç‰©ç†æ”»å‡»2çº§",
-			"ç‰©ç†æ”»å‡»3çº§",
-			"æ³•æœ¯æ”»å‡»1çº§",
-			"æ³•æœ¯æ”»å‡»2çº§",
-			"æ³•æœ¯æ”»å‡»3çº§",
-			"ç”Ÿå‘½å¢å¼º1çº§",
-			"ç”Ÿå‘½å¢å¼º2çº§",
-			"ç”Ÿå‘½å¢å¼º3çº§",
-			"å±æ€§å¢å¼º1çº§",
-			"å±æ€§å¢å¼º2çº§",
-			"å±æ€§å¢å¼º3çº§",
-			"ç‰¹æ®Šå±æ€§1çº§",
-			"ç‰¹æ®Šå±æ€§2çº§",
-			"ç‰¹æ®Šå±æ€§3çº§",
+			"ÎŞ",
+			"ÎïÀí¹¥»÷1¼¶",
+			"ÎïÀí¹¥»÷2¼¶",
+			"ÎïÀí¹¥»÷3¼¶",
+			"·¨Êõ¹¥»÷1¼¶",
+			"·¨Êõ¹¥»÷2¼¶",
+			"·¨Êõ¹¥»÷3¼¶",
+			"ÉúÃüÔöÇ¿1¼¶",
+			"ÉúÃüÔöÇ¿2¼¶",
+			"ÉúÃüÔöÇ¿3¼¶",
+			"ÊôĞÔÔöÇ¿1¼¶",
+			"ÊôĞÔÔöÇ¿2¼¶",
+			"ÊôĞÔÔöÇ¿3¼¶",
+			"ÌØÊâÊôĞÔ1¼¶",
+			"ÌØÊâÊôĞÔ2¼¶",
+			"ÌØÊâÊôĞÔ3¼¶",
 		};
 		const int nGFXFile = sizeof(szGFXFile)/sizeof(szGFXFile[0]);
 		if (idColor >= nGFXFile)
 			idColor = nGFXFile-1;
-		strGfxFile.Format("ç¨‹åºè”å…¥\\ç£¨åˆ€çŸ³å…‰æ•ˆ\\ç£¨åˆ€çŸ³å…‰æ•ˆ%s.gfx", szGFXFile[idColor]);
+		strGfxFile.Format("³ÌĞòÁªÈë\\Ä¥µ¶Ê¯¹âĞ§\\Ä¥µ¶Ê¯¹âĞ§%s.gfx", szGFXFile[idColor]);
 	}
 
 	return strGfxFile;
@@ -9144,7 +9144,7 @@ AString CECPlayer::GetArmorStoneGfx(WORD status, int nEquipIndex, int nEquipPara
 	
 	if (strGfxFile.IsEmpty() && status != 0)
 	{
-		const char * szColors[] = {"æ— ", "çº¢è‰²", "ç™½è‰²", "é‡‘è‰²", "è“è‰²", "ç´«è‰²", "ç»¿è‰²", "æ··åˆ"};
+		const char * szColors[] = {"ÎŞ", "ºìÉ«", "°×É«", "½ğÉ«", "À¶É«", "×ÏÉ«", "ÂÌÉ«", "»ìºÏ"};
 		int			idLevel = 1;
 		int			idColor = status & 0x00ff;
 		if( idColor > 7 )
@@ -9157,24 +9157,24 @@ AString CECPlayer::GetArmorStoneGfx(WORD status, int nEquipIndex, int nEquipPara
 		case EQUIPIVTR_BODY:
 			if (nEquipParam0 == 0)
 			{
-				strGfxFile.Format("ç¨‹åºè”å…¥\\è£…å¤‡å®çŸ³é•¶åµŒ\\%s%s%dçº§.gfx", szColors[idColor], "èƒ¸ç”²", idLevel);
+				strGfxFile.Format("³ÌĞòÁªÈë\\×°±¸±¦Ê¯ÏâÇ¶\\%s%s%d¼¶.gfx", szColors[idColor], "ĞØ¼×", idLevel);
 			}
 			else if (nEquipParam0 == 1)
 			{
-				strGfxFile.Format("ç¨‹åºè”å…¥\\è£…å¤‡å®çŸ³é•¶åµŒ\\%s%s%dçº§.gfx", szColors[idColor], "è‚©ç”²", idLevel);
+				strGfxFile.Format("³ÌĞòÁªÈë\\×°±¸±¦Ê¯ÏâÇ¶\\%s%s%d¼¶.gfx", szColors[idColor], "¼ç¼×", idLevel);
 			}
 			break;
 			
 		case EQUIPIVTR_WRIST:
-			strGfxFile.Format("ç¨‹åºè”å…¥\\è£…å¤‡å®çŸ³é•¶åµŒ\\%s%s%dçº§.gfx", szColors[idColor], "è…•ç”²", idLevel);
+			strGfxFile.Format("³ÌĞòÁªÈë\\×°±¸±¦Ê¯ÏâÇ¶\\%s%s%d¼¶.gfx", szColors[idColor], "Íó¼×", idLevel);
 			break;
 			
 		case EQUIPIVTR_LEG:
-			strGfxFile.Format("ç¨‹åºè”å…¥\\è£…å¤‡å®çŸ³é•¶åµŒ\\%s%s%dçº§.gfx", szColors[idColor], "è…¿ç”²", idLevel);
+			strGfxFile.Format("³ÌĞòÁªÈë\\×°±¸±¦Ê¯ÏâÇ¶\\%s%s%d¼¶.gfx", szColors[idColor], "ÍÈ¼×", idLevel);
 			break;
 			
 		case EQUIPIVTR_FOOT:
-			strGfxFile.Format("ç¨‹åºè”å…¥\\è£…å¤‡å®çŸ³é•¶åµŒ\\%s%s%dçº§.gfx", szColors[idColor], "é´ç”²", idLevel);
+			strGfxFile.Format("³ÌĞòÁªÈë\\×°±¸±¦Ê¯ÏâÇ¶\\%s%s%d¼¶.gfx", szColors[idColor], "Ñ¥¼×", idLevel);
 			break;
 		}
 	}
@@ -9191,7 +9191,7 @@ AString CECPlayer::GetWeaponStoneGfx(WORD status)
 	
 	if (strGfxFile.IsEmpty() && status != 0)
 	{
-		const char * szColors[] = {"æ— ", "çº¢", "ç™½", "é‡‘", "è“", "ç´«", "ç»¿", "æ··"};
+		const char * szColors[] = {"ÎŞ", "ºì", "°×", "½ğ", "À¶", "×Ï", "ÂÌ", "»ì"};
 		int			idColor1 = status & 0x7;
 		int			idColor2 = (status >> 3) & 0x7;
 		
@@ -9201,7 +9201,7 @@ AString CECPlayer::GetWeaponStoneGfx(WORD status)
 			idColor1 = idColor2;
 			idColor2 = temp;
 		}
-		strGfxFile.Format("ç¨‹åºè”å…¥\\æ­¦å™¨å®çŸ³é•¶åµŒ\\%s%s.gfx", szColors[idColor1], szColors[idColor2]);
+		strGfxFile.Format("³ÌĞòÁªÈë\\ÎäÆ÷±¦Ê¯ÏâÇ¶\\%s%s.gfx", szColors[idColor1], szColors[idColor2]);
 	}
 
 	return strGfxFile;
@@ -9633,7 +9633,7 @@ void CECPlayer::SetBoothModel(const char *idBoothModel)
 		return;
 	}
 	path.CutRight(4);
-	path += (GetGender()==GENDER_MALE ? "ç”·" : "å¥³");
+	path += (GetGender()==GENDER_MALE ? "ÄĞ" : "Å®");
 	path += ".ecm";
 	m_pBoothModel = LoadBoothModel(path);
 }
@@ -10188,7 +10188,7 @@ bool CECPlayer::IsPetCureGFX(const AString &strGFXFile)
 			break;
 
 		const char *szTitle = (const char *)strTitle;
-		if (strstr(szTitle, "ç”µå¼§") != szTitle)
+		if (strstr(szTitle, "µç»¡") != szTitle)
 			break;
 
 		//	åªè¦æ˜¯ç”µå¼§å…‰æ•ˆéƒ½è¿”å› true
@@ -10540,7 +10540,7 @@ void CECPlayer::AddMultiObjectEffect(int idTarget,char cType)
 	if (cType < 0 || cType > 2)
 		return;
 
-	static const char* szBasePath = "ç­–åˆ’è”å…¥\\çŠ¶æ€æ•ˆæœ\\";
+	static const char* szBasePath = "²ß»®ÁªÈë\\×´Ì¬Ğ§¹û\\";
 
 	MULTIOBJECT_EFFECT mo;
 	mo.cType = cType;

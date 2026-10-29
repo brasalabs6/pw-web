@@ -22,6 +22,19 @@ from http.server import SimpleHTTPRequestHandler
 ELEMENT_DIR = os.path.expanduser(
     '~/workspace/pw/clients/client-1.5.3-v145-pwbr/app/element')
 
+# Loose files the client expects on its VFS root (fonts are NOT inside
+# fonts.pck — they are individual .ttf files in element/font/).
+LOOSE_FILES = [
+    ('font/fzl2jw.ttf', 'font\\fzl2jw.ttf'),
+    ('font/fzlbjw.ttf', 'font\\fzlbjw.ttf'),
+    ('font/fzxh1jw.ttf', 'font\\fzxh1jw.ttf'),
+    ('data/fzxh1jw.ttf', 'data\\fzxh1jw.ttf'),
+    ('data/fzxh1jw1.ttf', 'data\\fzxh1jw1.ttf'),
+    ('data/verdana.ttf', 'data\\verdana.ttf'),
+    ('data/times.ttf', 'data\\times.ttf'),
+    ('data/kaiu.ttf', 'data\\kaiu.ttf'),
+]
+
 # The packages the original entry expects on its VFS root (the same set the
 # Node probe mapped; names must match the client's own lookups — the script
 # package uses a backslash in the client's VFS name).
@@ -133,9 +146,28 @@ class ProbeHandler(SimpleHTTPRequestHandler):
                     'size': os.path.getsize(source),
                     'url': '/pkg/' + url_name,
                 })
+            # Loose files (fonts etc.) that live outside any .pck package.
+            for disk_path, vfs_name in LOOSE_FILES:
+                source = os.path.join(ELEMENT_DIR, disk_path)
+                if not os.path.isfile(source) or vfs_name in seen_vfs:
+                    continue
+                seen_vfs.add(vfs_name)
+                packages.append({
+                    'name': vfs_name,
+                    'size': os.path.getsize(source),
+                    'url': '/loose/' + disk_path.replace('/', '_'),
+                })
             self.send_bytes(
                 json.dumps({'packages': packages}).encode(),
                 'application/json')
+        elif route.startswith('/loose/'):
+            # Serve loose files from the element directory.
+            disk_name = urllib.parse.unquote(route[len('/loose/'):]).replace('_', '/')
+            target = os.path.join(ELEMENT_DIR, disk_name)
+            if not os.path.isfile(target):
+                self.send_error(404)
+                return
+            self.serve_file_with_range(target)
         elif route.startswith('/pkg/'):
             url_name = urllib.parse.unquote(route[len('/pkg/'):])
             if url_name not in PACKAGE_ROUTES:

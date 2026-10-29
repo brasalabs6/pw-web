@@ -110,6 +110,13 @@ void a_ExportMemLog(const char* szPath);
 //	Make ID from string
 DWORD a_MakeIDFromString(const char* szStr);
 DWORD a_MakeIDFromLowString(const char* szStr);
+
+//	Convert a UTF-8 path to GB18030 (the encoding the original .pck package
+//	indexes use). Pure-ASCII paths pass through unchanged. Returns the
+//	converted length, or 0 on failure (caller should fall back to the
+//	original). This is the boundary between the adapted UTF-8 source and
+//	the original GB18030 game data.
+int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size);
 bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult);
 
 //	Set / Get current character code page

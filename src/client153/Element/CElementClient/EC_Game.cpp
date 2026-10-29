@@ -302,7 +302,7 @@ static LONGLONG TerminateProcess_Entry_Content_New = 0;
 BOOL WINAPI MyTerminateProcess(HANDLE hProcess, UINT uExitCode)
 {
 	*TerminateProcess_Entry = TerminateProcess_Entry_Content;
-	::MessageBoxA(NULL, "警告：程序被异常终止!!!!", "Error", MB_OK);
+	::MessageBoxA(NULL, "���棺�����쳣��ֹ!!!!", "Error", MB_OK);
 	char* p = 0;
 	memcpy(p, "error", 5);
 	return TRUE;
@@ -334,7 +334,7 @@ void WINAPI MyExitProcess(UINT uExitCode)
 		::ExitProcess(uExitCode);
 	else
 	{
-		::MessageBoxA(NULL, "警告：程序异常退出!!!!", "Error", MB_OK);
+		::MessageBoxA(NULL, "���棺�����쳣�˳�!!!!", "Error", MB_OK);
 		char* p = 0;
 		memcpy(p, "error", 5);
 	}
@@ -565,7 +565,7 @@ bool CECGame::Init(const GAMEINIT& GameInit)
 	//	now load templates from file
 	if (0 != m_pItemDataMan->load_data("data\\elements.data"))
 	{
-		MessageBoxA(NULL, "无法加载游戏数据文件！\n此错误可能是更新不完全所致，请重新进行更新或进行版本验证！", "错误", MB_OK | MB_ICONSTOP);
+		MessageBoxA(NULL, "�޷�������Ϸ�����ļ���\n�˴�������Ǹ��²���ȫ���£������½��и��»���а汾��֤��", "����", MB_OK | MB_ICONSTOP);
 		glb_ErrorOutput(ECERR_FAILEDTOCALL, "CECGame::Init", __LINE__);
 		return false;
 	}
