@@ -62,7 +62,7 @@ CSplit::VectorAWString CSplit::Split(const wchar_t *split)
 	wchar_t *pchStart = str, *pch = NULL;
 	while( true )
 	{
-		pch = wcsstr(pchStart, split);
+		pch = const_cast<wchar_t *>(pw153::platform::wide_strstr(pchStart, split));
 		if( pch ) *pch = '\0';
 
 		if( m_bReserveEmptyStr || wcslen(pchStart) > 0 )

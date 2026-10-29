@@ -15,6 +15,17 @@ endif()
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   if(EMSCRIPTEN)
+    add_executable(client153_split_wasm_test tests/client153/split_wasm.cpp
+      src/client153/Common/AUInterface2/CSplit.cpp)
+    target_include_directories(client153_split_wasm_test PRIVATE
+      $<TARGET_PROPERTY:client153_aui_original,INCLUDE_DIRECTORIES>)
+    target_compile_definitions(client153_split_wasm_test PRIVATE
+      $<TARGET_PROPERTY:client153_aui_original,COMPILE_DEFINITIONS>)
+    target_compile_options(client153_split_wasm_test PRIVATE
+      $<TARGET_PROPERTY:client153_aui_original,COMPILE_OPTIONS>)
+    target_link_options(client153_split_wasm_test PRIVATE -fexceptions "-sENVIRONMENT=node")
+    target_link_libraries(client153_split_wasm_test PRIVATE client153_common)
+    add_test(NAME client153_split_wasm COMMAND client153_split_wasm_test)
     add_executable(client153_gnet_web_scheduler_test tests/client153/gnet_web_scheduler.cpp)
     target_include_directories(client153_gnet_web_scheduler_test PRIVATE src/client153/platform/common)
     target_compile_features(client153_gnet_web_scheduler_test PRIVATE cxx_std_17)
