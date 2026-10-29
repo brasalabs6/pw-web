@@ -4288,13 +4288,13 @@ inline int GetDeviceCaps(HDC hDC, int index) {
   (void)index;
   return 0;
 }
-inline HDC CreateCompatibleDC(HDC hDC) { (void)hDC; return NULL; }
+HDC CreateCompatibleDC(HDC hDC);
 inline HBITMAP CreateCompatibleBitmap(HDC hDC, int width, int height) {
   (void)hDC; (void)width; (void)height;
   return NULL;
 }
-inline HGDIOBJ SelectObject(HDC hDC, HGDIOBJ object) { (void)hDC; (void)object; return NULL; }
-inline BOOL DeleteObject(HGDIOBJ object) { (void)object; return FALSE; }
+HGDIOBJ SelectObject(HDC hDC, HGDIOBJ object);
+BOOL DeleteObject(HGDIOBJ object);
 
 //	Brush/rect/pixel drawing: the browser has no GDI device contexts; the
 //	brush is none and the draws fail (the A3DTerrain debug cell-level
@@ -4365,18 +4365,9 @@ inline HFONT CreateFont(int height, int width, int escapement,
                      underline, strikeOut, charset, outPrecision,
                      clipPrecision, quality, pitchAndFamily, faceName);
 }
-inline HBITMAP CreateDIBSection(HDC hDC, const BITMAPINFO *info, UINT usage,
-                                void **bits, HANDLE section, DWORD offset) {
-  (void)hDC; (void)info; (void)usage; (void)section; (void)offset;
-  if (bits)
-    *bits = NULL;
-  return NULL;
-}
-inline int SetMapMode(HDC hDC, int mode) {
-  (void)hDC;
-  (void)mode;
-  return 0;
-}
+HBITMAP CreateDIBSection(HDC hDC, const BITMAPINFO *info, UINT usage,
+                         void **bits, HANDLE section, DWORD offset);
+int SetMapMode(HDC hDC, int mode);
 inline BOOL GetTextExtentPoint32W(HDC hDC, const wchar_t *text, int count,
                                   SIZE *size) {
   (void)hDC; (void)text; (void)count;
@@ -4390,10 +4381,7 @@ inline BOOL GetTextExtentPoint32(HDC hDC, const wchar_t *text, int count,
                                  SIZE *size) {
   return GetTextExtentPoint32W(hDC, text, count, size);
 }
-inline BOOL DeleteDC(HDC hDC) {
-  (void)hDC;
-  return TRUE;	//	no real DC objects exist (the creator fails first).
-}
+BOOL DeleteDC(HDC hDC);
 inline COLORREF GetSysColor(int index) { (void)index; return 0; }
 
 // Global memory: the heap is the C library; the GDI capture never reaches
