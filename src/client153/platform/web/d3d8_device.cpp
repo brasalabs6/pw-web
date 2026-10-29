@@ -13,6 +13,12 @@ class Device final : public IDirect3DDevice8 {
   PW153Surface *color, *depth;
   GLuint framebuffer;
   EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
+  // Rendering pipeline state (the D3D8 fixed-function pipeline emulation).
+  IDirect3DVertexBuffer8 *streamSource = nullptr;
+  UINT streamOffset = 0;
+  DWORD currentFVF = 0;
+  IDirect3DBaseTexture8 *textures[8] = {};
+  D3DMATRIX transforms[32] = {};
 public:
   Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner)
     : color(c), depth(d), framebuffer(f), context(owner) {}
@@ -49,7 +55,11 @@ public:
   }
   HRESULT CopyRects(IDirect3DSurface8 *, const RECT *, UINT, IDirect3DSurface8 *, const POINT *) override { return E_NOTIMPL; }
   HRESULT GetRenderState(DWORD, DWORD *) override { return E_NOTIMPL; }
-  HRESULT SetTexture(DWORD, IDirect3DBaseTexture8 *) override { return E_NOTIMPL; }
+  HRESULT SetTexture(DWORD stage, IDirect3DBaseTexture8 *texture) override {
+    if (stage >= 8) return E_FAIL;
+    textures[stage] = texture;
+    return D3D_OK;
+  }
   HRESULT GetClipPlane(DWORD, float *) override { return E_NOTIMPL; }
   HRESULT SetClipPlane(DWORD, const float *) override { return E_NOTIMPL; }
   HRESULT CreateRenderTarget(UINT width, UINT height, D3DFORMAT format, D3DMULTISAMPLE_TYPE, BOOL, IDirect3DSurface8 **surface) override {
@@ -76,19 +86,45 @@ public:
     return *surface ? D3D_OK : E_FAIL;
   }
   HRESULT TestCooperativeLevel() override { return E_NOTIMPL; }
-  HRESULT BeginScene() override { return E_NOTIMPL; }
-  HRESULT EndScene() override { return E_NOTIMPL; }
-  HRESULT Present(const RECT *, const RECT *, HWND, const void *) override { return E_NOTIMPL; }
+  HRESULT BeginScene() override { return D3D_OK; }
+  HRESULT EndScene() override { return D3D_OK; }
+  HRESULT Present(const RECT *, const RECT *, HWND, const void *) override {
+    // WebGL2 presents automatically: the canvas displays whatever the
+    // default framebuffer contains after the draw calls. No explicit
+    // swap-chain operation is needed.
+    return D3D_OK;
+  }
   HRESULT Reset(D3DPRESENT_PARAMETERS *) override { return E_NOTIMPL; }
-  HRESULT SetTransform(D3DTRANSFORMSTATETYPE, const D3DMATRIX *) override { return E_NOTIMPL; }
+  HRESULT SetTransform(D3DTRANSFORMSTATETYPE state, const D3DMATRIX *matrix) override {
+    if (!matrix) return E_FAIL;
+    if (state >= 0 && state < 32) {
+      memcpy((void*)&transforms[state], matrix, sizeof(D3DMATRIX));
+    }
+    return D3D_OK;
+  }
+  HRESULT SetVertexShader(DWORD fvf) override {
+    currentFVF = fvf;
+    return D3D_OK;
+  }
   HRESULT SetRenderState(DWORD, DWORD) override { return E_NOTIMPL; }
   HRESULT SetTextureStageState(DWORD, DWORD, DWORD) override { return E_NOTIMPL; }
   HRESULT GetTextureStageState(DWORD, DWORD, DWORD *) override { return E_NOTIMPL; }
   HRESULT SetLight(DWORD, const D3DLIGHT8 *) override { return E_NOTIMPL; }
   HRESULT LightEnable(DWORD, BOOL) override { return E_NOTIMPL; }
   HRESULT SetMaterial(const D3DMATERIAL8 *) override { return E_NOTIMPL; }
-  HRESULT SetViewport(const D3DVIEWPORT8 *) override { return E_NOTIMPL; }
-  HRESULT SetStreamSource(UINT, IDirect3DVertexBuffer8 *, UINT) override { return E_NOTIMPL; }
+  HRESULT SetViewport(const D3DVIEWPORT8 *vp) override {
+    if (!vp || emscripten_webgl_get_current_context() != context) return E_FAIL;
+    glViewport(vp->X, vp->Y, vp->Width, vp->Height);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT SetStreamSource(UINT stream, IDirect3DVertexBuffer8 *buffer, UINT offset) override {
+    // Store the vertex buffer for the next draw call. Only stream 0 is
+    // tracked (the original client uses a single stream for FVF data).
+    if (stream != 0) return D3D_OK;
+    streamSource = buffer;
+    streamOffset = offset;
+    return D3D_OK;
+  }
   HRESULT CreateVertexBuffer(UINT size, DWORD usage, DWORD, D3DPOOL pool, IDirect3DVertexBuffer8 **out) override {
     if (!out) return E_FAIL;
     *out = nullptr;
@@ -104,7 +140,6 @@ public:
     return *out ? D3D_OK : E_FAIL;
   }
   HRESULT SetIndices(IDirect3DIndexBuffer8 *, UINT) override { return E_NOTIMPL; }
-  HRESULT SetVertexShader(DWORD) override { return E_NOTIMPL; }
   HRESULT SetPixelShader(DWORD) override { return E_NOTIMPL; }
   HRESULT SetVertexShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
   HRESULT SetPixelShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
@@ -118,11 +153,73 @@ public:
   }
   HRESULT ResourceManagerDiscardBytes(DWORD) override { return E_NOTIMPL; }
   HRESULT GetDeviceCaps(D3DCAPS8 *) override { return E_NOTIMPL; }
-  HRESULT DrawIndexedPrimitive(DWORD, UINT, UINT, UINT, UINT) override { return E_NOTIMPL; }
-  HRESULT DrawPrimitive(DWORD, UINT, UINT) override { return E_NOTIMPL; }
-  HRESULT DrawIndexedPrimitiveUP(DWORD, UINT, UINT, UINT, const void *, DWORD, const void *, UINT) override { return E_NOTIMPL; }
-  HRESULT DrawPrimitiveUP(DWORD, UINT, const void *, UINT) override { return E_NOTIMPL; }
-  HRESULT SetRenderTarget(IDirect3DSurface8 *, IDirect3DSurface8 *) override { return E_NOTIMPL; }
+  HRESULT DrawPrimitive(DWORD type, UINT startVertex, UINT count) override {
+    if (emscripten_webgl_get_current_context() != context) return E_FAIL;
+    static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
+                                   GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
+    if (type < 1 || type > 6) return E_FAIL;
+    glDrawArrays(modes[type], startVertex, count);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT DrawIndexedPrimitive(DWORD type, UINT minIndex, UINT numVertices, UINT startIndex, UINT count) override {
+    if (emscripten_webgl_get_current_context() != context) return E_FAIL;
+    static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
+                                   GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
+    if (type < 1 || type > 6) return E_FAIL;
+    glDrawElements(modes[type], count * 3, GL_UNSIGNED_SHORT, nullptr);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT DrawPrimitiveUP(DWORD type, UINT count, const void *data, UINT stride) override {
+    if (emscripten_webgl_get_current_context() != context || !data) return E_FAIL;
+    static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
+                                   GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
+    if (type < 1 || type > 6) return E_FAIL;
+    // Upload the user-pointer data to a temporary VBO and draw.
+    GLuint vbo = 0;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, count * stride, data, GL_STREAM_DRAW);
+    glDrawArrays(modes[type], 0, count);
+    glDeleteBuffers(1, &vbo);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT DrawIndexedPrimitiveUP(DWORD type, UINT minIndex, UINT numVertices, UINT count,
+                                 const void *indices, DWORD indexFormat,
+                                 const void *vertexData, UINT stride) override {
+    if (emscripten_webgl_get_current_context() != context || !indices || !vertexData) return E_FAIL;
+    static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
+                                   GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
+    if (type < 1 || type > 6) return E_FAIL;
+    GLuint vbo = 0, ibo = 0;
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * stride, vertexData, GL_STREAM_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * 3 * (indexFormat == D3DFMT_INDEX16 ? 2 : 4), indices, GL_STREAM_DRAW);
+    glDrawElements(modes[type], count * 3, indexFormat == D3DFMT_INDEX16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, nullptr);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ibo);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT SetRenderTarget(IDirect3DSurface8 *target, IDirect3DSurface8 *depth) override {
+    if (emscripten_webgl_get_current_context() != context) return E_FAIL;
+    if (!target) {
+      // Binding the default framebuffer (the canvas).
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+      return D3D_OK;
+    }
+    auto *surface = static_cast<PW153Surface *>(target);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+    glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              GL_RENDERBUFFER, surface->renderbuffer());
+    if (depth) {
+      auto *depthSurface = static_cast<PW153Surface *>(depth);
+      glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                GL_RENDERBUFFER, depthSurface->renderbuffer());
+    }
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
 };
 }
 IDirect3DDevice8 *pw153_create_web_device(const D3DPRESENT_PARAMETERS &params) {
