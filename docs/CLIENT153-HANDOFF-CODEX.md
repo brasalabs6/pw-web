@@ -147,3 +147,9 @@ python3 scripts/revert_strings_gb18030.py <arquivos>
 
 ## CI
 native-and-wasm: **PASS** no head `0d8f802b` (o último commit meu pushado). Os 5 checks verdes.
+
+### Fonte: rasterização parcial no browser (2026-10-29)
+
+O DC em memória agora aceita criação e seleção de fontes, medição de texto UTF-16 e a combinação `ExtTextOutW(ETO_OPAQUE, rect=null, dx=null)` usada pelo atlas original. No WASM usa `OffscreenCanvas` 2D e escreve BGRA no DIB; testes do bitmap e teste de pixel no Chromium passaram. Com os objetos `A3DFontMan.cpp` e `A3DFont.cpp` reconstruídos, o probe original deixou de registrar falha ao criar a fonte do sistema, mas encerrou mais adiante por `world_targets.txt` ausente no servidor isolado.
+
+Limites: não carrega nem registra os arquivos TTF originais no browser, e a seleção CSS pode usar uma fonte substituta; não há prova de texto na interface real. As métricas são aproximadas e as demais combinações GDI falham explicitamente. O cliente precisa de build limpo que recompile os consumidores dos antigos stubs inline; falta validar o atlas, seus formatos de textura e a UI com os assets reais.

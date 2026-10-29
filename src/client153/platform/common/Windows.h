@@ -1594,21 +1594,10 @@ inline BOOL TextOutA(HDC device, int x, int y, const char *text, int length) {
   return FALSE;
 }
 
-//	The GDI extended text draw: the same no-GDI-target failure (the
-//	IME hook's candidate window drawing never runs on the browser).
-inline BOOL ExtTextOutW(HDC device, int x, int y, UINT options,
-                        const RECT *rect, const wchar_t *text, UINT count,
-                        const int *dx) {
-  (void)device;
-  (void)x;
-  (void)y;
-  (void)options;
-  (void)rect;
-  (void)text;
-  (void)count;
-  (void)dx;
-  return FALSE;
-}
+//	The memory-DC implementation supports the font atlas drawing subset.
+BOOL ExtTextOutW(HDC device, int x, int y, UINT options,
+                 const RECT *rect, const wchar_t *text, UINT count,
+                 const int *dx);
 
 //	The text alignment options (the documented wingdi.h values).
 #define TA_NOUPDATECP 0x0000
@@ -1630,28 +1619,11 @@ inline BOOL ExtTextOutW(HDC device, int x, int y, UINT options,
 #define ExtTextOut ExtTextOutW
 #endif
 
-//	The GDI text state setters: no GDI target exists on the browser
-//	target (the AUI renders through the WebGL adapter); the documented
-//	failure values apply.
+//	Memory-DC text state; unsupported alignment values fail explicitly.
 #define CLR_INVALID 0xFFFFFFFF
-inline COLORREF SetTextColor(HDC hDC, COLORREF color) {
-  (void)hDC;
-  (void)color;
-  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
-  return CLR_INVALID;
-}
-inline COLORREF SetBkColor(HDC hDC, COLORREF color) {
-  (void)hDC;
-  (void)color;
-  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
-  return CLR_INVALID;
-}
-inline UINT SetTextAlign(HDC hDC, UINT align) {
-  (void)hDC;
-  (void)align;
-  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
-  return CLR_INVALID;	//	GDI_ERROR, the documented SetTextAlign failure value.
-}
+COLORREF SetTextColor(HDC hDC, COLORREF color);
+COLORREF SetBkColor(HDC hDC, COLORREF color);
+UINT SetTextAlign(HDC hDC, UINT align);
 
 //	The lead byte test: the process locale is the single-byte C locale
 //	(the port converts UTF-16/UTF-8 directly); no lead bytes exist.
@@ -4337,10 +4309,8 @@ inline int GetDIBits(HDC hDC, HBITMAP hBitmap, UINT start, UINT lines,
 
 //	The GDI font/text-metric surface: no GDI target exists on the
 //	browser target (the browser IME adapter owns the real font
-//	selection). Font creation and the DIB section report none, the
-//	mapping-mode change reports failure and the extent probe zeroes
-//	its record and reports none - the font manager's Init fails on
-//	the memory DC and its callers' error paths handle it.
+//	selection). The browser implementation supports the font-atlas subset;
+//	unsupported font styles and text-drawing options fail explicitly.
 #define MM_TEXT 1
 #define FW_NORMAL 400
 #define FW_BOLD 700
@@ -4348,18 +4318,12 @@ inline int GetDIBits(HDC hDC, HBITMAP hBitmap, UINT start, UINT lines,
 #define CLIP_DEFAULT_PRECIS 0
 #define ANTIALIASED_QUALITY 4
 #define VARIABLE_PITCH 2
-inline HFONT CreateFontW(int height, int width, int escapement,
-                         int orientation, DWORD weight, DWORD italic,
-                         DWORD underline, DWORD strikeOut, DWORD charset,
-                         DWORD outPrecision, DWORD clipPrecision,
-                         DWORD quality, DWORD pitchAndFamily,
-                         const wchar_t *faceName) {
-  (void)height; (void)width; (void)escapement; (void)orientation;
-  (void)weight; (void)italic; (void)underline; (void)strikeOut;
-  (void)charset; (void)outPrecision; (void)clipPrecision; (void)quality;
-  (void)pitchAndFamily; (void)faceName;
-  return NULL;
-}
+HFONT CreateFontW(int height, int width, int escapement,
+                  int orientation, DWORD weight, DWORD italic,
+                  DWORD underline, DWORD strikeOut, DWORD charset,
+                  DWORD outPrecision, DWORD clipPrecision,
+                  DWORD quality, DWORD pitchAndFamily,
+                  const wchar_t *faceName);
 //	The UNICODE build maps the unprefixed text GDI to the W forms.
 inline HFONT CreateFont(int height, int width, int escapement,
                         int orientation, DWORD weight, DWORD italic,
@@ -4374,15 +4338,7 @@ inline HFONT CreateFont(int height, int width, int escapement,
 HBITMAP CreateDIBSection(HDC hDC, const BITMAPINFO *info, UINT usage,
                          void **bits, HANDLE section, DWORD offset);
 int SetMapMode(HDC hDC, int mode);
-inline BOOL GetTextExtentPoint32W(HDC hDC, const wchar_t *text, int count,
-                                  SIZE *size) {
-  (void)hDC; (void)text; (void)count;
-  if (size) {
-    size->cx = 0;
-    size->cy = 0;
-  }
-  return FALSE;
-}
+BOOL GetTextExtentPoint32W(HDC hDC, const wchar_t *text, int count, SIZE *size);
 inline BOOL GetTextExtentPoint32(HDC hDC, const wchar_t *text, int count,
                                  SIZE *size) {
   return GetTextExtentPoint32W(hDC, text, count, size);
