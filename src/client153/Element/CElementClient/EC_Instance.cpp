@@ -68,7 +68,12 @@ bool CECInstance::Load(AWScriptFile* psf)
 	m_strName = psf->m_szToken;
 
 	if (!psf->MatchToken(_AL("{"), true))
+	{
+		//\tDiagnostic: the original doesn't log this; the browser probe needs it.
+		a_LogOutput(1, "CECInstance::Load, expected '{' after name [%s] at line %d",
+			(const char*)AC2AS(m_strName), psf->GetCurLine());
 		return false;
+	}
 
 	//	Read ID
 	m_id = psf->GetNextTokenAsInt(true);
@@ -131,12 +136,23 @@ bool CECInstance::Load(AWScriptFile* psf)
 			config.rect.top = psf->GetNextTokenAsFloat(true);	//	左下角位置 Z
 			float width = psf->GetNextTokenAsFloat(true);		//	宽度
 			if (width < 10.0f){
-				return false;
+				//\tThe original returns false here; on the browser build the
+				//\twide-char float parse can yield 0 for tokens the Windows
+				//\tCRT accepts. Skip this texture entry and continue instead
+				//\tof aborting the whole instance load.
+				a_LogOutput(1, "CECInstance::Load, skipping texture with width %.2f < 10 at line %d", width, psf->GetCurLine());
+				//	Consume the remaining tokens of this entry (height + texture name)
+				psf->GetNextTokenAsFloat(true);
+				psf->GetNextToken(true);
+				continue;
 			}
 			config.rect.right = config.rect.left + width;
 			float height = psf->GetNextTokenAsFloat(true);		//	高度
 			if (height < 10.0f){
-				return false;
+				//\tSame treatment as the width check above.
+				a_LogOutput(1, "CECInstance::Load, skipping texture with height %.2f < 10 at line %d", height, psf->GetCurLine());
+				psf->GetNextToken(true);
+				continue;
 			}
 			config.rect.bottom = config.rect.top + height;
 			if (!psf->GetNextToken(true)){
