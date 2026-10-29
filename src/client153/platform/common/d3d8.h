@@ -737,9 +737,13 @@ struct IDirect3D8 : IUnknownD3D {
 
 //	The direct factory: returns none until the graphics backend
 //	registers (the callers' null-device paths handle it).
+#ifdef __EMSCRIPTEN__
+IDirect3D8 *Direct3DCreate8(UINT sdkVersion);
+#else
 inline IDirect3D8 *Direct3DCreate8(UINT sdkVersion) {
   (void)sdkVersion;
   return nullptr;
 }
+#endif
 
 #endif // PW153_PLATFORM_D3D8_H

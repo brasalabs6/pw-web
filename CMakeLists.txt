@@ -74,6 +74,10 @@ if(BUILD_TESTING)
     target_link_libraries(client153_webgl_caps_test PRIVATE client153_webgl_caps)
     target_link_options(client153_webgl_caps_test PRIVATE "-sMIN_WEBGL_VERSION=2" "-sMAX_WEBGL_VERSION=2" -fexceptions)
     target_compile_options(client153_webgl_caps_test PRIVATE -fexceptions)
+    add_executable(client153_d3d8_factory_browser_test tests/client153/d3d8_factory_browser.cpp)
+    target_include_directories(client153_d3d8_factory_browser_test PRIVATE src/client153/platform/common src/client153/Angelica2/AngelicaCommon/Header src/client153/Angelica2/Angelica3D/Header)
+    target_link_libraries(client153_d3d8_factory_browser_test PRIVATE client153_webgl_caps)
+    target_link_options(client153_d3d8_factory_browser_test PRIVATE "-sMIN_WEBGL_VERSION=2" "-sMAX_WEBGL_VERSION=2")
     add_executable(client153_aui_xml_test tests/client153/aui_xml.cpp src/client153/Common/AUInterface2/AXMLFile.cpp)
     target_include_directories(client153_aui_xml_test PRIVATE
       src/client153/Angelica2/AngelicaCommon/Header src/client153/Angelica2/AngelicaFile/Header
