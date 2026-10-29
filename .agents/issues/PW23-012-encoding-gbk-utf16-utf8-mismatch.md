@@ -51,3 +51,17 @@ Fixtures nomes reais não ASCII, português/chinês, surrogate pairs, path PCK e
 O relatório local do executor afirma simultaneamente (a) reversão de 2.489 literais chineses para bytes GB18030 e (b) conversão `UTF-8 → GB18030` no boundary `AFilePackGame::GetFileEntry`. **Risco a testar:** se o caller passar um literal **já codificado em GB18030** ao conversor que espera UTF-8, haverá erro ou bytes diferentes no CRC32. Essa possibilidade não confirma que a dupla conversão ocorreu no HEAD observado; auditar o caminho com fixture real.
 
 **Critério:** documentar encoding por origem e ter conversão **uma única vez** em cada borda (PCK path hash, scripts, configs, GNET). Dois testes separados com os mesmos caracteres chineses: caminho UTF8→GB18030→CRC32; caminho GB18030→CRC32 diretamente; ambos têm hash/lookup idêntico. Não aplicar conversão automática a `char*` sem contrato, nem reverter todas as fontes no escuro. [Análise no PR](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6499021552).
+
+## Revalidação com log Chromium de 29/10/2026 — esta falha agora é o primeiro bloqueador fatal
+
+**Evidência do operador (11:14:10):** `/Logs/AF.log` contém `AWScriptFile::Open, Couldn't handle non-unicode file !`, seguido imediatamente por `/Logs/EC.log` com `GlobalData_Load(), Failed to open file world_targets`, `CECGame::Init` abortando na linha 553 e `wWinMain` na 935. `A3DEngine/A3DDevice` passou (formato X8R8G8B8, device 800x600x32, software skin). Esta é a primeira falha fatal observada no novo probe; não é problema gráfico.
+
+**Call graph verificado em HEAD `7d76a6c77cbeb9537a6b2c79fc99d14c6f82c152`:**
+- `Element/CElementClient/EC_Game.cpp:550-556` exige `globaldata_load()`.
+- `Element/CCommon/globaldataman.cpp:446-454` abre `maps\\world\\world_targets.txt` via `AWScriptFile`.
+- `Angelica2/AngelicaFile/Source/AWScriptFile.cpp:110-139` chama `a_Gb18030ToWide(pBuf,len,nullptr,0)` para a consulta de capacidade se não houver BOM UTF-16, e depois deixa de continuar quando retorna zero.
+- `Angelica2/AngelicaCommon/Source/AAssist.cpp:192-208` **sempre devolve zero** para `szWide==nullptr` ou `iWideSize==0`. O contrato de consulta é impossível no estado atual, independentemente da validade do GB18030. Este defeito foi isoladamente reproduzido em inspeção anterior e agora é corroborado pelo log do fluxo do jogo, embora não se tenham executado os assets nesta revisão.
+
+**Ação:** implementar consulta de tamanho UTF-16LE real (contar unidades de 16 bits através de iconv com buffer de scratch, tratar E2BIG como continuação, rejeitar sequências inválidas/overflow) ou converter uma única vez a buffer com capacidade verificada; checar resultado da segunda conversão e garantir `sizeof(wchar_t)==2` no target; tratar arquivos de 1 byte antes do cast BOM. Validar `world_targets.txt` do manifest (já listado em `scripts/client153-entry-server.py:45`), seus bytes/codificação e testes nativo/wasm/browser para ASCII, chinês GB18030, UTF-16 com BOM, truncado/malformado. **Não contornar `globaldata_load` nem declarar PASS sem tokens e contagens válidos.** Depois desse gate, esperar novos erros de `Data/domain.data` ou `elements.data` e depurar separadamente.
+
+[Comentário técnico publicado no PR](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6499305374).

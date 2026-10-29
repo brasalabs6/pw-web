@@ -2,7 +2,7 @@
 id: PW23-043
 title: "Boot WASM falha em A3DEngine::Init; identificar primeiro false e corrigir contratos D3D8"
 priority: P0
-status: open
+status: in_progress
 kind: browser-boot-blocker
 first_observed: 2026-10-29
 verified_against: fc2105438eaf982812a7488ab7b65f0b9dfe51bd
@@ -67,3 +67,11 @@ O relatório do executor afirma que os novos marcadores `BOOT_A3DDEV_*` estão s
 **Contrato de render:** `Device::GetDeviceCaps` deve deixar de devolver `E_NOTIMPL`, enquanto `Factory::GetDeviceCaps` precisa ser consistente; checar `ConfigDevice()` dentro de `A3DDevice::Init`, atualmente ignorado. Entretanto essa falha ignorada e `GetRenderTarget` que devolve `D3D_OK + nullptr` **não explicam diretamente** a cascata de `return false`, sem evidência adicional.
 
 Prova de aceite da próxima rodada: commit/SHA do entry + `/Logs/A3D.log`, markers de FMT16, adapter display, factory caps, CreateDevice e superfície; apontar **o primeiro HRESULT incorreto**, corrigir e retestar. [Orientação aprofundada no PR](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6499021552).
+
+## Revalidação 29/10/2026 — gate de inicialização gráfica transposto no novo log
+
+O novo console e `/Logs/A3D.log` do operador registram `BOOT_A3DDEV_FMT16_OK`, `BOOT_A3DDEV_ADAPTER_DM_OK`, `BOOT_A3DDEV_GETCAPS_OK`, `Create device 800x600x32`, `VS/PS version 0.0` e `Skin model render method: Software`; depois disso, `CECGame::Init` progride até `globaldata_load` e aborta na linha 553. Portanto **o primeiro bloqueio `A3DDevice::Init` descrito no começo deste issue não persiste no novo probe**. A causa fatal atual está documentada em [PW23-012](PW23-012-encoding-gbk-utf16-utf8-mismatch.md).
+
+**Status mantido em andamento pela qualidade incompleta do adapter D3D8, NÃO porque A3DDevice continue falhando.** `Device::GetDeviceCaps` ainda retorna `E_NOTIMPL` e `GetRenderTarget/GetDepthStencilSurface` retornam `D3D_OK + nullptr`; a `A3DDevice::Init` original não verifica retorno de `ConfigDevice()`. Resolver com contratos e testes, não com sucesso de fachada. A abertura do device é evidência positiva de avanço, não prova de render/fixed-function completo ou login visível.
+
+[Diagnóstico atualizado no PR](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6499305374).

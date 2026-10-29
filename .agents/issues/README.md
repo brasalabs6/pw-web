@@ -15,7 +15,7 @@
 5. Vincular ao épico/workorder existente. Não substituir roadmap nem modificar PR #17 do servidor sem coordenação; seguir `AGENTS.md` (PR único do cliente, sem self-merge).
 6. Revisões futuras podem registrar novas issues **quando efetivamente executadas**; esta pasta não representa monitoramento automático em background.
 
-## Índice de 26 achados de portabilidade e funcionamento (22 abertos, 4 resolvidos)
+## Índice de 27 achados de portabilidade e funcionamento (22 abertos, 1 em andamento, 4 resolvidos)
 
 | ID | Prioridade | Estado | Título | Épico |
 |---|---|---|---|---|
@@ -48,7 +48,9 @@
 | [PW23-041](PW23-041-login-ecwld-scene-load-bypass.md) | P0 | open | Login.ecwld falha ao abrir no Chromium; bypass de LoadSceneObjects não comprova renderização da cena | [e05-asset-pipeline-v1](../epics/e05-asset-pipeline-v1/README.md) |
 | [PW23-042](PW23-042-ftdriver-test-hardcoded-clang-ci-failure.md) | P1 | open | Novo teste FTDriver invoca clang++ ausente no runner; CI do cliente falha e WASM é pulado | [e16-qa-observability-v1](../epics/e16-qa-observability-v1/README.md) |
 
-| [PW23-043](PW23-043-a3dengine-init-browser-boot-blocker.md) | P0 | open | Boot WASM falha em A3DEngine::Init; primeiro false e contratos D3D8 pendentes | [e06-render-webgl2-v1](../epics/e06-render-webgl2-v1/README.md) |
+| [PW23-043](PW23-043-a3dengine-init-browser-boot-blocker.md) | P0 | in_progress | Dispositivo D3D8 inicializa; pendências de caps/surfaces/configuração continuam | [e06-render-webgl2-v1](../epics/e06-render-webgl2-v1/README.md) |
+
+| [PW23-044](PW23-044-serverlist-direct-fopen-backslash-path.md) | P1 | open | Serverlist não abre por barras invertidas em access/fopen diretos no MEMFS | [e10-network-transport-v1](../epics/e10-network-transport-v1/README.md) |
 
 **Triagem sugerida:** começar por memória/lock e compatibilidade de wire (001–004), depois shims obrigatórios + link do jogo (006–009, 014, 019). Qualidade de testes e evidência (013/017) devem acompanhar cada milestone.
 
