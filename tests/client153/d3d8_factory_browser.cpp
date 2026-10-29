@@ -125,6 +125,23 @@ int main() {
   const GLuint textureName = static_cast<PW153Texture *>(texture)->texture(); texture->Release();
   if (glIsTexture(textureName)) return 49;
   if (device->CreateTexture(1, 1, 1, 0, D3DFMT_DXT1, D3DPOOL_MANAGED, &texture) == D3D_OK || texture) return 51;
+  IDirect3DTexture8 *renderTexture = nullptr;
+  if (device->CreateTexture(4, 4, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &renderTexture) != D3D_OK || !renderTexture) {
+    EM_ASM({ document.body.dataset.result = 'missing-render-texture'; }); return 54;
+  }
+  IDirect3DSurface8 *renderSurface = nullptr;
+  if (renderTexture->GetSurfaceLevel(0, &renderSurface) != D3D_OK || !renderSurface) return 55;
+  const GLuint renderTextureName = static_cast<PW153TextureSurface *>(renderSurface)->texture();
+  renderTexture->Release();
+  if (!glIsTexture(renderTextureName)) return 56;
+  GLuint renderFrame; glGenFramebuffers(1, &renderFrame); glBindFramebuffer(GL_FRAMEBUFFER, renderFrame);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureName, 0);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) return 57;
+  glClearColor(0, 1, 0, 1); glClear(GL_COLOR_BUFFER_BIT);
+  unsigned char renderPixel[4]{}; glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, renderPixel);
+  if (renderPixel[0] > 2 || renderPixel[1] < 250) return 58;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0); glDeleteFramebuffers(1, &renderFrame);
+  renderSurface->Release(); if (glIsTexture(renderTextureName)) return 59;
   if (device->Clear(0, nullptr, 0x4, 0, 1.0f, 0) == D3D_OK) return 32;
   GLuint frame;
   glGenFramebuffers(1, &frame); glBindFramebuffer(GL_FRAMEBUFFER, frame);
