@@ -36,8 +36,18 @@ var Module = {
     try {
       const manifest = JSON.parse(request('/manifest'));
       for (const item of manifest.packages) {
-        FS.createDataFile('/', item.name, null, true, false);
-        const node = FS.lookupPath('/' + item.name).node;
+        // The AFPlatform.h separator is '/' on POSIX (the Codex changed it
+        // from '\\'), so the client constructs paths with '/'. The MEMFS
+        // files must be at forward-slash paths to match. Convert the VFS
+        // name's backslashes to forward slashes and create the directory
+        // structure in MEMFS.
+        const memfsPath = '/' + item.name.replace(/\\/g, '/');
+        const dirPath = memfsPath.substring(0, memfsPath.lastIndexOf('/'));
+        if (dirPath && dirPath !== '/') {
+          try { FS.mkdirTree(dirPath); } catch (e) { /* already exists */ }
+        }
+        FS.createDataFile(dirPath || '/', memfsPath.substring(memfsPath.lastIndexOf('/') + 1), null, true, false);
+        const node = FS.lookupPath(memfsPath).node;
         node.usedBytes = item.size;
         const BLOCK_SHIFT = 20, BLOCK_SIZE = 1 << BLOCK_SHIFT, MAX_CACHED = 64;
         const blocks = new Map();
@@ -88,6 +98,16 @@ var Module = {
       }
       FS.writeFile('/userdata' + String.fromCharCode(92) + 'SystemSettings.ini', '[Video]\nFullScreen=0\n');
       specialHTMLTargets['#canvas'] = globalThis.pwCanvas;
+      //\tDiagnostic: verify the files are accessible in MEMFS at the
+      //\tforward-slash paths.
+      try {
+        const data = FS.readFile('/help/script.pck');
+        log('VFS check: /help/script.pck exists, size=' + data.length);
+      } catch (e) { log('VFS check: /help/script.pck FAILS: ' + e.message); }
+      try {
+        const data = FS.readFile('/configs.pck');
+        log('VFS check: /configs.pck exists, size=' + data.length);
+      } catch (e) { log('VFS check: /configs.pck FAILS: ' + e.message); }
       log('entry: packages mapped, calling pw153_browser_probe');
       //\tDiagnostic: test if the canvas's WebGL2 context can produce visible
       //\toutput with a direct JavaScript clear (bypassing the D3D8 adapter).
