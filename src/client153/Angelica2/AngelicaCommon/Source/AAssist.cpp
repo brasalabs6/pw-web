@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cstring>
 #include <ctime>
+#include <iconv.h>
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -146,6 +147,46 @@ DWORD a_MakeIDFromLowString(const char* szStr)
 	}
 
 	return c ^ 0xffffffffL;
+}
+
+int a_Utf8ToGb18030(const char* szUtf8, char* szGb18030, int iGb18030Size)
+{
+	if (!szUtf8 || !szGb18030 || iGb18030Size <= 0) return 0;
+
+	//	Fast path: pure ASCII needs no conversion (identical in both).
+	bool bNeedsConversion = false;
+	for (const unsigned char* p = (const unsigned char*)szUtf8; *p; ++p)
+	{
+		if (*p >= 0x80) { bNeedsConversion = true; break; }
+	}
+	if (!bNeedsConversion)
+	{
+		std::strncpy(szGb18030, szUtf8, iGb18030Size - 1);
+		szGb18030[iGb18030Size - 1] = '\0';
+		return (int)std::strlen(szGb18030);
+	}
+
+	//	Convert UTF-8 multi-byte sequences to GB18030 (the encoding the
+	//	original .pck package indexes use). iconv is available in the
+	//	Emscripten/musl C library.
+	iconv_t cd = iconv_open("GB18030", "UTF-8");
+	if (cd == (iconv_t)-1) return 0;
+
+	size_t inLen = std::strlen(szUtf8);
+	size_t outLen = iGb18030Size - 1;
+	char* inPtr = const_cast<char*>(szUtf8);
+	char* outPtr = szGb18030;
+
+	size_t result = iconv(cd, &inPtr, &inLen, &outPtr, &outLen);
+	iconv_close(cd);
+
+	if (result == (size_t)-1)
+	{
+		szGb18030[0] = '\0';
+		return 0;
+	}
+	*outPtr = '\0';
+	return (int)(outPtr - szGb18030);
 }
 
 /*	Get string after specified tag string

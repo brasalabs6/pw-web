@@ -580,9 +580,24 @@ AFilePackGame::FILEENTRY* AFilePackGame::GetFileEntry(const char* szFileName)
 {
 	ASSERT((int)m_FileQuickSearchTab.size() + m_aIDCollisionFiles.GetSize() == m_iNumEntry);
 
+	//	The adapted source stores string literals in UTF-8 (the GB18030→
+	//	UTF-8 conversion during porting), but the package indexes store
+	//	file paths in GB18030 (the original Windows encoding). Convert
+	//	the path to GB18030 before hashing so the CRC32 matches the
+	//	index. Pure-ASCII paths pass through unchanged (the fast path
+	//	in a_Utf8ToGb18030).
+	char szGbPath[MAX_PATH];
+	if (!a_Utf8ToGb18030(szFileName, szGbPath, MAX_PATH))
+	{
+		//	Conversion failed (no Chinese characters or iconv error) —
+		//	use the original path as-is.
+		strncpy(szGbPath, szFileName, MAX_PATH);
+		szGbPath[MAX_PATH - 1] = '\0';
+	}
+
 	//	Normalize file name
 	char szFindName[MAX_PATH];
-	strncpy(szFindName, szFileName, MAX_PATH);
+	strncpy(szFindName, szGbPath, MAX_PATH);
 	NormalizeFileName(szFindName, m_bUseShortName);
 
 	DWORD idFile = a_MakeIDFromLowString(szFindName);
