@@ -212,14 +212,16 @@ public:
     *out = pw153_create_index_buffer(size, usage, format, pool);
     return *out ? D3D_OK : E_FAIL;
   }
-  HRESULT SetIndices(IDirect3DIndexBuffer8 *buffer, UINT offset) override {
-    // Store the index buffer for the next indexed draw (the D3D8 contract:
-    // SetIndices persists until the next SetIndices, and the base offset
-    // shifts every index read).
+  HRESULT SetIndices(IDirect3DIndexBuffer8 *buffer, UINT baseVertexIndex) override {
+    // Store the index buffer for the next indexed draw. The D3D8 contract:
+    // SetIndices persists until the next SetIndices, and the second
+    // parameter is BaseVertexIndex — a vertex base added to every index
+    // (not a byte offset); the indexed draw shifts the attribute pointers
+    // by baseVertexIndex * stride to map it onto WebGL.
     if (buffer) buffer->AddRef();
     if (indexBuffer) indexBuffer->Release();
     indexBuffer = buffer;
-    indexOffset = offset;
+    indexOffset = baseVertexIndex;
     return D3D_OK;
   }
   HRESULT SetPixelShader(DWORD) override { return E_NOTIMPL; }
@@ -328,6 +330,49 @@ public:
     glDrawArrays(modes[type], startVertex, static_cast<GLsizei>(vertices));
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
+  //	Set up the vertex attributes for the current FVF. The sprite FVF
+  //	(XYZRHW|DIFFUSE|SPECULAR|TEX1) is the layout the shader implements
+  //	(pretransformed screen coordinates). Other FVFs need the transform
+  //	pipeline (world/view/projection in the shader) which is not wired
+  //	yet — they fail explicitly instead of drawing misinterpreted
+  //	geometry. Returns the byte offset of the vertex base (the D3D8
+  //	SetIndices BaseVertexIndex shifts every index, which WebGL maps to
+  //	shifting the attribute pointers).
+  HRESULT SetupFvfAttributes(DWORD fvf, UINT stride, UINT baseVertexIndex, uintptr_t &baseOffset) {
+    const UINT positionSize = (fvf & D3DFVF_XYZRHW) ? 4 : (fvf & D3DFVF_XYZ) ? 3 : 0;
+    if (!positionSize || !(fvf & D3DFVF_XYZRHW)) {
+      static bool warned = false;
+      if (!warned) {
+        std::fprintf(stderr, "pw-browser: FVF 0x%lx needs the transform pipeline (only XYZRHW sprite draws are wired); failing this draw explicitly\n", static_cast<unsigned long>(fvf));
+        warned = true;
+      }
+      return E_FAIL;
+    }
+    if (fvf & D3DFVF_XYZ) return E_FAIL;	//	untransformed: not wired yet
+    UINT offset = 0;
+    baseOffset = static_cast<uintptr_t>(baseVertexIndex) * stride;
+    glBindBuffer(GL_ARRAY_BUFFER, static_cast<PW153VertexBuffer *>(streamSource)->buffer());
+    glEnableVertexAttribArray(aPosition);
+    glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void *>(baseOffset));
+    offset += 16;
+    if (fvf & D3DFVF_DIFFUSE) {
+      glEnableVertexAttribArray(aColor);
+      glVertexAttribPointer(aColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, reinterpret_cast<const void *>(baseOffset + offset));
+      offset += 4;
+    } else {
+      glDisableVertexAttribArray(aColor);
+      glVertexAttrib4f(aColor, 1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    if (fvf & D3DFVF_SPECULAR) offset += 4;
+    if ((fvf & D3DFVF_TEXCOUNT_MASK) >= D3DFVF_TEX1) {
+      glEnableVertexAttribArray(aTexCoord);
+      glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void *>(baseOffset + offset));
+    } else {
+      glDisableVertexAttribArray(aTexCoord);
+      glVertexAttrib2f(aTexCoord, 0.0f, 0.0f);
+    }
+    return D3D_OK;
+  }
   HRESULT DrawIndexedPrimitive(DWORD type, UINT minIndex, UINT numVertices, UINT startIndex, UINT count) override {
     if (emscripten_webgl_get_current_context() != context || !indexBuffer || !streamSource) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
@@ -343,7 +388,7 @@ public:
     auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
     const UINT indexSize = indexData->format() == D3DFMT_INDEX32 ? 4 : 2;
     if (!count || indices > INT32_MAX ||
-        uint64_t(indexOffset) + uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
+        uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
     ensureShaderProgram();
     if (!shaderProgram) return E_FAIL;
     GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
@@ -354,15 +399,15 @@ public:
     glUniform1i(glGetUniformLocation(shaderProgram, "u_texture"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer->buffer());
-    glEnableVertexAttribArray(aPosition); glEnableVertexAttribArray(aColor); glEnableVertexAttribArray(aTexCoord);
-    glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(0));
-    glVertexAttribPointer(aColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, streamOffset, reinterpret_cast<const void *>(16));
-    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(24));
+    //	The D3D8 SetIndices second parameter is BaseVertexIndex: every
+    //	index refers to baseVertexIndex + i. WebGL cannot offset index
+    //	values, so the vertex base shifts the attribute pointers instead.
+    uintptr_t baseOffset = 0;
+    if (SetupFvfAttributes(currentFVF, streamOffset, indexOffset, baseOffset) != D3D_OK) return E_FAIL;
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexData->buffer());
     glDrawElements(modes[type], static_cast<GLsizei>(indices),
                    indexData->format() == D3DFMT_INDEX32 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT,
-                   reinterpret_cast<const void *>(uint64_t(indexOffset) + uint64_t(startIndex) * indexSize));
+                   reinterpret_cast<const void *>(uint64_t(startIndex) * indexSize));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }

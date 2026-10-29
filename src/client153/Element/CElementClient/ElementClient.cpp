@@ -127,7 +127,12 @@ static void pw153_browser_frame()
 	++frames;
 	if (frames == 1) printf("pw153: first browser frame\n");
 	if (frames == 60) printf("pw153: 60 browser frames\n");
+	//	Periodic liveness marker: the probe returns 0 as soon as wWinMain
+	//	hands off to this rAF loop, so a silent return does NOT mean the
+	//	game exited — these markers prove continuous frames.
+	if (frames % 300 == 0) printf("pw153: %u browser frames\n", frames);
 	if (!l_theGame.RunInMainThread()) {
+		printf("pw153: main loop exit at frame %u\n", frames);
 		emscripten_cancel_main_loop();
 		pw153_window_detach();
 	}
