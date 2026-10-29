@@ -9,6 +9,7 @@ const nodes = new Map();
 const requests = [];
 const size = 2 ** 31 + 16;
 const messages = [];
+const logReads = [];
 class XMLHttpRequest {
   open(_method, url) { this.url = url; }
   setRequestHeader(_name, value) { this.range = value; }
@@ -31,7 +32,7 @@ const FS = {
   createDataFile(_parent, name) { nodes.set('/' + name, {}); },
   lookupPath(name) { return {node: nodes.get(name)}; },
   writeFile() {},
-  readFile() { throw Error('no log'); },
+  readFile(name) { logReads.push(name); throw Error('no log'); },
   ErrnoError: class extends Error {},
 };
 const context = {XMLHttpRequest, FS, Uint8Array, Map, JSON, Number, Math,
@@ -48,4 +49,5 @@ context.Module._pw153_browser_probe = () => {
 context.Module.onRuntimeInitialized();
 assert.ok(!messages.some(message => message.type === 'exception'), JSON.stringify(messages));
 assert.deepEqual(requests, [`bytes=${2 ** 31}-${size - 1}`]);
+assert.deepEqual(logReads, ['/Logs/AF.log', '/Logs/EC.log']);
 console.log('PASS: range reads at 2 GiB');

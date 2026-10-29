@@ -137,7 +137,7 @@ var Module = {
       // Node probe does, so the boot diagnosis is identical.
       for (const name of ['AF.log', 'EC.log']) {
         try {
-          const text = FS.readFile('/logs/' + name, {encoding: 'utf8'});
+          const text = FS.readFile('/Logs/' + name, {encoding: 'utf8'});
           postMessage({type: 'vfslog', name, text: String(text)});
         } catch (_) { /* absent logs are not an error */ }
       }
