@@ -52,8 +52,16 @@ public:
   HRESULT SetTexture(DWORD, IDirect3DBaseTexture8 *) override { return E_NOTIMPL; }
   HRESULT GetClipPlane(DWORD, float *) override { return E_NOTIMPL; }
   HRESULT SetClipPlane(DWORD, const float *) override { return E_NOTIMPL; }
-  HRESULT CreateRenderTarget(UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, BOOL, IDirect3DSurface8 **surface) override { if (surface) *surface = nullptr; return E_NOTIMPL; }
-  HRESULT CreateDepthStencilSurface(UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, IDirect3DSurface8 **surface) override { if (surface) *surface = nullptr; return E_NOTIMPL; }
+  HRESULT CreateRenderTarget(UINT width, UINT height, D3DFORMAT format, D3DMULTISAMPLE_TYPE, BOOL, IDirect3DSurface8 **surface) override {
+    if (!surface) return E_FAIL;
+    *surface = pw153_create_surface(width, height, format);
+    return *surface ? D3D_OK : E_FAIL;
+  }
+  HRESULT CreateDepthStencilSurface(UINT width, UINT height, D3DFORMAT format, D3DMULTISAMPLE_TYPE, IDirect3DSurface8 **surface) override {
+    if (!surface) return E_FAIL;
+    *surface = pw153_create_surface(width, height, format);
+    return *surface ? D3D_OK : E_FAIL;
+  }
   HRESULT CreateTexture(UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format, D3DPOOL pool, IDirect3DTexture8 **out) override {
     if (!out) return E_FAIL;
     *out = nullptr;
@@ -62,7 +70,11 @@ public:
     return *out ? D3D_OK : E_FAIL;
   }
   HRESULT CreateCubeTexture(UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DCubeTexture8 **cubeTexture) override { if (cubeTexture) *cubeTexture = nullptr; return E_NOTIMPL; }
-  HRESULT CreateImageSurface(UINT, UINT, D3DFORMAT, IDirect3DSurface8 **surface) override { if (surface) *surface = nullptr; return E_NOTIMPL; }
+  HRESULT CreateImageSurface(UINT width, UINT height, D3DFORMAT format, IDirect3DSurface8 **surface) override {
+    if (!surface) return E_FAIL;
+    *surface = pw153_create_surface(width, height, format);
+    return *surface ? D3D_OK : E_FAIL;
+  }
   HRESULT TestCooperativeLevel() override { return E_NOTIMPL; }
   HRESULT BeginScene() override { return E_NOTIMPL; }
   HRESULT EndScene() override { return E_NOTIMPL; }
