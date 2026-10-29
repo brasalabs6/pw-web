@@ -43,7 +43,7 @@ var Module = {
       let requestCount = 0;
       let bytesFetched = 0;
       function fetchBlock(index) {
-        const start = index << BLOCK_SHIFT;
+        const start = index * BLOCK_SIZE;
         const end = Math.min(start + BLOCK_SIZE, size) - 1;
         if (start >= size) return null;
         const data = request(url, `bytes=${start}-${end}`);
@@ -74,10 +74,10 @@ var Module = {
           const result = new Uint8Array(length);
           let written = 0;
           while (written < length) {
-            const index = (position + written) >>> BLOCK_SHIFT;
+            const index = Math.floor((position + written) / BLOCK_SIZE);
             const block = getBlock(index);
             if (!block) break;
-            const blockOffset = (position + written) - (index << BLOCK_SHIFT);
+            const blockOffset = (position + written) - index * BLOCK_SIZE;
             const available = Math.min(block.length - blockOffset, length - written);
             if (available <= 0) break;
             result.set(block.subarray(blockOffset, blockOffset + available), written);
