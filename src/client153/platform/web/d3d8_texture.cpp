@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <new>
 
-PW153Texture::PW153Texture(IDirect3DDevice8 *device, GLuint texture, BYTE *pixels, UINT width, UINT height, D3DFORMAT format, D3DPOOL pool, DWORD usage, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context)
-  : device_(device), texture_(texture), pixels_(pixels), width_(width), height_(height), format_(format), pool_(pool), usage_(usage), context_(context) { device_->AddRef(); }
+PW153Texture::PW153Texture(IDirect3DDevice8 *device, GLuint texture, BYTE *pixels, UINT width, UINT height, UINT levels, D3DFORMAT format, D3DPOOL pool, DWORD usage, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context)
+  : device_(device), texture_(texture), pixels_(pixels), width_(width), height_(height), levels_(levels ? levels : 1), format_(format), pool_(pool), usage_(usage), context_(context) { device_->AddRef(); }
 PW153Texture::~PW153Texture() {
   if (emscripten_webgl_get_current_context() == context_) glDeleteTextures(1, &texture_);
   std::free(pixels_); device_->Release();
@@ -19,7 +19,7 @@ DWORD PW153Texture::SetPriority(DWORD value) { auto old = priority_; priority_ =
 DWORD PW153Texture::GetPriority() { return priority_; }
 DWORD PW153Texture::SetLOD(DWORD) { return 0; }
 DWORD PW153Texture::GetLOD() { return 0; }
-DWORD PW153Texture::GetLevelCount() { return 1; }
+DWORD PW153Texture::GetLevelCount() { return levels_; }
 HRESULT PW153Texture::GetLevelDesc(UINT level, D3DSURFACE_DESC *out) {
   if (level || !out) return E_FAIL;
   *out = {}; out->Format = format_; out->Type = D3DRTYPE_SURFACE;
@@ -86,6 +86,10 @@ HRESULT PW153Texture::UnlockRect(UINT level) {
   glPixelStorei(GL_UNPACK_SKIP_ROWS, 0); glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
   glBindTexture(GL_TEXTURE_2D, texture_);
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+  //	Multi-level textures fill level 0 from the CPU pixels; the rest of
+  //	the chain is generated on the GPU (the honest equivalent of the D3D
+  //	managed-texture mip chain for the formats the port decodes).
+  if (levels_ > 1) glGenerateMipmap(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previous));
   glPixelStorei(GL_UNPACK_ALIGNMENT, alignment); glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
   glPixelStorei(GL_UNPACK_SKIP_ROWS, skipRows); glPixelStorei(GL_UNPACK_SKIP_PIXELS, skipPixels);
@@ -95,8 +99,8 @@ HRESULT PW153Texture::UnlockRect(UINT level) {
 }
 PW153Texture *pw153_create_texture(IDirect3DDevice8 *device, UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format, D3DPOOL pool) {
   auto context = emscripten_webgl_get_current_context();
-  if (!device || context <= 0 || emscripten_is_webgl_context_lost(context) || !width || !height ||
-      levels != 1 || (format != D3DFMT_A8R8G8B8 && format != D3DFMT_X8R8G8B8 && format != D3DFMT_A4R4G4B4) ||
+  if (!device || context <= 0 || emscripten_is_webgl_context_lost(context) || !width || !height || !levels ||
+      (format != D3DFMT_A8R8G8B8 && format != D3DFMT_X8R8G8B8 && format != D3DFMT_A4R4G4B4) ||
       !((usage == 0 && pool == D3DPOOL_MANAGED) || (format == D3DFMT_A8R8G8B8 && usage == D3DUSAGE_RENDERTARGET && pool == D3DPOOL_DEFAULT)) ||
       static_cast<uint64_t>(width) * height > INT32_MAX / 4) return nullptr;
   GLint limit = 0, previous = 0, unpackBuffer = 0; glGetIntegerv(GL_MAX_TEXTURE_SIZE, &limit);
@@ -116,7 +120,7 @@ PW153Texture *pw153_create_texture(IDirect3DDevice8 *device, UINT width, UINT he
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, static_cast<GLuint>(unpackBuffer));
   glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previous));
   if (!ok) { glDeleteTextures(1, &name); std::free(pixels); return nullptr; }
-  auto *result = new (std::nothrow) PW153Texture(device, name, pixels, width, height, format, pool, usage, context);
+  auto *result = new (std::nothrow) PW153Texture(device, name, pixels, width, height, levels, format, pool, usage, context);
   if (!result) { glDeleteTextures(1, &name); std::free(pixels); }
   return result;
 }

@@ -334,15 +334,20 @@ inline HRESULT D3DXCreateTextureFromFileInMemoryEx(
   (void)mipFilter;
   if (!texture) return D3DERR_INVALIDCALL;
   *texture = nullptr;
-  if (!device || palette || mipLevels != 1) return D3DERR_INVALIDCALL;
+  if (!device || palette) return D3DERR_INVALIDCALL;
   D3DXIMAGE_INFO image{};
   if (D3DXGetImageInfoFromFileInMemory(srcData, srcDataSize, &image) != D3D_OK) return D3DERR_INVALIDCALL;
   if (width == D3DX_DEFAULT) width = image.Width;
   if (height == D3DX_DEFAULT) height = image.Height;
   if (width != image.Width || height != image.Height) return D3DERR_INVALIDCALL;
+  //	Mip levels: D3DX_DEFAULT takes the file's chain; explicit counts are
+	//	honoured up to what the image carries (the adapter generates the
+	//	GPU chain from the decoded level 0).
+  UINT levels = mipLevels == D3DX_DEFAULT ? (image.MipLevels ? image.MipLevels : 1) : mipLevels;
+  if (!levels || levels > (image.MipLevels ? image.MipLevels : 1)) return D3DERR_INVALIDCALL;
   if (format == D3DFMT_UNKNOWN) format = D3DFMT_A8R8G8B8;
   IDirect3DTexture8 *result = nullptr;
-  if (device->CreateTexture(width, height, 1, usage, format, pool, &result) != D3D_OK || !result)
+  if (device->CreateTexture(width, height, levels, usage, format, pool, &result) != D3D_OK || !result)
     return D3DERR_INVALIDCALL;
   IDirect3DSurface8 *surface = nullptr;
   if (result->GetSurfaceLevel(0, &surface) != D3D_OK || !surface) {
