@@ -12,8 +12,11 @@
 #include <emscripten/html5.h>
 
 #include <cstdio>
+#include <cstdint>
 
 extern int wWinMain(void *, void *, wchar_t *, int);
+extern "C" bool pw153_window_attach(void *host);
+extern "C" void pw153_window_detach();
 
 extern "C" int pw153_browser_probe() {
   EmscriptenWebGLContextAttributes attributes;
@@ -27,6 +30,10 @@ extern "C" int pw153_browser_probe() {
   printf("pw153_browser_probe: make_current = %d\n", (int)current);
   if (current != EMSCRIPTEN_RESULT_SUCCESS)
     return -101;
+  if (!pw153_window_attach(reinterpret_cast<void *>(static_cast<intptr_t>(context))))
+    return -102;
   wchar_t command[] = L"";
-  return wWinMain(nullptr, nullptr, command, 0);
+  const int result = wWinMain(nullptr, nullptr, command, 0);
+  pw153_window_detach();
+  return result;
 }

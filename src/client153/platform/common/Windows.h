@@ -1246,10 +1246,7 @@ inline UINT GetCaretBlinkTime() {
 
 //	The window destruction: no Win32 windows exist; destroying the
 //	nonexistent window fails (the caller's error path handles it).
-inline BOOL DestroyWindow(HWND hWnd) {
-  (void)hWnd;
-  return FALSE;
-}
+BOOL DestroyWindow(HWND hWnd);
 
 //	The window creation: the browser target has no Win32 window classes;
 //	creation fails (no fake HWND is returned).
@@ -1271,15 +1268,10 @@ inline HWND CreateWindowExA(DWORD exStyle, const char *className,
   (void)param;
   return nullptr;
 }
-inline HWND CreateWindowExW(DWORD exStyle, const wchar_t *className,
-                            const wchar_t *windowName, DWORD style, int x,
-                            int y, int width, int height, HWND parent,
-                            HMENU menu, HINSTANCE instance, void *param) {
-  (void)className;
-  (void)windowName;
-  return CreateWindowExA(exStyle, nullptr, nullptr, style, x, y, width, height,
-                          parent, menu, instance, param);
-}
+HWND CreateWindowExW(DWORD exStyle, const wchar_t *className,
+                     const wchar_t *windowName, DWORD style, int x,
+                     int y, int width, int height, HWND parent,
+                     HMENU menu, HINSTANCE instance, void *param);
 inline HWND CreateWindowEx(DWORD exStyle, const wchar_t *className,
                            const wchar_t *windowName, DWORD style, int x,
                            int y, int width, int height, HWND parent,
@@ -1370,10 +1362,7 @@ inline ATOM RegisterClassExA(const WNDCLASSEXA *windowClass) {
   (void)windowClass;
   return 0;
 }
-inline ATOM RegisterClassExW(const WNDCLASSEXW *windowClass) {
-  (void)windowClass;
-  return 0;
-}
+ATOM RegisterClassExW(const WNDCLASSEXW *windowClass);
 inline ATOM RegisterClassEx(const WNDCLASSEXW *windowClass) {
   return RegisterClassExW(windowClass);
 }
