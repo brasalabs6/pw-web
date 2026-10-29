@@ -89,8 +89,38 @@ var Module = {
       FS.writeFile('/userdata' + String.fromCharCode(92) + 'SystemSettings.ini', '[Video]\nFullScreen=0\n');
       specialHTMLTargets['#canvas'] = globalThis.pwCanvas;
       log('entry: packages mapped, calling pw153_browser_probe');
+      //\tDiagnostic: test if the canvas's WebGL2 context can produce visible
+      //\toutput with a direct JavaScript clear (bypassing the D3D8 adapter).
+      const testGl = globalThis.pwCanvas.getContext('webgl2');
+      if (testGl) {
+        testGl.clearColor(1.0, 0.0, 0.0, 1.0);
+        testGl.clear(testGl.COLOR_BUFFER_BIT);
+        log('diagnostic: canvas cleared to RED via direct JS WebGL2 call');
+      } else {
+        log('diagnostic: could not get webgl2 context from canvas');
+      }
       const result = Module._pw153_browser_probe();
       log('return: pw153_browser_probe returned ' + result);
+      //\tSecond diagnostic: clear to GREEN after the probe returns. If the
+      //\tcanvas shows green, the canvas still works and the client's
+      //\trendering just doesn't produce visible output.
+      const gl2 = globalThis.pwCanvas.getContext('webgl2');
+      if (gl2) {
+        gl2.clearColor(0.0, 1.0, 0.0, 1.0);
+        gl2.clear(gl2.COLOR_BUFFER_BIT);
+        log('diagnostic: canvas cleared to GREEN after probe returned');
+      }
+      // Dump the client's own logs for boot diagnosis.
+      try {
+        const logDir = FS.readdir('/logs');
+        log('logs dir contents: ' + JSON.stringify(logDir));
+      } catch (e) { log('no /logs dir: ' + e.message); }
+      for (const name of ['AF.log', 'EC.log']) {
+        try {
+          const text = FS.readFile('/logs/' + name, {encoding: 'utf8'});
+          log('=== ' + name + ' ===\n' + text);
+        } catch (e) { log('no /logs/' + name + ': ' + e.message); }
+      }
     } catch (error) {
       log('EXCEPTION: ' + (error.stack || error));
     }

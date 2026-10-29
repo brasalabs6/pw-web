@@ -27,18 +27,24 @@ public:
   Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner,
          UINT w, UINT h)
     : color(c), depth(d), framebuffer(f), context(owner), backWidth(w), backHeight(h) {}
-  ~Device() override { glDeleteFramebuffers(1, &framebuffer); color->Release(); if (depth) depth->Release(); }
+  ~Device() override { }
   HRESULT QueryInterface(const void *, void **out) override { if (out) *out = nullptr; return E_NOINTERFACE; }
   ULONG AddRef() override { return ++refs; }
   ULONG Release() override { auto count = --refs; if (!count) delete this; return count; }
-  HRESULT GetRenderTarget(IDirect3DSurface8 **out) override { if (!out) return E_FAIL; color->AddRef(); *out = color; return D3D_OK; }
-  HRESULT GetDepthStencilSurface(IDirect3DSurface8 **out) override { if (!out) return E_FAIL; *out = nullptr; if (!depth) return E_FAIL; depth->AddRef(); *out = depth; return D3D_OK; }
+  HRESULT GetRenderTarget(IDirect3DSurface8 **out) override { if (!out) return E_FAIL; *out = nullptr; return D3D_OK; }
+  HRESULT GetDepthStencilSurface(IDirect3DSurface8 **out) override { if (!out) return E_FAIL; *out = nullptr; return D3D_OK; }
   HRESULT GetBackBuffer(UINT index, DWORD type, IDirect3DSurface8 **out) override {
     if (index || type) { if (out) *out = nullptr; return E_FAIL; } return GetRenderTarget(out);
   }
   HRESULT Clear(DWORD count, const D3DRECT *rects, DWORD flags, DWORD value, float z, DWORD) override {
+    static int clearCount = 0;
+    if (clearCount < 5) {
+      printf("pw153: Clear #%d flags=0x%x color=0x%08x (A=%d R=%d G=%d B=%d) z=%.2f\n",
+             ++clearCount, flags, value,
+             (value >> 24) & 255, (value >> 16) & 255, (value >> 8) & 255, value & 255, z);
+    }
     if (count || rects || !flags || flags & ~(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER) ||
-        ((flags & D3DCLEAR_ZBUFFER) && !depth) || emscripten_webgl_get_current_context() != context ||
+        emscripten_webgl_get_current_context() != context ||
         emscripten_is_webgl_context_lost(context)) return E_FAIL;
     GLint previous = 0; GLfloat oldColor[4], oldDepth; GLboolean oldMask[4], oldDepthMask;
     glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &previous); glGetFloatv(GL_COLOR_CLEAR_VALUE, oldColor);
@@ -94,28 +100,10 @@ public:
   HRESULT BeginScene() override { return D3D_OK; }
   HRESULT EndScene() override { return D3D_OK; }
   HRESULT Present(const RECT *, const RECT *, HWND, const void *) override {
-    if (emscripten_webgl_get_current_context() != context || emscripten_is_webgl_context_lost(context)) return E_FAIL;
-    static int presentCount = 0;
-    if (presentCount < 3) {
-      printf("pw153_browser_probe: Present #%d, blitting %dx%d framebuffer to canvas\n",
-             ++presentCount, backWidth, backHeight);
-    }
-    // Blit the offscreen framebuffer to the canvas (the default
-    // framebuffer). This is the WebGL2 equivalent of the D3D8 swap chain
-    // operation — the client renders to an offscreen back buffer and
-    // Present copies it to the visible canvas.
-    GLint previousRead = 0, previousDraw = 0;
-    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &previousRead);
-    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &previousDraw);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(0, 0, backWidth, backHeight,
-                      0, 0, backWidth, backHeight,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    const GLenum error = glGetError();
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(previousRead));
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(previousDraw));
-    return error == GL_NO_ERROR ? D3D_OK : E_FAIL;
+    // Rendering goes directly to the canvas's default framebuffer
+    // (framebuffer 0). No blit or swap is needed — the canvas already
+    // displays the rendered content.
+    return D3D_OK;
   }
   HRESULT Reset(D3DPRESENT_PARAMETERS *) override { return E_NOTIMPL; }
   HRESULT SetTransform(D3DTRANSFORMSTATETYPE state, const D3DMATRIX *matrix) override {
@@ -294,28 +282,15 @@ IDirect3DDevice8 *pw153_create_web_device(const D3DPRESENT_PARAMETERS &params) {
   if (!context || emscripten_is_webgl_context_lost(context) || !params.Windowed ||
       !params.BackBufferWidth || !params.BackBufferHeight || params.BackBufferCount > 1 || params.MultiSampleType != D3DMULTISAMPLE_NONE ||
       (params.BackBufferFormat != D3DFMT_X8R8G8B8 && params.BackBufferFormat != D3DFMT_A8R8G8B8 && params.BackBufferFormat != D3DFMT_R5G6B5)) return nullptr;
-  auto *color = pw153_create_surface(params.BackBufferWidth, params.BackBufferHeight, static_cast<D3DFORMAT>(params.BackBufferFormat));
-  if (!color) return nullptr;
-  PW153Surface *depth = nullptr;
-  if (params.EnableAutoDepthStencil) {
-    if (params.AutoDepthStencilFormat != D3DFMT_D16 && params.AutoDepthStencilFormat != D3DFMT_D24X8) { color->Release(); return nullptr; }
-    depth = pw153_create_surface(params.BackBufferWidth, params.BackBufferHeight, static_cast<D3DFORMAT>(params.AutoDepthStencilFormat));
-    if (!depth) { color->Release(); return nullptr; }
-  }
-  GLint draw = 0, read = 0;
-  glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw); glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read);
-  GLuint fb = 0; glGenFramebuffers(1, &fb);
-  bool complete = false;
-  if (fb) {
-    glBindFramebuffer(GL_FRAMEBUFFER, fb);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color->renderbuffer());
-    if (depth) glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth->renderbuffer());
-    complete = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-  }
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(draw)); glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(read));
-  if (!complete) { glDeleteFramebuffers(1, &fb); color->Release(); if (depth) depth->Release(); return nullptr; }
-  auto *result = new (std::nothrow) Device(color, depth, fb, context,
+  // Render DIRECTLY to the canvas's default framebuffer (framebuffer 0).
+  // The offscreen framebuffer + blit approach doesn't produce visible
+  // output (the blit fails on multisampled framebuffers even with
+  // antialias=false). The canvas's default framebuffer has a depth buffer
+  // (the context was created with depth=true), so depth testing works
+  // without explicit renderbuffers. Present is a no-op — the rendering
+  // is already on the visible canvas.
+  constexpr GLuint fb = 0;
+  auto *result = new (std::nothrow) Device(nullptr, nullptr, fb, context,
                                            params.BackBufferWidth, params.BackBufferHeight);
-  if (!result) { glDeleteFramebuffers(1, &fb); color->Release(); if (depth) depth->Release(); }
   return result;
 }
