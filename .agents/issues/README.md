@@ -30,7 +30,7 @@
 | [PW23-009](PW23-009-gnet-browser-transport-unproven.md) | P0 | open | GNET/WSS/gateway/servidor não validados ponta a ponta | [e10-network-transport-v1](../epics/e10-network-transport-v1/README.md) |
 | [PW23-010](PW23-010-s3tc-required-for-bgra.md) | P1 | open | Não exigir S3TC para renderizar DDS BGRA sem compressão | [e06-render-webgl2-v1](../epics/e06-render-webgl2-v1/README.md) |
 | [PW23-011](PW23-011-input-keyboard-ime-a ui-events.md) | P1 | open | Bridge de eventos do navegador para AUI/gameplay ainda é parcial | [e09-interface-input-audio-v1](../epics/e09-interface-input-audio-v1/README.md) |
-| [PW23-012](PW23-012-encoding-gbk-utf16-utf8-mismatch.md) | P1 | open | Codificações GBK/UTF-16/UTF-8 incompatíveis entre caminhos | [e05-asset-pipeline-v1](../epics/e05-asset-pipeline-v1/README.md) |
+| [PW23-012](PW23-012-encoding-gbk-utf16-utf8-mismatch.md) | P1 | open | GBK/UTF-16/UTF-8: fallback GB18030 de AWScriptFile falha na consulta de tamanho (reprodutor isolado) | [e05-asset-pipeline-v1](../epics/e05-asset-pipeline-v1/README.md) |
 | [PW23-013](PW23-013-test-gates-not-browser-game.md) | P1 | open | CI verde só valida parsers e compilações, não game no Chrome | [e16-qa-observability-v1](../epics/e16-qa-observability-v1/README.md) |
 | [PW23-014](PW23-014-angelica-d3d8-webgl2-not-integrated.md) | P0 | open | Backend da Angelica original ainda não desenha os frames do jogo | [e06-render-webgl2-v1](../epics/e06-render-webgl2-v1/README.md) |
 | [PW23-015](PW23-015-web-audio-video-not-implemented.md) | P1 | open | AngelicaMedia compila mas não há saída WebAudio comprovada | [e09-interface-input-audio-v1](../epics/e09-interface-input-audio-v1/README.md) |
