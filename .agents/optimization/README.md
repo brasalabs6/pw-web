@@ -172,3 +172,11 @@ No HEAD `160026ec92931753c9fed059ef2a13db59a40bea`, o probe substituiu shifts bi
 | [OPT-045](OPT-045-d3d8-lockrect-full-texture-repack-upload.md) | P2 | Angelica D3D8 / textura WebGL2 | Medir cópia BGRA→RGBA, alocação temporária e upload integral em cada UnlockRect, inclusive locks parciais |
 
 Inspeção estática no SHA `cf1121324c6cca0e566b698311c45a85eea0dba9`, [linhas 44–85](https://github.com/brasalabs6/pw-web/blob/cf1121324c6cca0e566b698311c45a85eea0dba9/src/client153/platform/web/d3d8_texture.cpp#L44-L85). Distinto de OPT-002/014 e PW23-024. **Sem benchmark, execução mobile ou blocker reproduzido**. Somente pós-port; preservar PW23-021…037.
+
+## Auditoria incremental — contenção de paths do probe local (2026-10-29; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-046](OPT-046-probe-loose-route-root-containment.md) | P1 | Probe HTTP local / hardening preventivo | Confinar paths percent-decoded de `/loose/` ao diretório de assets; reprodução isolada da resolução de caminho, sem teste HTTP/exposição remota |
+
+Inspeção no SHA `413717155c1ac72573f447e3c29ae801d84949c9`, [linhas 185–192](https://github.com/brasalabs6/pw-web/blob/413717155c1ac72573f447e3c29ae801d84949c9/scripts/client153-entry-server.py#L185-L192). Distinto de OPT-032/044 e PW23-032; fase **post-browser-port** e antes de qualquer exposição pública do probe. Nenhum código-fonte ou benchmark alterado; preservar PW23-021…037.
