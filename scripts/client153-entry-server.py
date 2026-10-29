@@ -44,6 +44,16 @@ LOOSE_FILES = [
     ('cursors/gourd.cur', 'Cursors\\gourd.cur'),
     ('maps/world/world_targets.txt', 'maps\\world\\world_targets.txt'),
     ('../patcher/server/serverlist.txt', 'userdata\\server\\serverlist.txt'),
+    ('data/domain.data', 'Data\\domain.data'),
+    ('data/domain2.data', 'Data\\domain2.data'),
+    ('data/domain2_cross.data', 'Data\\domain2_cross.data'),
+    ('data/elements.data', 'Data\\elements.data'),
+    ('data/dyn_tasks.data', 'Data\\dyn_tasks.data'),
+    ('data/aipolicy.data', 'Data\\aipolicy.data'),
+    ('data/gshop.data', 'Data\\gshop.data'),
+    ('data/gshop1.data', 'Data\\gshop1.data'),
+    ('data/gshop2.data', 'Data\\gshop2.data'),
+    ('data/task_npc.data', 'Data\\task_npc.data'),
 ]
 
 # The packages the original entry expects on its VFS root (the same set the
