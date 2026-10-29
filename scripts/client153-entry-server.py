@@ -42,6 +42,8 @@ LOOSE_FILES = [
     ('cursors/flag.cur', 'Cursors\\flag.cur'),
     ('cursors/dig.ani', 'Cursors\\dig.ani'),
     ('cursors/gourd.cur', 'Cursors\\gourd.cur'),
+    ('maps/world/world_targets.txt', 'maps\\world\\world_targets.txt'),
+    ('../patcher/server/serverlist.txt', 'userdata\\server\\serverlist.txt'),
 ]
 
 # The packages the original entry expects on its VFS root (the same set the
@@ -164,15 +166,15 @@ class ProbeHandler(SimpleHTTPRequestHandler):
                 packages.append({
                     'name': vfs_name,
                     'size': os.path.getsize(source),
-                    'url': '/loose/' + disk_path.replace('/', '_'),
+                    'url': '/loose/' + urllib.parse.quote(disk_path, safe=''),
                 })
             self.send_bytes(
                 json.dumps({'packages': packages}).encode(),
                 'application/json')
         elif route.startswith('/loose/'):
             # Serve loose files from the element directory.
-            disk_name = urllib.parse.unquote(route[len('/loose/'):]).replace('_', '/')
-            target = os.path.join(ELEMENT_DIR, disk_name)
+            disk_name = urllib.parse.unquote(route[len('/loose/'):])
+            target = os.path.normpath(os.path.join(ELEMENT_DIR, disk_name))
             if not os.path.isfile(target):
                 self.send_error(404)
                 return
