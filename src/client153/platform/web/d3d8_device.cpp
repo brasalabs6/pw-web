@@ -17,6 +17,8 @@ class Device final : public IDirect3DDevice8 {
   // Rendering pipeline state (the D3D8 fixed-function pipeline emulation).
   IDirect3DVertexBuffer8 *streamSource = nullptr;
   UINT streamOffset = 0;
+  IDirect3DIndexBuffer8 *indexBuffer = nullptr;
+  UINT indexOffset = 0;
   DWORD currentFVF = 0;
   DWORD srcBlend = 2, dstBlend = 1;
   IDirect3DBaseTexture8 *textures[8] = {};
@@ -210,7 +212,16 @@ public:
     *out = pw153_create_index_buffer(size, usage, format, pool);
     return *out ? D3D_OK : E_FAIL;
   }
-  HRESULT SetIndices(IDirect3DIndexBuffer8 *, UINT) override { return E_NOTIMPL; }
+  HRESULT SetIndices(IDirect3DIndexBuffer8 *buffer, UINT offset) override {
+    // Store the index buffer for the next indexed draw (the D3D8 contract:
+    // SetIndices persists until the next SetIndices, and the base offset
+    // shifts every index read).
+    if (buffer) buffer->AddRef();
+    if (indexBuffer) indexBuffer->Release();
+    indexBuffer = buffer;
+    indexOffset = offset;
+    return D3D_OK;
+  }
   HRESULT SetPixelShader(DWORD) override { return E_NOTIMPL; }
   HRESULT SetVertexShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
   HRESULT SetPixelShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
@@ -318,11 +329,41 @@ public:
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT DrawIndexedPrimitive(DWORD type, UINT minIndex, UINT numVertices, UINT startIndex, UINT count) override {
-    if (emscripten_webgl_get_current_context() != context) return E_FAIL;
+    if (emscripten_webgl_get_current_context() != context || !indexBuffer || !streamSource) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
                                    GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
     if (type < 1 || type > 6) return E_FAIL;
-    glDrawElements(modes[type], count * 3, GL_UNSIGNED_SHORT, nullptr);
+    // D3D8 count is a primitive count: triangle list = 3 indices per
+    // primitive, strip/fan = count + 2, line list = 2 per primitive.
+    uint64_t indices = type == D3DPT_POINTLIST ? count :
+                       type == D3DPT_LINELIST ? uint64_t(count) * 2 :
+                       type == D3DPT_LINESTRIP ? uint64_t(count) + 1 :
+                       type == D3DPT_TRIANGLELIST ? uint64_t(count) * 3 : uint64_t(count) + 2;
+    auto *indexData = static_cast<PW153IndexBuffer *>(indexBuffer);
+    auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
+    const UINT indexSize = indexData->format() == D3DFMT_INDEX32 ? 4 : 2;
+    if (!count || indices > INT32_MAX ||
+        uint64_t(indexOffset) + uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
+    ensureShaderProgram();
+    if (!shaderProgram) return E_FAIL;
+    GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
+    if (viewport[2] <= 0 || viewport[3] <= 0) return E_FAIL;
+    glUseProgram(shaderProgram);
+    glUniform4f(uViewport, viewport[0], viewport[1], viewport[2], viewport[3]);
+    glUniform1i(uTextured, textures[0] ? 1 : 0);
+    glUniform1i(glGetUniformLocation(shaderProgram, "u_texture"), 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer->buffer());
+    glEnableVertexAttribArray(aPosition); glEnableVertexAttribArray(aColor); glEnableVertexAttribArray(aTexCoord);
+    glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(0));
+    glVertexAttribPointer(aColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, streamOffset, reinterpret_cast<const void *>(16));
+    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(24));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexData->buffer());
+    glDrawElements(modes[type], static_cast<GLsizei>(indices),
+                   indexData->format() == D3DFMT_INDEX32 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT,
+                   reinterpret_cast<const void *>(uint64_t(indexOffset) + uint64_t(startIndex) * indexSize));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT DrawPrimitiveUP(DWORD type, UINT count, const void *data, UINT stride) override {
