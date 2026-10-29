@@ -15,6 +15,11 @@ endif()
 add_subdirectory(src/client153)
 if(BUILD_TESTING)
   if(EMSCRIPTEN)
+    add_executable(client153_ftdriver_original_probe tests/client153/ftdriver_original_probe.cpp)
+    target_link_libraries(client153_ftdriver_original_probe PRIVATE client153_ftdriver_original)
+    target_compile_options(client153_ftdriver_original_probe PRIVATE -fms-extensions -fexceptions
+      "SHELL:-include ${PROJECT_SOURCE_DIR}/src/client153/platform/common/Windows.h")
+    target_link_options(client153_ftdriver_original_probe PRIVATE -fexceptions "-sENVIRONMENT=node" "-sNODERAWFS=1")
     add_executable(client153_split_wasm_test tests/client153/split_wasm.cpp
       src/client153/Common/AUInterface2/CSplit.cpp)
     target_include_directories(client153_split_wasm_test PRIVATE

@@ -2,6 +2,61 @@
 #	Emscripten ships zlib in its sysroot (link -lz directly); native builds
 #	use the system zlib through CMake's FindZLIB.
 if(EMSCRIPTEN)
+  # Original FreeType driver used by the client UI.
+  add_library(client153_freetype210 STATIC
+    thirdparty/freetype-2.1.10/src/autofit/autofit.c
+    thirdparty/freetype-2.1.10/src/bdf/bdf.c
+    thirdparty/freetype-2.1.10/src/cff/cff.c
+    thirdparty/freetype-2.1.10/src/base/ftbase.c
+    thirdparty/freetype-2.1.10/src/base/ftbbox.c
+    thirdparty/freetype-2.1.10/src/base/ftbdf.c
+    thirdparty/freetype-2.1.10/src/base/ftbitmap.c
+    thirdparty/freetype-2.1.10/src/cache/ftcache.c
+    thirdparty/freetype-2.1.10/src/base/ftdebug.c
+    thirdparty/freetype-2.1.10/src/base/ftglyph.c
+    thirdparty/freetype-2.1.10/src/gzip/ftgzip.c
+    thirdparty/freetype-2.1.10/src/base/ftinit.c
+    thirdparty/freetype-2.1.10/src/lzw/ftlzw.c
+    thirdparty/freetype-2.1.10/src/base/ftmm.c
+    thirdparty/freetype-2.1.10/src/base/ftotval.c
+    thirdparty/freetype-2.1.10/src/base/ftpfr.c
+    thirdparty/freetype-2.1.10/src/base/ftstroke.c
+    thirdparty/freetype-2.1.10/src/base/ftsynth.c
+    thirdparty/freetype-2.1.10/src/base/ftsystem.c
+    thirdparty/freetype-2.1.10/src/base/fttype1.c
+    thirdparty/freetype-2.1.10/src/base/ftwinfnt.c
+    thirdparty/freetype-2.1.10/src/base/ftxf86.c
+    thirdparty/freetype-2.1.10/src/otvalid/otvalid.c
+    thirdparty/freetype-2.1.10/src/pcf/pcf.c
+    thirdparty/freetype-2.1.10/src/pfr/pfr.c
+    thirdparty/freetype-2.1.10/src/psaux/psaux.c
+    thirdparty/freetype-2.1.10/src/pshinter/pshinter.c
+    thirdparty/freetype-2.1.10/src/psnames/psnames.c
+    thirdparty/freetype-2.1.10/src/raster/raster.c
+    thirdparty/freetype-2.1.10/src/sfnt/sfnt.c
+    thirdparty/freetype-2.1.10/src/smooth/smooth.c
+    thirdparty/freetype-2.1.10/src/truetype/truetype.c
+    thirdparty/freetype-2.1.10/src/type1/type1.c
+    thirdparty/freetype-2.1.10/src/cid/type1cid.c
+    thirdparty/freetype-2.1.10/src/type42/type42.c
+    thirdparty/freetype-2.1.10/src/winfonts/winfnt.c
+  )
+  target_include_directories(client153_freetype210 PUBLIC thirdparty/freetype-2.1.10/include)
+  target_compile_definitions(client153_freetype210 PRIVATE FT2_BUILD_LIBRARY)
+  add_library(client153_ftdriver_original STATIC
+    thirdparty/ftdriver/original/CriticalSession.cpp
+    thirdparty/ftdriver/original/FTFont.cpp
+    thirdparty/ftdriver/original/FTManager.cpp
+    thirdparty/ftdriver/original/FTGlyphCache.cpp
+    thirdparty/ftdriver/original/MyFTCache.cpp
+    thirdparty/ftdriver/original/MyRaster.cpp)
+  target_include_directories(client153_ftdriver_original PUBLIC thirdparty/ftdriver/original
+    PRIVATE platform/common Angelica2/AngelicaCommon/Header thirdparty/freetype-2.1.10/include/freetype)
+  target_compile_options(client153_ftdriver_original PRIVATE -fms-extensions -fshort-wchar -fexceptions
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/wingdi.h")
+  target_link_libraries(client153_ftdriver_original PUBLIC client153_freetype210 client153_platform)
+
   # Mesa's standalone GLU tessellator supplies polygon triangulation; it does
   # not provide the other GLU rendering, NURBS, or mipmapping APIs.
   add_library(client153_glu_tess STATIC
@@ -365,8 +420,7 @@ if(EMSCRIPTEN)
     thirdparty/defence/defence_stub.cpp
     thirdparty/immersion/ifc_stub.cpp
     thirdparty/xiph/vorbisfile_stub.cpp
-    thirdparty/mpg123/mpg123_stub.cpp
-    thirdparty/ftdriver/ftdriver_stub.cpp)
+    thirdparty/mpg123/mpg123_stub.cpp)
   target_include_directories(client153_middleware_stub PRIVATE
     platform/common Angelica2/AngelicaCommon/Header Angelica2/AngelicaFile/Header
     Angelica2/Angelica3D/Header Angelica2/Output/a3dsdk/include Angelica2/Output/acsdk/include

@@ -2,6 +2,9 @@
 // supplies and mounts the font; proprietary data is never committed here.
 #include "FTInterface.h"
 #include <cstdio>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 int main(int argc, char **argv) {
   if (argc != 2) return 1;
@@ -21,5 +24,8 @@ int main(int argc, char **argv) {
   std::printf("glyph %dx%d coverage=%u\n", bitmap.cx, bitmap.cy, coverage);
   font->Release();
   manager->Release();
+#ifdef __EMSCRIPTEN__
+  if (coverage) EM_ASM({ if (typeof document !== 'undefined') document.body.dataset.result = 'pass'; });
+#endif
   return coverage ? 0 : 6;
 }

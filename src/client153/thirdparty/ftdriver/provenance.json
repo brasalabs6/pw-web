@@ -1,0 +1,2100 @@
+{
+  "upstream": "https://github.com/WolfsCore/Source-Cliente-1.5.3",
+  "revision": "e3d6d0075d0a745c9f9859f2cb25b01d71dec045",
+  "source_root": "Common/FTDriver",
+  "authorization": "docs/LEGAL.md (2026-10-25)",
+  "freetype_license": "freetype-2.1.10/FTL.TXT or GPL.TXT",
+  "adaptations": [
+    "ftglyph.c callback signature matches typedef",
+    "FTFont.cpp GB18030 to UTF-8",
+    "FTManager.cpp Windows-only WTFont mode returns null",
+    "StdAfx.h lowercased for case-sensitive includes"
+  ],
+  "files": [
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftccache.h",
+      "sha256": "a06902e21ebe696c4bb7adbcdf13c71ba1821eb57ca027381439788bb2c35d5d",
+      "target": "freetype-2.1.10/include/freetype/cache/ftccache.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftccmap.h",
+      "sha256": "3ff2743ec323c8c90b23322bacd00960be1a9181c821d25f78c208b5ca558569",
+      "target": "freetype-2.1.10/include/freetype/cache/ftccmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftcglyph.h",
+      "sha256": "433fb049814e779056646cf574f90b5f6c73fd2eef965fbe88df4acfbf8fc453",
+      "target": "freetype-2.1.10/include/freetype/cache/ftcglyph.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftcimage.h",
+      "sha256": "94e70ab2f582c4deecbdd6fcd6381bcef43e10b31706131398203ec98208d006",
+      "target": "freetype-2.1.10/include/freetype/cache/ftcimage.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftcmanag.h",
+      "sha256": "d6196bfdc8d0c621791c602c33bdf624379e010a6a873dab26cba7bd281b5fe0",
+      "target": "freetype-2.1.10/include/freetype/cache/ftcmanag.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftcmru.h",
+      "sha256": "a94e81b64d05851c9b5d022685d7ad44d39411caab9878026b1d566c0f046700",
+      "target": "freetype-2.1.10/include/freetype/cache/ftcmru.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/cache/ftcsbits.h",
+      "sha256": "877014b95ffd0993005d4948c2105bc750a973b09ef3cc145b51353282f494c9",
+      "target": "freetype-2.1.10/include/freetype/cache/ftcsbits.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/config/ftconfig.h",
+      "sha256": "1e5d0fdd889072688957e89923f9bfd9cfe581fc90067a20c20eff41afd1e856",
+      "target": "freetype-2.1.10/include/freetype/config/ftconfig.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/config/ftheader.h",
+      "sha256": "a3ae4fe6f57fc542c814f0e28dffe4adb6c57a7b80641004a7131a641ffafeeb",
+      "target": "freetype-2.1.10/include/freetype/config/ftheader.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/config/ftmodule.h",
+      "sha256": "431e8850fce4f1267fe16837a97b53a5fe72ded97f38e22cddb7ae25205e2240",
+      "target": "freetype-2.1.10/include/freetype/config/ftmodule.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/config/ftoption.h",
+      "sha256": "876ffc4e62b74dbe99b5a53158764734ab9343c96a7bf4acf7ee845edabf9563",
+      "target": "freetype-2.1.10/include/freetype/config/ftoption.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/config/ftstdlib.h",
+      "sha256": "779d337df78810e2471190d3cd4785df1b7662786fae2d91c285a0a42614ce0c",
+      "target": "freetype-2.1.10/include/freetype/config/ftstdlib.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/freetype.h",
+      "sha256": "18388319e596ab13111bc8f89d46188f104a357c80b0ebc07b87b141869d9618",
+      "target": "freetype-2.1.10/include/freetype/freetype.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftbbox.h",
+      "sha256": "d0b66a5459c21cb6f7a5d9637e94785a2a6a6e1f72e3f35594095373fc42f99d",
+      "target": "freetype-2.1.10/include/freetype/ftbbox.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftbdf.h",
+      "sha256": "1449fb03d2f2fa61ac39e717280ab3ce66582f62941778ef823deedde9409d3a",
+      "target": "freetype-2.1.10/include/freetype/ftbdf.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftbitmap.h",
+      "sha256": "cabc496d3ca1cd9654949fb40540f3a9d431bdae6bbe385f66862ec2d47e4e7b",
+      "target": "freetype-2.1.10/include/freetype/ftbitmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftcache.h",
+      "sha256": "c0a267e974a3c9590c773e7e701c2fe1ebb40efa9bf5db3a27085aa0a0e745a3",
+      "target": "freetype-2.1.10/include/freetype/ftcache.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftchapters.h",
+      "sha256": "ddca5c9a366a008caef59e494c0059615b0e8441081c5ba3cbfb35b207f5edfd",
+      "target": "freetype-2.1.10/include/freetype/ftchapters.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/fterrdef.h",
+      "sha256": "a3a6413facd60034ce7a2e3684e60afcb3bc072f019f20181143675eaaba1182",
+      "target": "freetype-2.1.10/include/freetype/fterrdef.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/fterrors.h",
+      "sha256": "13ce56d517306b21d5910e474cddacdcc7009cb717140e691148d2641e0b041e",
+      "target": "freetype-2.1.10/include/freetype/fterrors.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftglyph.h",
+      "sha256": "d304ce5dc173ffc37c56b39aee2c649afbd49b4ca50047aec0962f0d763331bc",
+      "target": "freetype-2.1.10/include/freetype/ftglyph.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftgzip.h",
+      "sha256": "2f404a26e67b86a2460b2c05b65038b3400e56e884e1285657ade37dd218b90e",
+      "target": "freetype-2.1.10/include/freetype/ftgzip.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftimage.h",
+      "sha256": "9074175883ab782634f75ee404e74aac433cb567ecdf5fe09c3a045a6e89851d",
+      "target": "freetype-2.1.10/include/freetype/ftimage.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftincrem.h",
+      "sha256": "0873cab9e80c2477a2ea46b3b458aaa6a9b86d7f1364111e1e4841db1c00d29b",
+      "target": "freetype-2.1.10/include/freetype/ftincrem.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftlist.h",
+      "sha256": "a8cc198b860c7526877de410626a6edad4c4bbe6e09153458d992ab6731aa3c9",
+      "target": "freetype-2.1.10/include/freetype/ftlist.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftlzw.h",
+      "sha256": "21bf6c7d055c7df3c448d6c11924216740742dd61debc7541bd224631017b9b9",
+      "target": "freetype-2.1.10/include/freetype/ftlzw.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftmac.h",
+      "sha256": "0f3284dba3f8f0d751f353c0983a33a7e947c457930f328728b7a2b73fbafcfa",
+      "target": "freetype-2.1.10/include/freetype/ftmac.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftmm.h",
+      "sha256": "20f59407f310fd3649400173a882131ac35bc7ac0ec9cd2907c2ccc06677e68e",
+      "target": "freetype-2.1.10/include/freetype/ftmm.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftmodapi.h",
+      "sha256": "3b669ee772da762cbc1ba65854ab670eee42b465b153e6406eb7794c8a1fec31",
+      "target": "freetype-2.1.10/include/freetype/ftmodapi.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftmoderr.h",
+      "sha256": "3b70fff8add869b8414a9cc043c88af101e829bdcaf86b292312ac6aad53f115",
+      "target": "freetype-2.1.10/include/freetype/ftmoderr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftotval.h",
+      "sha256": "fb23c577dce73d3a4dd8c20799f18e6a61c1532b6a61b52c0598a140d988cb93",
+      "target": "freetype-2.1.10/include/freetype/ftotval.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftoutln.h",
+      "sha256": "045c2ced2334b1c9956ec8ca5156a0f2685e98346b103e321f030cb53824de22",
+      "target": "freetype-2.1.10/include/freetype/ftoutln.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftpfr.h",
+      "sha256": "d54939b9c0cc595c80f18a28034b800be86cac113213cbe9051be6ed9a519243",
+      "target": "freetype-2.1.10/include/freetype/ftpfr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftrender.h",
+      "sha256": "c3752f8a7b13663cc6cb359f6d16517fce0e2677203de90b88b0713377f3ae12",
+      "target": "freetype-2.1.10/include/freetype/ftrender.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftsizes.h",
+      "sha256": "9539ac0d0d108966db9f9da9dab31bc60a096b537cf8c6a7a471911b1f11a9e7",
+      "target": "freetype-2.1.10/include/freetype/ftsizes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftsnames.h",
+      "sha256": "3e8280ca047acf67b95179c2fa73a4def766da9287da35872fe600f89163600b",
+      "target": "freetype-2.1.10/include/freetype/ftsnames.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftstroke.h",
+      "sha256": "4fa0b29f22fe6431372dbc9791c2c190c27be0b07e161136799c31d33d31736b",
+      "target": "freetype-2.1.10/include/freetype/ftstroke.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftsynth.h",
+      "sha256": "2b19c221f3464cc3de65b34708d35c750e5f8274632b493936279a05cb06ddd9",
+      "target": "freetype-2.1.10/include/freetype/ftsynth.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftsysio.h",
+      "sha256": "36ae2b5d2f93baf6855441228751fb116848a4db289c8bf51ff8e2d4c7b8e37c",
+      "target": "freetype-2.1.10/include/freetype/ftsysio.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftsysmem.h",
+      "sha256": "3aaa4f344f66fdfd1dd089d31e193c832b0da7566ebc8de7dc12964d81ee87a4",
+      "target": "freetype-2.1.10/include/freetype/ftsysmem.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftsystem.h",
+      "sha256": "736bfdd3819007060dd531ed97d8deec6ced21948c4b7d7b6326daa4328e2e99",
+      "target": "freetype-2.1.10/include/freetype/ftsystem.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/fttrigon.h",
+      "sha256": "2106496c90200181956fe14ae71481c7cceacf95a65c17b3452ceca979f43e1c",
+      "target": "freetype-2.1.10/include/freetype/fttrigon.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/fttypes.h",
+      "sha256": "8ae31dcb93a286016ab31e67742f8d0ce6503d7cb80ae0754964081408c6e9d3",
+      "target": "freetype-2.1.10/include/freetype/fttypes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftwinfnt.h",
+      "sha256": "9c91ee508fa0b870e9791d1d0c66ce969dd699dacc971a2f9f3ba1cadf69fe9a",
+      "target": "freetype-2.1.10/include/freetype/ftwinfnt.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ftxf86.h",
+      "sha256": "78fc6a234f26cf79d0e11e6df4c609afee1d2a2378676e2b8435f19cd66a7492",
+      "target": "freetype-2.1.10/include/freetype/ftxf86.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/autohint.h",
+      "sha256": "4f3f0b75d3cd3738c99b50418f7d857717172b74cba746fc0e9f0c870d2c61f9",
+      "target": "freetype-2.1.10/include/freetype/internal/autohint.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftcalc.h",
+      "sha256": "94fad622f9037a6bd44f9974f814db1eeeee0b8046b451a2440f5cc4b432816e",
+      "target": "freetype-2.1.10/include/freetype/internal/ftcalc.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftdebug.h",
+      "sha256": "2de3ee453317e721d1e0d7d71098440d6264855977c2bd5ad0c531273d8e0700",
+      "target": "freetype-2.1.10/include/freetype/internal/ftdebug.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftdriver.h",
+      "sha256": "6843988b549f401938929fd5c26d1069ddb28577fdd42e854bc599ad776200a3",
+      "target": "freetype-2.1.10/include/freetype/internal/ftdriver.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftgloadr.h",
+      "sha256": "ffc49445759cdb7005db0b283cdac0fdaa595a882ccfb48eb515da903c6ac838",
+      "target": "freetype-2.1.10/include/freetype/internal/ftgloadr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftmemory.h",
+      "sha256": "688ff5500d96a9eb37e0c2cc79cb1a45c4141d4bdff39a87150bdf455d8188eb",
+      "target": "freetype-2.1.10/include/freetype/internal/ftmemory.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftobjs.h",
+      "sha256": "6ef8d206c8eed777e34af0e1c0818e96616da1d83a2e23c562afbf6060f44887",
+      "target": "freetype-2.1.10/include/freetype/internal/ftobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftrfork.h",
+      "sha256": "36f0721daacc91349b5ee26aaa8c1bbe97931fa8db7b21bf594a57584797e992",
+      "target": "freetype-2.1.10/include/freetype/internal/ftrfork.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftserv.h",
+      "sha256": "43612c9db403ad866ab191c6092262ac827b21c1726512612103a96764d4f87e",
+      "target": "freetype-2.1.10/include/freetype/internal/ftserv.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftstream.h",
+      "sha256": "0886d18d49869dd94fb128d92b95bb9bb3e8e7de972b866f41a12a97462e7cdb",
+      "target": "freetype-2.1.10/include/freetype/internal/ftstream.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/fttrace.h",
+      "sha256": "b62cc0b0f7f90488457fa8842696929de692641dda941eaf56bf2ad38cdf5dd5",
+      "target": "freetype-2.1.10/include/freetype/internal/fttrace.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/ftvalid.h",
+      "sha256": "799a864ab93c803481841c41810b9b8a916ce486010667853960b985a35dfa02",
+      "target": "freetype-2.1.10/include/freetype/internal/ftvalid.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/internal.h",
+      "sha256": "625bcb1020241057cb6f92b623d25394057f7433b30d8909097d800a93e1b8c5",
+      "target": "freetype-2.1.10/include/freetype/internal/internal.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/pcftypes.h",
+      "sha256": "4c43160d6b904634c82dbb288315eafdd85e3c3fc0c06d0d70b2cf6722b1ec6f",
+      "target": "freetype-2.1.10/include/freetype/internal/pcftypes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/psaux.h",
+      "sha256": "aa7dc311c000d812e21c3e28d6ef521452291e1a69d06c17e7df6171b55f091c",
+      "target": "freetype-2.1.10/include/freetype/internal/psaux.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/pshints.h",
+      "sha256": "bfa81952fface68dfa4dbf155184d663981f69203032e359c703783e4e839ab1",
+      "target": "freetype-2.1.10/include/freetype/internal/pshints.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svbdf.h",
+      "sha256": "1507bc07e12a1e0ea805293cc2052b75f87b18b4e06bdf749fddf4d0239ea0b5",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svbdf.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svgldict.h",
+      "sha256": "8b8bf517ba525e1ff0e6d8bd74861e618249957546158a38508850e24cbb2afc",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svgldict.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svmm.h",
+      "sha256": "5553636654c5e9fd6c8a62d1a2365f8f36aff9ec0927705730402868e8012d0b",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svmm.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svotval.h",
+      "sha256": "a5e99c7bbba394c6ff83383ac1ae434ed0cc651b36496f3d1df1e381eff897ea",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svotval.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svpfr.h",
+      "sha256": "9d978ca81c6bc6a059e987f70a79fa0771fac9943113eb45cf7aebbaf84ea5ac",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svpfr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svpostnm.h",
+      "sha256": "12e0f4823056e8b64b10e7e5113afc20938dda62c3f7c9ede3c6e36beeb62986",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svpostnm.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svpscmap.h",
+      "sha256": "bdb3639033629188ac13bc5d358f4226abf818a0cbb02f9b973c90ea3fdd9ce3",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svpscmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svpsinfo.h",
+      "sha256": "1081642d7fe67ab5754f9de4c31d3950e955bc0bf3ed487b058ef3c29895cae5",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svpsinfo.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svsfnt.h",
+      "sha256": "b021d23ccb6c1bcc3b0345e7269385b5fa65ad1d10a20236a93de1430d36b7ed",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svsfnt.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svttcmap.h",
+      "sha256": "3b326ba1fe7fc5c698986a5753b00bf6d57d19e5adaa562294aff840a9a831b8",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svttcmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svwinfnt.h",
+      "sha256": "138b183ac708b56268aba7ca793e6bfb36fb015a9a997d8b151cfba5ec87cae7",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svwinfnt.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/services/svxf86nm.h",
+      "sha256": "ed815ca884b5be9452dde39127bb4adcde78a586130dc456269f0b1211c0612f",
+      "target": "freetype-2.1.10/include/freetype/internal/services/svxf86nm.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/sfnt.h",
+      "sha256": "8fa09363de58efa91df7a1f8c535f4ebec26f05ff3d6cded1c216088b9065769",
+      "target": "freetype-2.1.10/include/freetype/internal/sfnt.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/t1types.h",
+      "sha256": "62b16af5325b2980fc9ed3a43f34fb7471dc7a6f2ac41b021403a400d6399655",
+      "target": "freetype-2.1.10/include/freetype/internal/t1types.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/internal/tttypes.h",
+      "sha256": "f27f93d250b4a49d73691c69e81160ab135f9f81edc934e472e0822a086ae8c3",
+      "target": "freetype-2.1.10/include/freetype/internal/tttypes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/t1tables.h",
+      "sha256": "8e1674801a749123bb2191300a128201fdebb37052eb81d91b8ea0d951c9c252",
+      "target": "freetype-2.1.10/include/freetype/t1tables.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ttnameid.h",
+      "sha256": "9228282a26d8dda9a46c7c76673ee5ef7b53b7df6ba3f6dea917726f87c09f82",
+      "target": "freetype-2.1.10/include/freetype/ttnameid.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/tttables.h",
+      "sha256": "33c61575e89f201e9bb132f8a74573f1eee30dd91d4883ba454e915d02c52312",
+      "target": "freetype-2.1.10/include/freetype/tttables.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/tttags.h",
+      "sha256": "71110c01c1b0c796fbb67954e593c5a1d7d95d9be4c2d38a3e98c6208fadbee5",
+      "target": "freetype-2.1.10/include/freetype/tttags.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/freetype/ttunpat.h",
+      "sha256": "e4ec8c173038b7abd0733e4d3a30af522fd4379e7fb72466cba2113c0cd666b3",
+      "target": "freetype-2.1.10/include/freetype/ttunpat.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/include/ft2build.h",
+      "sha256": "b37930f2e31bc5cc7265cd1c53bfa4ead9fd66f87a6cc2666c0879e0893a2ba4",
+      "target": "freetype-2.1.10/include/ft2build.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/Jamfile",
+      "sha256": "9beff7a6b9a583cad659ab5052e541f3f88bf8ded5b4f9c76fddfc97b897954a",
+      "target": "freetype-2.1.10/src/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/Jamfile",
+      "sha256": "701cb83415b43c2995cb48eda20f831009c6723845b1f214c08944f9dea76224",
+      "target": "freetype-2.1.10/src/autofit/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afangles.c",
+      "sha256": "a427aed0206e1dcb2b483d756ea7f89ac2c550f341109cab22558bf0b952bba4",
+      "target": "freetype-2.1.10/src/autofit/afangles.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afangles.h",
+      "sha256": "36ae6c0f4910113512b4f1e32b49f4cabf99341b152c13345b8b72e6d62ff842",
+      "target": "freetype-2.1.10/src/autofit/afangles.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afdummy.c",
+      "sha256": "5cf2bb350aa93876accf762999be31a25e632e6c2ebea69712a73b8b5d9b8351",
+      "target": "freetype-2.1.10/src/autofit/afdummy.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afdummy.h",
+      "sha256": "8b8cd7a3dd8cb1fd1e48c099607d578960e416d23978fbcfbd7d862daa0b35df",
+      "target": "freetype-2.1.10/src/autofit/afdummy.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/aferrors.h",
+      "sha256": "91eae0b2d7f6878485f3563937a25ab05bf1e5132ec1c92f643716805b4b9d2e",
+      "target": "freetype-2.1.10/src/autofit/aferrors.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afglobal.c",
+      "sha256": "0f9da98646aff765c36f01040aa75a18df0c0970cba769ba5792414466d259b1",
+      "target": "freetype-2.1.10/src/autofit/afglobal.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afglobal.h",
+      "sha256": "e8b590cf4aff9e939bbf433039e031c88278b42eee192d9ddba7884666da66d6",
+      "target": "freetype-2.1.10/src/autofit/afglobal.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afhints.c",
+      "sha256": "74de7db4f938e6aa3abb8c6a75735111ebed9e7c283384a35fe54f10a3dea893",
+      "target": "freetype-2.1.10/src/autofit/afhints.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afhints.h",
+      "sha256": "dfc02f5c9e79d06cdcdfe8749c836e22aa0a6bf62f7643d5c0be5ee2e2acc3fb",
+      "target": "freetype-2.1.10/src/autofit/afhints.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/aflatin.c",
+      "sha256": "beb1aeae938b282271eb10ba298f4c053ae74e001bcde4c9b579a33ecd572057",
+      "target": "freetype-2.1.10/src/autofit/aflatin.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/aflatin.h",
+      "sha256": "e4f113ab4bee4769f1dde7658d6891e668e87910c00c139000aeb937d2a22fc5",
+      "target": "freetype-2.1.10/src/autofit/aflatin.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afloader.c",
+      "sha256": "faedbd9b8a89ff6845106b6be334cd515b1ad4edb24976b130a78bdd1d580349",
+      "target": "freetype-2.1.10/src/autofit/afloader.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afloader.h",
+      "sha256": "2c431f04a7cade7580035776fac350ce59a00033c55ffa3f5f7c66e518a52113",
+      "target": "freetype-2.1.10/src/autofit/afloader.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afmodule.c",
+      "sha256": "fd0117241bea0a558e82cb5082cf1de9bcf22593b3b1467956cb7b509b55bc66",
+      "target": "freetype-2.1.10/src/autofit/afmodule.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/afmodule.h",
+      "sha256": "7b4a112f8e02ebf3b9d8158346ff066d09d4abac40650d2722566b46e94d638b",
+      "target": "freetype-2.1.10/src/autofit/afmodule.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/aftypes.h",
+      "sha256": "a10836090fbd02a21780444b5c3f438d281ec6b277b8e536492015a00b780a0c",
+      "target": "freetype-2.1.10/src/autofit/aftypes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/autofit.c",
+      "sha256": "75cef717a25254b9ac42bbee2711383c6f56352ea4800c9e7620e748887ee552",
+      "target": "freetype-2.1.10/src/autofit/autofit.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/module.mk",
+      "sha256": "59b115c82f18d805910eca6b8c13d68f9927dbf30044e5ca49bb3b92c91692b9",
+      "target": "freetype-2.1.10/src/autofit/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/autofit/rules.mk",
+      "sha256": "86212c126ec329eca7e9ccbaca92b9edfdf2ea45c4b11c05cbbaac6f7ea937b3",
+      "target": "freetype-2.1.10/src/autofit/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/Jamfile",
+      "sha256": "e085312e3a792e155ca59ad441a2068de6388650b78609cb3918fcbde62c0b27",
+      "target": "freetype-2.1.10/src/base/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftapi.c",
+      "sha256": "97428a4506c1edbf7791b49be6d70a24c9b3f1f56bc3eece396fb696b1c00fd0",
+      "target": "freetype-2.1.10/src/base/ftapi.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftbase.c",
+      "sha256": "494524e6edc098718c26a05b27175d14b44665fa682de59ad74a21d9c198cef2",
+      "target": "freetype-2.1.10/src/base/ftbase.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftbbox.c",
+      "sha256": "dca34b117703cc0521870350d7b1bfb4db6ebd3d9164adf12d1db9e17c846b74",
+      "target": "freetype-2.1.10/src/base/ftbbox.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftbdf.c",
+      "sha256": "727f6f8c900c1f9d53ef2e4830e485caa82f0ca115ae070385b93f16d46ceefd",
+      "target": "freetype-2.1.10/src/base/ftbdf.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftbitmap.c",
+      "sha256": "655836b65a17fde2e5e13bcee6859ea67d6c91dcc387b2451b29c43e71437e00",
+      "target": "freetype-2.1.10/src/base/ftbitmap.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftcalc.c",
+      "sha256": "1d705ccfcb604bf693e48a942e98127043fe0d21ac3ad98cd7b54d1dd92df0a6",
+      "target": "freetype-2.1.10/src/base/ftcalc.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftdbgmem.c",
+      "sha256": "8e62f9640c5ecc7a18b010144f5c4e8b08989535d913e996134ae5f84854332d",
+      "target": "freetype-2.1.10/src/base/ftdbgmem.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftdebug.c",
+      "sha256": "d71e5d8bd6556ac29428defd5bcba6ecc4943888b13c3e2c985f8bbfe45e9b18",
+      "target": "freetype-2.1.10/src/base/ftdebug.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftgloadr.c",
+      "sha256": "b56149cf5a396e85f8ac02e022f3b0c7ad21277515e21b8b217fa6db456136e7",
+      "target": "freetype-2.1.10/src/base/ftgloadr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftglyph.c",
+      "sha256": "0ada105557974826a564facbd80d0913661462694da1ed4d09d2d3a29ac20531",
+      "target": "freetype-2.1.10/src/base/ftglyph.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftinit.c",
+      "sha256": "90ee6c569686c60424bb79faa8fe71c167f6e657cbe48b631145c6498183792d",
+      "target": "freetype-2.1.10/src/base/ftinit.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftmac.c",
+      "sha256": "169b2f950e296fefa453c4ce624a32b35fbe828763594e920727b8496948e847",
+      "target": "freetype-2.1.10/src/base/ftmac.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftmm.c",
+      "sha256": "bc5833c5a9e8350d10bf3ff6900362330950943bcc5b76e65e1f929092fc84f2",
+      "target": "freetype-2.1.10/src/base/ftmm.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftnames.c",
+      "sha256": "abd882b05b83fcbe673f49e3eed9cc7cd10efe8742c17a943a8c4f08b19add25",
+      "target": "freetype-2.1.10/src/base/ftnames.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftobjs.c",
+      "sha256": "138904187c0622dda0c85549456dad74dd6ef9fdd657a5700c4631591e3bd523",
+      "target": "freetype-2.1.10/src/base/ftobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftotval.c",
+      "sha256": "08b300fad61fde00da1d2e554d0968a8a47016011c141dca0ac43bf836330280",
+      "target": "freetype-2.1.10/src/base/ftotval.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftoutln.c",
+      "sha256": "9bf70589c342e2b7da61a75a24b2f1d0f0263eb9c98d3283ba843695d63ffed6",
+      "target": "freetype-2.1.10/src/base/ftoutln.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftpfr.c",
+      "sha256": "d6ee00c96894595224a46bacb2a2711a4fbe33b980d968341483d23556e3a54b",
+      "target": "freetype-2.1.10/src/base/ftpfr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftrfork.c",
+      "sha256": "6c90c319bce47583d8b605b0571c7f9eacc739f7ddb0cbb7c0b3a3b3845345ac",
+      "target": "freetype-2.1.10/src/base/ftrfork.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftstream.c",
+      "sha256": "b1b9b5a56d79f8cb200747edf7a1229f694275d8f1c7b6e6c1bee295f557a64f",
+      "target": "freetype-2.1.10/src/base/ftstream.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftstroke.c",
+      "sha256": "46212c2ec96302814e489443e682322c3324270efe7017980ade8ad6628416c5",
+      "target": "freetype-2.1.10/src/base/ftstroke.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftsynth.c",
+      "sha256": "373d8f2e178b09ae2d5d3dc550b196a9559941dc1be24366e7f16ff573ed5143",
+      "target": "freetype-2.1.10/src/base/ftsynth.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftsystem.c",
+      "sha256": "d1a3d57daa7fc2865c3c304bc0ddde635d8e796cb0992516c94ea63347a9fb47",
+      "target": "freetype-2.1.10/src/base/ftsystem.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/fttrigon.c",
+      "sha256": "82c247182499ddbe1a5d8aeacd825d501365770020e9f2ec4c7d9c8073752ee7",
+      "target": "freetype-2.1.10/src/base/fttrigon.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/fttype1.c",
+      "sha256": "4aa04c4fe4cf3d714fe086a73807fa1402401b1cdbc75d39aa6393fbcc020c36",
+      "target": "freetype-2.1.10/src/base/fttype1.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftutil.c",
+      "sha256": "91abf60b8948bc5ac749eef930cc028eb32880f1188f00077b755824a83d7cf2",
+      "target": "freetype-2.1.10/src/base/ftutil.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftwinfnt.c",
+      "sha256": "6cbab04fb8828eade3e667f7db0a5feed1061b8c246bbdff50bb0b70679a597f",
+      "target": "freetype-2.1.10/src/base/ftwinfnt.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/ftxf86.c",
+      "sha256": "73fc6d4c44aad14181dc53f0f1ee1ea5d825543b544431bbdff78830d4413ad3",
+      "target": "freetype-2.1.10/src/base/ftxf86.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/base/rules.mk",
+      "sha256": "3ca69898b3d214f836f18052aadd8f66c30ab6a1b3cf018fd3e585536c41930f",
+      "target": "freetype-2.1.10/src/base/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/Jamfile",
+      "sha256": "5dd2afa92f2064bbe77151c2feddea7532444c898c19dd21bafd7048cd020fcd",
+      "target": "freetype-2.1.10/src/bdf/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/README",
+      "sha256": "1fefa2bcab71d2d0ffb0092fb3afd20995210a7104f57b564f16693c36a963a2",
+      "target": "freetype-2.1.10/src/bdf/README"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/bdf.c",
+      "sha256": "85402d440e4c6c662d4ecfccc89b128ba11573fe2b4fdc74dd4fc298595aca9b",
+      "target": "freetype-2.1.10/src/bdf/bdf.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/bdf.h",
+      "sha256": "411295b74e7f3ae1154d5104e1d1a41125d01524a3eca30cc2911521fbaa92a2",
+      "target": "freetype-2.1.10/src/bdf/bdf.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/bdfdrivr.c",
+      "sha256": "80d2f1a2ac02214a607ade2b056371cb00aba2a8678751357c0090b97720c51a",
+      "target": "freetype-2.1.10/src/bdf/bdfdrivr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/bdfdrivr.h",
+      "sha256": "855dcd9ca57c8d0896dcedc986bac795479f80cb956bf41191e36ab7f18c34ec",
+      "target": "freetype-2.1.10/src/bdf/bdfdrivr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/bdferror.h",
+      "sha256": "c38bac1eb2cf45a235cd48d351d26a3719d65602fde91e37f52ebbb31a0b0c9d",
+      "target": "freetype-2.1.10/src/bdf/bdferror.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/bdflib.c",
+      "sha256": "936b09f519755b6f3c4ce0cd8f258257f011ab2f2eb32585b2f2c922b76a4f9b",
+      "target": "freetype-2.1.10/src/bdf/bdflib.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/module.mk",
+      "sha256": "3563119957d70a3243f9f01e08b6a2c641df92dd1edf2338bcfaa7f980fbd5ee",
+      "target": "freetype-2.1.10/src/bdf/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/bdf/rules.mk",
+      "sha256": "a9a2cbe879c7eea593b918087bfd88407c7c7d4c55f022acbc270a44fc35f00d",
+      "target": "freetype-2.1.10/src/bdf/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/Jamfile",
+      "sha256": "dc8c4e789ea99a1f9ffb0a825917fbc741aa6933f736ed66b9da94439e4aeeb8",
+      "target": "freetype-2.1.10/src/cache/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcache.c",
+      "sha256": "be2a2252c42d3e84ed7765afc18b07550e6f66c33a69573aa1431a99d02c6404",
+      "target": "freetype-2.1.10/src/cache/ftcache.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcbasic.c",
+      "sha256": "24534ae35484074572fbb91565ecd018fddd67bc9602f686ebffe5438cf9bfe2",
+      "target": "freetype-2.1.10/src/cache/ftcbasic.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftccache.c",
+      "sha256": "4f82737c3b4018234966bb620a8580238153a14cb95b128c134adb85115033e7",
+      "target": "freetype-2.1.10/src/cache/ftccache.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftccback.h",
+      "sha256": "2240ac2988ee0b67f3195a80b715afc98a2551b8106ace91a2fa07bb8988f35c",
+      "target": "freetype-2.1.10/src/cache/ftccback.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftccmap.c",
+      "sha256": "8b185ec166954be2cccd104468aadefff0ce654545e056e2115bf6d5f173ac7c",
+      "target": "freetype-2.1.10/src/cache/ftccmap.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcerror.h",
+      "sha256": "bd7a5349e18849ec08c7b0454712827491e2c78b48d4c2a342957d2f9d0a66e9",
+      "target": "freetype-2.1.10/src/cache/ftcerror.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcglyph.c",
+      "sha256": "22702221ee5bae8bea751715532c7217216de1f91b44c5e82ed00c3d89ccdfc0",
+      "target": "freetype-2.1.10/src/cache/ftcglyph.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcimage.c",
+      "sha256": "279f110e9b7283a48fdcb2a63d562cfc9c0cd7402f4b43acbf88f320b397418e",
+      "target": "freetype-2.1.10/src/cache/ftcimage.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcmanag.c",
+      "sha256": "5d22d0182fd5c82b260ab4f8190cf49dd5d457092f553ee9194c7619a05ec673",
+      "target": "freetype-2.1.10/src/cache/ftcmanag.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcmru.c",
+      "sha256": "cc910ac2800e9cf8caf8c6c58cbc94dbcec1474c7a500ecab02f0fed3640fb6f",
+      "target": "freetype-2.1.10/src/cache/ftcmru.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/ftcsbits.c",
+      "sha256": "1476bbdcc876a3409abd25c754be773b56ba83043bfcdc4ba10bb50437ec35d3",
+      "target": "freetype-2.1.10/src/cache/ftcsbits.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cache/rules.mk",
+      "sha256": "f2754f7128d817b27e23634be77f21889193b9819724b00a3840997e89f5cc05",
+      "target": "freetype-2.1.10/src/cache/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/Jamfile",
+      "sha256": "231b9021eda5b68c9f29ab84472cd7ac975258a234df5f7e66e9eeed281ba363",
+      "target": "freetype-2.1.10/src/cff/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cff.c",
+      "sha256": "a4e06dd6eae9108aff1937e87c121af3463c0f1f058c71c94aaf864d824ceaf4",
+      "target": "freetype-2.1.10/src/cff/cff.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffcmap.c",
+      "sha256": "9d243547977129380e57e940d4aaa44ae24d0d2dda73c7fcce61340d1a889ab8",
+      "target": "freetype-2.1.10/src/cff/cffcmap.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffcmap.h",
+      "sha256": "280752c1ab4b5e36d7a65a41e64d72576e39a5266858d87e10c86130d37492c0",
+      "target": "freetype-2.1.10/src/cff/cffcmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffdrivr.c",
+      "sha256": "5687a6f8f6a2e2890fb1d69221ce4ba7a2ee0ce1606e6b7a3a792daf84435c89",
+      "target": "freetype-2.1.10/src/cff/cffdrivr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffdrivr.h",
+      "sha256": "501af221f033e6c9f77e82664a17ba4e0fb099334c11996d05f0594788ea1e46",
+      "target": "freetype-2.1.10/src/cff/cffdrivr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cfferrs.h",
+      "sha256": "d60dfa96ac04a3386d350378f494f4f86213c300227c263f4134a07b99c1b513",
+      "target": "freetype-2.1.10/src/cff/cfferrs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffgload.c",
+      "sha256": "e2e96944e770c89e4b9304e4d8eab21ea11c3ecaf8f05424d07c7dc46ec1d55a",
+      "target": "freetype-2.1.10/src/cff/cffgload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffgload.h",
+      "sha256": "931d90b3a8b15c870ca49c2099ccc29fb4aa5b64eb3a44232d43ee49fbf6e259",
+      "target": "freetype-2.1.10/src/cff/cffgload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffload.c",
+      "sha256": "75a57ed13afc27aa4717b8ec532075c25df5fdd52377c41400e210a50bb32fbb",
+      "target": "freetype-2.1.10/src/cff/cffload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffload.h",
+      "sha256": "eb558d1ca99c038413ead57669015e677a0c0b0dd3c427428f46fd6c434e3141",
+      "target": "freetype-2.1.10/src/cff/cffload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffobjs.c",
+      "sha256": "d7f8db2e4ed9f898d728b4dff265d30dcfbd338ba9b5cf425cbd708b30a9db5f",
+      "target": "freetype-2.1.10/src/cff/cffobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffobjs.h",
+      "sha256": "f8475cfeb484b76f95e97c196866702275f9374a4c40e00b976aaa595723e3af",
+      "target": "freetype-2.1.10/src/cff/cffobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffparse.c",
+      "sha256": "7e3ff039ad2899f1b1a616014b45acd748fa5fae85f622c1b8dc93c234ee2d18",
+      "target": "freetype-2.1.10/src/cff/cffparse.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cffparse.h",
+      "sha256": "245366ee4f5566cbf621ec83ffb53573c9cfb1da3f1dce97b53119dbe3987123",
+      "target": "freetype-2.1.10/src/cff/cffparse.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cfftoken.h",
+      "sha256": "1e4ecab4482769dc2bc5752ccef6b8d8423da0678ff969bd1a2fabc4a35c8d80",
+      "target": "freetype-2.1.10/src/cff/cfftoken.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/cfftypes.h",
+      "sha256": "866e7b37614719295c5612d4bafcb2a356ca5551fdf9d900aacf448109dcc074",
+      "target": "freetype-2.1.10/src/cff/cfftypes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/module.mk",
+      "sha256": "93f8fc673c5a2ad74533a1dc5104344cf36560c481d1b722269f450b19fd2837",
+      "target": "freetype-2.1.10/src/cff/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cff/rules.mk",
+      "sha256": "ddb461bb4fc3be92fc73d35f9d27f4ff214715c0734db2f95e4711b8a61f64df",
+      "target": "freetype-2.1.10/src/cff/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/Jamfile",
+      "sha256": "8ecef4639372eff60557e1087d7cbd7d68cb8a1889978e42309d4241cc142f41",
+      "target": "freetype-2.1.10/src/cid/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/ciderrs.h",
+      "sha256": "0c06e11205cc4953d83784c73a56010688915d71fd374430bb65bbfb0acfe0c5",
+      "target": "freetype-2.1.10/src/cid/ciderrs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidgload.c",
+      "sha256": "f55b5b383976577ce349859d2d9dea323edf152ec535dee00c7f4d46075a7220",
+      "target": "freetype-2.1.10/src/cid/cidgload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidgload.h",
+      "sha256": "8138e81929b7adc014a00f1226c7cb78fb0c06557a11c2ac2e3df687a2c9e023",
+      "target": "freetype-2.1.10/src/cid/cidgload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidload.c",
+      "sha256": "2ce1a6f358d7b70d1617513f2a67c4264fb52c873457b6c33429ad91055e7b99",
+      "target": "freetype-2.1.10/src/cid/cidload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidload.h",
+      "sha256": "3b4f1d12bd55a1ce02272194e7784dea015c8254a0747df3888a3d8567690ad3",
+      "target": "freetype-2.1.10/src/cid/cidload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidobjs.c",
+      "sha256": "e8a5ad25bb836c8cb8100e98bf24dd8b344c32bda089a9dee89143d756a1c4c0",
+      "target": "freetype-2.1.10/src/cid/cidobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidobjs.h",
+      "sha256": "b007ef9027bab9076d2799f77928c8b53065aa5d9eec03bc3cac7ff3d2321557",
+      "target": "freetype-2.1.10/src/cid/cidobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidparse.c",
+      "sha256": "22807e7b4eb3718cd43c40def44e493a19f544d5c4d1b382e3fba99f7880f7e0",
+      "target": "freetype-2.1.10/src/cid/cidparse.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidparse.h",
+      "sha256": "a29cc5f2052481148d0f035adfd2c56375b3392007fdb3f131fee040d835ba77",
+      "target": "freetype-2.1.10/src/cid/cidparse.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidriver.c",
+      "sha256": "a7951cacb0ee0fd1f74448bd8275b73c5db46f7d225f9042278b4c6d0076dccc",
+      "target": "freetype-2.1.10/src/cid/cidriver.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidriver.h",
+      "sha256": "c603f02deb2a2ba27d072325134761922196b1af678badd7562952af47ab74a6",
+      "target": "freetype-2.1.10/src/cid/cidriver.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/cidtoken.h",
+      "sha256": "5ee5dad1d35f29ddc28d5e96ef598a9ede2b3a9b60368b60f9de54eb28ea50e7",
+      "target": "freetype-2.1.10/src/cid/cidtoken.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/module.mk",
+      "sha256": "d7679f8bd286e7e5db3767a640a2798d4dc08df4481bd6b4a6235262e1706730",
+      "target": "freetype-2.1.10/src/cid/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/rules.mk",
+      "sha256": "7f8ebf7fd054e35dac90d768aef81d6d9e72d4956011cafe9e6d8a0339e47b39",
+      "target": "freetype-2.1.10/src/cid/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/cid/type1cid.c",
+      "sha256": "e9ba744674f8c6575287ce380da55269b98da097c71c0d67ce8f0562fb47e3b7",
+      "target": "freetype-2.1.10/src/cid/type1cid.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/Jamfile",
+      "sha256": "fdb8629bc0e22fb36b948ffc2bea8fcb72ceafcff2fe7a6923cfed9dbbc59b0a",
+      "target": "freetype-2.1.10/src/gzip/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/adler32.c",
+      "sha256": "86379a9e894670402c553f2f39ebb94963f0f93e4a6eea2a60135a99e68faea7",
+      "target": "freetype-2.1.10/src/gzip/adler32.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/ftgzip.c",
+      "sha256": "39ecbd66139a2fd23ee0a7dd78c32e4d1a95eac8024fc0ac1476db1c3953cd99",
+      "target": "freetype-2.1.10/src/gzip/ftgzip.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/infblock.c",
+      "sha256": "8c2ced331afcf57c5bbee6236f1002f32fd0616508f4a60f785f06f0dce5da30",
+      "target": "freetype-2.1.10/src/gzip/infblock.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/infblock.h",
+      "sha256": "f01671278609c8ff08cd738fde77c0298d841a8ad8745b3a43d829adaf20ebb2",
+      "target": "freetype-2.1.10/src/gzip/infblock.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/infcodes.c",
+      "sha256": "0ad082c56b91b6d0b39b1caf084f369e1c2682f9ad5de5c106d578fd65cd4ed3",
+      "target": "freetype-2.1.10/src/gzip/infcodes.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/infcodes.h",
+      "sha256": "74c64b003aa665b2302ad2cde3779cf52a2d66564f69f1b962f4c94200e33713",
+      "target": "freetype-2.1.10/src/gzip/infcodes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/inffixed.h",
+      "sha256": "70d88a501013305652c62a7e2bf1d1340402510a605c60174c6f0f354338e65f",
+      "target": "freetype-2.1.10/src/gzip/inffixed.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/inflate.c",
+      "sha256": "7bdb78033852daed76a923438ab0e382cf9a7b630392cfc3461f7d97d4c2cbe4",
+      "target": "freetype-2.1.10/src/gzip/inflate.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/inftrees.c",
+      "sha256": "47712465f120b258a590373958643ecf0085da8ffc70a0900cdbf482a202ccdf",
+      "target": "freetype-2.1.10/src/gzip/inftrees.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/inftrees.h",
+      "sha256": "08750e1ed063eab3709d1f64d6659a0c71cda4b1912798092772d3943ea0ef0c",
+      "target": "freetype-2.1.10/src/gzip/inftrees.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/infutil.c",
+      "sha256": "1f0b66e7c427fa91cd3359172890eac9e1245b42c1fdbf99aed5c6991473b0f2",
+      "target": "freetype-2.1.10/src/gzip/infutil.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/infutil.h",
+      "sha256": "c94c949faeee400f923122dd83e2f8e1c1e1fcd6443907b48d670b81cb77b538",
+      "target": "freetype-2.1.10/src/gzip/infutil.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/rules.mk",
+      "sha256": "d12c9bd9ce6709c01dfa81d2c035831517e9f3c5c297ab424160056e2630f287",
+      "target": "freetype-2.1.10/src/gzip/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/zconf.h",
+      "sha256": "98b64cfd34ad95ffa9483481f992028ad7091d6952606b82e76ee0329d89c8e1",
+      "target": "freetype-2.1.10/src/gzip/zconf.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/zlib.h",
+      "sha256": "3bca7aa1c5dd5a67781d10f8d09c8e0d0955655e703307e23b183e9abae6b94c",
+      "target": "freetype-2.1.10/src/gzip/zlib.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/zutil.c",
+      "sha256": "c5a0a2afc1094be3ba4c3044ed445b061a186c454d76ef1afb0c6b968aed1d07",
+      "target": "freetype-2.1.10/src/gzip/zutil.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/gzip/zutil.h",
+      "sha256": "cb88afefe1566a860ce5ace3defa1d8494b163c68fc5590e58759758d92baa7b",
+      "target": "freetype-2.1.10/src/gzip/zutil.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/lzw/Jamfile",
+      "sha256": "3b055a3dfbcba30e36208791eb3cf501f5f64157c9a56b20d7e549585e7a8314",
+      "target": "freetype-2.1.10/src/lzw/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/lzw/ftlzw.c",
+      "sha256": "1cad6f88f24451683f97202af19336f4e0cb8df42f92b8ddd1518278aaa0ed6a",
+      "target": "freetype-2.1.10/src/lzw/ftlzw.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/lzw/rules.mk",
+      "sha256": "5305516842700f1068f314bda75334f22dccf0ac48d0ac83ffb898ba8cb0dcc8",
+      "target": "freetype-2.1.10/src/lzw/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/lzw/zopen.c",
+      "sha256": "c1ae366ca602df9ecb856749bfea260ae23e6edce329f43dea3f24df7945840b",
+      "target": "freetype-2.1.10/src/lzw/zopen.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/lzw/zopen.h",
+      "sha256": "3e01234fc2956805ef8099d39de2a80500955677d2b7f6d73ff1349d2d320f4f",
+      "target": "freetype-2.1.10/src/lzw/zopen.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/Jamfile",
+      "sha256": "29ae57774e4289930714f12d30f76215bae804292b5fce95718279379755f1e5",
+      "target": "freetype-2.1.10/src/otvalid/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/module.mk",
+      "sha256": "95eeb14fa2f596cc8d3b659dbb6065b93b23446a4f1ea08aac05d71544663c37",
+      "target": "freetype-2.1.10/src/otvalid/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvalid.c",
+      "sha256": "1ecbc425daa0d2bda5cf5bd0bd348cc92f7775c1a315c3064e74c5c5484b6980",
+      "target": "freetype-2.1.10/src/otvalid/otvalid.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvalid.h",
+      "sha256": "8557c81adca045a8b9efc999a9734898bcee745e655a69b2168d85c0a0ea1f4e",
+      "target": "freetype-2.1.10/src/otvalid/otvalid.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvbase.c",
+      "sha256": "b66a8ef38a6442c9df609b0489478058a8733b7dc396b8d415bcb1e6dba7f759",
+      "target": "freetype-2.1.10/src/otvalid/otvbase.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvcommn.c",
+      "sha256": "a2aa473ab2c1c821f1085f670f2a6f56248a724715234b9e37e2603404ce7630",
+      "target": "freetype-2.1.10/src/otvalid/otvcommn.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvcommn.h",
+      "sha256": "286d39abcea8e77c46bb07a7f711cf251b3712eb01bdfacbc1e47de5af071825",
+      "target": "freetype-2.1.10/src/otvalid/otvcommn.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otverror.h",
+      "sha256": "e26c53b2e5e209925ba381389351a0a1d5bb54ec1e50d9b0684349f982b30bba",
+      "target": "freetype-2.1.10/src/otvalid/otverror.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvgdef.c",
+      "sha256": "4c72dc9ec193695102506aea34b322381cbfc4af4b6d846ca3f13771f514d3b8",
+      "target": "freetype-2.1.10/src/otvalid/otvgdef.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvgpos.c",
+      "sha256": "d22f3332c91c5b39c8d86ebcaa251bbd115558b71580a58c237b9270a7e15a1c",
+      "target": "freetype-2.1.10/src/otvalid/otvgpos.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvgpos.h",
+      "sha256": "c9c5737ff6c894dafe43cf3b4908de5c8bed1fc60b81723721d3da3ca477cdbd",
+      "target": "freetype-2.1.10/src/otvalid/otvgpos.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvgsub.c",
+      "sha256": "6a63cd41f8dc5bcde753df0cb1b74b422d776118dcd2b089a7ab51c294b3262b",
+      "target": "freetype-2.1.10/src/otvalid/otvgsub.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvjstf.c",
+      "sha256": "3801bb512c3e3be121e9bddb7b95f42a149922f554f282d0869fe7b15e9663a6",
+      "target": "freetype-2.1.10/src/otvalid/otvjstf.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvmod.c",
+      "sha256": "5bd4e5310d9d22cf210736e38da00e9019ea5fa8e94609e84023670a99f32702",
+      "target": "freetype-2.1.10/src/otvalid/otvmod.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/otvmod.h",
+      "sha256": "db24184b0a303bde2a87d3f4f9fd722b7686fc1f20e891de1bcae32be44addf5",
+      "target": "freetype-2.1.10/src/otvalid/otvmod.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/otvalid/rules.mk",
+      "sha256": "a76ed6ce7ff6cbff939b765b7eff77f9c55f04e9da007763ceaa162ce1227d38",
+      "target": "freetype-2.1.10/src/otvalid/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/Jamfile",
+      "sha256": "68e366bb4070981db4ff029e7cac2704d565ce56bc3097947015eaedef83b75e",
+      "target": "freetype-2.1.10/src/pcf/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/README",
+      "sha256": "d597b571ffe6149a51e25b010b3d476e109eab2a5533ca770c855727601fbe26",
+      "target": "freetype-2.1.10/src/pcf/README"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/module.mk",
+      "sha256": "3c9fc8ffc85f074286d7b6c5ac95981ad9cc14e00c118305b1b52d8f360ed566",
+      "target": "freetype-2.1.10/src/pcf/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcf.c",
+      "sha256": "aec65ebedec28d723840eb3fcc0101b054497ba4be90aaf3c6109de8b59e3441",
+      "target": "freetype-2.1.10/src/pcf/pcf.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcf.h",
+      "sha256": "50611ea0af458b225167b08b5d88e742f3141b7f5bd6b18d86c4017377290d22",
+      "target": "freetype-2.1.10/src/pcf/pcf.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcfdrivr.c",
+      "sha256": "11e0c8e01dc5acb5817a942aca8b0d13b7a1902600da63ab941656f061104752",
+      "target": "freetype-2.1.10/src/pcf/pcfdrivr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcfdrivr.h",
+      "sha256": "61471c4f20a4217da7dae98c4ccef140df237519fd9d626ad1a15b649866c7be",
+      "target": "freetype-2.1.10/src/pcf/pcfdrivr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcferror.h",
+      "sha256": "fffdb9ff6beb9a704130fb8b4f727e87444052e2f35db10dc0d4549b3d2e0475",
+      "target": "freetype-2.1.10/src/pcf/pcferror.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcfread.c",
+      "sha256": "79d480676975187aa891fb6fe0c8cc7395e9775b3d2cf9fd7506431c3d317188",
+      "target": "freetype-2.1.10/src/pcf/pcfread.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcfread.h",
+      "sha256": "6bd0baf20fa7eb184e33a754cbea4e3072fb5590ce3b8f07d6d664d5b9968541",
+      "target": "freetype-2.1.10/src/pcf/pcfread.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcfutil.c",
+      "sha256": "cf126f6d42afab26d88e210bc6f6df57de79baa08607a0ab71d4d868b2b8c7ac",
+      "target": "freetype-2.1.10/src/pcf/pcfutil.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/pcfutil.h",
+      "sha256": "bf9df9487427e51705aa3b4b07f4e937cb07968c79c65e7a42056f2fbf9ee8c2",
+      "target": "freetype-2.1.10/src/pcf/pcfutil.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pcf/rules.mk",
+      "sha256": "e7ed07ba3d5e1d9aef12dec42f1348628a1f14bc0d90fd7e34d52dc3047551b6",
+      "target": "freetype-2.1.10/src/pcf/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/Jamfile",
+      "sha256": "97c6afec6fbd8eaa892e142333f8294131ebd01f6c4ee6aca93e0a860d9ddf24",
+      "target": "freetype-2.1.10/src/pfr/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/module.mk",
+      "sha256": "c63000335ad115896eb8317e56e99c7039715ab0117b95479cc465a932f56867",
+      "target": "freetype-2.1.10/src/pfr/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfr.c",
+      "sha256": "b8afa65ad1c0f319ea6c927200ba103fa2e5f87da2fc3a1833843aac181dd4f8",
+      "target": "freetype-2.1.10/src/pfr/pfr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrcmap.c",
+      "sha256": "cef6d19390b05c21a9c5e05b9defb69673c380c0061e1173caffc7137b890b78",
+      "target": "freetype-2.1.10/src/pfr/pfrcmap.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrcmap.h",
+      "sha256": "c598b22b52f4e7cc12f7bd86ed4330fe174d4be102a9a99a973a04d869172d2e",
+      "target": "freetype-2.1.10/src/pfr/pfrcmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrdrivr.c",
+      "sha256": "f1556b3032d09916f7c72539951b66e07c98a23c535d164810ab5bc1de16a119",
+      "target": "freetype-2.1.10/src/pfr/pfrdrivr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrdrivr.h",
+      "sha256": "1a397c305bec6a7d3cfbed139e3cc587ceb3e0edebe593419968acda03c3eb22",
+      "target": "freetype-2.1.10/src/pfr/pfrdrivr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrerror.h",
+      "sha256": "cdb9ac32ec2c1e45e3dd5bbf51fbf2e760ad7c34e28ad351a60b650a62506e4b",
+      "target": "freetype-2.1.10/src/pfr/pfrerror.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrgload.c",
+      "sha256": "57aa9b174702ad82e2937a5257467c13ec6ccd1671216ac910e04f24596b8202",
+      "target": "freetype-2.1.10/src/pfr/pfrgload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrgload.h",
+      "sha256": "9c8ad79675dff862427b79b53104c64d410776230d37e7521ac96cd5ec28083d",
+      "target": "freetype-2.1.10/src/pfr/pfrgload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrload.c",
+      "sha256": "6de6e8fef7a3adda3999b22a0d6c6fbc93b59785b85630c126a9ff099c4ea193",
+      "target": "freetype-2.1.10/src/pfr/pfrload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrload.h",
+      "sha256": "09a3d3feb70d73c744a02eb7822e06e89018e50e33dd57348cce8236d2b93f09",
+      "target": "freetype-2.1.10/src/pfr/pfrload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrobjs.c",
+      "sha256": "b793fa822f0f090eb6f84913b9b93df94a719ac347c6548ff712d13e2f2c1c10",
+      "target": "freetype-2.1.10/src/pfr/pfrobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrobjs.h",
+      "sha256": "ea656e6b798483f536e20d5b0cebbcd437dc9c14367dd17953394c7a4ca4f58d",
+      "target": "freetype-2.1.10/src/pfr/pfrobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrsbit.c",
+      "sha256": "5c33608f09cd8c07e8da68c8650bbc5c779ed710d19741c1354796811ed2b6c7",
+      "target": "freetype-2.1.10/src/pfr/pfrsbit.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrsbit.h",
+      "sha256": "52c0a6c17122afa43512f2741b64db220a81aada637b6e6d82ee761048d9dc63",
+      "target": "freetype-2.1.10/src/pfr/pfrsbit.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/pfrtypes.h",
+      "sha256": "2c2b8768cc7229abcbe2ec7705b52e4a6d7a34fbe12bf18ffddd30ea7d87d490",
+      "target": "freetype-2.1.10/src/pfr/pfrtypes.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pfr/rules.mk",
+      "sha256": "62138d670f431ebcae5d7f1a391f1e5694f8e2e2c2edeb44418f064285f63df2",
+      "target": "freetype-2.1.10/src/pfr/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/Jamfile",
+      "sha256": "46e3d225669ce5f4c7b2ca90943a820d1f0b471959ec49514adebc51fed48df9",
+      "target": "freetype-2.1.10/src/psaux/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/module.mk",
+      "sha256": "481e37e599c4bef000797270401b282ced4118d43dfcee3bb07558cb096522d8",
+      "target": "freetype-2.1.10/src/psaux/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/psaux.c",
+      "sha256": "b6e0db7397f0fb362a5706bc666d1657b37c2165dc7c8ee3a566e17ba0e87246",
+      "target": "freetype-2.1.10/src/psaux/psaux.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/psauxerr.h",
+      "sha256": "e976672bd94377c603acf501f58f241208401209c9e6a82a2f905879564d5004",
+      "target": "freetype-2.1.10/src/psaux/psauxerr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/psauxmod.c",
+      "sha256": "096ae074ba7c883241d5881b3a99533fb0a806a87d888c7c2e28b72f0ecfbe5b",
+      "target": "freetype-2.1.10/src/psaux/psauxmod.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/psauxmod.h",
+      "sha256": "ec51a7451ce3da1ac09e2ac021342b5a1a582fd99f91b1b30ce1563d9716ee92",
+      "target": "freetype-2.1.10/src/psaux/psauxmod.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/psobjs.c",
+      "sha256": "adfc6dbfd7a14a1667af206aa63b061604a9ab977efb75fce5e73083ee5036c1",
+      "target": "freetype-2.1.10/src/psaux/psobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/psobjs.h",
+      "sha256": "693edccb2f5e84c67c91408adbc856d74028149cdda6010f9c25c7cfc4b0d4da",
+      "target": "freetype-2.1.10/src/psaux/psobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/rules.mk",
+      "sha256": "da628dee01ca9ee2d7b528108a77e8332cacaf24ea9e00fefe60043b6cf86a8c",
+      "target": "freetype-2.1.10/src/psaux/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/t1cmap.c",
+      "sha256": "c0b759c4868b8bd55935ddc6ca3c0c287d3e27d54a2f664b86b2c673e2971f47",
+      "target": "freetype-2.1.10/src/psaux/t1cmap.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/t1cmap.h",
+      "sha256": "d64d8c92b1778645227b53228212971b27c8ed04526f32462f6186dd05c5ea9f",
+      "target": "freetype-2.1.10/src/psaux/t1cmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/t1decode.c",
+      "sha256": "3f5c195f77ceda9b2a19c2fcc448625eb3bca8b63a6e5405cc3bc52b468f28f7",
+      "target": "freetype-2.1.10/src/psaux/t1decode.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psaux/t1decode.h",
+      "sha256": "7f54b3dfb89866504523c34355fc06486f296afd1c27505ca8a89df959bf14ef",
+      "target": "freetype-2.1.10/src/psaux/t1decode.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/Jamfile",
+      "sha256": "bc9504f03d8a05ea2dc5561028b8a00d8270d372f58d66b5b9057b8fcc0a358e",
+      "target": "freetype-2.1.10/src/pshinter/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/module.mk",
+      "sha256": "b3e71d1e80ce95d26227d6b507dc3b37868a504df2df2d271d6878dcfca7c1e3",
+      "target": "freetype-2.1.10/src/pshinter/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshalgo.c",
+      "sha256": "c15cfceda6ee552681e345c2f90818191cd64a69a31d1d23ff459a5d6afbcdbd",
+      "target": "freetype-2.1.10/src/pshinter/pshalgo.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshalgo.h",
+      "sha256": "68b80fb47db3ec8f69a6fbb4a33deff6390abd63b685811d96bb593cfce1542a",
+      "target": "freetype-2.1.10/src/pshinter/pshalgo.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshglob.c",
+      "sha256": "0099ec0abb6e5454ec903b7aca950df446e03a49dd7226bcd6e84a3791fa2873",
+      "target": "freetype-2.1.10/src/pshinter/pshglob.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshglob.h",
+      "sha256": "60cb09f273a90985a135a03ad92227baa73cf04e0c397f2e06549abf7f3c80da",
+      "target": "freetype-2.1.10/src/pshinter/pshglob.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshinter.c",
+      "sha256": "9df840254ac7c5c5733555e88cead5a5188cdae228a6f219a11b855f76297afa",
+      "target": "freetype-2.1.10/src/pshinter/pshinter.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshmod.c",
+      "sha256": "88a4f1467e72d82e87fb5dbcd8daeb0fafd8999902b4739045b7665a53cf6618",
+      "target": "freetype-2.1.10/src/pshinter/pshmod.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshmod.h",
+      "sha256": "d3d7d913b2f1d201889bb5a38d11ef984a9c0cc38082e3232ce3765969822985",
+      "target": "freetype-2.1.10/src/pshinter/pshmod.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshnterr.h",
+      "sha256": "a0f764d43dfb4b5fe2559cd53f6a1fe2036db06ed5c227b8b3a3de960ef2e364",
+      "target": "freetype-2.1.10/src/pshinter/pshnterr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshrec.c",
+      "sha256": "f69af7725538d7b0bd22b0d0b0e2834588acd86c9038fea1f3b1a6ca400dc9da",
+      "target": "freetype-2.1.10/src/pshinter/pshrec.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/pshrec.h",
+      "sha256": "7aaf8dfe29d62448e9a8918cf82a5685336806056a0f79532ae12a0dc0d6565a",
+      "target": "freetype-2.1.10/src/pshinter/pshrec.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/pshinter/rules.mk",
+      "sha256": "a1d5712db8130c5f815ab36b5103917f4b6b13a0c37394f4dc04f954152b1ad6",
+      "target": "freetype-2.1.10/src/pshinter/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/Jamfile",
+      "sha256": "bc19b6e85ef2bb53df9b3f3156531d7dd7b7b7fb603824700f089d0da3f30cbe",
+      "target": "freetype-2.1.10/src/psnames/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/module.mk",
+      "sha256": "5e2fadc88645360a54be25fb1eb2e8fd673c4a669ffa9488fa59a318fc3b6c95",
+      "target": "freetype-2.1.10/src/psnames/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/psmodule.c",
+      "sha256": "d8e2cb5df07145758b3f5879b0022fbb6d1fa3f62beac718b94af35114f6beb8",
+      "target": "freetype-2.1.10/src/psnames/psmodule.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/psmodule.h",
+      "sha256": "d8536a534d5a151737e608f95978091f4d89fdc24589ea424296656aeb5656ff",
+      "target": "freetype-2.1.10/src/psnames/psmodule.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/psnamerr.h",
+      "sha256": "d764c50c54d970c59e81ba7414075c73083b9b3f82ef6f0d01855fd40f9ec950",
+      "target": "freetype-2.1.10/src/psnames/psnamerr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/psnames.c",
+      "sha256": "0bfc37a7ea10957ffbba795709180284cddac94ed7585cb0c8f021e006bf93c6",
+      "target": "freetype-2.1.10/src/psnames/psnames.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/pstables.h",
+      "sha256": "f7d14c3fc8cc3b15268f7a2d5119a1935dd38521ab91690b16ffd11360519abf",
+      "target": "freetype-2.1.10/src/psnames/pstables.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/psnames/rules.mk",
+      "sha256": "4a4bf91111035f04c82028992965b8f7abe99ccf3d81041cbd5e1de84e66a21b",
+      "target": "freetype-2.1.10/src/psnames/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/Jamfile",
+      "sha256": "9b0b4d1fe8eaba9911ee714afacdae86753fb212e5445a5eb00b30bf0e9db8e1",
+      "target": "freetype-2.1.10/src/raster/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/ftmisc.h",
+      "sha256": "138e785c7a67e9378e65a7b81647be629e0d63fd797f37a24bb3d005ea8f5776",
+      "target": "freetype-2.1.10/src/raster/ftmisc.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/ftraster.c",
+      "sha256": "1fd0040434af511da1e39c09ae4eb45c1d18776f19dc7775ad7f1c5d84fd044e",
+      "target": "freetype-2.1.10/src/raster/ftraster.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/ftraster.h",
+      "sha256": "10d79175ab5751ec89142792bd81e2debefcdc59094e9689a2f500c08aeda934",
+      "target": "freetype-2.1.10/src/raster/ftraster.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/ftrend1.c",
+      "sha256": "4bd6dd4bbc6008fa4c0965448f6ecde51d2d7fdf1c0fbd1a7b6f10f1792f6a08",
+      "target": "freetype-2.1.10/src/raster/ftrend1.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/ftrend1.h",
+      "sha256": "525f95122c656dbc51971c542eb710595d50649beef3d6c549e77e90b7ef21fa",
+      "target": "freetype-2.1.10/src/raster/ftrend1.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/module.mk",
+      "sha256": "823a66dae16418b7285f8629f68dcac6b0053aaa2d70864bbfe4adcf87b47343",
+      "target": "freetype-2.1.10/src/raster/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/raster.c",
+      "sha256": "1114c09192bf63902a3340ea895821f90481a5fd442e38b59eaa158b0e4a2ff6",
+      "target": "freetype-2.1.10/src/raster/raster.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/rasterrs.h",
+      "sha256": "e23e0d51615f7a0521e39e17a1cddd1e412dc5896544cbf6a7b5efe2076ea98e",
+      "target": "freetype-2.1.10/src/raster/rasterrs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/raster/rules.mk",
+      "sha256": "69cf32b1b64e5d1d3a74f7db25d1e9343696190b13e45ff59c22240dba4ae1ce",
+      "target": "freetype-2.1.10/src/raster/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/Jamfile",
+      "sha256": "129b8c6b9685bf8acb39e148cd6966bca35b3948d5dc274ba86a3cda5b2be903",
+      "target": "freetype-2.1.10/src/sfnt/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/module.mk",
+      "sha256": "9f53dbe5611401b9f8df042beae2b42129d06c15623c3ee196fe231074797bd3",
+      "target": "freetype-2.1.10/src/sfnt/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/rules.mk",
+      "sha256": "8c838c89b04c5b3cd9c1c019b76a7c1fc6ea748fc9d03220f2b5656005e42805",
+      "target": "freetype-2.1.10/src/sfnt/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/sfdriver.c",
+      "sha256": "79830f40b16f406502e9d26fcaf41aefde2c6e685c4190e2fd767de22d4b6162",
+      "target": "freetype-2.1.10/src/sfnt/sfdriver.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/sfdriver.h",
+      "sha256": "b040531771e7db7901abac77d3d9988340d52f9d15ac279b9590cc4957cae4f1",
+      "target": "freetype-2.1.10/src/sfnt/sfdriver.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/sferrors.h",
+      "sha256": "6182c267fd18d8deb1add98b82014b01282799a1e1147ef1bc329f2f6c684f9d",
+      "target": "freetype-2.1.10/src/sfnt/sferrors.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/sfnt.c",
+      "sha256": "d5602de249ebb242d31c330f33a38d5a8ea79ba5f39b2e5dd5681f44947a4d04",
+      "target": "freetype-2.1.10/src/sfnt/sfnt.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/sfobjs.c",
+      "sha256": "f09ccbb168d045f7bf5d623bdc8566e66f2170deace603ac2f06003a02d8177e",
+      "target": "freetype-2.1.10/src/sfnt/sfobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/sfobjs.h",
+      "sha256": "95ad4248e7d0f2fac1bd1b55e2c93dde97eb3517d10b198beedab9b1cf43adcd",
+      "target": "freetype-2.1.10/src/sfnt/sfobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttcmap.c",
+      "sha256": "d77b93f2f3addabafe09476f992a8313587cd018e375e6b0e4d4037e4aa9350c",
+      "target": "freetype-2.1.10/src/sfnt/ttcmap.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttcmap.h",
+      "sha256": "a1a5353c7f4029cf957f9f0302f619adff6d6fb4f6aee70d3ab0ee6cce32a299",
+      "target": "freetype-2.1.10/src/sfnt/ttcmap.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttkern.c",
+      "sha256": "bc571461920eecdcd67a1fcefda7d938258e87318c5c7e9718f93f2d6b926245",
+      "target": "freetype-2.1.10/src/sfnt/ttkern.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttkern.h",
+      "sha256": "903dd7b847d8fb4f6327d38edf53a75d735960960aa202232eab8d2c6a525974",
+      "target": "freetype-2.1.10/src/sfnt/ttkern.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttload.c",
+      "sha256": "8dd93f8e0b6149cfd2e86d4a1ad4440e33ac684d492deceea2b5fac3a797ce86",
+      "target": "freetype-2.1.10/src/sfnt/ttload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttload.h",
+      "sha256": "e84c722a8ef1efe846278bbbd70aa501f01c8761b799f13edfe5fdc54344ce57",
+      "target": "freetype-2.1.10/src/sfnt/ttload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttpost.c",
+      "sha256": "31f1762019831474f670b51e50d5dace13adffe0153e1559fb45bfc8c94ed014",
+      "target": "freetype-2.1.10/src/sfnt/ttpost.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttpost.h",
+      "sha256": "33a080de0d1444f825f4fe8aaae9176bb8b7ef7e26d32c54018d95a57beba87c",
+      "target": "freetype-2.1.10/src/sfnt/ttpost.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttsbit.c",
+      "sha256": "9fb902c103857b8de090fe4c3c83d1148a53a8daa821c5b7c2fdec8897856bbb",
+      "target": "freetype-2.1.10/src/sfnt/ttsbit.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttsbit.h",
+      "sha256": "f30289f1663485f31fc7dd7b8ac120de5ec1022467bfca881048ea1266d1c917",
+      "target": "freetype-2.1.10/src/sfnt/ttsbit.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttsbit0.c",
+      "sha256": "a7597157b85464b06f3348e54a44a9efba2c9729f28a593090d5163f9f87a5ba",
+      "target": "freetype-2.1.10/src/sfnt/ttsbit0.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/sfnt/ttsbit0.h",
+      "sha256": "973ede0c85256f0eda583b63558725f665afbd4f920b86d93aef43883a432ccb",
+      "target": "freetype-2.1.10/src/sfnt/ttsbit0.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/Jamfile",
+      "sha256": "92f79876d775fbda0d3e63da98bcf6f7c386fea7aa56c69dd5ef82b07cd38b09",
+      "target": "freetype-2.1.10/src/smooth/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/ftgrays.c",
+      "sha256": "429345a514bf97c7875f716302f16f541a7e3297abd6a573811e3985aecb739d",
+      "target": "freetype-2.1.10/src/smooth/ftgrays.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/ftgrays.h",
+      "sha256": "107117e62f881f2e0a1d9c38441350c474e56e0f83d0d6d16460d3eda77a4480",
+      "target": "freetype-2.1.10/src/smooth/ftgrays.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/ftsmerrs.h",
+      "sha256": "da28df2ef6aa81c25bee6ee5273b998c68162e089a33a8586b825d117e319697",
+      "target": "freetype-2.1.10/src/smooth/ftsmerrs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/ftsmooth.c",
+      "sha256": "f01699538fa6b417fc12d13f77d03c7b61bf46bb3d1be5b5eca9bb56d18f3839",
+      "target": "freetype-2.1.10/src/smooth/ftsmooth.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/ftsmooth.h",
+      "sha256": "381e66b5c1e1bd7e999bebe2ba056d83e352d49f7e636db5bdd1900f18062573",
+      "target": "freetype-2.1.10/src/smooth/ftsmooth.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/module.mk",
+      "sha256": "36ef0e44b0a2d4e04e3ae68f18556e6d55450aa0abd1856f49b346decef0d373",
+      "target": "freetype-2.1.10/src/smooth/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/rules.mk",
+      "sha256": "2c7fa3abc2cb56e922fb6fb6fa8ec9fec3758898e73a61a7f7aef89ae7cb215b",
+      "target": "freetype-2.1.10/src/smooth/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/smooth/smooth.c",
+      "sha256": "bb18f6ec04fcf2a5d9b9cf953eca4968867515989dd1abee6f5f42188e4668c8",
+      "target": "freetype-2.1.10/src/smooth/smooth.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/cordic.py",
+      "sha256": "dd0d69e2a5ac56c83ee553d40c7bf5954edf9977ea31573c234bc6716b64ea90",
+      "target": "freetype-2.1.10/src/tools/cordic.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/content.py",
+      "sha256": "f8c17573830c38d811db5a47015578e51387c7e6d9903a06d394401537d446ad",
+      "target": "freetype-2.1.10/src/tools/docmaker/content.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/docbeauty.py",
+      "sha256": "d361e500760975406dfd922302626adf0493569d10b9dd7c46a2cf233dae0520",
+      "target": "freetype-2.1.10/src/tools/docmaker/docbeauty.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/docmaker.py",
+      "sha256": "d426b6a85d63bc7fd352945b17df0e02be59eff2054e746c86121e13f1ab2f80",
+      "target": "freetype-2.1.10/src/tools/docmaker/docmaker.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/formatter.py",
+      "sha256": "f1ec211a88bb571c7f719014afbdf96d08bc18197d40866ea47efdf961363592",
+      "target": "freetype-2.1.10/src/tools/docmaker/formatter.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/sources.py",
+      "sha256": "c01148da04af069a82ff2ce7b1f0867921ccf797694701eea078a1a3a7ed9c67",
+      "target": "freetype-2.1.10/src/tools/docmaker/sources.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/tohtml.py",
+      "sha256": "7a3231ea21d254a6ba332ba2b16e685bf5317b1c4264a4c253b9df857b56b3ea",
+      "target": "freetype-2.1.10/src/tools/docmaker/tohtml.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/docmaker/utils.py",
+      "sha256": "4dc5f0491f86bfecd68216d3a81891ae73f30eee3f136db120e3771ea3b45bb6",
+      "target": "freetype-2.1.10/src/tools/docmaker/utils.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/glnames.py",
+      "sha256": "4bd352b71491fdaefc0f3cde999589c2cbe1bc3cf88f0509252e9b0fcab3b643",
+      "target": "freetype-2.1.10/src/tools/glnames.py"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/test_bbox.c",
+      "sha256": "1387b8c65883c41b573a51b76cf7bf3c4b67ea14ec45675298fb90f9820862f4",
+      "target": "freetype-2.1.10/src/tools/test_bbox.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/tools/test_trig.c",
+      "sha256": "f6ab408f220eacd262398ab7e2442d52ac91f664eeb7eadfc8d9a61d090c47c7",
+      "target": "freetype-2.1.10/src/tools/test_trig.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/Jamfile",
+      "sha256": "a3a4387d7557ba55080a0bcb96beb149a0d68e1533bfef8749e982d1c3cbd4e6",
+      "target": "freetype-2.1.10/src/truetype/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/module.mk",
+      "sha256": "5ba8f80105fabc70329dbe3ec28fa421dd3b69586a55d8eb28dff82703fdbf79",
+      "target": "freetype-2.1.10/src/truetype/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/rules.mk",
+      "sha256": "b6be5168c5240957f81d9dee40ee271e4dd6005941926a096860c6982ac408a3",
+      "target": "freetype-2.1.10/src/truetype/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/truetype.c",
+      "sha256": "d31f57cd5a52babdc8c743ca887b7331d24060602fa2484f3ebda7794f1196fd",
+      "target": "freetype-2.1.10/src/truetype/truetype.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttdriver.c",
+      "sha256": "5fa30e9a09002695f259c8b3d8c4341e0c18dce4fd5b45232755f1fdbd613674",
+      "target": "freetype-2.1.10/src/truetype/ttdriver.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttdriver.h",
+      "sha256": "144c50339b03f69aecfba22180ed10b7dcac1ad80c68a4840d12ab4246b42d49",
+      "target": "freetype-2.1.10/src/truetype/ttdriver.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/tterrors.h",
+      "sha256": "c9122cc4bc59fa582e9b6a3bc0be19373e70e531ab780b4eaf353d0506c8f124",
+      "target": "freetype-2.1.10/src/truetype/tterrors.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttgload.c",
+      "sha256": "fa9efb14f445c70a723e6d16c53c702c495d48df1910f5799a3b208a06c19c52",
+      "target": "freetype-2.1.10/src/truetype/ttgload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttgload.h",
+      "sha256": "b8a103e983ffa8d6c5ce0aa575702bf6c4959e169408e38659922348904c65af",
+      "target": "freetype-2.1.10/src/truetype/ttgload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttgxvar.c",
+      "sha256": "85ff764e587f28c0c61f43d2632d614a67bb51d6345790ee40d24836e17693b8",
+      "target": "freetype-2.1.10/src/truetype/ttgxvar.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttgxvar.h",
+      "sha256": "a0cb9758206c92d40fc2645b61ce2d03399411819425d5cdbd76dd1c1acb7f40",
+      "target": "freetype-2.1.10/src/truetype/ttgxvar.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttinterp.c",
+      "sha256": "986952055ae943f374e5e840c98400e5048361fb6e5ea94e409f4c1497bea314",
+      "target": "freetype-2.1.10/src/truetype/ttinterp.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttinterp.h",
+      "sha256": "b70ce1e299389ba26dcdae11ac9d01f0f0f702cc4d881ab1dd93f585bbf4c8b6",
+      "target": "freetype-2.1.10/src/truetype/ttinterp.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttobjs.c",
+      "sha256": "3d282096f2456c5988250b4f40940e4e2ec935e7e3bcd86d4128dc95790efe2e",
+      "target": "freetype-2.1.10/src/truetype/ttobjs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttobjs.h",
+      "sha256": "9f4881162d10288f0f08e48b845bef88631885b961f83f8318ac12a20b4f01b0",
+      "target": "freetype-2.1.10/src/truetype/ttobjs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttpload.c",
+      "sha256": "75ea468ffbf44c941cfe9a05ada0d7a16932d032c4b9d798142e56f57717658b",
+      "target": "freetype-2.1.10/src/truetype/ttpload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/truetype/ttpload.h",
+      "sha256": "7bfd77d64a33214008d5f0f5ed56cf4603a7dfcc1691245f09c2f4f67e95a30f",
+      "target": "freetype-2.1.10/src/truetype/ttpload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/Jamfile",
+      "sha256": "6fe1efb383a63e5d8138f81701e56fbba5610d9518ff3225001dcccb1589c100",
+      "target": "freetype-2.1.10/src/type1/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/module.mk",
+      "sha256": "2a148de708a4c3d196ef5e6a1f566ed2b49307f612ea89a87a59e13349ba20f2",
+      "target": "freetype-2.1.10/src/type1/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/rules.mk",
+      "sha256": "fa1e593c3b2cf78a0ee94f803a5605fb5cdf7df4404c15a2cea06c8a6b2894f0",
+      "target": "freetype-2.1.10/src/type1/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1afm.c",
+      "sha256": "3c7022c55ad3fb45a0d0e886cbd2a1048d2506f6f9984a3beaf02cbbce0a6197",
+      "target": "freetype-2.1.10/src/type1/t1afm.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1afm.h",
+      "sha256": "43510e9565c6d945c02116d97983e0bfc305d5aaad6b589ee0d5ed836bb3236a",
+      "target": "freetype-2.1.10/src/type1/t1afm.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1driver.c",
+      "sha256": "124d2f497dfe3db81d176f05a0359ddd234562693bdc4646fd52de698f7ee105",
+      "target": "freetype-2.1.10/src/type1/t1driver.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1driver.h",
+      "sha256": "28e917d8945cf31a53bb4de7a79061b21a5aeddd3a95e27efb03c506a432089f",
+      "target": "freetype-2.1.10/src/type1/t1driver.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1errors.h",
+      "sha256": "a9572700702a6dcf0f24cf0ab1ede6f6810f57d89e9b10025b919ee48f425536",
+      "target": "freetype-2.1.10/src/type1/t1errors.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1gload.c",
+      "sha256": "eb617a55ec955d0bba2092bc8cc105c10c6d51e2cbac63fe367b5cfca9f4b05a",
+      "target": "freetype-2.1.10/src/type1/t1gload.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1gload.h",
+      "sha256": "74754210e970442cd10d24002d8854c0a0b1242970e0ff3ee94a68c1e222ec45",
+      "target": "freetype-2.1.10/src/type1/t1gload.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1load.c",
+      "sha256": "a5100ae344ef19991ff3484cd25b0ecd5312a149e976a99ffcefd3234c971e75",
+      "target": "freetype-2.1.10/src/type1/t1load.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1load.h",
+      "sha256": "b6d661e9c4a940d7480da3d90edf5524a0c7d8175560deddb74c10a3ebce3c5b",
+      "target": "freetype-2.1.10/src/type1/t1load.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1objs.c",
+      "sha256": "5b7636a1436bbbb2c2d196cad9171c18574ffc02e143e4ccc8dc8e3ce6c0f03a",
+      "target": "freetype-2.1.10/src/type1/t1objs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1objs.h",
+      "sha256": "ae4762a191a1fa0fa6e6f80eef9e9bb0e892bedb604e3fecb0a03d46372c3632",
+      "target": "freetype-2.1.10/src/type1/t1objs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1parse.c",
+      "sha256": "34aa4c87a79f940173a8fa8bc9a46ea185903e7b1b1c0c8f6420e369e69f5381",
+      "target": "freetype-2.1.10/src/type1/t1parse.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1parse.h",
+      "sha256": "b9185c0a9a69c3c3db9f19a55084ed4175e92ccf2101cd6c27d7b74fae0a892a",
+      "target": "freetype-2.1.10/src/type1/t1parse.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/t1tokens.h",
+      "sha256": "a1d02b2dc5467c249db33c8d2f3134fef2e3c99012530620cd7319e207614415",
+      "target": "freetype-2.1.10/src/type1/t1tokens.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type1/type1.c",
+      "sha256": "542506466a8b10c9c8ec6ac1ebe279335f8cbc1d35e970cf831d0e7fd44ab146",
+      "target": "freetype-2.1.10/src/type1/type1.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/Jamfile",
+      "sha256": "aae14c37015dab87a21ba5c7cdc2dd60dbeb2349220ac92b6aa2a4decd50b6f8",
+      "target": "freetype-2.1.10/src/type42/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/module.mk",
+      "sha256": "b90a00aa056e14f2e32673bc47e87923a83055fb841813b1237fcc8978a4d39f",
+      "target": "freetype-2.1.10/src/type42/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/rules.mk",
+      "sha256": "a98b6816855999aed8e8f5393fe6bf2594a459e4e9027d8f752c825a8b561d86",
+      "target": "freetype-2.1.10/src/type42/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42drivr.c",
+      "sha256": "15b6be6d64e91280851d5548266bde290a7b9891b5c0b77f4cb07a389603445e",
+      "target": "freetype-2.1.10/src/type42/t42drivr.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42drivr.h",
+      "sha256": "54bba2c9ee60bdfd2d9d124e76e9dd12bd9c3ec5c2a015f18fbe5426e495359d",
+      "target": "freetype-2.1.10/src/type42/t42drivr.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42error.h",
+      "sha256": "2d18ffadebebf6fdeba5e30d65e3661374ae0f1a55a80119cfbde3a1fa542974",
+      "target": "freetype-2.1.10/src/type42/t42error.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42objs.c",
+      "sha256": "0f036aeb79ef1f6db72e2c6b837ca526de29d00011cef60d4c8f9edf3030bd5a",
+      "target": "freetype-2.1.10/src/type42/t42objs.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42objs.h",
+      "sha256": "38eb5c7f360b32abaad0a3ced45e58daf30845174cc261e681f8f0b01a77ce31",
+      "target": "freetype-2.1.10/src/type42/t42objs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42parse.c",
+      "sha256": "3a2cded7d314cc6b97691cef83facb746cce63d909acc76b25ab37dee7a595fe",
+      "target": "freetype-2.1.10/src/type42/t42parse.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42parse.h",
+      "sha256": "774afb40c22803198631c50cb4e2a7cd9b0241dc7daf6396b31de908ddc83fd9",
+      "target": "freetype-2.1.10/src/type42/t42parse.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/t42types.h",
+      "sha256": "60b47386dfdae9d1947b091320b69c52a738bc309d567e9e8e0f700c9798386a",
+      "target": "freetype-2.1.10/src/type42/t42types.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/type42/type42.c",
+      "sha256": "7d3cdb86920eac07ac417e751d083663d9e8916dc30aa3a0acc1df3a98c1f342",
+      "target": "freetype-2.1.10/src/type42/type42.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/winfonts/Jamfile",
+      "sha256": "d4c2dc8f838ecd972396b2d98fa1680221e91cb03b094515f56a01bc56d2ab91",
+      "target": "freetype-2.1.10/src/winfonts/Jamfile"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/winfonts/fnterrs.h",
+      "sha256": "bf8bf077466580cb77cd6849dbce7df75922af0da462635cd693e8b9adf82ff5",
+      "target": "freetype-2.1.10/src/winfonts/fnterrs.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/winfonts/module.mk",
+      "sha256": "aaccc2f09cd48b9d2d63ffc8d59b88e125f880635780d0d0528e281a3b9ee63d",
+      "target": "freetype-2.1.10/src/winfonts/module.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/winfonts/rules.mk",
+      "sha256": "77066df4fd6db24efb0dd2376fe166133d6071e1236ce36ab56d410698b86efe",
+      "target": "freetype-2.1.10/src/winfonts/rules.mk"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/winfonts/winfnt.c",
+      "sha256": "379af046a37ca49e6c226b87b6fac376b9463a752620963b22567f11e0427ea7",
+      "target": "freetype-2.1.10/src/winfonts/winfnt.c"
+    },
+    {
+      "source": "FREETYPE-2.1.10/src/winfonts/winfnt.h",
+      "sha256": "475e63c171949d900dff5bfae7a6efca877903d8539d79a7e20bc427fec601eb",
+      "target": "freetype-2.1.10/src/winfonts/winfnt.h"
+    },
+    {
+      "source": "FREETYPE-2.1.10/docs/FTL.TXT",
+      "sha256": "46d8bd0884c554bb97a797cfab8b3cd5baee2e69ecd2fd51389f5be77d8c7e83",
+      "target": "freetype-2.1.10/FTL.TXT"
+    },
+    {
+      "source": "FREETYPE-2.1.10/docs/GPL.TXT",
+      "sha256": "c4120c6752c910c299e3bd9cb3a46ff262c268303ca2069b61f92f10a5656c18",
+      "target": "freetype-2.1.10/GPL.TXT"
+    },
+    {
+      "source": "FTDriverDLL/CriticalSession.cpp",
+      "sha256": "6d5545aee9d90a4c222ad0e22f6c87d99092f884a68f832a5d55101c04d149fd",
+      "target": "ftdriver/original/CriticalSession.cpp"
+    },
+    {
+      "source": "FTDriverDLL/CriticalSession.h",
+      "sha256": "c8c7f43cf0b18c2f7066ced945a9c7a1b337a10279a540efb0b042e79782849e",
+      "target": "ftdriver/original/CriticalSession.h"
+    },
+    {
+      "source": "FTDriverDLL/FTDriverDLL.h",
+      "sha256": "fbddb891fbd19bb614bcf011be078ca0aa8195c124a0dc379192e1909c3c2e12",
+      "target": "ftdriver/original/FTDriverDLL.h"
+    },
+    {
+      "source": "FTDriverDLL/FTFont.cpp",
+      "sha256": "39a948fd98fc1ebbc4073d1cec51799fb40190f707b7a580e1849759ffc9d43e",
+      "target": "ftdriver/original/FTFont.cpp"
+    },
+    {
+      "source": "FTDriverDLL/FTFont.h",
+      "sha256": "9ace92e67867808db0a98abcce25dba563d88f55d55ccea5b4cfe88385650236",
+      "target": "ftdriver/original/FTFont.h"
+    },
+    {
+      "source": "FTDriverDLL/FTGlyphCache.cpp",
+      "sha256": "36cfb633bda6ddf6613c369ad90d588f7109c301db5bc9d29b549e5b05a5a809",
+      "target": "ftdriver/original/FTGlyphCache.cpp"
+    },
+    {
+      "source": "FTDriverDLL/FTGlyphCache.h",
+      "sha256": "9db6d788978d7c8a6f8d1f4246d192800a0befd1ec9456610de77a9ec7b1a93c",
+      "target": "ftdriver/original/FTGlyphCache.h"
+    },
+    {
+      "source": "FTDriverDLL/FTHelper.h",
+      "sha256": "3ae3c5134d1d82a85a0d3906ca23ba8dc95b62103095dbae63309549466f2ef7",
+      "target": "ftdriver/original/FTHelper.h"
+    },
+    {
+      "source": "FTDriverDLL/FTInterface.h",
+      "sha256": "722f4fdc5678cc41f7608e2b4f606a12822c213616c88910cab833e64321cc55",
+      "target": "ftdriver/original/FTInterface.h"
+    },
+    {
+      "source": "FTDriverDLL/FTManager.cpp",
+      "sha256": "e9b8ffcdb75ef4e1748a05eb48fcb87159a621d5f33ffaf640c1657e03252fbe",
+      "target": "ftdriver/original/FTManager.cpp"
+    },
+    {
+      "source": "FTDriverDLL/FTManager.h",
+      "sha256": "f701d1b5b5d6aec366649d172112ab4551b514059280cfe7d7bb210347055a21",
+      "target": "ftdriver/original/FTManager.h"
+    },
+    {
+      "source": "FTDriverDLL/MyFTCache.cpp",
+      "sha256": "50f6e846e08e12173a766a800fd8b33e6176718cd2f48e7ea98680b6a6b86783",
+      "target": "ftdriver/original/MyFTCache.cpp"
+    },
+    {
+      "source": "FTDriverDLL/MyFTCache.h",
+      "sha256": "5688d03f783ff124e622d5b2283d878dc8272870ec8b20c8445d425e0c8ca8c4",
+      "target": "ftdriver/original/MyFTCache.h"
+    },
+    {
+      "source": "FTDriverDLL/MyRaster.cpp",
+      "sha256": "227158ae9e194d43b466c12e97e4388e50d1802a5b89c7eea08e725b4ac3e624",
+      "target": "ftdriver/original/MyRaster.cpp"
+    },
+    {
+      "source": "FTDriverDLL/MyRaster.h",
+      "sha256": "f9aef6a818fd7325b0f65107e8a5479d25975af854d29b2cb8b9c12289a00e2b",
+      "target": "ftdriver/original/MyRaster.h"
+    },
+    {
+      "source": "FTDriverDLL/StdAfx.h",
+      "sha256": "6e64e8612de528925938ea17c61d53b2fd30632fd7653361643bab9b4c768eda",
+      "target": "ftdriver/original/stdafx.h"
+    }
+  ]
+}

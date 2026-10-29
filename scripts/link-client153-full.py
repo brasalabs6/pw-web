@@ -97,8 +97,9 @@ def main() -> int:
         objects += [pathlib.Path(p) for p in args.extra_objects.split(',')]
     libraries = []
     for name in ('skeleton', 'animation', 'file', 'math', 'common',
-                 'platform', 'formats', 'webgl_caps', 'skinning',
-                 'speedtree_stub', 'middleware_stub', 'lua', 'glu_tess'):
+                 'formats', 'webgl_caps', 'skinning',
+                 'speedtree_stub', 'middleware_stub', 'ftdriver_original',
+                 'freetype210', 'platform', 'lua', 'glu_tess'):
         archive = pathlib.Path(args.wasm_build) / f'libclient153_{name}.a'
         if archive.exists():
             libraries.append(str(archive))
