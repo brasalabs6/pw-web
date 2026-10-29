@@ -15,6 +15,7 @@ const {spawn} = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const {classify} = require('./browser-entry-outcome.cjs');
 
 const PORT = process.env.PW153_ENTRY_PORT || '8497';
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -70,9 +71,9 @@ const {chromium} = require(
   console.log(full);
   console.log('report saved:', outPath);
 
-  const reachedReturn = report.terminal &&
-      report.terminal.includes('"type":"return"');
-  process.exitCode = reachedReturn ? 0 : 1;
+  const outcome = classify(report.terminal);
+  console.log('entry outcome:', outcome, '(a clean return does not prove gameplay)');
+  process.exitCode = outcome === 'returned' ? 0 : 1;
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
