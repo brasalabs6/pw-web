@@ -2,13 +2,13 @@
 id: OPT-044
 title: "Validar aritmética de offsets HTTP Range acima de 2 GiB no probe browser PCK/PKX"
 priority: P1
-status: candidate
+status: mitigated-in-probe
 phase: post-browser-port
 blocking: false
 kind: static-hardening
 source_sha: 0d8f802bea0603ebeb2723bbc886dc9555f12341
 first_observed: 2026-10-28
-validation: static-arithmetic-check-only
+validation: static-arithmetic-check-plus-synthetic-regression-added-not-independently-executed
 epic: e15-assets-streaming-perf-v1
 scope: PR-23
 ---
@@ -42,3 +42,10 @@ Se um pacote montado tiver bytes necessários a partir de 2 GiB, o Range constru
 Não duplica [PW23-024](PW23-024-asset-copy-amplification-wasm.md) (cópias RAM), [PW23-033](PW23-033-wasm-heap-budget-and-memory-growth.md) (budget), [OPT-032](OPT-032-game-pck-shared-open-redecode-lifetime.md) (reabertura/decompressão) ou [OPT-036](OPT-036-pck-read-short-read-integrity-contract.md) (leitura do PCK legado). O recorte aqui é **aritmética de offsets HTTP Range no novo probe browser**. [PW23-020](../issues/PW23-020-assets-streaming-cache-cloudflare-pending.md) já cobre a ausência de pipeline de entrega completo, não este limite específico.
 
 **Restrições:** nenhum tuning de código, PR adicional, auto-merge, mudança no PR #17 ou alegação de teste mobile. O gate principal continua o boot/render/gameplay real da Angelica 1.5.3 em desktop e celular.
+
+
+## Revalidação incremental — 2026-10-28 (HEAD `160026ec92931753c9fed059ef2a13db59a40bea`)
+
+**Estado atualizado:** o código do probe foi alterado por commits posteriores à observação original: [multiplicação segura por bloco](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/scripts/client153-entry-browser-pre.js#L46) substitui `index << 20` e [divisão inteira por `Math.floor`](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/scripts/client153-entry-browser-pre.js#L77) substitui o cálculo bitwise `>>> 20`. Portanto, a causa aritmética descrita acima **não está mais presente no HEAD inspecionado**. Preservamos os links e a análise originais como histórico; não se abriu nova issue nem se alterou código nesta auditoria.
+
+Foi acrescentado o [teste sintético de leitura na fronteira de 2 GiB](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/tests/client153/browser-entry-range.cjs#L1-L53), com Range esperado `bytes=2147483648-2147483663` e conteúdo simulado. **A existência do teste foi inspecionada, mas ele não foi executado por esta auditoria**. A cobertura para offsets acima de 4 GiB, pacotes reais e navegador mobile permanece não demonstrada. O CI do HEAD ainda estava em andamento na consulta. O item fica **mitigado no código do probe, com validação real e benchmark somente na fase post-browser-port**, sem alegar correção de todos os caminhos de asset ou melhoria de performance.

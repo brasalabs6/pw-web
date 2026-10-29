@@ -159,3 +159,8 @@ Inspeção estática no SHA `c4eb8fe8cb8262a217bdae69789174cae334db64`. Distinto
 | [OPT-044](OPT-044-browser-pck-range-index-32bit-overflow.md) | P1 | Browser worker / HTTP Range / PCK-PKX | Verificar aritmética de offsets em pacotes acima de 2 GiB; `<< 20` produz signed int32 e `>>> 20` perde bits acima de 4 GiB. Não há falha do boot real comprovada |
 
 Inspeção no SHA `0d8f802bea0603ebeb2723bbc886dc9555f12341`, com checagem aritmética JavaScript independente; sem assets, navegador, benchmark ou teste mobile nesta auditoria. Distinto de PW23-024/033, OPT-032/036 e PW23-020. O novo probe reporta avanço ao carregamento de modelos no Chrome, mas ainda não comprova gameplay; preservar PW23-021…037 e adiar tuning até port funcional.
+
+
+### Revalidação de OPT-044 — 2026-10-28
+
+No HEAD `160026ec92931753c9fed059ef2a13db59a40bea`, o probe substituiu shifts bitwise de offsets por `Math.floor` e multiplicação numérica ([código](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/scripts/client153-entry-browser-pre.js#L77), [código](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/scripts/client153-entry-browser-pre.js#L46)), e recebeu [teste sintético na fronteira de 2 GiB](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/tests/client153/browser-entry-range.cjs#L1-L53). O risco aritmético original está **mitigado no probe por inspeção estática**, mas o teste não foi executado nesta auditoria e não há comprovação com pacotes reais acima de 2/4 GiB nem em celular. [OPT-044](OPT-044-browser-pck-range-index-32bit-overflow.md) preserva o histórico, agora marcado `mitigated-in-probe`; benchmarks permanecem post-browser-port.
