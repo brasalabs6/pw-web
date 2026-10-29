@@ -120,6 +120,11 @@ bool AFilePackGame::InnerOpen(const char* szPckPath, const char* szFolder, OPENM
 	char szFullPckPath[MAX_PATH];
 	try { af_GetFullPath(szFullPckPath, szPckPath); }
 	catch (const std::length_error&) { return false; }
+	//\tConvert backslashes to forward slashes: the af_GetFullPath joins
+	//\twith the POSIX separator but the caller's path may contain
+	//\tbackslashes (the original Windows format). The MEMFS resolves
+	//\tforward slashes as directory separators.
+	for (char* p = szFullPckPath; *p; ++p) { if (*p == '\\') *p = '/'; }
 
 	m_bUseShortName = bShortName;
 

@@ -62,6 +62,10 @@ bool AFile::Open(const char *file, DWORD flags) {
                        : mode == AFILE_CREATENEW ? "wb"
                                                  : "ab+";
   m_pFile = std::fopen(path.c_str(), access);
+  //\tDiagnostic: trace the package file opens (the browser boot needs to
+  //\tverify the VFS path resolution).
+  if (path.find(".pck") != std::string::npos || path.find(".pkx") != std::string::npos)
+    printf("pw153: AFile::Open [%s] -> [%s] = %p\n", file, path.c_str(), (void*)m_pFile);
   if (!m_pFile)
     return false;
   std::strcpy(m_szFileName, path.c_str());
