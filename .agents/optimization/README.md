@@ -151,3 +151,11 @@ Inspeção estática no SHA `97dfe0d423494ee35178c082c518a66659cfd0d2`. Diferent
 | [OPT-043](OPT-043-horizon-culling-screen-column-scan.md) | P2 | Angelica / A3DHorizonCull / CPU-WASM | Medir varredura por coluna de tela e custo/benefício do culling; verificar segmentos degenerados após port funcional |
 
 Inspeção estática no SHA `c4eb8fe8cb8262a217bdae69789174cae334db64`. Distinto de PW23-036 (LOD/culling geral) e OPT-015 (render slots). Sem benchmark, teste mobile ou correção de código. Preservados os IDs PW23-021…037; execução do jogo no navegador segue prioritária.
+
+## Auditoria incremental — offsets Range do probe browser (2026-10-28; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-044](OPT-044-browser-pck-range-index-32bit-overflow.md) | P1 | Browser worker / HTTP Range / PCK-PKX | Verificar aritmética de offsets em pacotes acima de 2 GiB; `<< 20` produz signed int32 e `>>> 20` perde bits acima de 4 GiB. Não há falha do boot real comprovada |
+
+Inspeção no SHA `0d8f802bea0603ebeb2723bbc886dc9555f12341`, com checagem aritmética JavaScript independente; sem assets, navegador, benchmark ou teste mobile nesta auditoria. Distinto de PW23-024/033, OPT-032/036 e PW23-020. O novo probe reporta avanço ao carregamento de modelos no Chrome, mas ainda não comprova gameplay; preservar PW23-021…037 e adiar tuning até port funcional.
