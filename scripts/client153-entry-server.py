@@ -33,6 +33,15 @@ LOOSE_FILES = [
     ('data/verdana.ttf', 'data\\verdana.ttf'),
     ('data/times.ttf', 'data\\times.ttf'),
     ('data/kaiu.ttf', 'data\\kaiu.ttf'),
+    ('cursors/normal.ani', 'Cursors\\normal.ani'),
+    ('cursors/attack.cur', 'Cursors\\attack.cur'),
+    ('cursors/talk.cur', 'Cursors\\talk.cur'),
+    ('cursors/pick.cur', 'Cursors\\pick.cur'),
+    ('cursors/repair.cur', 'Cursors\\repair.cur'),
+    ('cursors/hand.cur', 'Cursors\\hand.cur'),
+    ('cursors/flag.cur', 'Cursors\\flag.cur'),
+    ('cursors/dig.ani', 'Cursors\\dig.ani'),
+    ('cursors/gourd.cur', 'Cursors\\gourd.cur'),
 ]
 
 # The packages the original entry expects on its VFS root (the same set the
