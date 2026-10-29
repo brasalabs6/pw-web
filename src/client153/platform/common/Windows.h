@@ -39,6 +39,9 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#ifdef __EMSCRIPTEN__
+#include <emscripten/heap.h>
+#endif
 
 inline int stricmp(const char *lhs, const char *rhs) { return ::strcasecmp(lhs, rhs); }
 inline int strcmpi(const char *lhs, const char *rhs) { return stricmp(lhs, rhs); }
@@ -3554,18 +3557,21 @@ inline HMODULE GetModuleHandle(const char *name) {
   return nullptr;
 }
 
-//	Pointer validation: the WASM memory model has no guard pages like
-//	Win32; the adapter's memory map supplies the real ranges. Until it
-//	registers, the checks fail closed (treat every pointer as bad).
+// Bounds-check WASM linear memory. This cannot establish allocation lifetime
+// or ownership; it only rejects null, overflow and out-of-memory ranges.
 inline BOOL IsBadWritePtr(const void *pointer, std::size_t size) {
+#ifdef __EMSCRIPTEN__
+  const auto address = reinterpret_cast<std::uintptr_t>(pointer);
+  const auto end = emscripten_get_heap_size();
+  return !address || address > end || size > end - address;
+#else
   (void)pointer;
   (void)size;
   return TRUE;
+#endif
 }
 inline BOOL IsBadReadPtr(const void *pointer, std::size_t size) {
-  (void)pointer;
-  (void)size;
-  return TRUE;
+  return IsBadWritePtr(pointer, size);
 }
 
 #include "winsync.h"	//	real event/semaphore/thread wait primitives (hosted last: needs the types above).
