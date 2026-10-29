@@ -1,5 +1,6 @@
 #include "d3d8.h"
 #include "d3d8_surface.h"
+#include "d3d8_buffer.h"
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include <GLES3/gl3.h>
@@ -69,6 +70,32 @@ int main() {
       device->GetBackBuffer(0, 0, &back) != D3D_OK || !target || !depth || !back) return 27;
   if (target != back) return 28;
   if (device->Clear(0, nullptr, D3DCLEAR_TARGET, 0xffff0000, 1.0f, 0) != D3D_OK) return 29;
+  IDirect3DVertexBuffer8 *vertex = nullptr;
+  if (device->CreateVertexBuffer(16, D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &vertex) != D3D_OK || !vertex) {
+    EM_ASM({ document.body.dataset.result = 'missing-vertex-buffer'; }); return 35;
+  }
+  BYTE *mapped = nullptr;
+  if (vertex->Lock(4, 4, &mapped, 0) != D3D_OK || !mapped) return 36;
+  mapped[0] = 7; mapped[1] = 8; mapped[2] = 9; mapped[3] = 10;
+  if (vertex->Unlock() != D3D_OK || vertex->Unlock() == D3D_OK) return 37;
+  if (vertex->Lock(15, 2, &mapped, 0) == D3D_OK || mapped) return 38;
+  const GLuint vertexName = static_cast<PW153VertexBuffer *>(vertex)->buffer();
+  glBindBuffer(GL_ARRAY_BUFFER, vertexName);
+  if (!EM_ASM_INT({ const gpu = new Uint8Array(4); GLctx.getBufferSubData(GLctx.ARRAY_BUFFER, 4, gpu); return gpu[0] === 7 && gpu[1] === 8 && gpu[2] === 9 && gpu[3] === 10; })) return 39;
+  glBindBuffer(GL_ARRAY_BUFFER, 0); vertex->Release();
+  if (glIsBuffer(vertexName)) return 40;
+  IDirect3DIndexBuffer8 *indices = nullptr;
+  if (device->CreateIndexBuffer(8, D3DUSAGE_DYNAMIC, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &indices) != D3D_OK || !indices) {
+    EM_ASM({ document.body.dataset.result = 'missing-index-buffer'; }); return 41;
+  }
+  if (indices->Lock(2, 2, &mapped, 0) != D3D_OK) return 42;
+  mapped[0] = 0x34; mapped[1] = 0x12;
+  if (indices->Unlock() != D3D_OK) return 43;
+  const GLuint indexName = static_cast<PW153IndexBuffer *>(indices)->buffer();
+  glBindBuffer(GL_ARRAY_BUFFER, indexName);
+  if (!EM_ASM_INT({ const gpu = new Uint8Array(2); GLctx.getBufferSubData(GLctx.ARRAY_BUFFER, 2, gpu); return gpu[0] === 0x34 && gpu[1] === 0x12; })) return 44;
+  glBindBuffer(GL_ARRAY_BUFFER, 0); indices->Release();
+  if (glIsBuffer(indexName)) return 45;
   IDirect3DTexture8 *texture = reinterpret_cast<IDirect3DTexture8 *>(1);
   if (device->CreateTexture(1, 1, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture) == D3D_OK || texture) return 31;
   if (device->Clear(0, nullptr, 0x4, 0, 1.0f, 0) == D3D_OK) return 32;

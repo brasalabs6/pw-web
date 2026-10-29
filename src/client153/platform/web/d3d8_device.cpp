@@ -1,4 +1,5 @@
 #include "d3d8_surface.h"
+#include "d3d8_buffer.h"
 #include <emscripten/html5.h>
 #include <new>
 #include <cstdio>
@@ -69,8 +70,20 @@ public:
   HRESULT SetMaterial(const D3DMATERIAL8 *) override { return E_NOTIMPL; }
   HRESULT SetViewport(const D3DVIEWPORT8 *) override { return E_NOTIMPL; }
   HRESULT SetStreamSource(UINT, IDirect3DVertexBuffer8 *, UINT) override { return E_NOTIMPL; }
-  HRESULT CreateVertexBuffer(UINT, DWORD, DWORD, D3DPOOL, IDirect3DVertexBuffer8 **vertexBuffer) override { if (vertexBuffer) *vertexBuffer = nullptr; return E_NOTIMPL; }
-  HRESULT CreateIndexBuffer(UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DIndexBuffer8 **indexBuffer) override { if (indexBuffer) *indexBuffer = nullptr; return E_NOTIMPL; }
+  HRESULT CreateVertexBuffer(UINT size, DWORD usage, DWORD, D3DPOOL pool, IDirect3DVertexBuffer8 **out) override {
+    if (!out) return E_FAIL;
+    *out = nullptr;
+    if (emscripten_webgl_get_current_context() != context || emscripten_is_webgl_context_lost(context)) return E_FAIL;
+    *out = pw153_create_vertex_buffer(size, usage, pool);
+    return *out ? D3D_OK : E_FAIL;
+  }
+  HRESULT CreateIndexBuffer(UINT size, DWORD usage, D3DFORMAT format, D3DPOOL pool, IDirect3DIndexBuffer8 **out) override {
+    if (!out) return E_FAIL;
+    *out = nullptr;
+    if (emscripten_webgl_get_current_context() != context || emscripten_is_webgl_context_lost(context)) return E_FAIL;
+    *out = pw153_create_index_buffer(size, usage, format, pool);
+    return *out ? D3D_OK : E_FAIL;
+  }
   HRESULT SetIndices(IDirect3DIndexBuffer8 *, UINT) override { return E_NOTIMPL; }
   HRESULT SetVertexShader(DWORD) override { return E_NOTIMPL; }
   HRESULT SetPixelShader(DWORD) override { return E_NOTIMPL; }
