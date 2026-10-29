@@ -57,3 +57,13 @@ O arquivo `/font/FZL2JW.ttf` existe e todas as verificações importantes passar
 - [PW23-014 — Renderer Angelica D3D8](PW23-014-angelica-d3d8-webgl2-not-integrated.md)
 - [Épico e06 — WebGL2](../epics/e06-render-webgl2-v1/README.md)
 - Baseline: `fc2105438eaf982812a7488ab7b65f0b9dfe51bd`. Revalidar no HEAD mais recente do executor.
+
+## Complemento de triagem (29/10) — hipótese de GetAdapterDisplayMode e escopo do primeiro erro
+
+O relatório do executor afirma que os novos marcadores `BOOT_A3DDEV_*` estão sendo adicionados mas **ainda não foram rodados no Chromium**. O primeiro `return false` de `A3DDevice::Init` permanece desconhecido.
+
+**Nova hipótese verificável:** em `platform/web/d3d8_factory.cpp:84-89`, `Factory::GetAdapterDisplayMode` consulta `GL_VIEWPORT` e depois chama `glGetError()`, interpretando **qualquer erro GL pendente** como erro dessa operação. Chamadas anteriores de `renderable_color()`/framebuffer podem deixar um erro no contexto; medir estado GL antes e depois, viewport e HRESULT no probe. Não concluir que esse é o erro de boot sem os marcadores.
+
+**Contrato de render:** `Device::GetDeviceCaps` deve deixar de devolver `E_NOTIMPL`, enquanto `Factory::GetDeviceCaps` precisa ser consistente; checar `ConfigDevice()` dentro de `A3DDevice::Init`, atualmente ignorado. Entretanto essa falha ignorada e `GetRenderTarget` que devolve `D3D_OK + nullptr` **não explicam diretamente** a cascata de `return false`, sem evidência adicional.
+
+Prova de aceite da próxima rodada: commit/SHA do entry + `/Logs/A3D.log`, markers de FMT16, adapter display, factory caps, CreateDevice e superfície; apontar **o primeiro HRESULT incorreto**, corrigir e retestar. [Orientação aprofundada no PR](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6499021552).

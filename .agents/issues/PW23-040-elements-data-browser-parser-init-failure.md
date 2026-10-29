@@ -34,3 +34,9 @@ Mesmos dados originais autorizados carregam com contagens e checksums verificáv
 ## Deduplicação
 
 Distinto de [PW23-007](PW23-007-missing-full-game-wasm-target.md) (entry/link do jogo), [PW23-012](PW23-012-encoding-gbk-utf16-utf8-mismatch.md) (conversões textuais) e [PW23-014](PW23-014-angelica-d3d8-webgl2-not-integrated.md) (render). É um erro de **dados binários do cliente** observado no caminho de boot. Não é tuning.
+
+## Complemento sobre memória (29/10) — não validar 2,9 GiB sem verificar o parser
+
+O executor relatou que `elements.data` exigiria ~2,9 GiB e configurou `-sMAXIMUM_MEMORY=4GB`. **Isto é relato local, não benchmark independente de necessidade legítima:** o parser `itemdataman` continua com falha/bypass de `elements.data` neste issue. Um `sizeof`/packing diferente, contagem ou offset corrompido e loop de parsing inválido podem levar a alocações gigantes sem que o dataset demande isso.
+
+**Diagnóstico obrigatório antes de refatorar:** medir tamanho real do arquivo, versão, contagens por seção, offsets, checksums, `sizeof/alignof/offsetof` MSVC 32-bit vs WASM32, pico heap e cópias em MEMFS/JS; abortar com erro explícito em contagens absurdas. `MAXIMUM_MEMORY=4GB` é limite superior em wasm32 com memory growth, **não orçamento viável de celular**. Depois da correção funcional, se a necessidade for real, aplicar streaming de registros/índices compactos/descartar temporários/lazy decode, mantendo consistência dos dados. Não aprovar game loop com `itemdataman` incompleto. [Análise no PR](https://github.com/brasalabs6/pw-web/pull/23#issuecomment-6499021552).
