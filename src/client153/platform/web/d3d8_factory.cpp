@@ -62,10 +62,12 @@ public:
     return renderable_color(target) ? D3D_OK : E_FAIL;
   }
   HRESULT CheckDeviceFormat(UINT adapter, DWORD type, DWORD adapterFormat, DWORD usage, DWORD resource, DWORD format) override {
-    if (adapter != 0 || type != D3DDEVTYPE_HAL || adapterFormat != D3DFMT_X8R8G8B8 ||
-        usage != D3DUSAGE_DEPTHSTENCIL || resource != D3DRTYPE_SURFACE ||
-        format == D3DFMT_UNKNOWN || !usable_context()) return E_FAIL;
-    return renderable_color(adapterFormat, format) ? D3D_OK : E_FAIL;
+    if (adapter != 0 || type != D3DDEVTYPE_HAL || adapterFormat != D3DFMT_X8R8G8B8 || !usable_context()) return E_FAIL;
+    if (usage == 0 && resource == D3DRTYPE_TEXTURE &&
+        (format == D3DFMT_A4R4G4B4 || format == D3DFMT_A8R8G8B8)) return D3D_OK;
+    if (usage == D3DUSAGE_DEPTHSTENCIL && resource == D3DRTYPE_SURFACE && format != D3DFMT_UNKNOWN)
+      return renderable_color(adapterFormat, format) ? D3D_OK : E_FAIL;
+    return E_FAIL;
   }
   HRESULT CreateDevice(UINT adapter, DWORD type, HWND, DWORD, D3DPRESENT_PARAMETERS *params, IDirect3DDevice8 **out) override {
     if (!out) return E_FAIL;

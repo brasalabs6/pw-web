@@ -49,6 +49,9 @@ int main() {
   if (d3d->CheckDeviceFormat(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D16) != D3D_OK) {
     EM_ASM({ document.body.dataset.result = 'missing-depth-format'; }); return 19;
   }
+  if (d3d->CheckDeviceFormat(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, 0, D3DRTYPE_TEXTURE, D3DFMT_A4R4G4B4) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'font-format-unavailable'; }); return 67;
+  }
   D3DCAPS8 caps{};
   if (d3d->GetDeviceCaps(0, D3DDEVTYPE_HAL, &caps) != D3D_OK || caps.DeviceType != D3DDEVTYPE_HAL || caps.MaxTextureWidth != 0 || caps.MaxSimultaneousTextures != 0) {
     EM_ASM({ document.body.dataset.result = 'missing-caps'; }); return 12;
@@ -135,6 +138,27 @@ int main() {
   const GLuint textureName = static_cast<PW153Texture *>(texture)->texture(); texture->Release();
   if (glIsTexture(textureName)) return 49;
   if (device->CreateTexture(1, 1, 1, 0, D3DFMT_DXT1, D3DPOOL_MANAGED, &texture) == D3D_OK || texture) return 51;
+  IDirect3DTexture8 *fontTexture = nullptr;
+  if (device->CreateTexture(2, 1, 1, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED, &fontTexture) != D3D_OK || !fontTexture) {
+    EM_ASM({ document.body.dataset.result = 'missing-font-texture'; }); return 62;
+  }
+  D3DSURFACE_DESC fontDesc{};
+  if (fontTexture->GetLevelDesc(0, &fontDesc) != D3D_OK || fontDesc.Format != D3DFMT_A4R4G4B4 || fontDesc.Size != 4) return 63;
+  D3DLOCKED_RECT fontLock{};
+  if (fontTexture->LockRect(0, &fontLock, nullptr, 0) != D3D_OK || fontLock.Pitch != 4) return 64;
+  auto *fontPixels = static_cast<unsigned short *>(fontLock.pBits);
+  fontPixels[0] = 0x8fff; fontPixels[1] = 0xff00;
+  if (fontTexture->UnlockRect(0) != D3D_OK) return 65;
+  RECT fontRect{1, 0, 2, 1};
+  if (fontTexture->LockRect(0, &fontLock, &fontRect, D3DLOCK_READONLY) != D3D_OK ||
+      *static_cast<unsigned short *>(fontLock.pBits) != 0xff00 || fontLock.Pitch != 4 ||
+      fontTexture->UnlockRect(0) != D3D_OK) return 68;
+  GLuint fontFrame; glGenFramebuffers(1, &fontFrame); glBindFramebuffer(GL_FRAMEBUFFER, fontFrame);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, static_cast<PW153Texture *>(fontTexture)->texture(), 0);
+  unsigned char fontRead[8]{}; glReadPixels(0, 0, 2, 1, GL_RGBA, GL_UNSIGNED_BYTE, fontRead);
+  if (fontRead[0] != 255 || fontRead[1] != 255 || fontRead[2] != 255 || fontRead[3] != 136 ||
+      fontRead[4] != 255 || fontRead[5] != 0 || fontRead[6] != 0 || fontRead[7] != 255) return 66;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0); glDeleteFramebuffers(1, &fontFrame); fontTexture->Release();
   IDirect3DTexture8 *renderTexture = nullptr;
   if (device->CreateTexture(4, 4, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &renderTexture) != D3D_OK || !renderTexture) {
     EM_ASM({ document.body.dataset.result = 'missing-render-texture'; }); return 54;

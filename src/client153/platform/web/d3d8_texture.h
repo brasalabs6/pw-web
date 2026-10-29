@@ -9,13 +9,14 @@ class PW153Texture final : public IDirect3DTexture8 {
   GLuint texture_;
   BYTE *pixels_;
   UINT width_, height_;
+  D3DFORMAT format_;
   D3DPOOL pool_;
   DWORD usage_;
   DWORD priority_ = 0, flags_ = 0;
   bool locked_ = false;
   EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context_;
 public:
-  PW153Texture(IDirect3DDevice8 *, GLuint, BYTE *, UINT, UINT, D3DPOOL, DWORD, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE);
+  PW153Texture(IDirect3DDevice8 *, GLuint, BYTE *, UINT, UINT, D3DFORMAT, D3DPOOL, DWORD, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE);
   ~PW153Texture() override;
   GLuint texture() const { return texture_; }
   HRESULT QueryInterface(const void *, void **) override;
