@@ -411,12 +411,15 @@ bool CheckImportantFiles(const char *& pszInfo)
 
 		if( !file.Open(szImportantFiles[i], AFILE_OPENEXIST | AFILE_TEMPMEMORY) )
 		{
+			printf("BOOT_CHECK_FILES_FAILED: index=%d AFileImage::Open returned false\n", i);
 			pszInfo = szImportantFiles[i];
 			return false;
 		}
 
 		file.Close();
 	}
+
+	printf("BOOT_CHECK_FILES_OK: all important files opened\n");
 
 	glb_RepairExeInMemory();
 	return true;
@@ -834,8 +837,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 #ifdef ENABLE_UNKNOWN_EXIT_CHECK
 		l_bEnableExitCheck = false;
 #endif
+		printf("BOOT_WWINMAIN_CHECK_FILES_FAILED: returning -1\n");
 		return -1;
 	}
+	printf("BOOT_WWINMAIN_CHECK_FILES_PASSED\n");
 
 	//	Build Game initialize structure
 	CECGame::GAMEINIT GameInit;

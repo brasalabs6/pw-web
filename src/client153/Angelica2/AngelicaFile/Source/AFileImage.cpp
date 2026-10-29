@@ -127,8 +127,15 @@ bool AFileImage::Init(const char* szFullName, bool bTempMem)
 	
 SEPFILE:
 	// no package for this file, so try to load from disk.
+	//\tConvert backslashes to forward slashes: the af_GetFullPath joins
+	//\twith the POSIX separator but preserves the caller's backslashes.
+	//\tThe MEMFS resolves forward slashes as directory separators.
+	char szDiskPath[MAX_PATH];
+	strncpy(szDiskPath, szFullName, MAX_PATH);
+	szDiskPath[MAX_PATH - 1] = '\0';
+	for (char* p = szDiskPath; *p; ++p) { if (*p == '\\') *p = '/'; }
 	FILE* pFile;
-	if (!(pFile = fopen(szFullName, "rb")))
+	if (!(pFile = fopen(szDiskPath, "rb")))
 	{
 #ifndef _DEBUG
 		if( !strstr(szFullName, "Textures") && !strstr(szFullName, "Tex_") )
