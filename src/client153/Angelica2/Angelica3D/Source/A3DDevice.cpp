@@ -153,6 +153,7 @@ bool A3DDevice::Init(A3DEngine* pA3DEngine, HWND hDeviceWnd, A3DDEVFMT* pA3DDevF
 
 	D3DDISPLAYMODE d3ddm;
 	HRESULT	hval;
+	printf("BOOT_A3DDEV_INIT_ENTER\n");
 
 	//	Init some members;
 	m_pA3DEngine	= pA3DEngine;
@@ -170,6 +171,7 @@ bool A3DDevice::Init(A3DEngine* pA3DEngine, HWND hDeviceWnd, A3DDEVFMT* pA3DDevF
 		if( D3D_OK != hval )
 		{
 			g_A3DErrLog.Log("Can not determine the 16-bit target format!");
+			printf("BOOT_A3DDEV_FMT16_FAILED hval=%ld\n", (long)hval);
 			return false;
 		}
 		else
@@ -183,6 +185,7 @@ bool A3DDevice::Init(A3DEngine* pA3DEngine, HWND hDeviceWnd, A3DDEVFMT* pA3DDevF
 		m_fmtAdapter16 = A3DFMT_R5G6B5;
 		m_fmtTarget16 = A3DFMT_R5G6B5;
 	}
+	printf("BOOT_A3DDEV_FMT16_OK fmt16=%d fmt32=%d\n", (int)m_fmtTarget16, (int)m_fmtTarget32);
 
 	hval = m_pA3DEngine->GetD3D()->CheckDeviceType(D3DADAPTER_DEFAULT, (D3DDEVTYPE) m_A3DDevType, D3DFMT_X8R8G8B8, D3DFMT_X8R8G8B8, false);
 	if( D3D_OK == hval )
@@ -210,8 +213,10 @@ bool A3DDevice::Init(A3DEngine* pA3DEngine, HWND hDeviceWnd, A3DDEVFMT* pA3DDevF
 	if( D3D_OK != hval )
 	{
 		g_A3DErrLog.Log("Can not get adapter display mode");
+		printf("BOOT_A3DDEV_ADAPTER_DM_FAILED hval=%ld\n", (long)hval);
 		return false;
 	}
+	printf("BOOT_A3DDEV_ADAPTER_DM_OK w=%u h=%u fmt=%d\n", d3ddm.Width, d3ddm.Height, (int)d3ddm.Format);
 
 	A3DFORMAT	fmtAdapter;
 	D3DPRESENT_PARAMETERS d3dpp; 
@@ -318,8 +323,10 @@ TryAgain:
 	if( D3D_OK != hval )
 	{
 		g_A3DErrLog.Log("A3DDevice::Init(), GetDeviceCaps() Fail.");
+		printf("BOOT_A3DDEV_GETCAPS_FAILED hval=%ld\n", (long)hval);
 		return false;
 	}
+	printf("BOOT_A3DDEV_GETCAPS_OK\n");
 
 	DWORD dwFlags = 0;
 	if (m_dwDeviceFlags & A3DDEV_ALLOWMULTITHREAD)
@@ -358,6 +365,7 @@ TryAgain:
 		char szErrorCode[1024];
 		D3DXGetErrorStringA(hval, szErrorCode, 1024);
 		g_A3DErrLog.Log("Can not create device[%dx%dx%d], reason: %s", pA3DDevFmt->nWidth, pA3DDevFmt->nHeight, (pA3DDevFmt->fmtTarget == A3DFMT_X8R8G8B8 || pA3DDevFmt->fmtTarget == A3DFMT_A8R8G8B8) ? 32 : 16, szErrorCode);
+		printf("BOOT_A3DDEV_CREATEDEVICE_FAILED hval=0x%08lx backbuf=%d depth=%d\n", (unsigned long)hval, (int)d3dpp.BackBufferFormat, (int)d3dpp.AutoDepthStencilFormat);
 
 		if( hval == D3DERR_OUTOFVIDEOMEMORY )
 		{

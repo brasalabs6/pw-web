@@ -151,22 +151,33 @@ A3DEngine::~A3DEngine()
 
 bool A3DEngine::Init(HINSTANCE hInstance, HWND hDeviceWnd, A3DDEVFMT* pA3DDevFmt, DWORD dwDevFlags, A3DDEVTYPE devType)
 {
+	printf("BOOT_A3DENGINE_ENTER\n");
 #ifdef _DEBUG
 	MessageBox(hDeviceWnd, _AL("DEBUG"), _AL(""), MB_OK);
 #endif
 
 	//	Initalize random number generator
 	a_InitRandom();
+	printf("BOOT_A3D_RANDOM_OK\n");
 
 	if (!g_A3DErrLog.Init("A3D.log", "Angelica 3D Error Log", false))
+	{
+		printf("BOOT_A3D_ERRLOG_FAILED\n");
 		return false;
+	}
+	printf("BOOT_A3D_ERRLOG_OK\n");
 
 	if (!(g_pA3DConfig = new A3DConfig))
+	{
+		printf("BOOT_A3D_CONFIG_FAILED\n");
 		return false;
+	}
+	printf("BOOT_A3D_CONFIG_OK\n");
 
 	g_pA3DMathUtility = new A3DMathUtility();
-	if (NULL == g_pA3DMathUtility)	return false;
-	if (!g_pA3DMathUtility->Init()) return false;
+	if (NULL == g_pA3DMathUtility)	{ printf("BOOT_A3D_MATH_ALLOC_FAILED\n"); return false; }
+	if (!g_pA3DMathUtility->Init()) { printf("BOOT_A3D_MATH_INIT_FAILED\n"); return false; }
+	printf("BOOT_A3D_MATH_OK\n");
 
 	// By default we turn on optimization flag, for editors, we should turn off this flag;
 	//m_bOptimizedEngine = true;
@@ -183,15 +194,19 @@ bool A3DEngine::Init(HINSTANCE hInstance, HWND hDeviceWnd, A3DDEVFMT* pA3DDevFmt
 	m_pAMEngine = new AMEngine();
 	if( NULL == m_pAMEngine )
 	{
+		printf("BOOT_A3D_AMENGINE_ALLOC_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init, Enough memory!");
 		return false;
 	}
+	printf("BOOT_A3D_AMENGINE_ALLOC_OK\n");
 
 	if( !m_pAMEngine->Init(hDeviceWnd) )
 	{
+		printf("BOOT_A3D_AMENGINE_INIT_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init, Init Angelica Media Engine Fail!");
 		return false;
 	}
+	printf("BOOT_A3D_AMENGINE_INIT_OK\n");
 
 	AMSOUNDDEVFORMAT devFormat;
 	ZeroMemory(&devFormat, sizeof(devFormat));
@@ -202,15 +217,19 @@ bool A3DEngine::Init(HINSTANCE hInstance, HWND hDeviceWnd, A3DDEVFMT* pA3DDevFmt
 	devFormat.bGlobalFocus = pA3DDevFmt->bSndGlobal;
 	if( !m_pAMEngine->InitSoundEngine(&devFormat, true) )
 	{
+		printf("BOOT_A3D_SOUNDENGINE_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init, Init Angelica Sound Engine Fail!");
 		return false;
 	}
+	printf("BOOT_A3D_SOUNDENGINE_OK\n");
 
 	if( !m_pAMEngine->InitVideoEngine() )
 	{
+		printf("BOOT_A3D_VIDEOENGINE_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init, Init Angelica Video Engine Fail!");
 		return false;
 	}
+	printf("BOOT_A3D_VIDEOENGINE_OK\n");
 
 	if( !m_pAMEngine->InitImmWrapper("Default.ifr") )
 	{
@@ -227,19 +246,24 @@ bool A3DEngine::Init(HINSTANCE hInstance, HWND hDeviceWnd, A3DDEVFMT* pA3DDevFmt
 	m_pD3D = Direct3DCreate8(D3D_SDK_VERSION);
 	if( NULL == m_pD3D )
 	{
+		printf("BOOT_A3D_D3DCREATE8_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init Error Create IDirect3D8 with version %d", D3D_SDK_VERSION);
 		return false;
 	}
+	printf("BOOT_A3D_D3DCREATE8_OK\n");
 
 	m_pA3DDevice = new A3DDevice();
 	if (!m_pA3DDevice)
 	{
+		printf("BOOT_A3D_DEVICE_ALLOC_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init() Not enough memory!");
 		return false;
 	}
+	printf("BOOT_A3D_DEVICE_ALLOC_OK\n");
 
 	if (!m_pA3DDevice->Init(this, m_hDeviceWnd, pA3DDevFmt, dwDevFlags, devType))
 	{
+		printf("BOOT_A3D_DEVICE_INIT_FAILED\n");
 		g_A3DErrLog.Log("A3DEngine::Init() Init A3DDevice Fail!");
 		return false;
 	}

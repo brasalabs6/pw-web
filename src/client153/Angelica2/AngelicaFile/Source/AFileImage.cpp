@@ -102,6 +102,7 @@ bool AFileImage::Init(const char* szFullName, bool bTempMem)
 		DWORD dwFileLen;
 
 		//	Init from a package
+		printf("PWDBG AFileImage::Init [%s] from PACKAGE folder [%s]\n", m_szRelativeName, m_pPackage->GetFolder());
 		if (!(m_dwHandle = m_pPackage->OpenSharedFile(m_szRelativeName, &m_pFileImage, &dwFileLen, bTempMem)))
 		{
 			// can't find it in package, so see if can load from disk.
@@ -111,6 +112,10 @@ bool AFileImage::Init(const char* szFullName, bool bTempMem)
 
 		m_nFileLength = (int)dwFileLen;
 		m_dwTimeStamp = 0;
+		printf("PWDBG AFileImage::Init [%s] PACKAGE OK len=%d first8=%02x%02x%02x%02x%02x%02x%02x%02x\n",
+			m_szRelativeName, m_nFileLength,
+			m_pFileImage[0], m_pFileImage[1], m_pFileImage[2], m_pFileImage[3],
+			m_pFileImage[4], m_pFileImage[5], m_pFileImage[6], m_pFileImage[7]);
 
 		//	Note: NOT to do ext decrypt for package file. DoExtDecrypt() may re-allocate the buffer
 		//		pointted by m_pFileImage, and this will may cause problem when call AFilePackage::CloseSharedFile(),
@@ -137,6 +142,7 @@ SEPFILE:
 	FILE* pFile;
 	if (!(pFile = fopen(szDiskPath, "rb")))
 	{
+		printf("PWDBG AFileImage::Init [%s] DISK OPEN FAILED path [%s]\n", m_szRelativeName, szDiskPath);
 #ifndef _DEBUG
 		if( !strstr(szFullName, "Textures") && !strstr(szFullName, "Tex_") )
 #endif
@@ -171,6 +177,10 @@ SEPFILE:
 	}
 
 	fread(m_pFileImage, m_nFileLength, 1, pFile);
+	printf("PWDBG AFileImage::Init [%s] DISK read len=%d first8=%02x%02x%02x%02x%02x%02x%02x%02x\n",
+		m_szRelativeName, m_nFileLength,
+		m_pFileImage[0], m_pFileImage[1], m_pFileImage[2], m_pFileImage[3],
+		m_pFileImage[4], m_pFileImage[5], m_pFileImage[6], m_pFileImage[7]);
 
 	//	Try to do external decryption
 	if (!DoExtDecrypt())
