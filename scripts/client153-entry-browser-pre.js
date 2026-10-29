@@ -10,7 +10,7 @@ var Module = {
   canvas: globalThis.pwCanvas,
   print: text => console.log('[pw153]', text),
   printErr: text => console.error('[pw153]', text),
-  onRuntimeInitialized() {
+  onRuntimeInitialized: async function() {
     const status = globalThis.pwStatus;
     function log(msg) {
       console.log('[pw153]', msg);
@@ -35,6 +35,16 @@ var Module = {
     }
     try {
       const manifest = JSON.parse(request('/manifest'));
+      // Loose (non-package) files must be provisioned eagerly with their
+      // real bytes: the sync-XHR text path cannot transport binary files
+      // that start with a UTF-16 BOM (ff fe) — the Encoding Standard's BOM
+      // sniffing decodes them as UTF-16LE regardless of the declared
+      // charset, consuming the BOM and collapsing the 2-byte units (this
+      // corrupted world_targets.txt and serverlist.txt). fetch() with
+      // arrayBuffer has no text decoding, so it preserves every byte.
+      // The multi-GB .pck/.pkx packages keep the lazy Range-request
+      // streams: their binary headers never trigger BOM sniffing.
+      const looseFiles = [];
       for (const item of manifest.packages) {
         // The AFPlatform.h separator is '/' on POSIX (the Codex changed it
         // from '\\'), so the client constructs paths with '/'. The MEMFS
@@ -46,6 +56,7 @@ var Module = {
         if (dirPath && dirPath !== '/') {
           try { FS.mkdirTree(dirPath); } catch (e) { /* already exists */ }
         }
+        if (!/\.(pck|pkx)$/i.test(item.name)) { looseFiles.push({ item, memfsPath }); continue; }
         FS.createDataFile(dirPath || '/', memfsPath.substring(memfsPath.lastIndexOf('/') + 1), null, true, false);
         const node = FS.lookupPath(memfsPath).node;
         node.usedBytes = item.size;
@@ -96,7 +107,31 @@ var Module = {
           write() { throw new FS.ErrnoError(69); }
         };
       }
-      FS.writeFile('/userdata' + String.fromCharCode(92) + 'SystemSettings.ini', '[Video]\nFullScreen=0\n');
+      // Provision the loose files with real bytes via async fetch (no text
+      // decoding, byte-exact). This must complete before the probe runs
+      // because the client reads these files synchronously during boot.
+      await Promise.all(looseFiles.map(async ({ item, memfsPath }) => {
+        try {
+          const response = await fetch(item.url);
+          if (!response.ok) throw Error('HTTP ' + response.status + ' ' + item.url);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          if (bytes.length !== item.size) log('loose size mismatch ' + item.name + ': got ' + bytes.length + ' expected ' + item.size);
+          FS.writeFile(memfsPath, bytes);
+        } catch (e) {
+          log('loose fetch failed ' + item.name + ': ' + e.message);
+        }
+      }));
+      // The client opens userdata\SystemSettings.ini, which AFile resolves
+      // to /userdata/SystemSettings.ini in MEMFS (forward slashes). The ini
+      // must exist with FullScreen=0: the browser device only supports
+      // windowed mode, and the client's default is fullscreen.
+      try { FS.mkdir('/userdata'); } catch(e) { /* already exists */ }
+      FS.writeFile('/userdata/SystemSettings.ini', '[Video]\nFullScreen=0\n');
+      try { FS.writeFile('/client_id.cfg', '[Default]\nclient_id=1\n'); } catch (e) { log('client_id.cfg write failed: ' + e.message); }
+      // The ALog system creates a "Logs" directory for the log files. The
+      // MEMFS needs this directory to exist before the client boots.
+      try { FS.mkdir('/Logs'); } catch(e) { /* already exists */ }
+      try { FS.mkdir('/logs'); } catch(e) { /* already exists */ }
       specialHTMLTargets['#canvas'] = globalThis.pwCanvas;
       //\tDiagnostic: verify the files are accessible in MEMFS at the
       //\tforward-slash paths.
@@ -139,16 +174,24 @@ var Module = {
         gl2.clear(gl2.COLOR_BUFFER_BIT);
         log('diagnostic: canvas cleared to GREEN after probe returned');
       }
-      // Dump the client's own logs for boot diagnosis.
-      try {
-        const logDir = FS.readdir('/logs');
-        log('logs dir contents: ' + JSON.stringify(logDir));
-      } catch (e) { log('no /logs dir: ' + e.message); }
-      for (const name of ['AF.log', 'EC.log']) {
+      // Dump the client's own logs for boot diagnosis. ALog uses the "Logs"
+      // directory (capital L, case-sensitive MEMFS) and names A3D.log (engine
+      // errlog), AM.log (media), EC.log (element client), AF.log (file system).
+      for (const dir of ['/Logs', '/logs']) {
         try {
-          const text = FS.readFile('/logs/' + name, {encoding: 'utf8'});
-          log('=== ' + name + ' ===\n' + text);
-        } catch (e) { log('no /logs/' + name + ': ' + e.message); }
+          const logDir = FS.readdir(dir);
+          log(dir + ' dir contents: ' + JSON.stringify(logDir));
+        } catch (e) { log('no ' + dir + ' dir: ' + e.message); }
+        for (const name of ['A3D.log', 'AM.log', 'EC.log', 'AF.log']) {
+          try {
+            let text = FS.readFile(dir + '/' + name, {encoding: 'utf8'});
+            const lines = text.split('\n');
+            if (lines.length > 300) {
+              text = '... (' + (lines.length - 300) + ' earlier lines)\n' + lines.slice(-300).join('\n');
+            }
+            log('=== ' + dir + '/' + name + ' ===\n' + text);
+          } catch (e) { log('no ' + dir + '/' + name + ': ' + e.message); }
+        }
       }
     } catch (error) {
       log('EXCEPTION: ' + (error.stack || error));
