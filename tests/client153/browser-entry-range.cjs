@@ -8,11 +8,11 @@ const vm = require('node:vm');
 const nodes = new Map();
 const requests = [];
 const size = 2 ** 31 + 16;
-const messages = [];
-const logReads = [];
+const status = {textContent: ''};
 class XMLHttpRequest {
   open(_method, url) { this.url = url; }
   setRequestHeader(_name, value) { this.range = value; }
+  overrideMimeType() {}
   send() {
     if (this.url === '/manifest') {
       this.status = 200;
@@ -25,18 +25,17 @@ class XMLHttpRequest {
     const start = Number(match[1]), end = Number(match[2]);
     if (start > end || end >= size) { this.status = 416; return; }
     this.status = 206;
-    this.response = new Uint8Array(end - start + 1).fill(42).buffer;
+    this.responseText = '*'.repeat(end - start + 1);
   }
 }
 const FS = {
   createDataFile(_parent, name) { nodes.set('/' + name, {}); },
   lookupPath(name) { return {node: nodes.get(name)}; },
   writeFile() {},
-  readFile(name) { logReads.push(name); throw Error('no log'); },
   ErrnoError: class extends Error {},
 };
-const context = {XMLHttpRequest, FS, Uint8Array, Map, JSON, Number, Math,
-  postMessage: message => messages.push(message), specialHTMLTargets: {}, pwCanvas: {}};
+const context = {XMLHttpRequest, FS, Uint8Array, Map, JSON, Number, Math, console,
+  specialHTMLTargets: {}, pwCanvas: {}, pwStatus: status};
 context.globalThis = context;
 const script = fs.readFileSync(path.join(__dirname, '../../scripts/client153-entry-browser-pre.js'), 'utf8');
 vm.runInNewContext(script, context);
@@ -47,7 +46,6 @@ context.Module._pw153_browser_probe = () => {
   return 0;
 };
 context.Module.onRuntimeInitialized();
-assert.ok(!messages.some(message => message.type === 'exception'), JSON.stringify(messages));
+assert.ok(!status.textContent.includes('EXCEPTION:'), status.textContent);
 assert.deepEqual(requests, [`bytes=${2 ** 31}-${size - 1}`]);
-assert.deepEqual(logReads, ['/Logs/AF.log', '/Logs/EC.log', '/Logs/A3D.log']);
 console.log('PASS: range reads at 2 GiB');

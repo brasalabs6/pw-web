@@ -42,7 +42,7 @@ var Module = {
         const BLOCK_SHIFT = 20, BLOCK_SIZE = 1 << BLOCK_SHIFT, MAX_CACHED = 64;
         const blocks = new Map();
         function fetchBlock(index) {
-          const start = index << BLOCK_SHIFT;
+          const start = index * BLOCK_SIZE;
           const end = Math.min(start + BLOCK_SIZE, item.size) - 1;
           if (start >= item.size) return null;
           return request(item.url, `bytes=${start}-${end}`);
@@ -66,10 +66,10 @@ var Module = {
             const result = new Uint8Array(count);
             let written = 0;
             while (written < count) {
-              const index = (position + written) >>> BLOCK_SHIFT;
+              const index = Math.floor((position + written) / BLOCK_SIZE);
               const block = getBlock(index);
               if (!block) break;
-              const blockOffset = (position + written) - (index << BLOCK_SHIFT);
+              const blockOffset = (position + written) - (index * BLOCK_SIZE);
               const available = Math.min(block.length - blockOffset, count - written);
               if (available <= 0) break;
               result.set(block.subarray(blockOffset, blockOffset + available), written);
