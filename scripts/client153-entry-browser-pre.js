@@ -108,6 +108,15 @@ var Module = {
         const data = FS.readFile('/configs.pck');
         log('VFS check: /configs.pck exists, size=' + data.length);
       } catch (e) { log('VFS check: /configs.pck FAILS: ' + e.message); }
+      //\tFont file check: the CheckImportantFiles fails at index=10 (font\\FZL2JW.ttf).
+      try {
+        const data = FS.readFile('/font/FZL2JW.ttf');
+        log('VFS font check: /font/FZL2JW.ttf exists, size=' + data.length);
+      } catch (e) { log('VFS font check: /font/FZL2JW.ttf FAILS: ' + e.message); }
+      try {
+        const data = FS.readFile('/font/fzl2jw.ttf');
+        log('VFS font check: /font/fzl2jw.ttf (lowercase) exists, size=' + data.length);
+      } catch (e) { log('VFS font check: /font/fzl2jw.ttf (lowercase) FAILS: ' + e.message); }
       log('entry: packages mapped, calling pw153_browser_probe');
       //\tDiagnostic: test if the canvas's WebGL2 context can produce visible
       //\toutput with a direct JavaScript clear (bypassing the D3D8 adapter).
