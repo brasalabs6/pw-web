@@ -180,3 +180,11 @@ Inspeção estática no SHA `cf1121324c6cca0e566b698311c45a85eea0dba9`, [linhas 
 | [OPT-046](OPT-046-probe-loose-route-root-containment.md) | P1 | Probe HTTP local / hardening preventivo | Confinar paths percent-decoded de `/loose/` ao diretório de assets; reprodução isolada da resolução de caminho, sem teste HTTP/exposição remota |
 
 Inspeção no SHA `413717155c1ac72573f447e3c29ae801d84949c9`, [linhas 185–192](https://github.com/brasalabs6/pw-web/blob/413717155c1ac72573f447e3c29ae801d84949c9/scripts/client153-entry-server.py#L185-L192). Distinto de OPT-032/044 e PW23-032; fase **post-browser-port** e antes de qualquer exposição pública do probe. Nenhum código-fonte ou benchmark alterado; preservar PW23-021…037.
+
+## Auditoria incremental — Draw*PrimitiveUP D3D8/WebGL2 (2026-10-29; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-047](OPT-047-d3d8-up-draw-transient-buffer-churn.md) | P2 | Angelica / D3D8 / VBO e IBO temporários | Medir criação, upload e exclusão de buffers por `DrawPrimitiveUP`/`DrawIndexedPrimitiveUP`; somente pós-port |
+
+Inspeção estática no SHA `982ad80682ba866a175ce1e75051a14a0b178ede`, [linhas 242–274](https://github.com/brasalabs6/pw-web/blob/982ad80682ba866a175ce1e75051a14a0b178ede/src/client153/platform/web/d3d8_device.cpp#L242-L274). Sem benchmark, medição de FPS/RAM/VRAM/energia ou teste mobile. Distinto de OPT-040/045 e PW23-014. IDs migrados PW23-021…037 preservados; priorizar primeiro renderização original funcional.
