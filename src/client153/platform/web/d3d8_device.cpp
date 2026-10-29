@@ -166,7 +166,18 @@ public:
     if (!warned) { std::fputs("pw-browser: D3D gamma ramp is not implemented\n", stderr); warned = true; }
   }
   HRESULT ResourceManagerDiscardBytes(DWORD) override { return E_NOTIMPL; }
-  HRESULT GetDeviceCaps(D3DCAPS8 *) override { return E_NOTIMPL; }
+  // The device reports the same implemented-capability subset the factory
+  // reports: this device exists only as a HAL on adapter 0 over the current
+  // WebGL2 context, and texture/shader caps stay zero until implemented.
+  // A3DDevice::ConfigDevice requires this call to succeed to set up the
+  // render-state tables.
+  HRESULT GetDeviceCaps(D3DCAPS8 *caps) override {
+    if (!caps || emscripten_is_webgl_context_lost(context)) return E_FAIL;
+    *caps = {};
+    caps->DeviceType = D3DDEVTYPE_HAL;
+    caps->AdapterOrdinal = 0;
+    return D3D_OK;
+  }
   // Create the FVF shader program lazily. The simplest FVF is
   // D3DFVF_XYZRHW | D3DFVF_DIFFUSE: position (4 floats) + color (4 bytes).
   // The vertex shader passes the position through (pre-transformed) and
