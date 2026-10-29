@@ -15,6 +15,7 @@ public:
   PW153VertexBuffer(GLuint buffer, BYTE *data, UINT size, DWORD usage, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context);
   ~PW153VertexBuffer() override;
   GLuint buffer() const { return buffer_; }
+  UINT size() const { return size_; }
   HRESULT QueryInterface(const void *, void **out) override;
   ULONG AddRef() override;
   ULONG Release() override;

@@ -1,6 +1,8 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import tempfile
+import hashlib
 
 
 spec = importlib.util.spec_from_file_location(
@@ -11,6 +13,29 @@ spec.loader.exec_module(link)
 
 
 class LinkDiagnosticsTest(unittest.TestCase):
+    def test_current_aui_objects_replace_campaign_objects(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = 'Common/AUInterface2/A3DFTFont.cpp'
+            old = root / (hashlib.sha256(source.encode()).hexdigest() + '.o')
+            old.touch()
+            other = root / 'other.o'
+            other.touch()
+            current = root / 'aui' / (source + '.o')
+            current.parent.mkdir(parents=True)
+            current.touch()
+            self.assertEqual(link.overlay_aui_objects([old, other], root / 'aui'), [current, other])
+
+    def test_fresh_entry_object_replaces_stale_campaign_object(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = 'Element/CElementClient/ElementClient.cpp'
+            old = root / (hashlib.sha256(source.encode()).hexdigest() + '.o')
+            old.touch()
+            current = root / 'current.o'
+            current.touch()
+            self.assertEqual(link.replace_source_object([old], source, current), [current])
+
     def test_symbols_keep_argument_commas_and_are_deduplicated(self):
         errors = '''wasm-ld: error: /tmp/a.o: undefined symbol: foo(int, float), referenced by x
 wasm-ld: error: /tmp/b.o: undefined symbol: foo(int, float), referenced by y

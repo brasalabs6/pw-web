@@ -11,6 +11,7 @@ Usage: link-client153-full.py [--object-dir DIR] [--wasm-build DIR]
                                [--output FILE] [--error-limit N] [--list-only]
 """
 import argparse
+import hashlib
 import pathlib
 import subprocess
 import sys
@@ -55,6 +56,24 @@ def browser_probe_flags(pre_js: str | None) -> list[str]:
             '-sMAX_WEBGL_VERSION=2'] if pre_js else []
 
 
+def overlay_aui_objects(objects, aui_dir):
+    """Use rebuilt CMake AUI objects instead of stale campaign objects."""
+    replacements = {}
+    for current in aui_dir.rglob('*.cpp.o'):
+        source = current.relative_to(aui_dir).as_posix()[:-2]
+        digest = hashlib.sha256(source.encode('utf-8')).hexdigest() + '.o'
+        replacements[digest] = current
+    return [replacements.get(obj.name, obj) for obj in objects]
+
+
+def replace_source_object(objects, source, replacement):
+    name = hashlib.sha256(source.encode('utf-8')).hexdigest() + '.o'
+    matches = sum(obj.name == name for obj in objects)
+    if matches != 1 or not replacement.is_file():
+        raise ValueError(f'expected one campaign object for {source} and a replacement file')
+    return [replacement if obj.name == name else obj for obj in objects]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--emxx', default=str(
@@ -80,10 +99,16 @@ def main() -> int:
     parser.add_argument('--node-probe-pre-js', help='Node-only entry probe script')
     parser.add_argument('--browser-probe-pre-js', help='browser entry probe pre-js (worker context)')
     parser.add_argument('--extra-objects', help='comma-separated extra object files to link')
+    parser.add_argument('--entry-object', type=pathlib.Path,
+                        help='fresh ElementClient.cpp object, replacing the campaign object')
     parser.add_argument('--list-only', action='store_true')
     args = parser.parse_args()
 
     objects = sorted(pathlib.Path(args.object_dir).rglob('*.o'))
+    if args.entry_object:
+        objects = replace_source_object(objects, 'Element/CElementClient/ElementClient.cpp', args.entry_object)
+    objects = overlay_aui_objects(objects, pathlib.Path(args.wasm_build) /
+                                  'CMakeFiles/client153_aui_original.dir')
     engine_dir = pathlib.Path(args.engine_objects)
     if engine_dir.exists():
         objects += sorted(engine_dir.rglob('*.o'))

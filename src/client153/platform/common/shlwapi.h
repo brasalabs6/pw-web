@@ -50,8 +50,10 @@ inline LPSTR PathFindExtensionA(const char *path) {
 //	File existence: the real filesystem check (the documented semantics).
 inline BOOL PathFileExistsA(const char *path) {
   if (!path || !*path) return FALSE;
+  std::string normalized(path);
+  std::replace(normalized.begin(), normalized.end(), '\\', '/');
   struct stat info;
-  return ::stat(path, &info) == 0 ? TRUE : FALSE;
+  return ::stat(normalized.c_str(), &info) == 0 ? TRUE : FALSE;
 }
 
 inline BOOL PathFileExistsW(const wchar_t *path) {
@@ -60,12 +62,7 @@ inline BOOL PathFileExistsW(const wchar_t *path) {
   std::string narrow;
   if (!pw153::platform::utf16_to_utf8(path, narrow))
     return FALSE;
-  FILE *probe = std::fopen(narrow.c_str(), "rb");
-  if (probe) {
-    std::fclose(probe);
-    return TRUE;
-  }
-  return FALSE;
+  return PathFileExistsA(narrow.c_str());
 }
 
 inline BOOL PathAppendW(wchar_t *path, const wchar_t *more) {

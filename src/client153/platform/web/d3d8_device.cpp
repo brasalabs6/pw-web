@@ -18,11 +18,12 @@ class Device final : public IDirect3DDevice8 {
   IDirect3DVertexBuffer8 *streamSource = nullptr;
   UINT streamOffset = 0;
   DWORD currentFVF = 0;
+  DWORD srcBlend = 2, dstBlend = 1;
   IDirect3DBaseTexture8 *textures[8] = {};
   D3DMATRIX transforms[32] = {};
   // The FVF shader program (created lazily on the first draw call).
   GLuint shaderProgram = 0;
-  GLint aPosition = -1, aColor = -1;
+  GLint aPosition = -1, aColor = -1, aTexCoord = -1, uViewport = -1, uTextured = -1;
 public:
   Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner,
          UINT w, UINT h)
@@ -67,10 +68,47 @@ public:
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(previous));
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
-  HRESULT CopyRects(IDirect3DSurface8 *, const RECT *, UINT, IDirect3DSurface8 *, const POINT *) override { return E_NOTIMPL; }
+  HRESULT CopyRects(IDirect3DSurface8 *source, const RECT *rects, UINT count,
+                    IDirect3DSurface8 *destination, const POINT *points) override {
+    if (!source || !destination || source == destination || (!rects && count)) return E_FAIL;
+    D3DSURFACE_DESC src{}, dst{};
+    if (source->GetDesc(&src) != D3D_OK || destination->GetDesc(&dst) != D3D_OK || src.Format != dst.Format) return E_FAIL;
+    unsigned bytes = 0;
+    switch (src.Format) {
+      case D3DFMT_A8R8G8B8: case D3DFMT_X8R8G8B8: bytes = 4; break;
+      case D3DFMT_A4R4G4B4: case D3DFMT_A1R5G5B5: case D3DFMT_R5G6B5: bytes = 2; break;
+      default: return E_FAIL;
+    }
+    const UINT total = rects ? count : 1;
+    for (UINT i = 0; i < total; ++i) {
+      RECT r = rects ? rects[i] : RECT{0, 0, static_cast<LONG>(src.Width), static_cast<LONG>(src.Height)};
+      POINT p = points ? points[i] : POINT{0, 0};
+      if (r.left < 0 || r.top < 0 || r.right <= r.left || r.bottom <= r.top ||
+          r.right > static_cast<LONG>(src.Width) || r.bottom > static_cast<LONG>(src.Height) ||
+          p.x < 0 || p.y < 0 || static_cast<uint64_t>(p.x) + (r.right - r.left) > dst.Width ||
+          static_cast<uint64_t>(p.y) + (r.bottom - r.top) > dst.Height) return E_FAIL;
+    }
+    for (UINT i = 0; i < total; ++i) {
+      RECT r = rects ? rects[i] : RECT{0, 0, static_cast<LONG>(src.Width), static_cast<LONG>(src.Height)};
+      POINT p = points ? points[i] : POINT{0, 0};
+      RECT target{p.x, p.y, p.x + r.right - r.left, p.y + r.bottom - r.top};
+      D3DLOCKED_RECT from{}, to{};
+      if (source->LockRect(&from, &r, D3DLOCK_READONLY) != D3D_OK) return E_FAIL;
+      if (destination->LockRect(&to, &target, 0) != D3D_OK) { source->UnlockRect(); return E_FAIL; }
+      for (LONG y = 0; y < r.bottom - r.top; ++y)
+        std::memcpy(static_cast<BYTE *>(to.pBits) + size_t(y) * to.Pitch,
+                    static_cast<const BYTE *>(from.pBits) + size_t(y) * from.Pitch,
+                    static_cast<size_t>(r.right - r.left) * bytes);
+      HRESULT a = destination->UnlockRect(), b = source->UnlockRect();
+      if (a != D3D_OK || b != D3D_OK) return E_FAIL;
+    }
+    return D3D_OK;
+  }
   HRESULT GetRenderState(DWORD, DWORD *) override { return E_NOTIMPL; }
   HRESULT SetTexture(DWORD stage, IDirect3DBaseTexture8 *texture) override {
     if (stage >= 8) return E_FAIL;
+    if (texture) texture->AddRef();
+    if (textures[stage]) textures[stage]->Release();
     textures[stage] = texture;
     return D3D_OK;
   }
@@ -96,7 +134,7 @@ public:
   HRESULT CreateCubeTexture(UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DCubeTexture8 **cubeTexture) override { if (cubeTexture) *cubeTexture = nullptr; return E_NOTIMPL; }
   HRESULT CreateImageSurface(UINT width, UINT height, D3DFORMAT format, IDirect3DSurface8 **surface) override {
     if (!surface) return E_FAIL;
-    *surface = pw153_create_surface(width, height, format);
+    *surface = pw153_create_image_surface(width, height, format);
     return *surface ? D3D_OK : E_FAIL;
   }
   HRESULT TestCooperativeLevel() override { return E_NOTIMPL; }
@@ -120,7 +158,24 @@ public:
     currentFVF = fvf;
     return D3D_OK;
   }
-  HRESULT SetRenderState(DWORD, DWORD) override { return E_NOTIMPL; }
+  HRESULT SetRenderState(DWORD state, DWORD value) override {
+    if (emscripten_webgl_get_current_context() != context || emscripten_is_webgl_context_lost(context)) return E_FAIL;
+    if (state == D3DRS_ALPHABLENDENABLE) {
+      if (value) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+    } else if (state == D3DRS_SRCBLEND || state == D3DRS_DESTBLEND) {
+      static const GLenum factors[] = {0, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR,
+                                      GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA,
+                                      GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR,
+                                      GL_SRC_ALPHA_SATURATE};
+      if (value < 1 || value > 11 || (state == D3DRS_DESTBLEND && value == 11)) return E_FAIL;
+      const DWORD nextSrc = state == D3DRS_SRCBLEND ? value : srcBlend;
+      const DWORD nextDst = state == D3DRS_DESTBLEND ? value : dstBlend;
+      glBlendFunc(factors[nextSrc], factors[nextDst]);
+      if (glGetError() != GL_NO_ERROR) return E_FAIL;
+      srcBlend = nextSrc; dstBlend = nextDst;
+    } else return E_NOTIMPL;
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
   HRESULT SetTextureStageState(DWORD, DWORD, DWORD) override { return E_NOTIMPL; }
   HRESULT GetTextureStageState(DWORD, DWORD, DWORD *) override { return E_NOTIMPL; }
   HRESULT SetLight(DWORD, const D3DLIGHT8 *) override { return E_NOTIMPL; }
@@ -134,7 +189,9 @@ public:
   HRESULT SetStreamSource(UINT stream, IDirect3DVertexBuffer8 *buffer, UINT offset) override {
     // Store the vertex buffer for the next draw call. Only stream 0 is
     // tracked (the original client uses a single stream for FVF data).
-    if (stream != 0) return D3D_OK;
+    if (stream != 0) return E_FAIL;
+    if (buffer) buffer->AddRef();
+    if (streamSource) streamSource->Release();
     streamSource = buffer;
     streamOffset = offset;
     return D3D_OK;
@@ -178,23 +235,29 @@ public:
     caps->AdapterOrdinal = 0;
     return D3D_OK;
   }
-  // Create the FVF shader program lazily. The simplest FVF is
-  // D3DFVF_XYZRHW | D3DFVF_DIFFUSE: position (4 floats) + color (4 bytes).
-  // The vertex shader passes the position through (pre-transformed) and
-  // the fragment shader outputs the vertex color.
+  // The sprite FVF contains pretransformed screen coordinates and one texture.
   void ensureShaderProgram() {
     if (shaderProgram) return;
     static const char *vsSource =
         "#version 300 es\n"
-        "in vec4 a_position;\n"
-        "in vec4 a_color;\n"
+        "layout(location=0) in vec4 a_position;\n"
+        "layout(location=1) in vec4 a_color;\n"
+        "layout(location=2) in vec2 a_texcoord;\n"
+        "uniform vec4 u_viewport;\n"
         "out vec4 v_color;\n"
-        "void main() { gl_Position = a_position; v_color = a_color; }\n";
+        "out vec2 v_texcoord;\n"
+        "void main() { float w=1.0/a_position.w; vec2 p=(a_position.xy-u_viewport.xy)/u_viewport.zw; "
+        "gl_Position=vec4((p.x*2.0-1.0)*w,(1.0-p.y*2.0)*w,(a_position.z*2.0-1.0)*w,w); "
+        "v_color=a_color.bgra; v_texcoord=a_texcoord; }\n";
     static const char *fsSource =
         "#version 300 es\n"
+        "precision mediump float;\n"
         "in vec4 v_color;\n"
+        "in vec2 v_texcoord;\n"
+        "uniform sampler2D u_texture;\n"
+        "uniform bool u_textured;\n"
         "out vec4 fragColor;\n"
-        "void main() { fragColor = v_color; }\n";
+        "void main() { fragColor = v_color * (u_textured ? texture(u_texture,v_texcoord) : vec4(1.0)); }\n";
     auto compile = [](GLenum type, const char *source) -> GLuint {
       GLuint shader = glCreateShader(type);
       glShaderSource(shader, 1, &source, nullptr);
@@ -218,16 +281,40 @@ public:
     if (!linked) { glDeleteProgram(shaderProgram); shaderProgram = 0; return; }
     aPosition = glGetAttribLocation(shaderProgram, "a_position");
     aColor = glGetAttribLocation(shaderProgram, "a_color");
+    aTexCoord = glGetAttribLocation(shaderProgram, "a_texcoord");
+    uViewport = glGetUniformLocation(shaderProgram, "u_viewport");
+    uTextured = glGetUniformLocation(shaderProgram, "u_textured");
   }
 
   HRESULT DrawPrimitive(DWORD type, UINT startVertex, UINT count) override {
-    if (emscripten_webgl_get_current_context() != context) return E_FAIL;
+    if (emscripten_webgl_get_current_context() != context || !streamSource ||
+        currentFVF != (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1) ||
+        streamOffset < 32) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
                                    GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
     if (type < 1 || type > 6) return E_FAIL;
+    uint64_t vertices = type == D3DPT_POINTLIST ? count :
+                        type == D3DPT_LINELIST ? uint64_t(count) * 2 :
+                        type == D3DPT_LINESTRIP ? uint64_t(count) + 1 :
+                        type == D3DPT_TRIANGLELIST ? uint64_t(count) * 3 : uint64_t(count) + 2;
+    auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
+    if (!count || vertices > INT32_MAX || (uint64_t(startVertex) + vertices) * streamOffset > buffer->size()) return E_FAIL;
     ensureShaderProgram();
-    if (shaderProgram) glUseProgram(shaderProgram);
-    glDrawArrays(modes[type], startVertex, count);
+    if (!shaderProgram) return E_FAIL;
+    GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
+    if (viewport[2] <= 0 || viewport[3] <= 0) return E_FAIL;
+    glUseProgram(shaderProgram);
+    glUniform4f(uViewport, viewport[0], viewport[1], viewport[2], viewport[3]);
+    glUniform1i(uTextured, textures[0] ? 1 : 0);
+    glUniform1i(glGetUniformLocation(shaderProgram, "u_texture"), 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer->buffer());
+    glEnableVertexAttribArray(aPosition); glEnableVertexAttribArray(aColor); glEnableVertexAttribArray(aTexCoord);
+    glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(0));
+    glVertexAttribPointer(aColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, streamOffset, reinterpret_cast<const void *>(16));
+    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(24));
+    glDrawArrays(modes[type], startVertex, static_cast<GLsizei>(vertices));
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT DrawIndexedPrimitive(DWORD type, UINT minIndex, UINT numVertices, UINT startIndex, UINT count) override {

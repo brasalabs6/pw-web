@@ -9,6 +9,8 @@ WNDPROC procedure = nullptr;
 void *canvas = nullptr;
 struct Window { WNDPROC procedure; } window{};
 bool live = false;
+bool active = false;
+bool focused = false;
 std::u16string copy_name(const wchar_t *value) {
   std::u16string result;
   if (value) while (*value) result.push_back(static_cast<char16_t>(*value++));
@@ -26,6 +28,22 @@ extern "C" void pw153_window_detach() {
   canvas = nullptr;
   procedure = nullptr;
   name.clear();
+}
+extern "C" bool pw153_window_set_active(bool value) {
+  if (!live || !window.procedure) return false;
+  if (active != value) {
+    active = value;
+    window.procedure(&window, WM_ACTIVATEAPP, value ? TRUE : FALSE, 0);
+  }
+  return true;
+}
+extern "C" bool pw153_window_set_focus(bool value) {
+  if (!live || !window.procedure) return false;
+  if (focused != value) {
+    focused = value;
+    window.procedure(&window, value ? WM_SETFOCUS : WM_KILLFOCUS, 0, 0);
+  }
+  return true;
 }
 ATOM RegisterClassExW(const WNDCLASSEXW *cls) {
   if (!cls || cls->cbSize != sizeof(*cls) || !cls->lpfnWndProc ||
@@ -53,6 +71,8 @@ HWND CreateWindowExW(DWORD, const wchar_t *className, const wchar_t *windowName,
 BOOL DestroyWindow(HWND handle) {
   if (!live || handle != &window) return FALSE;
   live = false;
+  active = false;
+  focused = false;
   WNDPROC callback = window.procedure;
   window.procedure = nullptr;
   callback(handle, WM_DESTROY, 0, 0);

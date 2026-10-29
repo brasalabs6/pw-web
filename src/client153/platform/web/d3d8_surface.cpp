@@ -1,6 +1,7 @@
 #include "d3d8_surface.h"
 #include <emscripten/html5.h>
 #include <new>
+#include <cstdlib>
 
 PW153Surface::PW153Surface(GLuint buffer, const D3DSURFACE_DESC &description)
   : buffer_(buffer), description_(description) {}
@@ -52,5 +53,58 @@ PW153Surface *pw153_create_surface(UINT width, UINT height, D3DFORMAT format) {
   desc.Size = width * height * bytes; desc.Width = width; desc.Height = height;
   auto *surface = new (std::nothrow) PW153Surface(buffer, desc);
   if (!surface) glDeleteRenderbuffers(1, &buffer);
+  return surface;
+}
+
+namespace {
+class ImageSurface final : public IDirect3DSurface8 {
+  ULONG refs_ = 1;
+  D3DSURFACE_DESC desc_{};
+  BYTE *pixels_;
+  bool locked_ = false;
+  unsigned bytes_;
+public:
+  ImageSurface(UINT width, UINT height, D3DFORMAT format, unsigned bytes, BYTE *pixels)
+      : pixels_(pixels), bytes_(bytes) {
+    desc_.Format = format; desc_.Type = D3DRTYPE_SURFACE; desc_.Pool = D3DPOOL_SYSTEMMEM;
+    desc_.Width = width; desc_.Height = height; desc_.Size = width * height * bytes;
+  }
+  ~ImageSurface() override { std::free(pixels_); }
+  HRESULT QueryInterface(const void *, void **out) override { if (out) *out = nullptr; return E_NOINTERFACE; }
+  ULONG AddRef() override { return ++refs_; }
+  ULONG Release() override { ULONG refs = --refs_; if (!refs) delete this; return refs; }
+  HRESULT GetDesc(void *out) override { if (!out) return E_FAIL; *static_cast<D3DSURFACE_DESC *>(out) = desc_; return D3D_OK; }
+  HRESULT LockRect(D3DLOCKED_RECT *out, const RECT *rect, DWORD flags) override {
+    if (!out) return E_FAIL;
+    out->pBits = nullptr; out->Pitch = 0;
+    if (locked_ || (flags & ~D3DLOCK_READONLY)) return E_FAIL;
+    LONG x = 0, y = 0;
+    if (rect) {
+      if (rect->left < 0 || rect->top < 0 || rect->right <= rect->left || rect->bottom <= rect->top ||
+          static_cast<UINT>(rect->right) > desc_.Width || static_cast<UINT>(rect->bottom) > desc_.Height) return E_FAIL;
+      x = rect->left; y = rect->top;
+    }
+    locked_ = true;
+    out->Pitch = static_cast<INT>(desc_.Width * bytes_);
+    out->pBits = pixels_ + (static_cast<size_t>(y) * desc_.Width + x) * bytes_;
+    return D3D_OK;
+  }
+  HRESULT UnlockRect() override { if (!locked_) return E_FAIL; locked_ = false; return D3D_OK; }
+};
+}
+
+IDirect3DSurface8 *pw153_create_image_surface(UINT width, UINT height, D3DFORMAT format) {
+  unsigned bytes = 0;
+  switch (format) {
+    case D3DFMT_A8R8G8B8: case D3DFMT_X8R8G8B8: bytes = 4; break;
+    case D3DFMT_A4R4G4B4: case D3DFMT_R5G6B5: case D3DFMT_A1R5G5B5: bytes = 2; break;
+    default: return nullptr;
+  }
+  const uint64_t size = static_cast<uint64_t>(width) * height * bytes;
+  if (!width || !height || size > INT32_MAX || static_cast<uint64_t>(width) * bytes > INT32_MAX) return nullptr;
+  auto *pixels = static_cast<BYTE *>(std::calloc(static_cast<size_t>(size), 1));
+  if (!pixels) return nullptr;
+  auto *surface = new (std::nothrow) ImageSurface(width, height, format, bytes, pixels);
+  if (!surface) std::free(pixels);
   return surface;
 }

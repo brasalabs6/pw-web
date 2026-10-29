@@ -153,27 +153,8 @@ var Module = {
         log('VFS font check: /font/fzl2jw.ttf (lowercase) exists, size=' + data.length);
       } catch (e) { log('VFS font check: /font/fzl2jw.ttf (lowercase) FAILS: ' + e.message); }
       log('entry: packages mapped, calling pw153_browser_probe');
-      //\tDiagnostic: test if the canvas's WebGL2 context can produce visible
-      //\toutput with a direct JavaScript clear (bypassing the D3D8 adapter).
-      const testGl = globalThis.pwCanvas.getContext('webgl2');
-      if (testGl) {
-        testGl.clearColor(1.0, 0.0, 0.0, 1.0);
-        testGl.clear(testGl.COLOR_BUFFER_BIT);
-        log('diagnostic: canvas cleared to RED via direct JS WebGL2 call');
-      } else {
-        log('diagnostic: could not get webgl2 context from canvas');
-      }
       const result = Module._pw153_browser_probe();
       log('return: pw153_browser_probe returned ' + result);
-      //\tSecond diagnostic: clear to GREEN after the probe returns. If the
-      //\tcanvas shows green, the canvas still works and the client's
-      //\trendering just doesn't produce visible output.
-      const gl2 = globalThis.pwCanvas.getContext('webgl2');
-      if (gl2) {
-        gl2.clearColor(0.0, 1.0, 0.0, 1.0);
-        gl2.clear(gl2.COLOR_BUFFER_BIT);
-        log('diagnostic: canvas cleared to GREEN after probe returned');
-      }
       // Dump the client's own logs for boot diagnosis. ALog uses the "Logs"
       // directory (capital L, case-sensitive MEMFS) and names A3D.log (engine
       // errlog), AM.log (media), EC.log (element client), AF.log (file system).

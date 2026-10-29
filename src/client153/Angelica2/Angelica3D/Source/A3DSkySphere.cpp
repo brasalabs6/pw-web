@@ -856,10 +856,16 @@ bool A3DSkySphere::TransSky(const char * szCap, const char * szSurroundF, const 
 	}
 	else
 	{
+		m_bTextureLoading = true;
+#ifdef __EMSCRIPTEN__
+		// Browser builds load synchronously; native threads are unavailable.
+		if( -1 == SkyLoadTextures(this) )
+			return false;
+#else
 		HANDLE hThread;
 		DWORD  dwThreadID;
-		m_bTextureLoading = true;
 		hThread = CreateThread(NULL, 0, SkyLoadTextures, this, 0, &dwThreadID);
+#endif
 	}
 
 	return true;

@@ -13,9 +13,11 @@ FT_Error MyFTCFaceRequest(FTC_FaceID  face_id,
 	FT_Error error = 0;
 	if (myFaceID->file_length == 0)
 	{
+		std::string path(myFaceID->file_path);
+		std::replace(path.begin(), path.end(), '\\', '/');
 		error = FT_New_Face(
 			library, 
-			myFaceID->file_path, 
+			path.c_str(),
 			myFaceID->face_index, 
 			aface);
 	}

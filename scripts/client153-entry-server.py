@@ -57,6 +57,27 @@ LOOSE_FILES = [
     ('data/task_npc.data', 'Data\\task_npc.data'),
 ]
 
+def loose_files():
+    """Expose the installed login scene alongside the explicitly listed files."""
+    files = list(LOOSE_FILES)
+    scene_root = os.path.join(ELEMENT_DIR, 'maps', 'login')
+    for directory, subdirs, names in os.walk(scene_root, followlinks=False):
+        subdirs[:] = sorted(name for name in subdirs
+                            if not os.path.islink(os.path.join(directory, name)))
+        for name in sorted(names):
+            path = os.path.join(directory, name)
+            if os.path.islink(path) or not os.path.isfile(path):
+                continue
+            relative = os.path.relpath(path, scene_root).replace(os.sep, '/')
+            vfs_relative = relative
+            if relative in ('login.ecwld', 'login.ecbsd', 'login.cld', 'login.trn2'):
+                vfs_relative = 'L' + relative[1:]
+            elif relative.startswith('login_login.'):
+                vfs_relative = 'login_Login.' + relative.split('.', 1)[1]
+            files.append(('maps/login/' + relative,
+                          'Maps\\Login\\' + vfs_relative.replace('/', '\\')))
+    return files
+
 # The packages the original entry expects on its VFS root (the same set the
 # Node probe mapped; names must match the client's own lookups — the script
 # package uses a backslash in the client's VFS name).
@@ -169,7 +190,7 @@ class ProbeHandler(SimpleHTTPRequestHandler):
                     'url': '/pkg/' + url_name,
                 })
             # Loose files (fonts etc.) that live outside any .pck package.
-            for disk_path, vfs_name in LOOSE_FILES:
+            for disk_path, vfs_name in loose_files():
                 source = os.path.join(ELEMENT_DIR, disk_path)
                 if not os.path.isfile(source) or vfs_name in seen_vfs:
                     continue
@@ -184,7 +205,7 @@ class ProbeHandler(SimpleHTTPRequestHandler):
                 'application/json')
         elif route.startswith('/loose/'):
             disk_name = urllib.parse.unquote(route[len('/loose/'):])
-            if disk_name not in {disk for disk, _ in LOOSE_FILES}:
+            if disk_name not in {disk for disk, _ in loose_files()}:
                 self.send_error(404)
                 return
             target = os.path.normpath(os.path.join(ELEMENT_DIR, disk_name))

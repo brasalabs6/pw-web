@@ -19,3 +19,4 @@ public:
   HRESULT GetDesc(void *out) override;
 };
 PW153Surface *pw153_create_surface(UINT width, UINT height, D3DFORMAT format);
+IDirect3DSurface8 *pw153_create_image_surface(UINT width, UINT height, D3DFORMAT format);

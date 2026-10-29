@@ -1,4 +1,5 @@
 #include "d3d8.h"
+#include "d3dx8.h"
 #include "d3d8_surface.h"
 #include "d3d8_buffer.h"
 #include "d3d8_texture.h"
@@ -70,6 +71,127 @@ int main() {
   if (d3d->CreateDevice(0, D3DDEVTYPE_HAL, nullptr, 0, &params, &device) != D3D_OK || !device) {
     EM_ASM({ document.body.dataset.result = 'missing-device'; }); return 7;
   }
+  IDirect3DSurface8 *image = nullptr;
+  D3DLOCKED_RECT imageLock{};
+  if (device->CreateImageSurface(2, 2, D3DFMT_A8R8G8B8, &image) != D3D_OK || !image ||
+      image->LockRect(&imageLock, nullptr, 0) != D3D_OK || imageLock.Pitch != 8) {
+    EM_ASM({ document.body.dataset.result = 'image-surface-not-lockable'; }); return 68;
+  }
+  static_cast<unsigned char *>(imageLock.pBits)[0] = 42;
+  if (image->UnlockRect() != D3D_OK || image->LockRect(&imageLock, nullptr, D3DLOCK_READONLY) != D3D_OK ||
+      static_cast<unsigned char *>(imageLock.pBits)[0] != 42 || image->UnlockRect() != D3D_OK) return 69;
+  const unsigned char tga[] = {0,0,2,0,0,0,0,0,0,0,0,0,2,0,2,0,32,0x28,
+                               0,0,255,255, 0,255,0,255, 255,0,0,255, 255,255,255,128};
+  if (D3DXLoadSurfaceFromFileInMemory(image, nullptr, nullptr, tga, sizeof(tga) - 1,
+                                      nullptr, 0, 0, nullptr) == D3D_OK) return 77;
+  if (D3DXLoadSurfaceFromFileInMemory(image, nullptr, nullptr, tga, sizeof(tga),
+                                      nullptr, 0, 0, nullptr) != D3D_OK ||
+      image->LockRect(&imageLock, nullptr, D3DLOCK_READONLY) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'image-decode-failed'; }); return 70;
+  }
+  const auto *imagePixel = static_cast<const unsigned char *>(imageLock.pBits);
+  if (imagePixel[0] != 0 || imagePixel[1] != 0 || imagePixel[2] != 255 || imagePixel[3] != 255 ||
+      imagePixel[8] != 255 || imagePixel[9] != 0 || imagePixel[10] != 0 || imagePixel[11] != 255) return 71;
+  if (image->UnlockRect() != D3D_OK) return 72;
+  IDirect3DTexture8 *imageTexture = nullptr;
+  IDirect3DSurface8 *textureSurface = nullptr;
+  if (device->CreateTexture(2, 2, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &imageTexture) != D3D_OK ||
+      imageTexture->GetSurfaceLevel(0, &textureSurface) != D3D_OK ||
+      device->CopyRects(image, nullptr, 0, textureSurface, nullptr) != D3D_OK ||
+      textureSurface->LockRect(&imageLock, nullptr, D3DLOCK_READONLY) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'image-copy-failed'; }); return 73;
+  }
+  imagePixel = static_cast<const unsigned char *>(imageLock.pBits);
+  if (imagePixel[2] != 255 || imagePixel[3] != 255 || imagePixel[8] != 255) return 74;
+  if (textureSurface->UnlockRect() != D3D_OK) return 75;
+  GLuint imageFramebuffer = 0;
+  glGenFramebuffers(1, &imageFramebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, imageFramebuffer);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         static_cast<PW153Texture *>(imageTexture)->texture(), 0);
+  unsigned char gpuImagePixel[4]{};
+  glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, gpuImagePixel);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteFramebuffers(1, &imageFramebuffer);
+  if (gpuImagePixel[0] != 255 || gpuImagePixel[1] != 0 || gpuImagePixel[2] != 0 || gpuImagePixel[3] != 255) {
+    EM_ASM({ document.body.dataset.result = 'image-gpu-copy-failed'; }); return 76;
+  }
+  struct UiVertex { float x, y, z, rhw; DWORD diffuse, specular; float u, v; };
+  const UiVertex vertices[] = {{0, 0, 0, 1, 0xff800000, 0, .25f, .25f},
+                               {32, 0, 0, 1, 0xff800000, 0, .25f, .25f},
+                               {0, 16, 0, 1, 0xff800000, 0, .25f, .25f}};
+  IDirect3DVertexBuffer8 *uiVertices = nullptr;
+  BYTE *vertexData = nullptr;
+  if (device->CreateVertexBuffer(sizeof(vertices), 0, 0, D3DPOOL_MANAGED, &uiVertices) != D3D_OK ||
+      uiVertices->Lock(0, sizeof(vertices), &vertexData, 0) != D3D_OK) return 83;
+  std::memcpy(vertexData, vertices, sizeof(vertices));
+  if (uiVertices->Unlock() != D3D_OK ||
+      device->SetStreamSource(0, uiVertices, sizeof(UiVertex)) != D3D_OK ||
+      device->SetVertexShader(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1) != D3D_OK ||
+      device->SetTexture(0, imageTexture) != D3D_OK) return 84;
+  glViewport(0, 0, 32, 16);
+  glDisable(GL_DEPTH_TEST); glDisable(GL_BLEND); glDisable(GL_CULL_FACE);
+  glClearColor(0, 0, 0, 1); glClear(GL_COLOR_BUFFER_BIT);
+  if (device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'ui-draw-failed'; }); return 85;
+  }
+  unsigned char uiPixel[4]{};
+  glReadPixels(4, 12, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, uiPixel);
+  if (uiPixel[0] < 126 || uiPixel[0] > 130 || uiPixel[1] > 2 || uiPixel[2] > 2) {
+    EM_ASM({ document.body.dataset.result = 'ui-pixel-failed'; }); return 86;
+  }
+  const UiVertex alphaVertices[] = {{0, 0, 0, 1, 0xffffffff, 0, .75f, .75f},
+                                    {32, 0, 0, 1, 0xffffffff, 0, .75f, .75f},
+                                    {0, 16, 0, 1, 0xffffffff, 0, .75f, .75f}};
+  if (uiVertices->Lock(0, sizeof(alphaVertices), &vertexData, 0) != D3D_OK) return 87;
+  std::memcpy(vertexData, alphaVertices, sizeof(alphaVertices));
+  if (uiVertices->Unlock() != D3D_OK || device->SetRenderState(D3DRS_SRCBLEND, 5) != D3D_OK ||
+      device->SetRenderState(D3DRS_DESTBLEND, 6) != D3D_OK ||
+      device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'ui-blend-state-failed'; }); return 88;
+  }
+  glClearColor(0, 0, 1, 1); glClear(GL_COLOR_BUFFER_BIT);
+  if (device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1) != D3D_OK) return 89;
+  glReadPixels(4, 12, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, uiPixel);
+  if (uiPixel[0] < 125 || uiPixel[0] > 130 || uiPixel[1] < 125 || uiPixel[1] > 130 || uiPixel[2] < 250) {
+    EM_ASM({ document.body.dataset.result = 'ui-blend-pixel-failed'; }); return 90;
+  }
+  device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+  device->SetTexture(0, nullptr); device->SetStreamSource(0, nullptr, 0); uiVertices->Release();
+  textureSurface->Release(); imageTexture->Release();
+  image->Release();
+  unsigned char dds[144]{};
+  auto dds32 = [&](int offset, unsigned value) {
+    for (int i = 0; i < 4; ++i) dds[offset + i] = (value >> (i * 8)) & 255;
+  };
+  dds[0] = 'D'; dds[1] = 'D'; dds[2] = 'S'; dds[3] = ' ';
+  dds32(4, 124); dds32(12, 4); dds32(16, 4); dds32(76, 32); dds32(80, 4); dds32(84, D3DFMT_DXT3);
+  for (int i = 128; i < 136; ++i) dds[i] = 0xff;
+  dds[136] = 0; dds[137] = 0xf8;
+  IDirect3DSurface8 *ddsSurface = nullptr;
+  if (device->CreateImageSurface(4, 4, D3DFMT_A8R8G8B8, &ddsSurface) != D3D_OK ||
+      D3DXLoadSurfaceFromFileInMemory(ddsSurface, nullptr, nullptr, dds, sizeof(dds), nullptr, 0, 0, nullptr) != D3D_OK ||
+      ddsSurface->LockRect(&imageLock, nullptr, D3DLOCK_READONLY) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'dds-decode-failed'; }); return 78;
+  }
+  imagePixel = static_cast<const unsigned char *>(imageLock.pBits);
+  if (imagePixel[0] != 0 || imagePixel[1] != 0 || imagePixel[2] != 255 || imagePixel[3] != 255) return 79;
+  if (ddsSurface->UnlockRect() != D3D_OK) return 80;
+  ddsSurface->Release();
+  IDirect3DTexture8 *loadedTexture = nullptr;
+  D3DXIMAGE_INFO loadedInfo{};
+  if (D3DXCreateTextureFromFileInMemoryEx(device, tga, sizeof(tga), D3DX_DEFAULT, D3DX_DEFAULT,
+      1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, 0, 0, 0, &loadedInfo, nullptr, &loadedTexture) != D3D_OK ||
+      !loadedTexture || loadedInfo.Width != 2 || loadedTexture->LockRect(0, &imageLock, nullptr, D3DLOCK_READONLY) != D3D_OK) {
+    EM_ASM({ document.body.dataset.result = 'texture-decode-failed'; }); return 81;
+  }
+  imagePixel = static_cast<const unsigned char *>(imageLock.pBits);
+  if (imagePixel[2] != 255 || imagePixel[3] != 255 || loadedTexture->UnlockRect(0) != D3D_OK) return 82;
+  loadedTexture->Release();
+#ifdef PW153_IMAGE_SURFACE_ONLY
+  EM_ASM({ document.body.dataset.result = 'pass'; });
+  return 0;
+#endif
   IDirect3DSurface8 *target = nullptr, *depth = nullptr, *back = nullptr;
   if (device->GetRenderTarget(&target) != D3D_OK || device->GetDepthStencilSurface(&depth) != D3D_OK ||
       device->GetBackBuffer(0, 0, &back) != D3D_OK || !target || !depth || !back) return 27;

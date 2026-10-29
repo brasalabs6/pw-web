@@ -18,6 +18,11 @@ class LooseFontsTest(unittest.TestCase):
             root = pathlib.Path(tmp)
             (root / 'font').mkdir()
             (root / 'font/fzl2jw.ttf').write_bytes(b'font-data')
+            (root / 'maps/login/bsdata').mkdir(parents=True)
+            (root / 'maps/login/login.ecwld').write_bytes(b'scene-data')
+            (root / 'maps/login/login_login.t2bk').write_bytes(b'terrain-data')
+            (root / 'maps/login/login.ecbsd').write_bytes(b'scene-brush-data')
+            (root / 'maps/login/bsdata/login.dat').write_bytes(b'brush-data')
             original = server_module.ELEMENT_DIR
             server_module.ELEMENT_DIR = tmp
             server = server_module.ThreadingServer(('127.0.0.1', 0), server_module.ProbeHandler)
@@ -26,6 +31,13 @@ class LooseFontsTest(unittest.TestCase):
             try:
                 base = f'http://127.0.0.1:{server.server_address[1]}'
                 manifest = json.load(urllib.request.urlopen(base + '/manifest'))
+                scene = next(x for x in manifest['packages'] if x['name'] == 'Maps\\Login\\Login.ecwld')
+                self.assertEqual(urllib.request.urlopen(base + scene['url']).read(), b'scene-data')
+                terrain = next(x for x in manifest['packages'] if x['name'] == 'Maps\\Login\\login_Login.t2bk')
+                self.assertEqual(urllib.request.urlopen(base + terrain['url']).read(), b'terrain-data')
+                self.assertTrue(any(x['name'] == 'Maps\\Login\\Login.ecbsd' for x in manifest['packages']))
+                brush = next(x for x in manifest['packages'] if x['name'] == 'Maps\\Login\\bsdata\\login.dat')
+                self.assertEqual(urllib.request.urlopen(base + brush['url']).read(), b'brush-data')
                 item = next(x for x in manifest['packages'] if x['name'] == 'font\\FZL2JW.ttf')
                 req = urllib.request.Request(base + item['url'], headers={'Range': 'bytes=0-3'})
                 with urllib.request.urlopen(req) as response:

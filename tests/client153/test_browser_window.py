@@ -13,10 +13,15 @@ class BrowserWindowTest(unittest.TestCase):
         code = r'''#include "Windows.h"
 extern "C" bool pw153_window_attach(void *host);
 extern "C" void pw153_window_detach();
-static int created, destroyed;
-static LRESULT callback(HWND, UINT message, WPARAM, LPARAM) {
+extern "C" bool pw153_window_set_active(bool active);
+extern "C" bool pw153_window_set_focus(bool focused);
+static int created, destroyed, activation, focus;
+static LRESULT callback(HWND, UINT message, WPARAM value, LPARAM) {
   if (message == WM_CREATE) ++created;
   if (message == WM_DESTROY) ++destroyed;
+  if (message == WM_ACTIVATEAPP) activation += value ? 1 : 10;
+  if (message == WM_SETFOCUS) ++focus;
+  if (message == WM_KILLFOCUS) focus += 10;
   return 0;
 }
 int main() {
@@ -29,6 +34,10 @@ int main() {
   if (!pw153_window_attach(&host)) return 4;
   HWND window = CreateWindowExW(0, L"PWWindow", L"PW", 0, 0, 0, 800, 600, nullptr, nullptr, nullptr, nullptr);
   if (!window || created != 1) return 5;
+  if (!pw153_window_set_active(true) || !pw153_window_set_active(true) || activation != 1) return 8;
+  if (!pw153_window_set_focus(true) || focus != 1) return 9;
+  if (!pw153_window_set_focus(false) || focus != 11) return 10;
+  if (!pw153_window_set_active(false) || activation != 11) return 11;
   if (!DestroyWindow(window) || destroyed != 1 || DestroyWindow(window)) return 6;
   pw153_window_detach();
   if (!RegisterClassExW(&cls)) return 7;

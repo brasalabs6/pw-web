@@ -43,6 +43,7 @@
 #include "log_cleanup.h"
 #ifdef __EMSCRIPTEN__
 #include "../../platform/web/webgl_caps.h"
+#include <emscripten/emscripten.h>
 #endif
 
 #ifdef _PROFILE_MEMORY
@@ -118,6 +119,20 @@ static HWND	l_hMainWnd = NULL;
 static const ACHAR* l_szClassName = _AL("ElementClient Window");
 
 static CECGame l_theGame;
+#ifdef __EMSCRIPTEN__
+extern "C" void pw153_window_detach();
+static void pw153_browser_frame()
+{
+	static unsigned frames = 0;
+	++frames;
+	if (frames == 1) printf("pw153: first browser frame\n");
+	if (frames == 60) printf("pw153: 60 browser frames\n");
+	if (!l_theGame.RunInMainThread()) {
+		emscripten_cancel_main_loop();
+		pw153_window_detach();
+	}
+}
+#endif
 
 CECConfigs g_GameCfgs;
 
@@ -944,6 +959,15 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmd
 		g_bHookExitProcess = FALSE;
 		return -2;
 	}
+
+#ifdef __EMSCRIPTEN__
+	// Browser frames run on the event loop; native defence threads are unavailable.
+	g_bMultiThreadRenderMode = false;
+	g_hExitGame = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_hRenderEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	emscripten_set_main_loop(pw153_browser_frame, 0, 0);
+	return 0;
+#endif
 
 	DWORD dwThreadID;
 	g_hRenderThread = ::CreateThread(NULL, 0, RenderThreadFunc, NULL, CREATE_SUSPENDED, &dwThreadID);

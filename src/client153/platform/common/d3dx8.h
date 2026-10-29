@@ -14,6 +14,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 //	D3D8 vertex shader declarator tokens (documented d3d8types.h values).
 #define D3DVSD_TOKENTYPESHIFT 29
@@ -145,63 +146,182 @@ inline HRESULT D3DXLoadSurfaceFromSurface(IDirect3DSurface8 *destination,
   return D3DERR_INVALIDCALL;
 }
 
-//	The image decode into a surface: the same explicit failure (no
-//	real image decode on the browser target yet; the callers' error
-//	paths handle it).
+inline HRESULT D3DXGetImageInfoFromFileInMemory(const void *, UINT, D3DXIMAGE_INFO *);
+
+// Decode the true-colour TGA images used by the original UI into a lockable surface.
 inline HRESULT D3DXLoadSurfaceFromFileInMemory(
     IDirect3DSurface8 *destinationSurface, const PALETTEENTRY *destinationPalette,
     const RECT *destinationRect, const void *srcData, UINT srcDataSize,
     const RECT *srcRect, DWORD filter, D3DCOLOR colorKey,
     D3DXIMAGE_INFO *srcInfo) {
-  (void)destinationSurface;
-  (void)destinationPalette;
-  (void)destinationRect;
-  (void)srcData;
-  (void)srcDataSize;
-  (void)srcRect;
   (void)filter;
-  (void)colorKey;
-  if (srcInfo) {
-    srcInfo->Width = 0;
-    srcInfo->Height = 0;
-    srcInfo->Depth = 0;
-    srcInfo->MipLevels = 0;
-    srcInfo->Format = D3DFMT_UNKNOWN;
-    srcInfo->ResourceType = 0;
-    srcInfo->ImageFileFormat = 0;
+  D3DXIMAGE_INFO image{};
+  if (!destinationSurface || destinationPalette ||
+      D3DXGetImageInfoFromFileInMemory(srcData, srcDataSize, &image) != D3D_OK ||
+      (image.ImageFileFormat != D3DXIFF_TGA && image.ImageFileFormat != D3DXIFF_BMP &&
+       !(image.ImageFileFormat == D3DXIFF_DDS &&
+         (image.Format == D3DFMT_DXT3 || image.Format == D3DFMT_A8R8G8B8)))) return D3DERR_INVALIDCALL;
+  D3DSURFACE_DESC desc{};
+  if (destinationSurface->GetDesc(&desc) != D3D_OK) return D3DERR_INVALIDCALL;
+  RECT source{0, 0, static_cast<LONG>(image.Width), static_cast<LONG>(image.Height)};
+  RECT target{0, 0, static_cast<LONG>(desc.Width), static_cast<LONG>(desc.Height)};
+  if (srcRect) source = *srcRect;
+  if (destinationRect) target = *destinationRect;
+  if (source.left < 0 || source.top < 0 || source.right <= source.left || source.bottom <= source.top ||
+      source.right > static_cast<LONG>(image.Width) || source.bottom > static_cast<LONG>(image.Height) ||
+      target.left < 0 || target.top < 0 || target.right <= target.left || target.bottom <= target.top ||
+      target.right > static_cast<LONG>(desc.Width) || target.bottom > static_cast<LONG>(desc.Height) ||
+      source.right - source.left != target.right - target.left ||
+      source.bottom - source.top != target.bottom - target.top) return D3DERR_INVALIDCALL;
+  if (desc.Format != D3DFMT_A8R8G8B8 && desc.Format != D3DFMT_X8R8G8B8 &&
+      desc.Format != D3DFMT_A4R4G4B4 && desc.Format != D3DFMT_A1R5G5B5 &&
+      desc.Format != D3DFMT_R5G6B5) return D3DERR_INVALIDCALL;
+  const auto *data = static_cast<const unsigned char *>(srcData);
+  const size_t pixels = size_t(image.Width) * image.Height;
+  std::vector<unsigned char> bgra(pixels * 4);
+  if (image.ImageFileFormat == D3DXIFF_BMP) {
+    //	24/32-bit BI_RGB rows, bottom-up (negative height = top-down),
+    //	each row padded to 4 bytes. The colour key matches the TGA path.
+    const unsigned bits = image.Format == D3DFMT_A8R8G8B8 ? 32 : 24;
+    const size_t rowBytes = (size_t(image.Width) * bits + 31) / 32 * 4;
+    const unsigned pixelOffset = unsigned(data[10]) | unsigned(data[11]) << 8 |
+                                  unsigned(data[12]) << 16 | unsigned(data[13]) << 24;
+    const int storedHeight = static_cast<int>(unsigned(data[22]) | unsigned(data[23]) << 8 |
+                                              unsigned(data[24]) << 16 | unsigned(data[25]) << 24);
+    const bool topDown = storedHeight < 0;
+    for (unsigned y = 0; y < image.Height; ++y) {
+      const size_t sourceRow = topDown ? y : image.Height - 1 - y;
+      const auto *row = data + pixelOffset + sourceRow * rowBytes;
+      for (unsigned x = 0; x < image.Width; ++x) {
+        auto *out = bgra.data() + (size_t(y) * image.Width + x) * 4;
+        out[0] = row[x * (bits / 8)];
+        out[1] = row[x * (bits / 8) + 1];
+        out[2] = row[x * (bits / 8) + 2];
+        out[3] = bits == 32 ? row[x * 4 + 3] : 255;
+        if (colorKey && (0xff000000u | unsigned(out[2]) << 16 | unsigned(out[1]) << 8 | out[0]) ==
+                            (0xff000000u | (colorKey & 0xffffffu))) out[3] = 0;
+      }
+    }
+  } else if (image.ImageFileFormat == D3DXIFF_DDS && image.Format == D3DFMT_A8R8G8B8) {
+    //	Uncompressed 32-bit BGRA surface; only mip level 0 (the loader fills
+    //	the top level of a one-level texture).
+    const auto *surface = data + 128;
+    for (size_t i = 0; i < pixels; ++i) {
+      auto *out = bgra.data() + i * 4;
+      out[0] = surface[i * 4]; out[1] = surface[i * 4 + 1];
+      out[2] = surface[i * 4 + 2]; out[3] = surface[i * 4 + 3];
+      if (colorKey && (0xff000000u | unsigned(out[2]) << 16 | unsigned(out[1]) << 8 | out[0]) ==
+                          (0xff000000u | (colorKey & 0xffffffu))) out[3] = 0;
+    }
+  } else if (image.ImageFileFormat == D3DXIFF_DDS) {
+    const unsigned blocksX = (image.Width + 3) / 4, blocksY = (image.Height + 3) / 4;
+    for (unsigned by = 0; by < blocksY; ++by) for (unsigned bx = 0; bx < blocksX; ++bx) {
+      const unsigned char *block = data + 128 + (size_t(by) * blocksX + bx) * 16;
+      unsigned c0 = unsigned(block[8]) | unsigned(block[9]) << 8;
+      unsigned c1 = unsigned(block[10]) | unsigned(block[11]) << 8;
+      unsigned colors[4][3]{};
+      for (unsigned i = 0; i < 2; ++i) {
+        unsigned c = i ? c1 : c0;
+        unsigned r = (c >> 11) & 31, g = (c >> 5) & 63, b = c & 31;
+        colors[i][0] = (b << 3) | (b >> 2);
+        colors[i][1] = (g << 2) | (g >> 4);
+        colors[i][2] = (r << 3) | (r >> 2);
+      }
+      for (unsigned k = 0; k < 3; ++k) {
+        colors[2][k] = (2 * colors[0][k] + colors[1][k]) / 3;
+        colors[3][k] = (colors[0][k] + 2 * colors[1][k]) / 3;
+      }
+      unsigned indices = unsigned(block[12]) | unsigned(block[13]) << 8 |
+                         unsigned(block[14]) << 16 | unsigned(block[15]) << 24;
+      for (unsigned y = 0; y < 4; ++y) for (unsigned x = 0; x < 4; ++x) {
+        const unsigned pixel = y * 4 + x, px = bx * 4 + x, py = by * 4 + y;
+        if (px >= image.Width || py >= image.Height) continue;
+        auto *out = bgra.data() + (size_t(py) * image.Width + px) * 4;
+        const unsigned *rgb = colors[(indices >> (pixel * 2)) & 3];
+        out[0] = rgb[0]; out[1] = rgb[1]; out[2] = rgb[2];
+        out[3] = ((block[pixel / 2] >> ((pixel & 1) * 4)) & 15) * 17;
+      }
+    }
+  } else {
+  const unsigned bytes = data[16] / 8;
+  size_t pos = 18u + data[0], index = 0;
+  while (index < pixels) {
+    unsigned packet = data[2] == 10 ? data[pos++] : 0;
+    size_t count = data[2] == 10 ? (packet & 127u) + 1u : 1u;
+    for (size_t i = 0; i < count; ++i) {
+      const size_t pixelPos = pos + ((packet & 128u) ? 0 : i * bytes);
+      const size_t x = index % image.Width, y = index / image.Width;
+      const size_t dx = (data[17] & 0x10) ? image.Width - 1 - x : x;
+      const size_t dy = (data[17] & 0x20) ? y : image.Height - 1 - y;
+      auto *out = bgra.data() + (dy * image.Width + dx) * 4;
+      out[0] = data[pixelPos]; out[1] = data[pixelPos + 1]; out[2] = data[pixelPos + 2];
+      out[3] = bytes == 4 ? data[pixelPos + 3] : 255;
+      if (colorKey && (0xff000000u | unsigned(out[2]) << 16 | unsigned(out[1]) << 8 | out[0]) ==
+                          (0xff000000u | (colorKey & 0xffffffu))) out[3] = 0;
+      ++index;
+    }
+    pos += ((packet & 128u) ? 1 : count) * bytes;
   }
-  return D3DERR_INVALIDCALL;
+  }
+  D3DLOCKED_RECT lock{};
+  if (destinationSurface->LockRect(&lock, &target, 0) != D3D_OK) return D3DERR_INVALIDCALL;
+  for (LONG y = 0; y < target.bottom - target.top; ++y) {
+    auto *row = static_cast<unsigned char *>(lock.pBits) + size_t(y) * lock.Pitch;
+    for (LONG x = 0; x < target.right - target.left; ++x) {
+      const auto *p = bgra.data() + (size_t(source.top + y) * image.Width + source.left + x) * 4;
+      if (desc.Format == D3DFMT_A8R8G8B8 || desc.Format == D3DFMT_X8R8G8B8) {
+        std::memcpy(row + x * 4, p, 4);
+        if (desc.Format == D3DFMT_X8R8G8B8) row[x * 4 + 3] = 255;
+      } else {
+        unsigned value = desc.Format == D3DFMT_A4R4G4B4 ?
+            ((p[3] >> 4) << 12) | ((p[2] >> 4) << 8) | ((p[1] >> 4) << 4) | (p[0] >> 4) :
+            desc.Format == D3DFMT_A1R5G5B5 ?
+            ((p[3] >= 128) << 15) | ((p[2] >> 3) << 10) | ((p[1] >> 3) << 5) | (p[0] >> 3) :
+            ((p[2] >> 3) << 11) | ((p[1] >> 2) << 5) | (p[0] >> 3);
+        row[x * 2] = value & 255; row[x * 2 + 1] = value >> 8;
+      }
+    }
+  }
+  if (destinationSurface->UnlockRect() != D3D_OK) return D3DERR_INVALIDCALL;
+  if (srcInfo) *srcInfo = image;
+  return D3D_OK;
 }
 
 //	The D3DX default sentinel (the documented d3dx8 value).
 #define D3DX_DEFAULT 0xFFFFFFFF
 
-//	The texture creation from memory: real texture creation does not
-//	exist on the browser target yet (the WebGL backend owns the real
-//	surfaces when it registers); the call fails explicitly and the
-//	callers' error paths handle it.
+// Create one-level textures for formats the surface decoder supports.
 inline HRESULT D3DXCreateTextureFromFileInMemoryEx(
     IDirect3DDevice8 *device, const void *srcData, UINT srcDataSize,
     UINT width, UINT height, UINT mipLevels, DWORD usage, D3DFORMAT format,
     D3DPOOL pool, DWORD filter, DWORD mipFilter, D3DCOLOR colorKey,
     D3DXIMAGE_INFO *srcInfo, PALETTEENTRY *palette,
     IDirect3DTexture8 **texture) {
-  (void)device;
-  (void)srcData;
-  (void)srcDataSize;
-  (void)width;
-  (void)height;
-  (void)mipLevels;
-  (void)usage;
-  (void)format;
-  (void)pool;
   (void)filter;
   (void)mipFilter;
-  (void)colorKey;
-  (void)srcInfo;
-  (void)palette;
-  (void)texture;
-  return D3DERR_INVALIDCALL;
+  if (!texture) return D3DERR_INVALIDCALL;
+  *texture = nullptr;
+  if (!device || palette || mipLevels != 1) return D3DERR_INVALIDCALL;
+  D3DXIMAGE_INFO image{};
+  if (D3DXGetImageInfoFromFileInMemory(srcData, srcDataSize, &image) != D3D_OK) return D3DERR_INVALIDCALL;
+  if (width == D3DX_DEFAULT) width = image.Width;
+  if (height == D3DX_DEFAULT) height = image.Height;
+  if (width != image.Width || height != image.Height) return D3DERR_INVALIDCALL;
+  if (format == D3DFMT_UNKNOWN) format = D3DFMT_A8R8G8B8;
+  IDirect3DTexture8 *result = nullptr;
+  if (device->CreateTexture(width, height, 1, usage, format, pool, &result) != D3D_OK || !result)
+    return D3DERR_INVALIDCALL;
+  IDirect3DSurface8 *surface = nullptr;
+  if (result->GetSurfaceLevel(0, &surface) != D3D_OK || !surface) {
+    result->Release(); return D3DERR_INVALIDCALL;
+  }
+  HRESULT status = D3DXLoadSurfaceFromFileInMemory(surface, nullptr, nullptr, srcData, srcDataSize,
+                                                    nullptr, filter, colorKey, nullptr);
+  surface->Release();
+  if (status != D3D_OK) { result->Release(); return status; }
+  if (srcInfo) *srcInfo = image;
+  *texture = result;
+  return D3D_OK;
 }
 
 //	The error string: the documented D3DXGetErrorStringA contract is a
@@ -313,8 +433,6 @@ inline HRESULT D3DXGetImageInfoFromFileA(const char *file,
 inline HRESULT D3DXGetImageInfoFromFileInMemory(const void *srcData,
                                                 UINT srcDataSize,
                                                 D3DXIMAGE_INFO *info) {
-  (void)srcData;
-  (void)srcDataSize;
   if (info) {
     info->Width = 0;
     info->Height = 0;
@@ -324,7 +442,99 @@ inline HRESULT D3DXGetImageInfoFromFileInMemory(const void *srcData,
     info->ResourceType = 0;
     info->ImageFileFormat = 0;
   }
-  return D3DERR_INVALIDCALL;
+  if (!srcData || !info || srcDataSize < 18) return D3DERR_INVALIDCALL;
+  const auto *bytes = static_cast<const unsigned char *>(srcData);
+  auto read32 = [&](size_t offset) -> unsigned {
+    return unsigned(bytes[offset]) | (unsigned(bytes[offset + 1]) << 8) |
+           (unsigned(bytes[offset + 2]) << 16) | (unsigned(bytes[offset + 3]) << 24);
+  };
+  if (srcDataSize >= 128 && std::memcmp(bytes, "DDS ", 4) == 0) {
+    const unsigned width = read32(16), height = read32(12), fourcc = read32(84);
+    const unsigned pfFlags = read32(80), bitCount = read32(88);
+    const bool compressed = pfFlags & 0x4;  //	DDPF_FOURCC
+    const bool rgb = pfFlags & 0x40;       //	DDPF_RGB
+    if (read32(4) != 124 || read32(76) != 32 || !width || !height || width > 8192 || height > 8192 ||
+        read32(112) || read32(24) > 1) return D3DERR_INVALIDCALL;
+    if (compressed && fourcc != D3DFMT_DXT1 && fourcc != D3DFMT_DXT3 && fourcc != D3DFMT_DXT5)
+      return D3DERR_INVALIDCALL;
+    //	Uncompressed surfaces: only the 32-bit BGRA layout the original UI
+    //	assets use (e.g. Listbox\列表框_反显.dds); reject anything else
+    //	instead of guessing a layout.
+    if (!compressed && (!rgb || bitCount != 32 || read32(92) != 0xFF0000u || read32(96) != 0xFF00u ||
+                        read32(100) != 0xFFu)) return D3DERR_INVALIDCALL;
+    unsigned levels = read32(28); if (!levels) levels = 1;
+    unsigned maxLevels = 1;
+    for (unsigned extent = width > height ? width : height; extent > 1; extent >>= 1) ++maxLevels;
+    if (levels > maxLevels) return D3DERR_INVALIDCALL;
+    size_t pos = 128;
+    unsigned w = width, h = height;
+    for (unsigned i = 0; i < levels; ++i) {
+      const size_t levelBytes = compressed
+          ? size_t((w + 3) / 4) * ((h + 3) / 4) * (fourcc == D3DFMT_DXT1 ? 8 : 16)
+          : size_t(w) * h * 4;
+      if (levelBytes > srcDataSize - pos) return D3DERR_INVALIDCALL;
+      pos += levelBytes; w = w > 1 ? w / 2 : 1; h = h > 1 ? h / 2 : 1;
+    }
+    info->Width = width; info->Height = height; info->Depth = 1; info->MipLevels = levels;
+    info->Format = compressed ? static_cast<D3DFORMAT>(fourcc) : D3DFMT_A8R8G8B8;
+    info->ResourceType = D3DRTYPE_TEXTURE;
+    info->ImageFileFormat = D3DXIFF_DDS;
+    return D3D_OK;
+  }
+  //	Windows bitmap: the original UI stores dialog colour-key and face
+  //	sprites as 24/32-bit BI_RGB .bmp files (e.g. Window\对话框_透明色.bmp).
+  if (srcDataSize >= 54 && bytes[0] == 'B' && bytes[1] == 'M') {
+    const unsigned headerSize = read32(14);
+    const int width = static_cast<int>(read32(18));
+    const int height = static_cast<int>(read32(22));
+    const unsigned bitCount = read32(28) & 0xFFFF;
+    const unsigned compression = read32(30);
+    const unsigned pixelOffset = read32(10);
+    if (headerSize < 40 || compression != 0 || (bitCount != 24 && bitCount != 32) ||
+        width <= 0 || height == 0 || width > 8192 || (height < -8192 || height > 8192) ||
+        (height < 0 && bitCount != 32)) return D3DERR_INVALIDCALL;
+    const size_t rowBytes = (size_t(width) * bitCount + 31) / 32 * 4;
+    if (pixelOffset > srcDataSize || rowBytes * size_t(height < 0 ? -height : height) > srcDataSize - pixelOffset)
+      return D3DERR_INVALIDCALL;
+    info->Width = width; info->Height = height < 0 ? -height : height;
+    info->Depth = 1; info->MipLevels = 1;
+    info->Format = bitCount == 32 ? D3DFMT_A8R8G8B8 : D3DFMT_X8R8G8B8;
+    info->ResourceType = D3DRTYPE_TEXTURE;
+    info->ImageFileFormat = D3DXIFF_BMP;
+    return D3D_OK;
+  }
+  const unsigned type = bytes[2], bits = bytes[16];
+  if (bytes[1] != 0 || (type != 2 && type != 10) ||
+      (bits != 24 && bits != 32)) return D3DERR_INVALIDCALL;
+  const unsigned width = bytes[12] | (unsigned(bytes[13]) << 8);
+  const unsigned height = bytes[14] | (unsigned(bytes[15]) << 8);
+  if (!width || !height || width > 8192 || height > 8192) return D3DERR_INVALIDCALL;
+  const size_t offset = 18u + bytes[0];
+  if (offset > srcDataSize) return D3DERR_INVALIDCALL;
+  size_t remaining = size_t(width) * height;
+  size_t cursor = offset;
+  if (type == 2) {
+    if (remaining > (srcDataSize - cursor) / (bits / 8)) return D3DERR_INVALIDCALL;
+  } else {
+    while (remaining) {
+      if (cursor >= srcDataSize) return D3DERR_INVALIDCALL;
+      const unsigned packet = bytes[cursor++];
+      const size_t count = (packet & 127u) + 1u;
+      if (count > remaining) return D3DERR_INVALIDCALL;
+      const size_t payload = (packet & 128u ? 1u : count) * (bits / 8);
+      if (payload > srcDataSize - cursor) return D3DERR_INVALIDCALL;
+      cursor += payload;
+      remaining -= count;
+    }
+  }
+  info->Width = width;
+  info->Height = height;
+  info->Depth = 1;
+  info->MipLevels = 1;
+  info->Format = bits == 32 ? D3DFMT_A8R8G8B8 : D3DFMT_X8R8G8B8;
+  info->ResourceType = D3DRTYPE_TEXTURE;
+  info->ImageFileFormat = D3DXIFF_TGA;
+  return D3D_OK;
 }
 
 //	D3D8 texture stage states (documented d3d8types.h values).
