@@ -153,3 +153,9 @@ native-and-wasm: **PASS** no head `0d8f802b` (o último commit meu pushado). Os 
 O DC em memória agora aceita criação e seleção de fontes, medição de texto UTF-16 e a combinação `ExtTextOutW(ETO_OPAQUE, rect=null, dx=null)` usada pelo atlas original. No WASM usa `OffscreenCanvas` 2D e escreve BGRA no DIB; testes do bitmap e teste de pixel no Chromium passaram. Com os objetos `A3DFontMan.cpp` e `A3DFont.cpp` reconstruídos, o probe original deixou de registrar falha ao criar a fonte do sistema, mas encerrou mais adiante por `world_targets.txt` ausente no servidor isolado.
 
 Limites: não carrega nem registra os arquivos TTF originais no browser, e a seleção CSS pode usar uma fonte substituta; não há prova de texto na interface real. As métricas são aproximadas e as demais combinações GDI falham explicitamente. O cliente precisa de build limpo que recompile os consumidores dos antigos stubs inline; falta validar o atlas, seus formatos de textura e a UI com os assets reais.
+
+### Diagnóstico de boot: StartLogin (2026-10-29)
+
+Em Chrome, o probe com os arquivos soltos do manifest completo chegou ao `Present` inicial, mas o canvas permaneceu branco. Uma compilação diagnóstica com marcadores temporários em `ElementClient.cpp` confirmou `CECGame::Init` concluído e entrada em `CECGameRun::StartLogin`; o marcador após `StartLogin` e o de entrada no loop principal não apareceram durante a observação. Isso não prova um loop ativo nem identifica ainda a chamada exata que não retornou. Os marcadores foram removidos da source versionada.
+
+Próximo passo: instrumentar e testar sequencialmente `CreateLoginWorld`, `LoadLoginRes`, inicialização de `CECWorld`, carregamento de `Login.ecwld` e mudança do gerenciador de interface. Observar os eventos no worker e validar a renderização real, sem tornar falhas de assets não fatais. O ambiente do probe usa objetos locais; uma reconstrução limpa ainda é necessária antes de concluir que o resultado é reproduzível.
