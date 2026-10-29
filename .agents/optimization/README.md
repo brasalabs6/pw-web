@@ -164,3 +164,11 @@ Inspeção no SHA `0d8f802bea0603ebeb2723bbc886dc9555f12341`, com checagem aritm
 ### Revalidação de OPT-044 — 2026-10-28
 
 No HEAD `160026ec92931753c9fed059ef2a13db59a40bea`, o probe substituiu shifts bitwise de offsets por `Math.floor` e multiplicação numérica ([código](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/scripts/client153-entry-browser-pre.js#L77), [código](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/scripts/client153-entry-browser-pre.js#L46)), e recebeu [teste sintético na fronteira de 2 GiB](https://github.com/brasalabs6/pw-web/blob/160026ec92931753c9fed059ef2a13db59a40bea/tests/client153/browser-entry-range.cjs#L1-L53). O risco aritmético original está **mitigado no probe por inspeção estática**, mas o teste não foi executado nesta auditoria e não há comprovação com pacotes reais acima de 2/4 GiB nem em celular. [OPT-044](OPT-044-browser-pck-range-index-32bit-overflow.md) preserva o histórico, agora marcado `mitigated-in-probe`; benchmarks permanecem post-browser-port.
+
+## Auditoria incremental — atualização de texturas D3D8/WebGL2 (2026-10-29; 1 candidato)
+
+| ID | Prioridade pós-port | Subsistema | Hipótese |
+|---|---|---|---|
+| [OPT-045](OPT-045-d3d8-lockrect-full-texture-repack-upload.md) | P2 | Angelica D3D8 / textura WebGL2 | Medir cópia BGRA→RGBA, alocação temporária e upload integral em cada UnlockRect, inclusive locks parciais |
+
+Inspeção estática no SHA `cf1121324c6cca0e566b698311c45a85eea0dba9`, [linhas 44–85](https://github.com/brasalabs6/pw-web/blob/cf1121324c6cca0e566b698311c45a85eea0dba9/src/client153/platform/web/d3d8_texture.cpp#L44-L85). Distinto de OPT-002/014 e PW23-024. **Sem benchmark, execução mobile ou blocker reproduzido**. Somente pós-port; preservar PW23-021…037.
