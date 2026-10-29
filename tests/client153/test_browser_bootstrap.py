@@ -7,7 +7,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 ENTRY = ROOT / 'src/client153/Element/CElementClient/ElementClient.cpp'
 class BrowserBootstrapTest(unittest.TestCase):
     def test_render_dimensions_use_independent_command_line_values(self):
-        source = ENTRY.read_text()
+        source = ENTRY.read_bytes().decode('utf-8', errors='surrogateescape')
         start = source.index('\tif( l_CmdParams.iRenderWid == -1 )')
         end = source.index('\n\tif (LOBYTE', start)
         with tempfile.TemporaryDirectory() as tmp:
@@ -34,7 +34,7 @@ int main() {
             subprocess.run([str(exe)], check=True)
 
     def test_browser_skips_windows_launcher(self):
-        source = ENTRY.read_text()
+        source = ENTRY.read_bytes().decode('utf-8', errors='surrogateescape')
         start = source.index('\twhile (true)', source.index('int APIENTRY wWinMain'))
         end = source.index('#ifdef _PROFILE_MEMORY', start)
         start = source.rfind('\tHANDLE hInstMutex = NULL;', 0, start)
