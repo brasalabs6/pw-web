@@ -139,11 +139,18 @@ std::function<void()> MakeThreadBody(const std::shared_ptr<ThreadState> &state,
 }
 
 //	The browser target has no native threads (single-threaded WASM):
-//	launching a std::thread throws std::system_error. The seam runs the
-//	body synchronously on the calling thread instead — the work still
-//	happens and the completion state preserves the wait/join contract
-//	(a later WaitForSingleObject observes done and returns immediately).
-inline void RunThreadBodyNow(std::function<void()> body) { body(); }
+//	launching a std::thread throws std::system_error. On Emscripten the
+//	seam runs the body synchronously on the calling thread instead — the
+//	work still happens and the completion state preserves the wait/join
+//	contract (a later WaitForSingleObject observes done and returns
+//	immediately). Native targets keep real std::threads.
+inline void RunThreadBodyNow(std::function<void()> body) {
+#ifdef __EMSCRIPTEN__
+  body();
+#else
+  std::thread(std::move(body)).detach();
+#endif
+}
 
 } // namespace pw153::platform
 
@@ -266,7 +273,11 @@ inline HANDLE _beginthreadex(void *security, unsigned stackSize,
     std::lock_guard<std::mutex> lock(wrapped->state->mutex);
     wrapped->pending = std::move(body);
   } else {
+#ifdef __EMSCRIPTEN__
     pw153::platform::RunThreadBodyNow(std::move(body));
+#else
+    wrapped->thread = std::thread(std::move(body));
+#endif
   }
   if (threadId)
     *threadId = 0; //\tThread ids are not addressable in this backend.
@@ -507,11 +518,15 @@ inline DWORD ResumeThread(HANDLE handle) {
   if (thread->pending) {
     auto run = std::move(thread->pending);
     thread->pending = nullptr;
+#ifdef __EMSCRIPTEN__
     //	Browser target: no native threads — run the body synchronously
-	//	(see RunThreadBodyNow). The state mutex must be released first:
-	//	the body's completion write locks it again.
+    //	(see RunThreadBodyNow). The state mutex must be released first:
+    //	the body's completion write locks it again.
     lock.unlock();
     pw153::platform::RunThreadBodyNow(std::move(run));
+#else
+    thread->thread = std::thread(std::move(run));
+#endif
     return 1;	//	previous suspend count.
   }
   return 0;	//	Win32: resume of a running thread is a no-op returning 0.
@@ -538,7 +553,11 @@ inline HANDLE CreateThread(void *security, unsigned stackSize, Start start,
     std::lock_guard<std::mutex> lock(wrapped->state->mutex);
     wrapped->pending = std::move(body);
   } else {
+#ifdef __EMSCRIPTEN__
     pw153::platform::RunThreadBodyNow(std::move(body));
+#else
+    wrapped->thread = std::thread(std::move(body));
+#endif
   }
   if (threadId)
     *threadId = 0;
