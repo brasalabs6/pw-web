@@ -153,6 +153,33 @@ var Module = {
         log('VFS font check: /font/fzl2jw.ttf (lowercase) exists, size=' + data.length);
       } catch (e) { log('VFS font check: /font/fzl2jw.ttf (lowercase) FAILS: ' + e.message); }
       log('entry: packages mapped, calling pw153_browser_probe');
+      // The input bridge: canvas events translate to Win32 messages and
+      // post into the adapter's queue (the game's pump drains them). The
+      // key-state table backs GetAsyncKeyState (the camera polling path).
+      const canvasInput = globalThis.pwCanvas;
+      const post = (msg, wp, lp) => { try { Module._pw153_post_message(msg, wp, lp); } catch (e) {} };
+      const setKey = (vk, down) => { try { Module._pw153_set_key_state(vk, down ? 1 : 0); } catch (e) {} };
+      // Browser KeyboardEvent.code → Win32 VK (the subset the client uses).
+      const VK = { 'KeyW': 0x57, 'KeyA': 0x41, 'KeyS': 0x53, 'KeyD': 0x44,
+                   'KeyQ': 0x51, 'KeyE': 0x45, 'KeyR': 0x52, 'KeyT': 0x54,
+                   'KeyY': 0x59, 'Space': 0x20, 'Tab': 0x09, 'Escape': 0x1B,
+                   'Enter': 0x0D, 'Backspace': 0x08, 'ShiftLeft': 0xA1, 'ShiftRight': 0xA2,
+                   'ControlLeft': 0xA2, 'ControlRight': 0xA3, 'AltLeft': 0xA4, 'AltRight': 0xA5,
+                   'Digit0': 0x30, 'Digit1': 0x31, 'Digit2': 0x32, 'Digit3': 0x33, 'Digit4': 0x34,
+                   'Digit5': 0x35, 'Digit6': 0x36, 'Digit7': 0x37, 'Digit8': 0x38, 'Digit9': 0x39,
+                   'ArrowUp': 0x26, 'ArrowDown': 0x28, 'ArrowLeft': 0x25, 'ArrowRight': 0x27,
+                   'PageUp': 0x21, 'PageDown': 0x22, 'Home': 0x24, 'End': 0x23,
+                   'Insert': 0x2D, 'Delete': 0x2E };
+      canvasInput.addEventListener('keydown', e => { const vk = VK[e.code]; if (vk) { setKey(vk, true); post(0x100, vk, 0); e.preventDefault(); } });
+      canvasInput.addEventListener('keyup', e => { const vk = VK[e.code]; if (vk) { setKey(vk, false); post(0x101, vk, 0); e.preventDefault(); } });
+      // Mouse: client coordinates in lParam (y << 16 | x), button state in wParam.
+      const mouseButtons = e => (e.button === 0 ? 1 : 0) | (e.button === 2 ? 2 : 0) | (e.button === 1 ? 4 : 0);
+      const mouseLp = e => { const r = canvasInput.getBoundingClientRect(); return ((e.clientY - r.top) << 16) | (Math.max(0, e.clientX - r.left) & 0xFFFF); };
+      canvasInput.addEventListener('mousemove', e => post(0x0200, mouseButtons(e), mouseLp(e)));
+      canvasInput.addEventListener('mousedown', e => { post(e.button === 2 ? 0x0204 : 0x0201, mouseButtons(e), mouseLp(e)); e.preventDefault(); });
+      canvasInput.addEventListener('mouseup', e => { post(e.button === 2 ? 0x0205 : 0x0202, mouseButtons(e), mouseLp(e)); e.preventDefault(); });
+      canvasInput.addEventListener('contextmenu', e => e.preventDefault());
+      canvasInput.addEventListener('wheel', e => { post(0x020A, mouseButtons(e), (Math.sign(e.deltaY) << 16) | mouseLp(e)); e.preventDefault(); }, {passive: false});
       const result = Module._pw153_browser_probe();
       log('return: pw153_browser_probe returned ' + result);
       // Structured asset-failure taxonomy: unique (reason, path) pairs

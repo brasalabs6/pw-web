@@ -51,7 +51,7 @@ def browser_probe_flags(pre_js: str | None) -> list[str]:
     # Range-request-backed read-only MEMFS streams inside a worker and
     # drives the original wWinMain through pw153_browser_probe. Unlike the
     # Node probe it must not pull the Node-only readonly mapper.
-    return ['--pre-js', pre_js, '-sEXPORTED_FUNCTIONS=_malloc,_pw153_browser_probe,_pw153_asset_diag_dump',
+    return ['--pre-js', pre_js, '-sEXPORTED_FUNCTIONS=_malloc,_pw153_browser_probe,_pw153_asset_diag_dump,_pw153_post_message,_pw153_pop_message,_pw153_set_key_state',
             '-sALLOW_MEMORY_GROWTH=1', '-sMAXIMUM_MEMORY=4GB',
             '-sMAX_WEBGL_VERSION=2'] if pre_js else []
 

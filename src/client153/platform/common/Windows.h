@@ -1135,17 +1135,14 @@ inline LRESULT SendMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   return SendMessageA(hWnd, msg, wParam, lParam);
 }
 
-//	The message posting: the browser host owns the input dispatch and
-//	there is no Win32 message queue, so posting fails (the Win32 result
-//	for a window without a queue); the callers' failure paths handle it.
-//	The adapter's dispatch (m-boot) replaces the pump where delivery is
-//	actually needed.
+//	The message posting: real events land in the adapter's queue (the
+//	browser bridge posts key/mouse messages; the game's pump drains them).
+extern "C" int pw153_post_message(unsigned, unsigned, unsigned);
+extern "C" int pw153_pop_message(unsigned *, unsigned *, unsigned *);
 inline BOOL PostMessageA(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-  (void)hWnd;
-  (void)msg;
-  (void)wParam;
-  (void)lParam;
-  return FALSE;
+  (void)hWnd;	//	the single client window is implicit
+  return pw153_post_message(msg, static_cast<unsigned>(wParam),
+                            static_cast<unsigned>(lParam)) ? TRUE : FALSE;
 }
 inline BOOL PostMessageW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   return PostMessageA(hWnd, msg, wParam, lParam);
@@ -3155,9 +3152,15 @@ inline BOOL TranslateMessage(const MSG *message) {
   (void)message;
   return FALSE;
 }
+//	The single client window's procedure receives the dispatched message
+//	(the adapter registry owns it; the queue entries carry no HWND).
+extern "C" LRESULT pw153_window_dispatch(unsigned, unsigned, unsigned);
 inline LRESULT DispatchMessage(const MSG *message) {
-  (void)message;
-  return 0;
+  if (!message)
+    return 0;
+  return pw153_window_dispatch(message->message,
+                               static_cast<unsigned>(message->wParam),
+                               static_cast<unsigned>(message->lParam));
 }
 
 #define VK_LBUTTON 0x01
@@ -4373,8 +4376,24 @@ inline HWND GetWindow(HWND hWnd, UINT cmd) { (void)hWnd; (void)cmd; return NULL;
 // The W/A message-pump aliases forward to the charset-neutral seam
 // implementations above (the host owns the input dispatch).
 inline BOOL PeekMessageW(LPMSG message, HWND hWnd, UINT min, UINT max, UINT remove) {
-  (void)message; (void)hWnd; (void)min; (void)max; (void)remove;
-  return FALSE;
+  (void)hWnd; (void)min; (void)max;
+  unsigned msg = 0, wparam = 0, lparam = 0;
+  if (!pw153_pop_message(&msg, &wparam, &lparam))
+    return FALSE;
+  if (remove == 0x0001) {	//	PM_REMOVE (the define sits below in WinUser.h)
+    if (message) {
+      message->hwnd = nullptr;
+      message->message = msg;
+      message->wParam = wparam;
+      message->lParam = lparam;
+      message->time = 0;
+      message->pt = POINT{0, 0};
+    }
+  } else {
+    //	PM_NOREMOVE: push it back (the queue head is already advanced).
+    pw153_post_message(msg, wparam, lparam);
+  }
+  return TRUE;
 }
 inline BOOL PeekMessage(MSG *message, HWND hWnd, UINT min, UINT max, UINT remove) {
   return PeekMessageW(message, hWnd, min, max, remove);

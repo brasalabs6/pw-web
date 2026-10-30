@@ -2,7 +2,8 @@
 #include <string>
 
 // One browser canvas backs one client window. This registry does not model
-// child windows, menus, or browser input; those require their own adapters.
+// child windows or menus; the input adapter dispatches to the registered
+// procedure through pw153_window_procedure().
 namespace {
 std::u16string name;
 WNDPROC procedure = nullptr;
@@ -77,4 +78,18 @@ BOOL DestroyWindow(HWND handle) {
   window.procedure = nullptr;
   callback(handle, WM_DESTROY, 0, 0);
   return TRUE;
+}
+
+//	The input adapter's dispatch: the message queue's entries carry no
+//	HWND (the single client window is implicit), so the queue hands the
+//	message here and the registered procedure receives it.
+extern "C" LRESULT pw153_window_dispatch(unsigned message, unsigned wParam, unsigned lParam) {
+  if (!live || !window.procedure)
+    return 0;
+  MSG message_struct{};
+  message_struct.hwnd = &window;
+  message_struct.message = message;
+  message_struct.wParam = wParam;
+  message_struct.lParam = lParam;
+  return window.procedure(&window, message, wParam, lParam);
 }
