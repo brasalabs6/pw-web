@@ -23,21 +23,48 @@ class Device final : public IDirect3DDevice8 {
   DWORD srcBlend = 2, dstBlend = 1;
   IDirect3DBaseTexture8 *textures[8] = {};
   D3DMATRIX transforms[32] = {};
+  // The default framebuffer attachments (the canvas), created once and
+  // handed out by the surface getters.
+  PW153DefaultSurface *defaultColor = nullptr;
+  PW153DefaultSurface *defaultDepth = nullptr;
   // The FVF shader program (created lazily on the first draw call).
   GLuint shaderProgram = 0;
   GLint aPosition = -1, aColor = -1, aTexCoord = -1, uViewport = -1, uTextured = -1;
 public:
   Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner,
          UINT w, UINT h)
-    : color(c), depth(d), framebuffer(f), context(owner), backWidth(w), backHeight(h) {}
-  ~Device() override { }
+    : color(c), depth(d), framebuffer(f), context(owner), backWidth(w), backHeight(h) {
+    // The default framebuffer attachments (the canvas): the colour format
+    // is the real RGBA8 backend (alpha is present), the depth matches the
+    // client's chosen D24X8 stencil-less request.
+    defaultColor = new PW153DefaultSurface(w, h, D3DFMT_A8R8G8B8);
+    defaultDepth = new PW153DefaultSurface(w, h, D3DFMT_D24X8);
+  }
+  ~Device() override {
+    if (defaultColor) defaultColor->Release();
+    if (defaultDepth) defaultDepth->Release();
+  }
   HRESULT QueryInterface(const void *, void **out) override { if (out) *out = nullptr; return E_NOINTERFACE; }
   ULONG AddRef() override { return ++refs; }
   ULONG Release() override { auto count = --refs; if (!count) delete this; return count; }
-  HRESULT GetRenderTarget(IDirect3DSurface8 **out) override { if (!out) return E_FAIL; *out = nullptr; return D3D_OK; }
-  HRESULT GetDepthStencilSurface(IDirect3DSurface8 **out) override { if (!out) return E_FAIL; *out = nullptr; return D3D_OK; }
+  // The getters hand out real surface objects for the canvas attachments
+  // (never D3D_OK with a null out pointer — the A3DDevice::Init contract
+  // requires non-null render target, depth stencil and back buffer).
+  HRESULT GetRenderTarget(IDirect3DSurface8 **out) override {
+    if (!out) return E_FAIL;
+    defaultColor->AddRef();
+    *out = defaultColor;
+    return D3D_OK;
+  }
+  HRESULT GetDepthStencilSurface(IDirect3DSurface8 **out) override {
+    if (!out) return E_FAIL;
+    defaultDepth->AddRef();
+    *out = defaultDepth;
+    return D3D_OK;
+  }
   HRESULT GetBackBuffer(UINT index, DWORD type, IDirect3DSurface8 **out) override {
-    if (index || type) { if (out) *out = nullptr; return E_FAIL; } return GetRenderTarget(out);
+    if (index || type) { if (out) *out = nullptr; return E_FAIL; }
+    return GetRenderTarget(out);
   }
   HRESULT Clear(DWORD count, const D3DRECT *rects, DWORD flags, DWORD value, float z, DWORD) override {
     static int clearCount = 0;
@@ -300,33 +327,16 @@ public:
   }
 
   HRESULT DrawPrimitive(DWORD type, UINT startVertex, UINT count) override {
-    if (emscripten_webgl_get_current_context() != context || !streamSource ||
-        currentFVF != (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1) ||
-        streamOffset < 32) return E_FAIL;
+    if (emscripten_webgl_get_current_context() != context || !streamSource) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
                                    GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
     if (type < 1 || type > 6) return E_FAIL;
-    uint64_t vertices = type == D3DPT_POINTLIST ? count :
-                        type == D3DPT_LINELIST ? uint64_t(count) * 2 :
-                        type == D3DPT_LINESTRIP ? uint64_t(count) + 1 :
-                        type == D3DPT_TRIANGLELIST ? uint64_t(count) * 3 : uint64_t(count) + 2;
+    uint64_t vertices = CountsForType(type, count);
     auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
     if (!count || vertices > INT32_MAX || (uint64_t(startVertex) + vertices) * streamOffset > buffer->size()) return E_FAIL;
-    ensureShaderProgram();
-    if (!shaderProgram) return E_FAIL;
-    GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
-    if (viewport[2] <= 0 || viewport[3] <= 0) return E_FAIL;
-    glUseProgram(shaderProgram);
-    glUniform4f(uViewport, viewport[0], viewport[1], viewport[2], viewport[3]);
-    glUniform1i(uTextured, textures[0] ? 1 : 0);
-    glUniform1i(glGetUniformLocation(shaderProgram, "u_texture"), 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer->buffer());
-    glEnableVertexAttribArray(aPosition); glEnableVertexAttribArray(aColor); glEnableVertexAttribArray(aTexCoord);
-    glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(0));
-    glVertexAttribPointer(aColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, streamOffset, reinterpret_cast<const void *>(16));
-    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, streamOffset, reinterpret_cast<const void *>(24));
+    if (!PrepareFvfDraw()) return E_FAIL;
+    uintptr_t baseOffset = 0;
+    if (SetupFvfAttributes(currentFVF, buffer->buffer(), streamOffset, 0, baseOffset) != D3D_OK) return E_FAIL;
     glDrawArrays(modes[type], startVertex, static_cast<GLsizei>(vertices));
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
@@ -337,8 +347,9 @@ public:
   //	yet — they fail explicitly instead of drawing misinterpreted
   //	geometry. Returns the byte offset of the vertex base (the D3D8
   //	SetIndices BaseVertexIndex shifts every index, which WebGL maps to
-  //	shifting the attribute pointers).
-  HRESULT SetupFvfAttributes(DWORD fvf, UINT stride, UINT baseVertexIndex, uintptr_t &baseOffset) {
+  //	shifting the attribute pointers). `arrayBuffer` is the caller's
+  //	bound vertex storage (the stream source or a temporary UP buffer).
+  HRESULT SetupFvfAttributes(DWORD fvf, GLuint arrayBuffer, UINT stride, UINT baseVertexIndex, uintptr_t &baseOffset) {
     const UINT positionSize = (fvf & D3DFVF_XYZRHW) ? 4 : (fvf & D3DFVF_XYZ) ? 3 : 0;
     if (!positionSize || !(fvf & D3DFVF_XYZRHW)) {
       static bool warned = false;
@@ -351,7 +362,7 @@ public:
     if (fvf & D3DFVF_XYZ) return E_FAIL;	//	untransformed: not wired yet
     UINT offset = 0;
     baseOffset = static_cast<uintptr_t>(baseVertexIndex) * stride;
-    glBindBuffer(GL_ARRAY_BUFFER, static_cast<PW153VertexBuffer *>(streamSource)->buffer());
+    glBindBuffer(GL_ARRAY_BUFFER, arrayBuffer);
     glEnableVertexAttribArray(aPosition);
     glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void *>(baseOffset));
     offset += 16;
@@ -373,37 +384,48 @@ public:
     }
     return D3D_OK;
   }
-  HRESULT DrawIndexedPrimitive(DWORD type, UINT minIndex, UINT numVertices, UINT startIndex, UINT count) override {
-    if (emscripten_webgl_get_current_context() != context || !indexBuffer || !streamSource) return E_FAIL;
-    static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
-                                   GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
-    if (type < 1 || type > 6) return E_FAIL;
-    // D3D8 count is a primitive count: triangle list = 3 indices per
-    // primitive, strip/fan = count + 2, line list = 2 per primitive.
-    uint64_t indices = type == D3DPT_POINTLIST ? count :
-                       type == D3DPT_LINELIST ? uint64_t(count) * 2 :
-                       type == D3DPT_LINESTRIP ? uint64_t(count) + 1 :
-                       type == D3DPT_TRIANGLELIST ? uint64_t(count) * 3 : uint64_t(count) + 2;
-    auto *indexData = static_cast<PW153IndexBuffer *>(indexBuffer);
-    auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
-    const UINT indexSize = indexData->format() == D3DFMT_INDEX32 ? 4 : 2;
-    if (!count || indices > INT32_MAX ||
-        uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
+  //	Shared draw preparation: the FVF shader program, the viewport
+  //	uniform and the texture binding. Returns false when the context or
+  //	the viewport is unusable.
+  bool PrepareFvfDraw() {
+    if (emscripten_webgl_get_current_context() != context) return false;
     ensureShaderProgram();
-    if (!shaderProgram) return E_FAIL;
+    if (!shaderProgram) return false;
     GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
-    if (viewport[2] <= 0 || viewport[3] <= 0) return E_FAIL;
+    if (viewport[2] <= 0 || viewport[3] <= 0) return false;
     glUseProgram(shaderProgram);
     glUniform4f(uViewport, viewport[0], viewport[1], viewport[2], viewport[3]);
     glUniform1i(uTextured, textures[0] ? 1 : 0);
     glUniform1i(glGetUniformLocation(shaderProgram, "u_texture"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
+    return true;
+  }
+  //	Vertex/index counts for a D3D8 primitive count (triangle list = 3
+  //	per primitive, strip/fan = count + 2, line list = 2 per primitive).
+  static uint64_t CountsForType(DWORD type, UINT count) {
+    return type == D3DPT_POINTLIST ? count :
+           type == D3DPT_LINELIST ? uint64_t(count) * 2 :
+           type == D3DPT_LINESTRIP ? uint64_t(count) + 1 :
+           type == D3DPT_TRIANGLELIST ? uint64_t(count) * 3 : uint64_t(count) + 2;
+  }
+  HRESULT DrawIndexedPrimitive(DWORD type, UINT minIndex, UINT numVertices, UINT startIndex, UINT count) override {
+    if (emscripten_webgl_get_current_context() != context || !indexBuffer || !streamSource) return E_FAIL;
+    static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
+                                   GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
+    if (type < 1 || type > 6) return E_FAIL;
+    uint64_t indices = CountsForType(type, count);
+    auto *indexData = static_cast<PW153IndexBuffer *>(indexBuffer);
+    auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
+    const UINT indexSize = indexData->format() == D3DFMT_INDEX32 ? 4 : 2;
+    if (!count || indices > INT32_MAX ||
+        uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
+    if (!PrepareFvfDraw()) return E_FAIL;
     //	The D3D8 SetIndices second parameter is BaseVertexIndex: every
     //	index refers to baseVertexIndex + i. WebGL cannot offset index
     //	values, so the vertex base shifts the attribute pointers instead.
     uintptr_t baseOffset = 0;
-    if (SetupFvfAttributes(currentFVF, streamOffset, indexOffset, baseOffset) != D3D_OK) return E_FAIL;
+    if (SetupFvfAttributes(currentFVF, buffer->buffer(), streamOffset, indexOffset, baseOffset) != D3D_OK) return E_FAIL;
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexData->buffer());
     glDrawElements(modes[type], static_cast<GLsizei>(indices),
                    indexData->format() == D3DFMT_INDEX32 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT,
@@ -412,42 +434,60 @@ public:
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT DrawPrimitiveUP(DWORD type, UINT count, const void *data, UINT stride) override {
-    if (emscripten_webgl_get_current_context() != context || !data) return E_FAIL;
+    if (emscripten_webgl_get_current_context() != context || !data || !stride) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
                                    GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
     if (type < 1 || type > 6) return E_FAIL;
-    // Upload the user-pointer data to a temporary VBO and draw.
+    const uint64_t vertices = CountsForType(type, count);
+    if (!count || vertices > INT32_MAX || vertices * stride > UINT32_MAX) return E_FAIL;
+    if (!PrepareFvfDraw()) return E_FAIL;
+    // Upload the user-pointer data to a temporary VBO and draw with the
+    // current FVF's attribute layout.
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, count * stride, data, GL_STREAM_DRAW);
-    glDrawArrays(modes[type], 0, count);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices * stride), data, GL_STREAM_DRAW);
+    uintptr_t baseOffset = 0;
+    const HRESULT setup = SetupFvfAttributes(currentFVF, vbo, stride, 0, baseOffset);
+    if (setup == D3D_OK)
+      glDrawArrays(modes[type], 0, static_cast<GLsizei>(vertices));
     glDeleteBuffers(1, &vbo);
-    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+    return setup == D3D_OK && glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT DrawIndexedPrimitiveUP(DWORD type, UINT minIndex, UINT numVertices, UINT count,
                                  const void *indices, DWORD indexFormat,
                                  const void *vertexData, UINT stride) override {
-    if (emscripten_webgl_get_current_context() != context || !indices || !vertexData) return E_FAIL;
+    if (emscripten_webgl_get_current_context() != context || !indices || !vertexData || !stride) return E_FAIL;
     static const GLenum modes[] = {0, GL_POINTS, GL_LINES, GL_LINE_STRIP,
                                    GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN};
-    if (type < 1 || type > 6) return E_FAIL;
+    if (type < 1 || type > 6 || (indexFormat != D3DFMT_INDEX16 && indexFormat != D3DFMT_INDEX32)) return E_FAIL;
+    const uint64_t indicesCount = CountsForType(type, count);
+    if (!count || !numVertices || indicesCount > INT32_MAX ||
+        uint64_t(numVertices) * stride > UINT32_MAX ||
+        indicesCount * (indexFormat == D3DFMT_INDEX16 ? 2 : 4) > UINT32_MAX) return E_FAIL;
+    if (!PrepareFvfDraw()) return E_FAIL;
     GLuint vbo = 0, ibo = 0;
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * stride, vertexData, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(uint64_t(numVertices) * stride), vertexData, GL_STREAM_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * 3 * (indexFormat == D3DFMT_INDEX16 ? 2 : 4), indices, GL_STREAM_DRAW);
-    glDrawElements(modes[type], count * 3, indexFormat == D3DFMT_INDEX16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, nullptr);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indicesCount * (indexFormat == D3DFMT_INDEX16 ? 2 : 4)), indices, GL_STREAM_DRAW);
+    uintptr_t baseOffset = 0;
+    const HRESULT setup = SetupFvfAttributes(currentFVF, vbo, stride, 0, baseOffset);
+    if (setup == D3D_OK)
+      glDrawElements(modes[type], static_cast<GLsizei>(indicesCount),
+                     indexFormat == D3DFMT_INDEX16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, nullptr);
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ibo);
-    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+    return setup == D3D_OK && glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
   HRESULT SetRenderTarget(IDirect3DSurface8 *target, IDirect3DSurface8 *depth) override {
     if (emscripten_webgl_get_current_context() != context) return E_FAIL;
-    if (!target) {
-      // Binding the default framebuffer (the canvas).
+    // The default colour surface (or NULL, the D3D8 "back buffer" request)
+    // binds the canvas's framebuffer 0 — no renderbuffer attachments may
+    // be made to the default framebuffer.
+    if (!target || target == defaultColor) {
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
       return D3D_OK;
     }
@@ -455,7 +495,7 @@ public:
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
     glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER, surface->renderbuffer());
-    if (depth) {
+    if (depth && depth != defaultDepth) {
       auto *depthSurface = static_cast<PW153Surface *>(depth);
       glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                                 GL_RENDERBUFFER, depthSurface->renderbuffer());

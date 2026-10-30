@@ -108,3 +108,37 @@ IDirect3DSurface8 *pw153_create_image_surface(UINT width, UINT height, D3DFORMAT
   if (!surface) std::free(pixels);
   return surface;
 }
+
+// --- Default framebuffer surfaces (the canvas attachments) -----------------
+
+PW153DefaultSurface::PW153DefaultSurface(UINT width, UINT height, D3DFORMAT format) {
+  description_ = {};
+  description_.Format = format;
+  description_.Type = D3DRTYPE_SURFACE;
+  description_.Usage = 0;
+  description_.Pool = D3DPOOL_DEFAULT;
+  description_.Width = width;
+  description_.Height = height;
+}
+PW153DefaultSurface::~PW153DefaultSurface() = default;
+HRESULT PW153DefaultSurface::QueryInterface(const void *, void **out) {
+  if (out) *out = nullptr;
+  return E_NOINTERFACE;
+}
+ULONG PW153DefaultSurface::AddRef() { return ++references_; }
+ULONG PW153DefaultSurface::Release() {
+  const auto count = --references_;
+  if (!count) delete this;
+  return count;
+}
+HRESULT PW153DefaultSurface::LockRect(D3DLOCKED_RECT *, const RECT *, DWORD) {
+  // The default framebuffer is not CPU-lockable in WebGL without a
+  // readback; fail explicitly instead of pretending.
+  return E_NOTIMPL;
+}
+HRESULT PW153DefaultSurface::UnlockRect() { return E_FAIL; }
+HRESULT PW153DefaultSurface::GetDesc(void *out) {
+  if (!out) return E_FAIL;
+  *static_cast<D3DSURFACE_DESC *>(out) = description_;
+  return D3D_OK;
+}
