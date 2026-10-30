@@ -15,7 +15,7 @@
 5. Vincular ao épico/workorder existente. Não substituir roadmap nem modificar PR #17 do servidor sem coordenação; seguir `AGENTS.md` (PR único do cliente, sem self-merge).
 6. Revisões futuras podem registrar novas issues **quando efetivamente executadas**; esta pasta não representa monitoramento automático em background.
 
-## Índice de 31 achados de portabilidade e funcionamento (25 abertos, 2 em andamento, 4 resolvidos)
+## Índice de 32 achados de portabilidade e funcionamento (24 abertos, 4 em andamento, 4 resolvidos)
 
 | ID | Prioridade | Estado | Título | Épico |
 |---|---|---|---|---|
@@ -54,8 +54,9 @@
 
 | [PW23-045](PW23-045-winsync-synchronous-thread-ci-regression.md) | P1 | open | Execução inline de CreateThread/_beginthreadex quebra semântica nativa; CTest 33/34 e WASM pulado no CI | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
 | [PW23-046](PW23-046-game-sources-absolute-path-wasm-ci-regression.md) | P0 | in_progress | Manifest relocável e CI WASM recuperado em 198ff691; falta validar regeneração em duas raízes e TUs ausentes | [e04-wasm-runtime-v1](../epics/e04-wasm-runtime-v1/README.md) |
-| [PW23-047](PW23-047-window-dispatch-unused-msg-native-ci-regression.md) | P1 | open | Unused MSG em window dispatch quebra CI nativo no SHA a2a4952e; WASM pulado | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
-| [PW23-048](PW23-048-u04-test-wasm-only-object-native-cmake-regression.md) | P1 | open | U04 CTest referencia target exclusivo WASM na configuração nativa; CMake falha no SHA e8cd605 e WASM é pulado | [e16-qa-observability-v1](../epics/e16-qa-observability-v1/README.md) |
+| [PW23-047](PW23-047-window-dispatch-unused-msg-native-ci-regression.md) | P1 | in_progress | Unused MSG em window dispatch quebra CI nativo no SHA a2a4952e; WASM pulado | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
+| [PW23-048](PW23-048-u04-test-wasm-only-object-native-cmake-regression.md) | P1 | in_progress | U04 CTest referencia target exclusivo WASM na configuração nativa; CMake falha no SHA e8cd605 e WASM é pulado | [e16-qa-observability-v1](../epics/e16-qa-observability-v1/README.md) |
+| [PW23-049](PW23-049-manifest-regeneration-nested-reference-ci-regression.md) | P1 | open | Novo teste de regeneração do manifesto difere entre referência aninhada e externa; Python CI falha e WASM é pulado em b048b842 | [e16-qa-observability-v1](../epics/e16-qa-observability-v1/README.md) |
 
 **Triagem sugerida:** começar por memória/lock e compatibilidade de wire (001–004), depois shims obrigatórios + link do jogo (006–009, 014, 019). Qualidade de testes e evidência (013/017) devem acompanhar cada milestone.
 
