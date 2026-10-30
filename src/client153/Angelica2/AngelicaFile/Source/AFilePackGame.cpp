@@ -166,13 +166,19 @@ bool AFilePackGame::InnerOpen(const char* szPckPath, const char* szFolder, OPENM
 
 		LoadSafeHeader();
 
-		int nOffset;
+		//	The split packages' entry offset exceeds INT32_MAX
+		//	(models.pck's safe header points at 2947397257): an int here
+		//	truncates the offset, and the seeks below only worked on
+		//	32-bit size_t targets because the unsigned wrap reproduced
+		//	the right position — on LP64 the sign extension survives and
+		//	the seek saturates at 0 (the "Incorrect version" failure).
+		std::int64_t nOffset;
 		m_fpPackageFile->seek(0, SEEK_END);
 		nOffset = m_fpPackageFile->tell();
 		m_fpPackageFile->seek(0, SEEK_SET);
 
 		if( m_bHasSafeHeader )
-			nOffset = (int)m_safeHeader.offset;
+			nOffset = m_safeHeader.offset;
 
 		// Now analyse the file entries of the package;
 		DWORD dwVersion;
@@ -295,7 +301,10 @@ bool AFilePackGame::InnerOpen(const char* szPckPath, const char* szFolder, OPENM
 
 			// now we move entry point to the end of the file so to keep old entries here
 			if( m_bHasSafeHeader )
-				m_header.dwEntryOffset = nOffset;
+				// The split packages' entry offset fits the 32-bit field
+				// (the format's own limit; the data section ends before
+				// 4 GiB by construction).
+				m_header.dwEntryOffset = (DWORD)nOffset;
 		}
 		else if (dwVersion == 0x00020003)
 		{
@@ -411,7 +420,10 @@ bool AFilePackGame::InnerOpen(const char* szPckPath, const char* szFolder, OPENM
 
 			// now we move entry point to the end of the file so to keep old entries here
 			if( m_bHasSafeHeader )
-				m_header.dwEntryOffset = nOffset;
+				// The split packages' entry offset fits the 32-bit field
+				// (the format's own limit; the data section ends before
+				// 4 GiB by construction).
+				m_header.dwEntryOffset = (DWORD)nOffset;
 		}
 		else
 		{
