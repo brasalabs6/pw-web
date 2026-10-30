@@ -139,33 +139,16 @@ bool CECInstance::Load(AWScriptFile* psf)
 			config.rect.top = psf->GetNextTokenAsFloat(true);	//	左下角位置 Z
 			float width = psf->GetNextTokenAsFloat(true);		//	宽度
 			if (width < 10.0f){
-				//\tThe original returns false here; on the browser build the
-				//\twide-char float parse can yield 0 for tokens the Windows
-				//\tCRT accepts. Skip this texture entry and continue instead
-				//\tof aborting the whole instance load.
-				{
-					char szTokenUtf8[MAX_PATH];
-					szTokenUtf8[0] = '\0';
-					std::string tokenUtf8;
-					if (pw153::platform::utf16_to_utf8(psf->m_szToken, tokenUtf8))
-					{
-						std::strncpy(szTokenUtf8, tokenUtf8.c_str(), MAX_PATH - 1);
-						szTokenUtf8[MAX_PATH - 1] = '\0';
-					}
-					a_LogOutput(1, "CECInstance::Load, token [%s], skipping texture with width %.2f < 10 at line %d", szTokenUtf8, width, psf->GetCurLine());
-				}
-				//	Consume the remaining tokens of this entry (height + texture name)
-				psf->GetNextTokenAsFloat(true);
-				psf->GetNextToken(true);
-				continue;
+				//	The original rejection (restored U04-A: the wide-char
+				//	float parse now goes through the port's wide_tof, so a
+				//	valid token parses as its value and an invalid one is
+				//	rejected exactly as the Windows build did).
+				return false;
 			}
 			config.rect.right = config.rect.left + width;
 			float height = psf->GetNextTokenAsFloat(true);		//	高度
 			if (height < 10.0f){
-				//\tSame treatment as the width check above.
-				a_LogOutput(1, "CECInstance::Load, skipping texture with height %.2f < 10 at line %d", height, psf->GetCurLine());
-				psf->GetNextToken(true);
-				continue;
+				return false;
 			}
 			config.rect.bottom = config.rect.top + height;
 			if (!psf->GetNextToken(true)){

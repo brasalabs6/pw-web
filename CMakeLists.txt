@@ -212,6 +212,25 @@ if(BUILD_TESTING)
   add_executable(client153_gb18030_encoder_test tests/client153/gb18030_encoder.cpp)
   target_link_libraries(client153_gb18030_encoder_test PRIVATE client153_common)
   add_test(NAME client153_gb18030_encoder COMMAND client153_gb18030_encoder_test)
+  add_executable(client153_u04_instance_parse_test tests/client153/u04_instance_parse.cpp)
+  target_compile_definitions(client153_u04_instance_parse_test PRIVATE
+    U04_EC_INSTANCE_SOURCE="${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp")
+  target_link_libraries(client153_u04_instance_parse_test PRIVATE client153_file client153_common
+    $<TARGET_OBJECTS:client153_engine_original>)
+  target_include_directories(client153_u04_instance_parse_test PRIVATE src/client153/Angelica2/AngelicaFile/Header src/client153/Angelica2/AngelicaCommon/Header src/client153/platform/common)
+  # The AWScriptFile parser and the ALog sink need stack headroom (the
+  # default 64 KB overflows in the ALog directory setup).
+  target_link_options(client153_u04_instance_parse_test PRIVATE -sSTACK_SIZE=1048576)
+  # Structural gate (U04-A): the EC_Instance rejection is restored — the
+  # diagnostic continue bypass must not return. This runs at every
+  # configure (including CI) and fails the build when the bypass returns.
+  file(READ ${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp u04_ec_instance_source)
+  if(u04_ec_instance_source MATCHES "skipping texture with")
+    message(FATAL_ERROR "U04-A regression: the EC_Instance diagnostic bypass (skipping texture) is back in the source — the original return false rejection must stay")
+  endif()
+  configure_file(${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp
+                 ${CMAKE_CURRENT_BINARY_DIR}/EC_Instance_source.cpp COPYONLY)
+  add_test(NAME client153_u04_instance_parse COMMAND client153_u04_instance_parse_test)
   add_executable(client153_tracks_test tests/client153/tracks.cpp)
   target_link_libraries(client153_tracks_test PRIVATE client153_animation)
   add_test(NAME client153_tracks COMMAND client153_tracks_test)
