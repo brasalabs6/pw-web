@@ -17,6 +17,10 @@ jobs:
         with:
           submodules: false
           persist-credentials: false
+      - name: Materialize the pinned reference checkout (the r3 build reads the .vcproj from it)
+        run: |
+          git submodule update --init --checkout references/client-153
+          test -f references/client-153/Element/CElementClient/ElementClient.vcproj
       - name: Install native zlib headers for PCK tests
         run: |
           apt-get update
