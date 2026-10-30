@@ -256,9 +256,45 @@ if(BUILD_TESTING)
   if(u04_ec_instance_source MATCHES "skipping texture with")
     message(FATAL_ERROR "U04-A regression: the EC_Instance diagnostic bypass (skipping texture) is back in the source — the original return false rejection must stay")
   endif()
+  # Structural gate (U05 / PW23-040): the elements.data load failure aborts
+  # init again — the parse is fixed (32-bit serialized timestamps) and
+  # regression-tested; the boot-diagnostic continuation must not return.
+  file(READ ${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Game.cpp u05_ec_game_source)
+  if(u05_ec_game_source MATCHES "elements.data load failed \\(continuing")
+    message(FATAL_ERROR "U05 regression: the EC_Game elements.data diagnostic bypass is back in the source — the original return false rejection must stay")
+  endif()
   configure_file(${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp
                  ${CMAKE_CURRENT_BINARY_DIR}/EC_Instance_source.cpp COPYONLY)
   add_test(NAME client153_u04_instance_parse COMMAND client153_u04_instance_parse_test)
+  # PW23-040 / U05: the elements.data binary parse contract, driven through
+  # the real shipped loader TUs (elementdataman + itemdataman, compiled with
+  # the game build's TU environment — Emscripten/clang: the adapted game
+  # headers spell 64-bit types as MSVC __int64, so the TUs follow the game
+  # build target). The full byte-exact load runs when the authorized asset
+  # path is passed as the executable's argument; the ctest run (CI)
+  # exercises the crafted negative fixtures.
+  if(EMSCRIPTEN)
+  add_executable(client153_elements_data_parse_test
+    tests/client153/elements_data_parse.cpp
+    src/client153/Element/CCommon/elementdataman.cpp)
+  target_compile_definitions(client153_elements_data_parse_test PRIVATE
+    WIN32 NDEBUG _WINDOWS UNICODE _ELEMENTCLIENT _USE_32BIT_TIME_T
+    ENABLE_SKILL RESOURCE_BATTLE _WIN32_DCOM _LIB _ANGELICA2 _ANGELICA_AUDIO _FW_EDITOR)
+  target_include_directories(client153_elements_data_parse_test PRIVATE
+    src/client153/Element/CCommon
+    src/client153/Angelica2/AngelicaCommon/Header
+    src/client153/platform/common)
+  target_compile_options(client153_elements_data_parse_test PRIVATE -fms-extensions -fexceptions -w
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/ATime.h")
+  target_link_libraries(client153_elements_data_parse_test PRIVATE client153_common client153_platform)
+  target_link_options(client153_elements_data_parse_test PRIVATE
+    -sSTACK_SIZE=1048576 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4GB
+    -sNODERAWFS=1 -sENVIRONMENT=node)
+  add_test(NAME client153_elements_data_parse COMMAND client153_elements_data_parse_test)
+  endif()
   add_executable(client153_tracks_test tests/client153/tracks.cpp)
   target_link_libraries(client153_tracks_test PRIVATE client153_animation)
   add_test(NAME client153_tracks COMMAND client153_tracks_test)

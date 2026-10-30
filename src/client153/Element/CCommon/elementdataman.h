@@ -312,17 +312,36 @@ protected:
 		inline T & operator [](size_t pos) {return _v[pos];}
 		int save(FILE * file)
 		{
-			size_t s = _v.size();
+			unsigned int s = (unsigned int)_v.size();
 			fwrite(&s, sizeof(unsigned int), 1, file);
 			if(s>0)		fwrite(&(_v[0]), sizeof(T), s, file);
 			return 0;
 		}
 		int load(FILE * file)
 		{
-			size_t s;
+			//	The serialized width is 4 bytes (save writes unsigned int);
+			//	a host size_t is wider on LP64 targets and its upper half
+			//	would stay uninitialized here (PW23-040).
+			unsigned int s;
 			if(fread(&s, sizeof(unsigned int), 1, file) != 1)	return -1;
 			if(s>0)
 			{
+				//	An explicit error on impossible counts (PW23-040): the
+				//	section must fit in the bytes the file still has, so a
+				//	corrupt or shifted count fails here instead of turning
+				//	into a giant reserve.
+				const long current = ftell(file);
+				fseek(file, 0, SEEK_END);
+				const long end = ftell(file);
+				fseek(file, current, SEEK_SET);
+				if((unsigned long long)s * sizeof(T) >
+					(unsigned long long)(end - current))
+				{
+					fprintf(stderr, "elements.data section error: count %u of %u-byte records "
+						"exceeds the %ld bytes remaining at offset %ld\n",
+						s, (unsigned)sizeof(T), end - current, current);
+					return -1;
+				}
 				_v.reserve(s);
 				T data;
 				unsigned int i;
@@ -332,7 +351,7 @@ protected:
 					_v.push_back(data);
 				}
 			}
-			return 0;		
+			return 0;
 		}	
 	protected:
 		abase::vector<T> _v;

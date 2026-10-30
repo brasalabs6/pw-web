@@ -567,11 +567,7 @@ bool CECGame::Init(const GAMEINIT& GameInit)
 	{
 		MessageBoxA(NULL, "ÎÞ·¨¼ÓÔØÓÎÏ·Êý¾ÝÎÄ¼þ£¡\n´Ë´íÎó¿ÉÄÜÊÇ¸üÐÂ²»ÍêÈ«ËùÖÂ£¬ÇëÖØÐÂ½øÐÐ¸üÐÂ»ò½øÐÐ°æ±¾ÑéÖ¤£¡", "´íÎó", MB_OK | MB_ICONSTOP);
 		glb_ErrorOutput(ECERR_FAILEDTOCALL, "CECGame::Init", __LINE__);
-		//\tThe elements.data binary parser fails on the browser build
-		//\t(struct alignment investigation pending). Continue without
-		//\titem data to reach the login screen â€” the boot diagnostic
-		//\tneeds to see how far the client gets.
-		a_LogOutput(1, "CECGame::Init, elements.data load failed (continuing for boot diagnostic)");
+		return false;
 	}
 	m_pElementDataMan = m_pItemDataMan->GetElementDataMan();
 

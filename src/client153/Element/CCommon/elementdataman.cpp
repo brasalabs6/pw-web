@@ -3915,7 +3915,17 @@ int elementdataman::save_data(const char * pathname)
 int elementdataman::load_data(const char * pathname)
 {
 	FILE * file;
-	file = fopen(pathname, "rb");
+	//	The caller passes the Windows spelling ("data\\elements.data").
+	//	The browser VFS treats a backslash as a plain character, so the
+	//	path is normalized before the raw fopen exactly the way
+	// AFileImage::Init does (glb_CalcFileMD5 reads through AFileImage
+	// and already worked; this fopen is the one the boot abort fired
+	//	on — the file opens, the MD5 hashes, the raw fopen missed it).
+	char szPath[MAX_PATH];
+	strncpy(szPath, pathname, MAX_PATH);
+	szPath[MAX_PATH - 1] = '\0';
+	for(char* p = szPath; *p; ++p) { if(*p == '\\') *p = '/'; }
+	file = fopen(szPath, "rb");
 	if(file == NULL)		return -1;
 
 	unsigned int version = 0;
@@ -3923,8 +3933,15 @@ int elementdataman::load_data(const char * pathname)
 	if( version != ELEMENTDATA_VERSION )
 		return -1;
 
-	time_t t;
-	fread(&t, sizeof(time_t), 1, file);
+	//	The exporter's build compiled with _USE_32BIT_TIME_T (see the
+	//	pinned .vcproj defines), so the file carries a 32-bit timestamp
+	//	here. The port's time_t is 64-bit (MSVC's _USE_32BIT_TIME_T
+	//	switch does not exist on it), and reading sizeof(time_t) would
+	//	consume the first section's count and shift the whole stream —
+	//	the elements.data parse failure (PW23-040). Read the serialized
+	//	4-byte width explicitly.
+	unsigned int export_time = 0;
+	fread(&export_time, sizeof(unsigned int), 1, file);
 
 	if(equipment_addon_array.load(file) != 0) return -1;
 	if(weapon_major_type_array.load(file) != 0) return -1;
@@ -3957,7 +3974,9 @@ int elementdataman::load_data(const char * pathname)
 	unsigned int len;
 	fread(&len, sizeof(unsigned int), 1, file);
 	fread(buffer, len, 1, file);
-	fread(&t, sizeof(time_t), 1, file);
+	//	The second exporter timestamp: same 32-bit serialized width as
+	//	the header one (PW23-040).
+	fread(&export_time, sizeof(unsigned int), 1, file);
 	
 	if(skilltome_sub_type_array.load(file) != 0) return -1;
 	if(skilltome_essence_array.load(file) != 0) return -1;
