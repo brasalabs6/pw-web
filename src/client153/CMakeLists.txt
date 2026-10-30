@@ -618,6 +618,56 @@ if(EMSCRIPTEN)
   foreach(widget AUIListBox AUIComboBox AUIEditBox AUILabel AUIStillImageButton AUICheckBox AUIImagePicture AUIDialog)
     target_compile_options(client153_aui_original PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Common/AUInterface2/${widget}.h")
   endforeach()
+
+  # --- Reproducible full-client build (r3) -----------------------------------
+  # One target compiles the COMPLETE original game (the source list comes
+  # from the pinned .vcproj files via scripts/emit-client153-game-sources.py
+  # — regenerate that fragment when the reference projects change) and one
+  # executable links it with the port libraries into the browser entry.
+  # This replaces the campaign-object assembly that mixed stale objects.
+  include(${CMAKE_CURRENT_SOURCE_DIR}/game-sources.cmake)
+  add_library(client153_game_full OBJECT EXCLUDE_FROM_ALL ${CLIENT153_GAME_SOURCES})
+  target_include_directories(client153_game_full PRIVATE ${CLIENT153_GAME_INCLUDE_DIRS}
+    Element/Output/include Element/CCommon Element/CElementClient
+    Element/Output/include/fw Element/CElementSkill Element/AutoPFImp/AutoMoveImp Common/CHBasedCD
+    Common/AUInterface2 Common/Output/include Common/Output/include/Gfx
+    Common/Output/include/PropDlg Common/Output/include/LuaWrapper
+    Common/Output/include/aaudio Element/CCommon/lua
+    Angelica2/Output/3rdsdk/include Angelica2/Output/a3dsdk/include
+    Angelica2/Output/acsdk/include Angelica2/Output/afsdk/include
+    Angelica2/Output/amsdk/include)
+  target_compile_features(client153_game_full PRIVATE cxx_std_17)
+  # _FW_EDITOR: the CFWEditorLib headers gate their editor members (Draw,
+  # DrawHandles) behind it; the vcproj defines don't carry it but the
+  # original editor-lib build did (the game target adds it manually).
+  target_compile_definitions(client153_game_full PRIVATE ${CLIENT153_GAME_COMPILE_DEFINITIONS} _FW_EDITOR)
+  target_compile_options(client153_game_full PRIVATE -fms-extensions -fshort-wchar -fexceptions -w
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Angelica2/AngelicaCommon/Header/ATime.h")
+  foreach(widget AUIListBox AUIComboBox AUIEditBox AUILabel AUIStillImageButton AUICheckBox AUIImagePicture AUIDialog)
+    target_compile_options(client153_game_full PRIVATE "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/Common/AUInterface2/${widget}.h")
+  endforeach()
+
+  add_executable(client153_browser_entry ${CMAKE_SOURCE_DIR}/scripts/client153-browser-entry.cpp
+    $<TARGET_OBJECTS:client153_game_full>
+    $<TARGET_OBJECTS:client153_engine_original>
+    $<TARGET_OBJECTS:client153_gfx_original>)
+  target_include_directories(client153_browser_entry PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/client153/platform/web ${CMAKE_SOURCE_DIR}/src/client153/platform/common
+    ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header
+    ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/Angelica3D/Header)
+  target_link_libraries(client153_browser_entry PRIVATE
+    client153_skeleton client153_animation client153_file client153_math
+    client153_common client153_formats client153_webgl_caps client153_skinning
+    client153_speedtree_stub client153_middleware_stub client153_ftdriver_original
+    client153_freetype210 client153_platform client153_lua client153_glu_tess)
+  target_link_options(client153_browser_entry PRIVATE
+    -fexceptions -sUSE_ZLIB=1 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4GB
+    -sMAX_WEBGL_VERSION=2 -sMIN_WEBGL_VERSION=2
+    "-sEXPORTED_FUNCTIONS=_malloc,_pw153_browser_probe,_pw153_asset_diag_dump"
+    "--pre-js=${CMAKE_SOURCE_DIR}/scripts/client153-entry-browser-pre.js")
 endif()
 
 add_library(client153_formats STATIC
