@@ -2,10 +2,12 @@
 id: PW23-049
 title: "Manifest regeneration gate differs for nested vs external pinned reference checkout"
 priority: P1
-status: open
+status: resolved
 kind: reproduced-ci-regression
 first_observed: 2026-10-30
-verified_against: b048b842c3c66bf08440dc6a9264de51e12df9d9
+verified_against: f3dc52432440cb3f8c7598f491d901e5776e580a
+resolved_at: 2026-10-30
+resolved_by: f166d7aa9de2f4eb3efae21ddc96c2aea6a730fd
 epic: e16-qa-observability-v1
 scope: pr-23
 ---
@@ -44,3 +46,10 @@ A representação do manifesto depende da topologia do checkout, não apenas da 
 - PW23-046 cobre o incidente anterior de caminhos absolutos e o trabalho residual de regeneração em duas raízes; **esta issue registra a regressão nova, reproduzida no CI, provocada pelo novo teste de igualdade**. Não duplicar a causa histórica.
 - PW23-048 é a falha CMake do teste U04, agora superada na configuração/CTest nativos deste SHA; PW23-042 continua cobrindo o skip FTDriver.
 - Sem tuning de performance; preservar PW23-021…037 na pasta de otimização.
+
+## Resolução verificada em 2026-10-30 (auditoria incremental)
+
+- **Correção de código:** [`f166d7aa9de2f4eb3efae21ddc96c2aea6a730fd`](https://github.com/brasalabs6/pw-web/commit/f166d7aa9de2f4eb3efae21ddc96c2aea6a730fd), [`emit-client153-game-sources.py:213–229`](https://github.com/brasalabs6/pw-web/blob/f3dc52432440cb3f8c7598f491d901e5776e580a/scripts/emit-client153-game-sources.py#L213-L229): seleção da raiz pelo ownership da árvore adaptada e da referência, em vez de prefixo genérico do checkout.
+- **Cobertura:** [`test_game_sources_emitter.py:153–210`](https://github.com/brasalabs6/pw-web/blob/f3dc52432440cb3f8c7598f491d901e5776e580a/tests/client153/test_game_sources_emitter.py#L153-L210) inclui referência aninhada e regeneração byte a byte contra o fragmento versionado; testes de fixture externa permanecem no módulo.
+- **Evidência CI do HEAD:** [run 41090328207, job 124182230552](https://github.com/brasalabs6/pw-web/actions/runs/41090328207/job/124182230552), SHA `f3dc52432440cb3f8c7598f491d901e5776e580a`: etapa nativa (inclui `python3 -m unittest discover -s tests/client153 -p 'test_*.py'`) **success**, 44 testes Python (3 skips); CTest nativo **37/37**; build/link `client153_game_full` e `client153_browser_entry` concluídos; CTest WASM **41/41**. O erro de regeneração que impedia o WASM não reapareceu.
+- **Escopo do fechamento:** apenas a regressão CI de manifesto PW23-049. Não comprova que todos os TUs estejam completos, assets reais, pixels, login ou gameplay; manter PW23-046/PW23-013 e demais lacunas separadas. Não foi executado jogo em Chromium ou dispositivo mobile nesta auditoria.
