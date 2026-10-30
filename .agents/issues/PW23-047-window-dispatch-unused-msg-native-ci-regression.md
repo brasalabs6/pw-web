@@ -2,7 +2,7 @@
 id: PW23-047
 title: "Unused MSG in window dispatch breaks native CI and skips WASM"
 priority: P1
-status: open
+status: in_progress
 kind: reproduced-ci-regression
 first_observed: 2026-10-30
 verified_against: a2a4952e22ccc995610db2362689813c97885680
@@ -35,6 +35,12 @@ Eliminar o `MSG` temporário sem uso (ou efetivamente usá-lo em contrato necess
 2. `ctest --test-dir build/client153-native --output-on-failure` com todos os testes realmente executados e aprovados.
 3. Etapa WASM **não** pulada: configurar, compilar/linkar `client153_browser_entry` e executar `ctest --test-dir build/client153-wasm --output-on-failure` com resultados verdes.
 4. Registrar SHA, links de job e contagens; nenhum resultado de compilação prova render, login ou gameplay.
+
+## Revalidação parcial — 2026-10-30 (SHA `b048b842c3c66bf08440dc6a9264de51e12df9d9`)
+
+- O [código atual de `window.cpp:85–93`](https://github.com/brasalabs6/pw-web/blob/b048b842c3c66bf08440dc6a9264de51e12df9d9/src/client153/platform/common/window.cpp#L85-L93) não cria mais `MSG message_struct` não utilizado.
+- [CI run 41065095748 / job 124094150575](https://github.com/brasalabs6/pw-web/actions/runs/41065095748/job/124094150575): CMake e compilação nativas concluídas; **36/36 CTest nativos aprovados**, sem o warning original. A etapa Python falhou por **PW23-049** e WASM foi pulado. Portanto o blocker de compilação nativa foi corrigido, mas o critério de CI nativo+WASM no mesmo SHA ainda não foi concluído.
+- **Estado: in_progress**, não `resolved`. Não confundir com validação do bridge de input/AUI no Chrome (PW23-011).
 
 ## Deduplicação
 
