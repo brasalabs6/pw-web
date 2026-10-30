@@ -2,7 +2,7 @@
 id: PW23-048
 title: "U04 test references WASM-only OBJECT target during native CMake generation"
 priority: P1
-status: open
+status: in_progress
 kind: reproduced-ci-regression
 first_observed: 2026-10-30
 verified_against: e8cd605bd093558c28d1f11e309c6e544580a226
@@ -31,6 +31,13 @@ Separar as dependências nativas da variante WASM do teste U04. Para a variante 
 2. Checkout limpo: CMake Emscripten configura, compila/linka o browser e executa CTest WASM, incluindo U04; sem skips induzidos por falha nativa.
 3. Registrar SHA, comandos, logs e contagens; testes de parsing não são prova de renderização, login ou gameplay.
 4. Para declarar U04 funcionalmente encerrado, fixtures válidas e inválidas devem exercitar o loader real `CECInstance::Load` e comprovar sucesso/rejeição corretos.
+
+## Revalidação parcial — 2026-10-30 (SHA `b048b842c3c66bf08440dc6a9264de51e12df9d9`)
+
+- [`CMakeLists.txt:214–248`](https://github.com/brasalabs6/pw-web/blob/b048b842c3c66bf08440dc6a9264de51e12df9d9/CMakeLists.txt#L214-L248) agora compila `AWScriptFile.cpp` diretamente no teste U04, sem `$<TARGET_OBJECTS:client153_engine_original>`; a opção `-sSTACK_SIZE` está protegida por `if(EMSCRIPTEN)`.
+- [CI run 41065095748 / job 124094150575](https://github.com/brasalabs6/pw-web/actions/runs/41065095748/job/124094150575): CMake nativo configurou/gerou, teste `client153_u04_instance_parse` compilou e passou no conjunto **36/36 CTest nativos**. Python discovery falhou depois por **PW23-049**; etapa WASM foi **skipped**, logo o gate completo ainda não foi revalidado.
+- O teste U04 ainda exercita o parser `AWScriptFile` e a condição `width < 10`, mas **não invoca `CECInstance::Load`**. Manter o critério de validação funcional do loader.
+- **Estado: in_progress**, não `resolved`.
 
 ## Deduplicação
 
