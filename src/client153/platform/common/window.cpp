@@ -86,10 +86,5 @@ BOOL DestroyWindow(HWND handle) {
 extern "C" LRESULT pw153_window_dispatch(unsigned message, unsigned wParam, unsigned lParam) {
   if (!live || !window.procedure)
     return 0;
-  MSG message_struct{};
-  message_struct.hwnd = &window;
-  message_struct.message = message;
-  message_struct.wParam = wParam;
-  message_struct.lParam = lParam;
   return window.procedure(&window, message, wParam, lParam);
 }

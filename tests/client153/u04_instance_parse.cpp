@@ -7,9 +7,11 @@
 // The EC_Instance parse itself is asserted structurally: the source keeps
 // the original `return false` rejection (no diagnostic `continue`).
 #include "AWScriptFile.h"
+#include "AFI.h"
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <unistd.h>
 
 #ifndef U04_EC_INSTANCE_SOURCE
 #define U04_EC_INSTANCE_SOURCE "src/client153/Element/CElementClient/EC_Instance.cpp"
@@ -52,6 +54,22 @@ bool write_utf16_script(const char *path, const std::string &utf8Content) {
 }  // namespace
 
 int main() {
+  // The game sets the Angelica base dir to its working directory at boot
+  // (ElementClient.cpp calls af_SetBaseDir(g_szWorkDir)) and the parser's
+  // path join resolves relative names against it. Honor the same startup
+  // contract so the fixtures resolve identically in the native FS and in
+  // the Emscripten MEMFS (whose CWD is "/").
+  char base_dir[4096];
+  if (!getcwd(base_dir, sizeof(base_dir)))
+  {
+    std::printf("FAIL getcwd\n");
+    return 1;
+  }
+  if (!af_SetBaseDir(base_dir))
+  {
+    std::printf("FAIL af_SetBaseDir\n");
+    return 1;
+  }
   // ---- Positive: the real instance.txt texture-entry tokens parse as
   // their values (the tokens captured from the browser diagnosis: the
   // width token was literally "160").

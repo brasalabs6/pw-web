@@ -148,6 +148,15 @@ if(BUILD_TESTING)
   target_include_directories(client153_wincrt_test PRIVATE src/client153/Angelica2/Output/a3dsdk/include)
   target_link_libraries(client153_wincrt_test PRIVATE client153_common)
   add_test(NAME client153_wincrt COMMAND client153_wincrt_test)
+  # U04-B: the wide-char scan formats the audited game call sites use,
+  # driven through the shipped parser and all three aliases (swscanf,
+  # a_sscanf, wide_sscanf) with MSVC matching-failure semantics.
+  add_executable(client153_wide_sscanf_formats_test tests/client153/wide_sscanf_formats.cpp)
+  target_include_directories(client153_wide_sscanf_formats_test PRIVATE
+    src/client153/platform/common
+    src/client153/Angelica2/AngelicaCommon/Header)
+  target_link_libraries(client153_wide_sscanf_formats_test PRIVATE client153_platform)
+  add_test(NAME client153_wide_sscanf_formats COMMAND client153_wide_sscanf_formats_test)
   add_executable(client153_d3d8_caps_test tests/client153/d3d8_caps.cpp)
   target_link_libraries(client153_d3d8_caps_test PRIVATE client153_math)
   add_test(NAME client153_d3d8_caps COMMAND client153_d3d8_caps_test)
@@ -212,15 +221,34 @@ if(BUILD_TESTING)
   add_executable(client153_gb18030_encoder_test tests/client153/gb18030_encoder.cpp)
   target_link_libraries(client153_gb18030_encoder_test PRIVATE client153_common)
   add_test(NAME client153_gb18030_encoder COMMAND client153_gb18030_encoder_test)
-  add_executable(client153_u04_instance_parse_test tests/client153/u04_instance_parse.cpp)
+  # U04 regression test: drives the REAL shipped parser TU (AWScriptFile.cpp
+  # compiled into this target with the engine build's compile environment)
+  # over real UTF-16 script fixtures. Self-contained on purpose (PW23-048):
+  # client153_engine_original exists only under Emscripten, so linking
+  # $<TARGET_OBJECTS:...> broke the native CMake generation.
+  add_executable(client153_u04_instance_parse_test
+    tests/client153/u04_instance_parse.cpp
+    src/client153/Angelica2/AngelicaFile/Source/AWScriptFile.cpp)
   target_compile_definitions(client153_u04_instance_parse_test PRIVATE
-    U04_EC_INSTANCE_SOURCE="${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp")
-  target_link_libraries(client153_u04_instance_parse_test PRIVATE client153_file client153_common
-    $<TARGET_OBJECTS:client153_engine_original>)
-  target_include_directories(client153_u04_instance_parse_test PRIVATE src/client153/Angelica2/AngelicaFile/Header src/client153/Angelica2/AngelicaCommon/Header src/client153/platform/common)
-  # The AWScriptFile parser and the ALog sink need stack headroom (the
-  # default 64 KB overflows in the ALog directory setup).
-  target_link_options(client153_u04_instance_parse_test PRIVATE -sSTACK_SIZE=1048576)
+    U04_EC_INSTANCE_SOURCE="${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp"
+    WIN32 NDEBUG _LIB UNICODE _CRT_SECURE_NO_WARNINGS)
+  target_link_libraries(client153_u04_instance_parse_test PRIVATE client153_file client153_common)
+  target_include_directories(client153_u04_instance_parse_test PRIVATE
+    src/client153/Angelica2/AngelicaFile/Header
+    src/client153/Angelica2/AngelicaCommon/Header
+    src/client153/platform/common)
+  # The compile environment the engine build gives this TU. No
+  # -fms-extensions: the native CI compiler is GCC, which rejects it.
+  target_compile_options(client153_u04_instance_parse_test PRIVATE -fexceptions
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/platform/common/Windows.h"
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/platform/common/sdk_forward.h"
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/AChar.h"
+    "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/ATime.h")
+  if(EMSCRIPTEN)
+    # The AWScriptFile parser and the ALog sink need stack headroom (the
+    # default 64 KB overflows in the ALog directory setup).
+    target_link_options(client153_u04_instance_parse_test PRIVATE -sSTACK_SIZE=1048576)
+  endif()
   # Structural gate (U04-A): the EC_Instance rejection is restored — the
   # diagnostic continue bypass must not return. This runs at every
   # configure (including CI) and fails the build when the bypass returns.

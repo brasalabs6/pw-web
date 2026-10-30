@@ -559,32 +559,54 @@ int wide_scan_core(const wchar_t *&text, const wchar_t *format, va_list args,
     case L'X': {
       while (iswspace(*text))
         ++text;
+      // Every integer conversion accepts an optional sign (the C
+      // standard fscanf contract; MSVC honors it for %u/%x/%X too).
       bool negative = false;
-      if (spec != L'x' && (*text == L'-' || *text == L'+')) {
+      if (*text == L'-' || *text == L'+') {
         negative = *text == L'-';
         ++text;
       }
+      // %x/%X are hexadecimal; %i auto-detects (0x/0X hex, leading 0
+      // octal, else decimal). A "0x" prefix with no hex digit after it
+      // falls back to the decimal "0" (longest valid prefix).
+      int base = 10;
+      if (spec == L'x' || spec == L'X')
+        base = 16;
+      else if (spec == L'i') {
+        const bool hex_digit_follows = (text[2] >= L'0' && text[2] <= L'9') ||
+                                       (text[2] >= L'a' && text[2] <= L'f') ||
+                                       (text[2] >= L'A' && text[2] <= L'F');
+        if (text[0] == L'0' && (text[1] == L'x' || text[1] == L'X') && hex_digit_follows) {
+          base = 16;
+          text += 2;
+        } else if (text[0] == L'0' && text[1] >= L'0' && text[1] <= L'9')
+          base = 8;
+      }
       long long value = 0;
-      if (spec == L'x') {
-        while (true) {
-          wchar_t c = *text;
-          int digit = -1;
-          if (c >= L'0' && c <= L'9')
-            digit = static_cast<int>(c - L'0');
-          else if (c >= L'a' && c <= L'f')
+      bool any = false;
+      while (true) {
+        wchar_t c = *text;
+        int digit = -1;
+        if (c >= L'0' && c <= L'9')
+          digit = static_cast<int>(c - L'0');
+        else if (base == 16) {
+          if (c >= L'a' && c <= L'f')
             digit = static_cast<int>(c - L'a' + 10);
           else if (c >= L'A' && c <= L'F')
             digit = static_cast<int>(c - L'A' + 10);
-          if (digit < 0)
-            break;
-          value = value * 16 + digit;
-          ++text;
         }
-      } else {
-        while (*text >= L'0' && *text <= L'9') {
-          value = value * 10 + (*text - L'0');
-          ++text;
-        }
+        if (digit < 0 || digit >= base)
+          break;
+        value = value * base + digit;
+        ++text;
+        any = true;
+      }
+      // No digits: matching failure — the conversion is not counted and
+      // the output argument is untouched (MSVC semantics; EC_PetWords
+      // branches on the return value).
+      if (!any) {
+        matching = false;
+        return converted;
       }
       if (negative)
         value = -value;
@@ -620,6 +642,33 @@ int wide_scan_core(const wchar_t *&text, const wchar_t *format, va_list args,
           scale *= 0.1;
           ++text;
           any = true;
+        }
+      }
+      // Exponent notation (MSVC %f accepts it: "1.5e2" == 150.0). The
+      // exponent is only consumed when at least one mantissa digit
+      // parsed and a digit follows the e/E[sign]; otherwise the longest
+      // valid prefix stays ("1e" parses as 1.0 with 'e' unconsumed).
+      if (any && (*text == L'e' || *text == L'E')) {
+        const wchar_t *look = text + 1;
+        bool exponent_negative = false;
+        if (*look == L'-' || *look == L'+') {
+          exponent_negative = *look == L'-';
+          ++look;
+        }
+        if (*look >= L'0' && *look <= L'9') {
+          int exponent = 0;
+          while (*look >= L'0' && *look <= L'9') {
+            exponent = exponent * 10 + (*look - L'0');
+            ++look;
+          }
+          double scale = 1.0;
+          for (int i = 0; i < exponent; ++i)
+            scale *= 10.0;
+          if (exponent_negative)
+            value /= scale;
+          else
+            value *= scale;
+          text = look;
         }
       }
       if (!any) {

@@ -14,6 +14,13 @@
 #define _AWSCRIPTFILE_H_
 
 #include "ABaseDef.h"
+//	The port's wide seam: under -fshort-wchar the system CRT swscanf/_wtoi
+//	parse 32-bit wchar strings and misread the game's 16-bit tokens (this
+//	duplicated SDK header is shadowed by AngelicaFile/Header's adapted copy
+//	in every target's include order, but it must stay self-consistent if
+//	that order ever changes).
+#include "widestr.h"
+#include "Windows.h"
 
 ///////////////////////////////////////////////////////////////////////////
 //
