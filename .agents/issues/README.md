@@ -15,7 +15,7 @@
 5. Vincular ao épico/workorder existente. Não substituir roadmap nem modificar PR #17 do servidor sem coordenação; seguir `AGENTS.md` (PR único do cliente, sem self-merge).
 6. Revisões futuras podem registrar novas issues **quando efetivamente executadas**; esta pasta não representa monitoramento automático em background.
 
-## Índice de 28 achados de portabilidade e funcionamento (23 abertos, 1 em andamento, 4 resolvidos)
+## Índice de 29 achados de portabilidade e funcionamento (24 abertos, 1 em andamento, 4 resolvidos)
 
 | ID | Prioridade | Estado | Título | Épico |
 |---|---|---|---|---|
@@ -53,6 +53,7 @@
 | [PW23-044](PW23-044-serverlist-direct-fopen-backslash-path.md) | P1 | open | Serverlist não abre por barras invertidas em access/fopen diretos no MEMFS | [e10-network-transport-v1](../epics/e10-network-transport-v1/README.md) |
 
 | [PW23-045](PW23-045-winsync-synchronous-thread-ci-regression.md) | P1 | open | Execução inline de CreateThread/_beginthreadex quebra semântica nativa; CTest 33/34 e WASM pulado no CI | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
+| [PW23-046](PW23-046-game-sources-absolute-path-wasm-ci-regression.md) | P0 | open | Manifest gerado usa caminhos absolutos de workstation; CI WASM falha no configure | [e04-wasm-runtime-v1](../epics/e04-wasm-runtime-v1/README.md) |
 
 **Triagem sugerida:** começar por memória/lock e compatibilidade de wire (001–004), depois shims obrigatórios + link do jogo (006–009, 014, 019). Qualidade de testes e evidência (013/017) devem acompanhar cada milestone.
 
