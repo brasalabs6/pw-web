@@ -12,7 +12,10 @@
 
 #include "EC_Instance.h"
 #include "AWScriptFile.h"
+#include "utf16.h"
 #include <ALog.h>
+#include <cstring>
+#include <string>
 
 #define new A_DEBUG_NEW
 
@@ -140,7 +143,17 @@ bool CECInstance::Load(AWScriptFile* psf)
 				//\twide-char float parse can yield 0 for tokens the Windows
 				//\tCRT accepts. Skip this texture entry and continue instead
 				//\tof aborting the whole instance load.
-				a_LogOutput(1, "CECInstance::Load, skipping texture with width %.2f < 10 at line %d", width, psf->GetCurLine());
+				{
+					char szTokenUtf8[MAX_PATH];
+					szTokenUtf8[0] = '\0';
+					std::string tokenUtf8;
+					if (pw153::platform::utf16_to_utf8(psf->m_szToken, tokenUtf8))
+					{
+						std::strncpy(szTokenUtf8, tokenUtf8.c_str(), MAX_PATH - 1);
+						szTokenUtf8[MAX_PATH - 1] = '\0';
+					}
+					a_LogOutput(1, "CECInstance::Load, skipping texture with width %.2f < 10 at line %d, token [%s]", width, psf->GetCurLine(), szTokenUtf8);
+				}
 				//	Consume the remaining tokens of this entry (height + texture name)
 				psf->GetNextTokenAsFloat(true);
 				psf->GetNextToken(true);

@@ -206,10 +206,34 @@ def main() -> int:
 
     root = args.source.resolve()
     adapted = args.adapted_root.resolve()
+    repo_root = adapted.parents[1]  # the checkout root (src/client153's parent's parent... src's parent)
+
+    def portable(path: pathlib.Path) -> str:
+        """Map an absolute path to ${PW153_REPO_ROOT}/... or
+        ${PW153_REFERENCE_ROOT}/... — the fragment must not contain
+        workstation-absolute paths (the CI configure failure)."""
+        try:
+            return '${PW153_REPO_ROOT}/' + str(path.relative_to(repo_root))
+        except ValueError:
+            pass
+        try:
+            return '${PW153_REFERENCE_ROOT}/' + str(path.relative_to(root))
+        except ValueError:
+            raise SystemExit(f'path outside both roots: {path}')
+
     sources = []
     include_dirs = []
     missing = []
     defines = []
+
+    # The port seam headers come first: Windows.h's own includes (ABaseDef.h
+    # etc.) must resolve to the PORT's copies — a reference ABaseDef defines
+    # LONG as `long`, collapsing the LONG/long InterlockedExchange overloads.
+    include_dirs += [portable(adapted / d) for d in
+                     ('platform/common', 'Angelica2/AngelicaCommon/Header',
+                      'Angelica2/AngelicaFile/Header', 'Angelica2/Angelica3D/Header',
+                      'Common/AUInterface2')]
+    include_dirs.append(portable(root / 'Common' / 'CHBasedCD'))
 
     for project_rel in PROJECTS:
         project = root / project_rel
@@ -230,15 +254,20 @@ def main() -> int:
                 rel = resolved.relative_to(root)
             except ValueError:
                 continue
+            rel_str = str(rel).replace('\\', '/')
             adapted_inc = adapted / rel
+            is_sdk_dir = 'angelica2' in rel_str.lower()
             if adapted_inc.is_dir():
-                # The adapted copy first, then the reference: headers that
-                # were never copied to the adapted tree (callid.hxx etc.)
-                # still resolve from the pinned checkout.
-                include_dirs.append(str(adapted_inc))
-                include_dirs.append(str(root / rel))
+                # The adapted copy first: headers that were never copied to
+                # the adapted tree (callid.hxx etc.) still resolve from the
+                # pinned reference checkout — EXCEPT the SDK dirs, whose
+                # reference headers are the raw Windows ones and conflict
+                # with the port's Windows.h (InterlockedExchange etc.).
+                include_dirs.append(portable(adapted_inc))
+                if not is_sdk_dir:
+                    include_dirs.append(portable(root / rel))
             else:
-                include_dirs.append(str(root / rel))
+                include_dirs.append(portable(root / rel))
         for entry in tree.findall('.//File'):
             path = resolve_windows(project.parent, entry.attrib['RelativePath'])
             if path.suffix.lower() not in ('.cpp', '.c', '.cxx'):
@@ -259,9 +288,9 @@ def main() -> int:
             adapted_source = adapted / rel
             reference_source = root / rel
             if adapted_source.is_file():
-                sources.append(str(adapted_source))
+                sources.append(portable(adapted_source))
             elif reference_source.is_file():
-                sources.append(str(reference_source))
+                sources.append(portable(reference_source))
             else:
                 # Neither tree carries it: the pinned checkout is partial.
                 # Skip and report — the build stays reproducible from what
@@ -269,14 +298,16 @@ def main() -> int:
                 missing.append(str(rel))
 
     # The port seam headers come first (the prelude chain lives there).
-    port_dirs = [str(adapted / d) for d in
-                 ('platform/common', 'Angelica2/AngelicaCommon/Header',
-                  'Angelica2/AngelicaFile/Header', 'Angelica2/Angelica3D/Header',
-                  'Common/AUInterface2')]
     # The collision-headers were never copied to the adapted CHBasedCD (only
     # its .cpp files were); the pinned reference carries the complete set.
-    port_dirs.append(str(root / 'Common' / 'CHBasedCD'))
-    include_dirs = port_dirs + include_dirs
+    include_dirs += [f'${{PW153_REPO_ROOT}}/{d}' for d in
+                     ('Element/Output/include', 'Element/CCommon',
+                      'Element/CElementClient', 'Element/Output/include/fw',
+                      'Element/CElementSkill', 'Element/AutoPFImp/AutoMoveImp',
+                      'Common/CHBasedCD', 'Common/AUInterface2',
+                      'Common/Output/include', 'Common/Output/include/Gfx',
+                      'Common/Output/include/PropDlg', 'Common/Output/include/LuaWrapper',
+                      'Common/Output/include/aaudio', 'Element/CCommon/lua')]
 
     # Deduplicate, preserving order.
     seen = set()
@@ -286,13 +317,15 @@ def main() -> int:
         adapted_extra = adapted / extra
         reference_extra = root / extra
         if adapted_extra.is_file():
-            if str(adapted_extra) not in seen:
-                sources.append(str(adapted_extra))
-                seen.add(str(adapted_extra))
+            portable_extra = portable(adapted_extra)
+            if portable_extra not in seen:
+                sources.append(portable_extra)
+                seen.add(portable_extra)
         elif reference_extra.is_file():
-            if str(reference_extra) not in seen:
-                sources.append(str(reference_extra))
-                seen.add(str(reference_extra))
+            portable_extra = portable(reference_extra)
+            if portable_extra not in seen:
+                sources.append(portable_extra)
+                seen.add(portable_extra)
     seen = set()
     include_dirs = [d for d in include_dirs if not (d in seen or seen.add(d))]
     seen = set()

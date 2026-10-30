@@ -625,6 +625,15 @@ if(EMSCRIPTEN)
   # — regenerate that fragment when the reference projects change) and one
   # executable links it with the port libraries into the browser entry.
   # This replaces the campaign-object assembly that mixed stale objects.
+  # Roots: PW153_REPO_ROOT is this checkout; PW153_REFERENCE_ROOT is the
+  # pinned reference checkout (default references/client-153, overridable).
+  if(NOT PW153_REFERENCE_ROOT)
+    set(PW153_REFERENCE_ROOT "${CMAKE_SOURCE_DIR}/references/client-153")
+  endif()
+  set(PW153_REPO_ROOT "${CMAKE_SOURCE_DIR}")
+  if(NOT EXISTS "${PW153_REFERENCE_ROOT}/Element/CElementClient/ElementClient.vcproj")
+    message(FATAL_ERROR "PW153_REFERENCE_ROOT (${PW153_REFERENCE_ROOT}) does not contain the pinned reference checkout — materialize references/client-153 before configuring")
+  endif()
   include(${CMAKE_CURRENT_SOURCE_DIR}/game-sources.cmake)
   add_library(client153_game_full OBJECT EXCLUDE_FROM_ALL ${CLIENT153_GAME_SOURCES})
   target_include_directories(client153_game_full PRIVATE ${CLIENT153_GAME_INCLUDE_DIRS}
