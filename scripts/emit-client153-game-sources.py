@@ -14,6 +14,7 @@ Usage: emit-client153-game-sources.py --source <reference root> \
 
 import argparse
 import pathlib
+import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -223,7 +224,14 @@ def main() -> int:
 
     sources = []
     include_dirs = []
+    # U02: a TU the original build compiles that neither tree carries is a
+    # broken manifest, not a skippable entry — collected here and turned
+    # into a hard error with the complete inventory at the end. The only
+    # allowed omissions are the explicit ones: ExcludedFromBuild in the
+    # .vcproj and BROWSER_EXCLUDED_SOURCES (both are declarations, not
+    # silent gaps).
     missing = []
+    applied_exclusions = set()
     defines = []
 
     # The port seam headers come first: Windows.h's own includes (ABaseDef.h
@@ -283,6 +291,7 @@ def main() -> int:
                 continue
             rel_str = str(rel).replace('\\', '/')
             if rel_str in BROWSER_EXCLUDED_SOURCES:
+                applied_exclusions.add(rel_str)
                 continue
             # The adapted copy wins when it exists (the port fixes live there).
             adapted_source = adapted / rel
@@ -292,10 +301,7 @@ def main() -> int:
             elif reference_source.is_file():
                 sources.append(portable(reference_source))
             else:
-                # Neither tree carries it: the pinned checkout is partial.
-                # Skip and report — the build stays reproducible from what
-                # the checkouts actually contain.
-                missing.append(str(rel))
+                missing.append(f'vcproj source absent from both trees: {rel_str}')
 
     # The port seam headers come first (the prelude chain lives there).
     # The collision-headers were never copied to the adapted CHBasedCD (only
@@ -326,6 +332,24 @@ def main() -> int:
             if portable_extra not in seen:
                 sources.append(portable_extra)
                 seen.add(portable_extra)
+        else:
+            missing.append(f'link-required extra source absent from both trees: {extra}')
+    # An exclusion entry that matched no .vcproj file is a stale
+    # declaration: the allowlist must stay exact, or the manifest silently
+    # narrows (U02 — explicit, verified exclusions only).
+    stale_exclusions = [entry for entry in BROWSER_EXCLUDED_SOURCES
+                        if entry not in applied_exclusions]
+    if missing or stale_exclusions:
+        for entry in missing:
+            print(f'error: {entry}', file=sys.stderr)
+        for entry in stale_exclusions:
+            print(f'error: BROWSER_EXCLUDED_SOURCES entry matched no project file '
+                  f'(stale exclusion): {entry}', file=sys.stderr)
+        print(f'{len(missing)} mandatory source(s) missing and '
+              f'{len(stale_exclusions)} stale exclusion(s) — the manifest must '
+              'declare every entry and omit nothing silently (U02)',
+              file=sys.stderr)
+        raise SystemExit(1)
     seen = set()
     include_dirs = [d for d in include_dirs if not (d in seen or seen.add(d))]
     seen = set()
@@ -348,9 +372,8 @@ def main() -> int:
         lines.append(f'  list(APPEND CLIENT153_GAME_COMPILE_DEFINITIONS "{define}")')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text('\n'.join(lines) + '\n', encoding='utf-8')
-    print(f'sources: {len(sources)}  include dirs: {len(include_dirs)}  skipped-missing: {len(missing)}  wrote {args.output}')
-    for m in missing[:10]:
-        print(f'  missing: {m}')
+    print(f'sources: {len(sources)}  include dirs: {len(include_dirs)}  '
+          f'exclusions: {len(applied_exclusions)}  wrote {args.output}')
     return 0
 
 
