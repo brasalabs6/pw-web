@@ -347,6 +347,19 @@ if(BUILD_TESTING)
     -sNODERAWFS=1 -sENVIRONMENT=node)
   add_test(NAME client153_pack_lookup COMMAND client153_pack_lookup_test)
   endif()
+  # B08: the vs.1.1 assembler covers the shipped shader corpus — every
+  # vertex shader in the authorized shaders.pck assembles into GLSL ES
+  # 300 (the corpus drive goes through the independently validated
+  # Python reader).
+  if(EMSCRIPTEN)
+  add_executable(client153_vs_assembler_corpus_test tests/client153/vs_assembler_corpus.cpp)
+  target_include_directories(client153_vs_assembler_corpus_test PRIVATE
+    src/client153/platform/web src/client153/platform/common)
+  target_link_libraries(client153_vs_assembler_corpus_test PRIVATE client153_platform client153_webgl_caps)
+  target_link_options(client153_vs_assembler_corpus_test PRIVATE
+    -sSTACK_SIZE=1048576 -sENVIRONMENT=node -sNODERAWFS=1)
+  add_test(NAME client153_vs_assembler_corpus COMMAND client153_vs_assembler_corpus_test)
+  endif()
   add_executable(client153_tracks_test tests/client153/tracks.cpp)
   target_link_libraries(client153_tracks_test PRIVATE client153_animation)
   add_test(NAME client153_tracks COMMAND client153_tracks_test)

@@ -11,9 +11,11 @@
 #ifndef PW153_PLATFORM_D3DX8_H
 #define PW153_PLATFORM_D3DX8_H
 #include "d3d8.h"
+#include "vs_assembler.h"
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <vector>
 
 //	D3D8 vertex shader declarator tokens (documented d3d8types.h values).
@@ -426,16 +428,33 @@ inline HRESULT D3DXAssembleShader(const void *srcData, UINT srcDataLen,
                                   DWORD flags, ID3DXBuffer **constants,
                                   ID3DXBuffer **compiledShader,
                                   ID3DXBuffer **compilationErrors) {
-  (void)srcData;
-  (void)srcDataLen;
   (void)flags;
   if (constants)
     *constants = nullptr;
-  if (compiledShader)
-    *compiledShader = nullptr;
   if (compilationErrors)
     *compilationErrors = nullptr;
-  return D3DERR_INVALIDCALL;
+  if (compiledShader)
+    *compiledShader = nullptr;
+  // The shipped shaders are vs.1.1 assembly; the port assembles them
+  // into GLSL ES 300 source (the WebGL2 device compiles it). The buffer
+  // carries the GLSL text where the original carried the compiled
+  // tokens — CreateVertexShader consumes it through the same contract.
+  if (!srcData || !srcDataLen || !compiledShader)
+    return D3DERR_INVALIDCALL;
+  std::string glsl, error;
+  if (!pw153::platform::AssembleVertexShader(
+          static_cast<const char *>(srcData), glsl, error))
+    return D3DERR_INVALIDCALL;
+  auto *buffer = new D3DXShaderBuffer();
+  buffer->data_ = std::malloc(glsl.size() + 1);
+  if (!buffer->data_) {
+    buffer->Release();
+    return E_OUTOFMEMORY;
+  }
+  std::memcpy(buffer->data_, glsl.c_str(), glsl.size() + 1);
+  buffer->size_ = (DWORD)glsl.size();
+  *compiledShader = buffer;
+  return D3D_OK;
 }
 
 //	The D3DX texture filters (the documented d3dx8tex values).
