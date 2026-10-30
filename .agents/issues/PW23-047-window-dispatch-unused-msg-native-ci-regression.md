@@ -2,10 +2,12 @@
 id: PW23-047
 title: "Unused MSG in window dispatch breaks native CI and skips WASM"
 priority: P1
-status: in_progress
+status: resolved
 kind: reproduced-ci-regression
 first_observed: 2026-10-30
-verified_against: a2a4952e22ccc995610db2362689813c97885680
+verified_against: 69a670f1c9f9a83803372ee90743893ceb4f1f43
+resolved_at: 2026-10-30
+resolved_by: b048b842c3c66bf08440dc6a9264de51e12df9d9
 epic: e03-platform-portability-v1
 scope: pr-23
 ---
@@ -48,3 +50,9 @@ Eliminar o `MSG` temporário sem uso (ou efetivamente usá-lo em contrato necess
 - PW23-011 cobre semântica e cobertura do bridge de entrada; os problemas estáticos `PeekMessageW` e `WM_MOUSEWHEEL` devem ser acompanhados lá, não em nova issue de blocker.
 - [Review incremental #5711080100](https://github.com/brasalabs6/pw-web/pull/23#pullrequestreview-5711080100) documenta ambos com SHA e linhas.
 - Preservar PR único #23, sem tocar PR servidor #17, sem auto-merge.
+
+## Resolução verificada — 2026-10-30, CI do HEAD `69a670f1`
+
+- O warning de `MSG message_struct` foi removido no código em [`b048b842`](https://github.com/brasalabs6/pw-web/commit/b048b842c3c66bf08440dc6a9264de51e12df9d9).
+- [CI run 41098247196, job 124209512436](https://github.com/brasalabs6/pw-web/actions/runs/41098247196/job/124209512436), SHA `69a670f1c9f9a83803372ee90743893ceb4f1f43`: `cmake -S . -B build/client153-native -DCMAKE_BUILD_TYPE=Debug`, build nativo, `ctest --test-dir build/client153-native --output-on-failure` **37/37 PASS**; `emcmake cmake -S . -B build/client153-wasm -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug`, build/link `client153_game_full`/`client153_browser_entry` e `ctest --test-dir build/client153-wasm --output-on-failure` **41/41 PASS**. Ambas as etapas executaram no mesmo SHA; não há skip induzido pelo warning.
+- **Escopo do fechamento:** somente a regressão nativa `-Werror=unused-but-set-variable`. A correção de `PeekMessageW`, tradução DOM→Win32, input real na AUI e lifecycle continuam sem prova e pertencem a [PW23-011](PW23-011-input-keyboard-ime-a%20ui-events.md) e à [review anterior](https://github.com/brasalabs6/pw-web/pull/23#pullrequestreview-5711080100). CI não prova login, pixels nem gameplay.
