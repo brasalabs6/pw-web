@@ -152,7 +152,7 @@ bool CECInstance::Load(AWScriptFile* psf)
 						std::strncpy(szTokenUtf8, tokenUtf8.c_str(), MAX_PATH - 1);
 						szTokenUtf8[MAX_PATH - 1] = '\0';
 					}
-					a_LogOutput(1, "CECInstance::Load, skipping texture with width %.2f < 10 at line %d, token [%s]", width, psf->GetCurLine(), szTokenUtf8);
+					a_LogOutput(1, "CECInstance::Load, token [%s], skipping texture with width %.2f < 10 at line %d", szTokenUtf8, width, psf->GetCurLine());
 				}
 				//	Consume the remaining tokens of this entry (height + texture name)
 				psf->GetNextTokenAsFloat(true);

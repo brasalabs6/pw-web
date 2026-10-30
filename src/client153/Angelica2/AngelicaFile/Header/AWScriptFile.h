@@ -14,6 +14,7 @@
 #define _AWSCRIPTFILE_H_
 
 #include "ABaseDef.h"
+#include "widestr.h"
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -114,12 +115,14 @@ protected:	//	Operations
 ///////////////////////////////////////////////////////////////////////////
 
 //	Get next token as float
+//	The system swscanf cannot run under -fshort-wchar: the CRT's swscanf
+//	parses 32-bit wchar strings, so both the format and the input are
+//	misread (reproduced: swscanf(L"160", L"%f") returns -1/0.0). The
+//	port's wide_tof owns the 16-bit parse.
 float AWScriptFile::GetNextTokenAsFloat(bool bCrossLine)
 {
 	GetNextToken(bCrossLine);
-	float fVal;
-	swscanf(m_szToken, L"%f", &fVal);
-	return fVal;
+	return pw153::platform::wide_tof(m_szToken);
 }
 
 //	Get next token as int
