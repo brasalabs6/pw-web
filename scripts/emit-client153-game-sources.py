@@ -210,17 +210,19 @@ def main() -> int:
     repo_root = adapted.parents[1]  # the checkout root (src/client153's parent's parent... src's parent)
 
     def portable(path: pathlib.Path) -> str:
-        """Map an absolute path to ${PW153_REPO_ROOT}/... or
-        ${PW153_REFERENCE_ROOT}/... — the fragment must not contain
-        workstation-absolute paths (the CI configure failure)."""
-        try:
+        """Map a path to ${PW153_REPO_ROOT}/... (the adapted tree) or
+        ${PW153_REFERENCE_ROOT}/... (the pinned reference) — the fragment
+        must not contain workstation-absolute paths (the CI configure
+        failure). The mapping is decided by which tree owns the path, not
+        by generic prefix matching: the CI materializes the reference
+        INSIDE the checkout (references/client-153), and those files must
+        still map to the overridable reference root — the two roots are
+        distinct contracts."""
+        if adapted == path or adapted in path.parents:
             return '${PW153_REPO_ROOT}/' + str(path.relative_to(repo_root))
-        except ValueError:
-            pass
-        try:
+        if root == path or root in path.parents:
             return '${PW153_REFERENCE_ROOT}/' + str(path.relative_to(root))
-        except ValueError:
-            raise SystemExit(f'path outside both roots: {path}')
+        raise SystemExit(f'path outside both roots: {path}')
 
     sources = []
     include_dirs = []

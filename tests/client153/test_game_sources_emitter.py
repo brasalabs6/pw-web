@@ -149,6 +149,49 @@ class SyntheticTree(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
 
+    def test_reference_inside_checkout_keeps_the_reference_root(self):
+        # CI parity: the reference is materialized INSIDE the checkout
+        # (references/client-153). Its files must still map to the
+        # overridable ${PW153_REFERENCE_ROOT}, not to
+        # ${PW153_REPO_ROOT}/references/... — the byte-identity CI
+        # regression (the committed fragment uses the reference root).
+        repo = Path(self._directory.name) / 'repo'
+        self.root = repo / 'references/client-153'
+        self.adapted = repo / 'src/client153'
+        (self.root / 'Element/CElementClient').mkdir(parents=True)
+        (self.root / 'Common/AUInterface2').mkdir(parents=True)
+        # One vcproj source exists only in the reference: the emitter must
+        # emit it under the reference root.
+        project = VCPROJ.replace(
+            '<File RelativePath="defence_native.cpp"/>',
+            '<File RelativePath="defence_native.cpp"/>\n'
+            '    <File RelativePath="reference_only.cpp"/>')
+        (self.root / 'Element/CElementClient/ElementClient.vcproj').write_text(
+            project, encoding='gb18030')
+        (self.root / 'Common/AUInterface2/AUInterface_2.2.vcproj').write_text(
+            VCPROJ, encoding='gb18030')
+        (self.root / 'Element/CElementClient/reference_only.cpp').write_text('// reference')
+        for relative in ('Element/CElementClient/client.cpp',
+                         'Element/CElementClient/defence_native.cpp',
+                         'Common/AUInterface2/client.cpp',
+                         'Common/AUInterface2/defence_native.cpp'):
+            path = self.adapted / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('// adapted')
+        for extra in emitter.EXTRA_SOURCES:
+            path = self.adapted / extra
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('// extra')
+        code, stdout, stderr = self.run_emitter()
+        self.assertEqual(code, 0, stderr)
+        fragment = self.output.read_text(encoding='utf-8')
+        self.assertIn('${PW153_REFERENCE_ROOT}/Element/CElementClient/reference_only.cpp',
+                      fragment)
+        self.assertNotIn('${PW153_REPO_ROOT}/references/client-153', fragment)
+        self.assertIn('${PW153_REPO_ROOT}/src/client153/Element/CElementClient/client.cpp',
+                      fragment)
+
+
 class CommittedFragment(unittest.TestCase):
     """Regenerating against the real pinned reference must reproduce the
     committed fragment byte for byte — the manifest cannot drift."""
