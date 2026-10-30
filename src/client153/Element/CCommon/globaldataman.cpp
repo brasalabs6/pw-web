@@ -737,22 +737,19 @@ bool globaldata_load()
 		a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
 		return false;
 	}
-	int retcode;
+	//	The shipped v145 gshop2.data carries NO per-item retcode: the item
+	//	records are plain GSHOP_ITEM (1436 bytes, pack 1) back to back —
+	//	measured on the authorized file (item 1's local_id=2 lands at
+	//	offset 1444 = 8 + 1436, and the 8 main-type names plus main type
+	//	5's one sub consume the file to the exact last byte). The
+	//	retcode read here shifted every later record and turned the main
+	//	type section into garbage (the skips this replaces).
 	for(i=0; i<size; i++)
 	{
 		GSHOP_ITEM item;
 		if( !gshopFile.Read(&item, sizeof(item), &dwReadLen) )
 		{
-			//\tThe gshop2.data in this client distribution is a 219-byte
-			//\tplaceholder; the full GSHOP_ITEM (1436 bytes packed) does not
-			//\tfit. Skip the remaining items instead of aborting the boot —
-			//\tthe shop UI is not needed to reach the login screen.
-			a_LogOutput(1, "GlobalData_Load(), gshop2 item %d/%d unreadable (placeholder data?), skipping remaining", i, size);
-			break;
-		}
-		if( !gshopFile.Read(&retcode, sizeof(int), &dwReadLen) )
-		{
-			a_LogOutput(1, "GlobalData_Load(), gshop2 retcode error!");
+			a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
 			return false;
 		}
 		global_gshop_items3.push_back(item);
@@ -762,24 +759,22 @@ bool globaldata_load()
 		GSHOP_MAIN_TYPE main_type;
 		if( !gshopFile.Read(&main_type.szName, sizeof(WORD) * 64, &dwReadLen) )
 		{
-			//\tNon-fatal: the gshop2 main-type section is not needed to
-			//\treach the login screen.
-			a_LogOutput(1, "GlobalData_Load(), gshop2 main type %d unreadable, skipping remaining", i);
-			break;
+			a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
+			return false;
 		}
 		int num_sub;
 		if( !gshopFile.Read(&num_sub, sizeof(int), &dwReadLen) )
 		{
-			a_LogOutput(1, "GlobalData_Load(), gshop2 main type %d sub-count unreadable, skipping remaining", i);
-			break;
+			a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
+			return false;
 		}
 		for(j=0; j<num_sub; j++)
 		{
 			WORD szSubName[64];
 			if( !gshopFile.Read(&szSubName, sizeof(WORD) * 64, &dwReadLen) )
 			{
-				a_LogOutput(1, "GlobalData_Load(), gshop2 sub type %d unreadable, skipping remaining", j);
-				break;
+				a_LogOutput(1, "GlobalData_Load(), corrupted gshop2 file!");
+				return false;
 			}
 			main_type.sub_types.push_back((WCHAR*)szSubName);
 		}
