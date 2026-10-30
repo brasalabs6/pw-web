@@ -608,7 +608,7 @@ AFilePackGame::FILEENTRY* AFilePackGame::GetFileEntry(const char* szFileName)
 	//	  2. segment-wise normalization for mixed-encoding paths;
 	//	  3. last-segment-only conversion (GB18030 dirs + UTF-8 filename);
 	//	  4. the raw bytes as-is (already GB18030).
-	char candidates[4][MAX_PATH];
+	char candidates[8][MAX_PATH];
 	int candidateCount = 0;
 
 	if (a_Utf8ToGb18030(szFileName, candidates[candidateCount], MAX_PATH))
@@ -635,6 +635,20 @@ AFilePackGame::FILEENTRY* AFilePackGame::GetFileEntry(const char* szFileName)
 		for (int i = 0; i < candidateCount; ++i)
 			if (std::strcmp(candidates[i], candidates[candidateCount]) == 0) { duplicate = true; break; }
 		if (!duplicate) ++candidateCount;	//	4: raw bytes
+	}
+	if (a_RunMixedToGb18030(szFileName, candidates[candidateCount], MAX_PATH))
+	{
+		//	5: run-level mixed conversion — the adapted headers are UTF-8
+		//	while the legacy sources are GB18030, so a caller-built path
+		//	can carry both encodings inside one segment (the default
+		//	equipment skin paths: the GB18030 template from the .cpp plus
+		//	the UTF-8 default-name literal from the .h). Attempted LAST:
+		//	the run heuristic can corrupt ambiguous GB sequences, and the
+		//	index decides which candidate is real.
+		bool duplicate = false;
+		for (int i = 0; i < candidateCount; ++i)
+			if (std::strcmp(candidates[i], candidates[candidateCount]) == 0) { duplicate = true; break; }
+		if (!duplicate) ++candidateCount;
 	}
 
 	for (int i = 0; i < candidateCount; ++i)

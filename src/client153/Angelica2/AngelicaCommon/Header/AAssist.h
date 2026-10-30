@@ -142,6 +142,13 @@ int a_MixedPathToGb18030(const char* szPath, char* szGb18030, int iGb18030Size);
 //	pattern: legacy GB18030 directories plus a UTF-8 filename), keeping
 //	everything else byte-exact. Returns the bytes written, or 0 on failure.
 int a_LastSegmentToGb18030(const char* szPath, char* szGb18030, int iGb18030Size);
+
+//	Convert the maximal valid UTF-8 runs (3/4-byte sequences — the CJK the
+//	UTF-8-encoded sources carry) inside an otherwise-GB18030 path; the
+//	ambiguous 2-byte leads stay raw. Covers mixed paths whose UTF-8 and
+//	GB18030 bytes share one segment (the adapted headers are UTF-8 while
+//	the legacy sources are GB18030). Returns the bytes written, or 0.
+int a_RunMixedToGb18030(const char* szPath, char* szGb18030, int iGb18030Size);
 bool a_GetStringAfter(const char* szBuffer, const char* szTag, char* szResult);
 
 //	Set / Get current character code page

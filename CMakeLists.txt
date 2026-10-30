@@ -331,6 +331,22 @@ if(BUILD_TESTING)
     -sSTACK_SIZE=1048576 -sENVIRONMENT=node)
   add_test(NAME client153_vfs_casefold_fs COMMAND client153_vfs_casefold_fs_test)
   endif()
+  # B02/B10: the game's real package flow in the WASM target — the split
+  # models package opens and the game's exact GB18030 skin spelling
+  # resolves through the shipped AFilePackMan/AFilePackGame code. The
+  # full checks run when the authorized asset dir is passed as the
+  # executable's argument; the ctest run (CI) reports the skip.
+  if(EMSCRIPTEN)
+  add_executable(client153_pack_lookup_test tests/client153/pack_lookup.cpp)
+  target_include_directories(client153_pack_lookup_test PRIVATE
+    src/client153/platform/common src/client153/Angelica2/AngelicaCommon/Header
+    src/client153/Angelica2/AngelicaFile/Header)
+  target_link_libraries(client153_pack_lookup_test PRIVATE client153_file client153_common)
+  target_link_options(client153_pack_lookup_test PRIVATE
+    -sSTACK_SIZE=1048576 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4GB
+    -sNODERAWFS=1 -sENVIRONMENT=node)
+  add_test(NAME client153_pack_lookup COMMAND client153_pack_lookup_test)
+  endif()
   add_executable(client153_tracks_test tests/client153/tracks.cpp)
   target_link_libraries(client153_tracks_test PRIVATE client153_animation)
   add_test(NAME client153_tracks COMMAND client153_tracks_test)

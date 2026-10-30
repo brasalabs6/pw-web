@@ -378,6 +378,68 @@ int a_LastSegmentToGb18030(const char* szPath, char* szGb18030, int iGb18030Size
 	return headLen + convertedLen;
 }
 
+int a_RunMixedToGb18030(const char* szPath, char* szGb18030, int iGb18030Size)
+{
+	if (!szPath || !szGb18030 || iGb18030Size <= 0) return 0;
+
+	int out = 0;
+	const char* p = szPath;
+	while (*p)
+	{
+		//	Try a maximal strict UTF-8 sequence at p. Only 3/4-byte leads
+		//	are attempted: the CJK the UTF-8-encoded sources carry. The
+		//	2-byte leads are ambiguous with GB18030 pairs and stay raw.
+		const unsigned char lead = (unsigned char)*p;
+		int seq = 0;
+		if (lead >= 0xE0 && lead <= 0xEF) seq = 3;
+		else if (lead >= 0xF0 && lead <= 0xF7) seq = 4;
+		if (seq)
+		{
+			bool valid = true;
+			for (int k = 1; k < seq && valid; ++k)
+				if (((unsigned char)p[k] & 0xC0) != 0x80) valid = false;
+			if (valid)
+			{
+				//	Extend over consecutive valid sequences so the run
+				//	converts in one a_Utf8ToGb18030 call.
+				const char* runEnd = p + seq;
+				while (*runEnd)
+				{
+					const unsigned char l2 = (unsigned char)*runEnd;
+					int s2 = 0;
+					if (l2 >= 0xE0 && l2 <= 0xEF) s2 = 3;
+					else if (l2 >= 0xF0 && l2 <= 0xF7) s2 = 4;
+					bool v2 = s2 > 0;
+					for (int k = 1; k < s2 && v2; ++k)
+						if (((unsigned char)runEnd[k] & 0xC0) != 0x80) v2 = false;
+					if (!v2) break;
+					runEnd += s2;
+				}
+				const int runLen = (int)(runEnd - p);
+				if (runLen < MAX_PATH)
+				{
+					char runBuf[MAX_PATH];
+					std::memcpy(runBuf, p, (size_t)runLen);
+					runBuf[runLen] = '\0';
+					char converted[MAX_PATH];
+					const int convertedLen = a_Utf8ToGb18030(runBuf, converted, MAX_PATH);
+					if (convertedLen > 0 && out + convertedLen < iGb18030Size)
+					{
+						std::memcpy(szGb18030 + out, converted, (size_t)convertedLen);
+						out += convertedLen;
+						p = runEnd;
+						continue;
+					}
+				}
+			}
+		}
+		if (out + 1 >= iGb18030Size) { szGb18030[0] = '\0'; return 0; }
+		szGb18030[out++] = *p++;
+	}
+	szGb18030[out] = '\0';
+	return out;
+}
+
 int a_Gb18030ToWide(const char* szGb18030, int iGbLen, wchar_t* szWide, int iWideSize)
 {
 	if (!szGb18030 || iGbLen <= 0) return 0;
