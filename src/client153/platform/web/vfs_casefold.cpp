@@ -21,11 +21,17 @@ extern "C" void pw153_vfs_install_casefold(void) {
 		if (FS.__pw153Casefold) return;
 		FS.__pw153Casefold = true;
 		const origLookup = FS.lookupPath;
-		const fold = (path) => {
+		// Walks the MEMFS tree case-insensitively. A missing LAST
+		// component is tolerated only for parent lookups (the caller
+		// wants the directory that will hold it), keeping the caller's
+		// original spelling for the leaf; every other miss fails the
+		// fold so the original error propagates.
+		const fold = (path, opts) => {
 			const parts = path.split('/');
 			let node = FS.root;
 			let built = '';
-			for (const part of parts) {
+			for (let i = 0; i < parts.length; ++i) {
+				const part = parts[i];
 				if (part === '' || part === '.') continue;
 				if (part === '..') {
 					node = node.parent;
@@ -33,6 +39,7 @@ extern "C" void pw153_vfs_install_casefold(void) {
 					built = cut > 0 ? built.slice(0, cut) : '';
 					continue;
 				}
+				const isLast = i === parts.length - 1;
 				if (!node.isFolder) return null;
 				let hit = null;
 				for (const name in node.contents) {
@@ -44,17 +51,26 @@ extern "C" void pw153_vfs_install_casefold(void) {
 						if (name.toLowerCase() === lower) { hit = name; break; }
 					}
 				}
-				if (hit === null) return null;
+				if (hit === null) {
+					if (isLast && opts && opts.parent) {
+						// The parent exists case-folded; the leaf is the
+						// name the caller will create.
+						return built + '/' + part;
+					}
+					return null;
+				}
 				node = node.contents[hit];
 				built += '/' + hit;
 			}
 			return built || '/';
 		};
-		const retryFolded = (path) => {
-			const folded = fold(path);
+		const retryFolded = (path, opts) => {
+			const folded = fold(path, opts);
 			if (folded !== null && folded !== path) {
 				console.log('[pw153] vfs casefold: ' + path + ' -> ' + folded);
-				return origLookup.call(FS, folded, { follow: true });
+				// The caller's lookup semantics (follow, parent,
+				// noent_okay) apply to the folded path unchanged.
+				return origLookup.call(FS, folded, opts);
 			}
 			return undefined;
 		};
@@ -64,7 +80,7 @@ extern "C" void pw153_vfs_install_casefold(void) {
 				// The noent_okay callers get a node-less result for a
 				// last-component miss instead of a throw.
 				if (result && result.node === undefined && typeof path === 'string') {
-					const folded = retryFolded(path);
+					const folded = retryFolded(path, opts);
 					if (folded !== undefined) return folded;
 				}
 				return result;
@@ -73,7 +89,7 @@ extern "C" void pw153_vfs_install_casefold(void) {
 				// ENOENT); a mid-path miss throws even with noent_okay.
 				if (e && (e.errno === 44 || e.code === 'ENOENT') &&
 					typeof path === 'string') {
-					const folded = retryFolded(path);
+					const folded = retryFolded(path, opts);
 					if (folded !== undefined) return folded;
 				}
 				throw e;

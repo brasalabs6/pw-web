@@ -22,7 +22,18 @@ class Device final : public IDirect3DDevice8 {
   DWORD currentFVF = 0;
   DWORD srcBlend = 2, dstBlend = 1;
   IDirect3DBaseTexture8 *textures[8] = {};
-  D3DMATRIX transforms[32] = {};
+  // The transform states: view (2), projection (3), texture (16-23) and
+  // the world matrices (D3DTS_WORLDMATRIX(n) = 256+n, the game's
+  // SetTransform(D3DTS_WORLD) lands at 256). The old 32-entry array
+  // silently dropped the world matrix — SetTransform returned success
+  // without storing it.
+  D3DMATRIX transforms[264] = {};
+  // The texture-stage states the game sets (address modes and filters
+  // per stage; stage 0 is the one the draws bind).
+  struct TextureStage {
+    DWORD addressU = 1, addressV = 1;  // D3DTADDRESS_WRAP
+    DWORD magFilter = 1, minFilter = 1;  // D3DTEXF_POINT
+  } textureStages[8];
   // The default framebuffer attachments (the canvas), created once and
   // handed out by the surface getters.
   PW153DefaultSurface *defaultColor = nullptr;
@@ -30,6 +41,7 @@ class Device final : public IDirect3DDevice8 {
   // The FVF shader program (created lazily on the first draw call).
   GLuint shaderProgram = 0;
   GLint aPosition = -1, aColor = -1, aTexCoord = -1, uViewport = -1, uTextured = -1;
+  GLint uTransformed = -1, uWorld = -1, uView = -1, uProjection = -1;
 public:
   Device(PW153Surface *c, PW153Surface *d, GLuint f, EMSCRIPTEN_WEBGL_CONTEXT_HANDLE owner,
          UINT w, UINT h)
@@ -178,7 +190,7 @@ public:
   HRESULT Reset(D3DPRESENT_PARAMETERS *) override { return E_NOTIMPL; }
   HRESULT SetTransform(D3DTRANSFORMSTATETYPE state, const D3DMATRIX *matrix) override {
     if (!matrix) return E_FAIL;
-    if (state >= 0 && state < 32) {
+    if (state >= 0 && state < 264) {
       memcpy((void*)&transforms[state], matrix, sizeof(D3DMATRIX));
     }
     return D3D_OK;
@@ -202,11 +214,48 @@ public:
       glBlendFunc(factors[nextSrc], factors[nextDst]);
       if (glGetError() != GL_NO_ERROR) return E_FAIL;
       srcBlend = nextSrc; dstBlend = nextDst;
+    } else if (state == D3DRS_CULLMODE) {
+      // D3DCULL_NONE=1 (no culling), D3DCULL_CW=2 (front faces wind CW —
+      // cull the CCW ones), D3DCULL_CCW=3 (front faces wind CCW). The
+      // device's front-face convention is CW (set with the shader), so
+      // culling CW faces means glFrontFace(GL_CCW).
+      switch (value) {
+        case D3DCULL_NONE: glDisable(GL_CULL_FACE); break;
+        case D3DCULL_CW:
+          glEnable(GL_CULL_FACE); glFrontFace(GL_CCW); glCullFace(GL_BACK); break;
+        case D3DCULL_CCW:
+          glEnable(GL_CULL_FACE); glFrontFace(GL_CW); glCullFace(GL_BACK); break;
+        default: return E_FAIL;
+      }
+      if (glGetError() != GL_NO_ERROR) return E_FAIL;
     } else return E_NOTIMPL;
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
-  HRESULT SetTextureStageState(DWORD, DWORD, DWORD) override { return E_NOTIMPL; }
-  HRESULT GetTextureStageState(DWORD, DWORD, DWORD *) override { return E_NOTIMPL; }
+  // The texture-stage states the game sets: the address modes and the
+  // sampler filters. Stored per stage; stage 0's states apply to the
+  // bound texture at draw time.
+  HRESULT SetTextureStageState(DWORD stage, DWORD type, DWORD value) override {
+    if (stage >= 8) return E_FAIL;
+    TextureStage &s = textureStages[stage];
+    switch (type) {
+      case D3DTSS_ADDRESSU: s.addressU = value; return D3D_OK;
+      case D3DTSS_ADDRESSV: s.addressV = value; return D3D_OK;
+      case D3DTSS_MAGFILTER: s.magFilter = value; return D3D_OK;
+      case D3DTSS_MINFILTER: s.minFilter = value; return D3D_OK;
+      default: return E_NOTIMPL;
+    }
+  }
+  HRESULT GetTextureStageState(DWORD stage, DWORD type, DWORD *value) override {
+    if (!value || stage >= 8) return E_FAIL;
+    const TextureStage &s = textureStages[stage];
+    switch (type) {
+      case D3DTSS_ADDRESSU: *value = s.addressU; return D3D_OK;
+      case D3DTSS_ADDRESSV: *value = s.addressV; return D3D_OK;
+      case D3DTSS_MAGFILTER: *value = s.magFilter; return D3D_OK;
+      case D3DTSS_MINFILTER: *value = s.minFilter; return D3D_OK;
+      default: return E_NOTIMPL;
+    }
+  }
   HRESULT SetLight(DWORD, const D3DLIGHT8 *) override { return E_NOTIMPL; }
   HRESULT LightEnable(DWORD, BOOL) override { return E_NOTIMPL; }
   HRESULT SetMaterial(const D3DMATERIAL8 *) override { return E_NOTIMPL; }
@@ -275,7 +324,12 @@ public:
     caps->AdapterOrdinal = 0;
     return D3D_OK;
   }
-  // The sprite FVF contains pretransformed screen coordinates and one texture.
+  // The FVF shader: the sprite FVF (XYZRHW) carries pretransformed screen
+  // coordinates; the XYZ FVF goes through the world/view/projection
+  // matrices the game sets with SetTransform (uploaded raw: the D3D
+  // row-major array read as GL column-major is the transpose the
+  // row-vector convention needs). The D3D depth range [0,1] maps to GL's
+  // [-1,1] with z' = 2z-1.
   void ensureShaderProgram() {
     if (shaderProgram) return;
     static const char *vsSource =
@@ -284,10 +338,17 @@ public:
         "layout(location=1) in vec4 a_color;\n"
         "layout(location=2) in vec2 a_texcoord;\n"
         "uniform vec4 u_viewport;\n"
+        "uniform bool u_transformed;\n"
+        "uniform mat4 u_world;\n"
+        "uniform mat4 u_view;\n"
+        "uniform mat4 u_projection;\n"
         "out vec4 v_color;\n"
         "out vec2 v_texcoord;\n"
-        "void main() { float w=1.0/a_position.w; vec2 p=(a_position.xy-u_viewport.xy)/u_viewport.zw; "
-        "gl_Position=vec4((p.x*2.0-1.0)*w,(1.0-p.y*2.0)*w,(a_position.z*2.0-1.0)*w,w); "
+        "void main() { if (u_transformed) { float w=1.0/a_position.w; "
+        "vec2 p=(a_position.xy-u_viewport.xy)/u_viewport.zw; "
+        "gl_Position=vec4((p.x*2.0-1.0)*w,(1.0-p.y*2.0)*w,(a_position.z*2.0-1.0)*w,w); } "
+        "else { vec4 clip=u_projection*u_view*u_world*vec4(a_position.xyz,1.0); "
+        "gl_Position=vec4(clip.x,clip.y,2.0*clip.z-clip.w,clip.w); } "
         "v_color=a_color.bgra; v_texcoord=a_texcoord; }\n";
     static const char *fsSource =
         "#version 300 es\n"
@@ -324,6 +385,13 @@ public:
     aTexCoord = glGetAttribLocation(shaderProgram, "a_texcoord");
     uViewport = glGetUniformLocation(shaderProgram, "u_viewport");
     uTextured = glGetUniformLocation(shaderProgram, "u_textured");
+    uTransformed = glGetUniformLocation(shaderProgram, "u_transformed");
+    uWorld = glGetUniformLocation(shaderProgram, "u_world");
+    uView = glGetUniformLocation(shaderProgram, "u_view");
+    uProjection = glGetUniformLocation(shaderProgram, "u_projection");
+    // D3D's front faces wind clockwise in its NDC; with the same NDC
+    // orientation in GL the front face stays CW.
+    glFrontFace(GL_CW);
   }
 
   HRESULT DrawPrimitive(DWORD type, UINT startVertex, UINT count) override {
@@ -342,30 +410,22 @@ public:
   }
   //	Set up the vertex attributes for the current FVF. The sprite FVF
   //	(XYZRHW|DIFFUSE|SPECULAR|TEX1) is the layout the shader implements
-  //	(pretransformed screen coordinates). Other FVFs need the transform
-  //	pipeline (world/view/projection in the shader) which is not wired
-  //	yet — they fail explicitly instead of drawing misinterpreted
-  //	geometry. Returns the byte offset of the vertex base (the D3D8
+  //	(pretransformed screen coordinates); the XYZ FVF goes through the
+  //	world/view/projection pipeline the shader reads from the stored
+  //	transforms. Returns the byte offset of the vertex base (the D3D8
   //	SetIndices BaseVertexIndex shifts every index, which WebGL maps to
   //	shifting the attribute pointers). `arrayBuffer` is the caller's
   //	bound vertex storage (the stream source or a temporary UP buffer).
   HRESULT SetupFvfAttributes(DWORD fvf, GLuint arrayBuffer, UINT stride, UINT baseVertexIndex, uintptr_t &baseOffset) {
     const UINT positionSize = (fvf & D3DFVF_XYZRHW) ? 4 : (fvf & D3DFVF_XYZ) ? 3 : 0;
-    if (!positionSize || !(fvf & D3DFVF_XYZRHW)) {
-      static bool warned = false;
-      if (!warned) {
-        std::fprintf(stderr, "pw-browser: FVF 0x%lx needs the transform pipeline (only XYZRHW sprite draws are wired); failing this draw explicitly\n", static_cast<unsigned long>(fvf));
-        warned = true;
-      }
-      return E_FAIL;
-    }
-    if (fvf & D3DFVF_XYZ) return E_FAIL;	//	untransformed: not wired yet
+    if (!positionSize) return E_FAIL;
     UINT offset = 0;
-    baseOffset = static_cast<uintptr_t>(baseVertexIndex) * stride;
+    baseOffset = static_cast<UINT>(baseVertexIndex) * stride;
     glBindBuffer(GL_ARRAY_BUFFER, arrayBuffer);
     glEnableVertexAttribArray(aPosition);
-    glVertexAttribPointer(aPosition, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void *>(baseOffset));
-    offset += 16;
+    glVertexAttribPointer(aPosition, positionSize, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void *>(baseOffset));
+    offset += positionSize * 4;
+    if (fvf & D3DFVF_NORMAL) offset += 12;  // the shader ignores the normal
     if (fvf & D3DFVF_DIFFUSE) {
       glEnableVertexAttribArray(aColor);
       glVertexAttribPointer(aColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, reinterpret_cast<const void *>(baseOffset + offset));
@@ -385,8 +445,9 @@ public:
     return D3D_OK;
   }
   //	Shared draw preparation: the FVF shader program, the viewport
-  //	uniform and the texture binding. Returns false when the context or
-  //	the viewport is unusable.
+  //	uniform, the transform matrices (for the XYZ path) and the texture
+  //	binding with stage 0's address/filter states. Returns false when the
+  //	context or the viewport is unusable.
   bool PrepareFvfDraw() {
     if (emscripten_webgl_get_current_context() != context) return false;
     ensureShaderProgram();
@@ -395,10 +456,32 @@ public:
     if (viewport[2] <= 0 || viewport[3] <= 0) return false;
     glUseProgram(shaderProgram);
     glUniform4f(uViewport, viewport[0], viewport[1], viewport[2], viewport[3]);
+    const bool transformed = (currentFVF & D3DFVF_XYZRHW) != 0;
+    glUniform1i(uTransformed, transformed ? 1 : 0);
+    if (!transformed) {
+      // The raw D3D row-major arrays read as GL column-major are the
+      // transposes the row-vector convention needs.
+      glUniformMatrix4fv(uWorld, 1, GL_FALSE, &transforms[D3DTS_WORLD].m[0][0]);
+      glUniformMatrix4fv(uView, 1, GL_FALSE, &transforms[D3DTS_VIEW].m[0][0]);
+      glUniformMatrix4fv(uProjection, 1, GL_FALSE, &transforms[D3DTS_PROJECTION].m[0][0]);
+    }
     glUniform1i(uTextured, textures[0] ? 1 : 0);
     glUniform1i(glGetUniformLocation(shaderProgram, "u_texture"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
+    if (textures[0]) {
+      // Stage 0's addressing and filtering apply to the bound texture.
+      const TextureStage &stage = textureStages[0];
+      static const GLenum wrapModes[] = {0, GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE};
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                      stage.addressU < 4 ? wrapModes[stage.addressU] : GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                      stage.addressV < 4 ? wrapModes[stage.addressV] : GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                      stage.magFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      stage.minFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+    }
     return true;
   }
   //	Vertex/index counts for a D3D8 primitive count (triangle list = 3

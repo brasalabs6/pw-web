@@ -3701,7 +3701,11 @@ int elementdataman::save_data(const char * pathname)
 	npc_essence_array.save(file);
 
 	size_t sz = talk_proc_array.size();
-	fwrite(&sz, sizeof(size_t), 1, file);
+	//	The serialized width is 4 bytes (the 32-bit exporter's
+	//	sizeof(size_t)); writing a host size_t would emit 8 bytes on LP64
+	//	and diverge the wire format.
+	unsigned int talk_count = (unsigned int)sz;
+	fwrite(&talk_count, sizeof(unsigned int), 1, file);
 	for(size_t i=0; i<sz; i++)
 		talk_proc_array[i]->save(file);
 	
@@ -4024,11 +4028,38 @@ int elementdataman::load_data(const char * pathname)
 	if(npc_essence_array.load(file) != 0) return -1;
 
 	size_t sz = 0;
-	if(fread(&sz, sizeof(size_t), 1, file) != 1)	return -1;
-	for(size_t i=0; i<sz; i++)
+	//	The serialized width is 4 bytes: the 32-bit exporter wrote
+	//	sizeof(size_t) == 4 here (the PW23-040 review's static ABI
+	//	finding) — a host size_t is 8 on LP64 and the 8-byte read would
+	//	consume the first record's bytes and drift the whole section.
+	unsigned int talk_count = 0;
+	if(fread(&talk_count, sizeof(unsigned int), 1, file) != 1)	return -1;
+	//	A count beyond the remaining bytes cannot be real: reject it
+	//	instead of looping into a giant allocation.
+	{
+		const long current = ftell(file);
+		fseek(file, 0, SEEK_END);
+		const long end = ftell(file);
+		fseek(file, current, SEEK_SET);
+		if(end - current < (long)talk_count * (long)sizeof(int))
+		{
+			fclose(file);
+			return -1;
+		}
+	}
+	for(unsigned int i=0; i<talk_count; i++)
 	{
 		talk_proc * tp = new talk_proc;
 		tp->load(file);
+		//	talk_proc::load keeps the original's contract and ignores the
+		//	fread results; the stream state is the boundary's truncation
+		//	detector (an 8-byte drift or a cut file surfaces here).
+		if (ferror(file) || feof(file))
+		{
+			delete tp;
+			fclose(file);
+			return -1;
+		}
 		add_structure(tp->id_talk, tp);
 	}
 	

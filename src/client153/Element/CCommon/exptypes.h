@@ -5,8 +5,9 @@
 #include <stdlib.h>
 
 #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
-	typedef	unsigned __int64 UINT64;
-	typedef __int64	INT64;
+	//	The port's Windows.h already provides the 8-byte UINT64/INT64
+	//	(std::uint64_t / std::int64_t, the same layout the original MSVC
+	//	__int64 had); nothing to redefine in this branch.
 #else
 	#include <stdint.h>
 	typedef uint64_t UINT64;
@@ -4327,7 +4328,7 @@ struct ASTROLABE_APPEARANCE_CONFIG
 	
 	struct  
 	{
-		unsigned long	name_color;			//	名称颜色(type=color)
+		unsigned int	name_color;			//	名称颜色(type=color)
 		char			file_gfx[128];		//	特效路径(type=path)
 	}list[ELEMENTDATA_MAX_ASTROLABE_ADDON_COUNT];	//	%条属性星盘
 };
@@ -4570,7 +4571,7 @@ struct FORCE_CONFIG
 	namechar		name[32];			//	名称，最多15个汉字
 
 	char					file_icon[128];		//	图标路径名
-	unsigned long	color;					//	显示颜色
+	unsigned int	color;					//	显示颜色
 	namechar		desc[256];			//	介绍文字，最多255个汉字
 
 	int					reputation_max;	//	威望上限
@@ -4595,7 +4596,7 @@ struct COUNTRY_CONFIG
 	{
 		namechar		name[32];			//	国家名称
 		char			file_icon[128];		//	图标路径
-		unsigned long	color;				//	显示颜色
+		unsigned int	color;				//	显示颜色
 	}country[4];
 	
 	int					flag_controller_id[3];	//	旗帜对应控制器ID
@@ -4736,7 +4737,7 @@ struct TITLE_CONFIG
 	
 	namechar		desc[256];					//	简单描述(type=single_text)
 	namechar		condition[256];				//	获取条件描述(type=single_text)
-	unsigned long	color;						//	显示颜色(type=color)
+	unsigned int	color;						//	显示颜色(type=color)
 	unsigned int	after_name;					//	是否后置显示(type=bool)
 
 	int				phy_damage;					//	增加物攻
@@ -5016,7 +5017,7 @@ struct AUTOTASK_DISPLAY_CONFIG
 		int			task_id;				//	自动任务ID(type=task_type)
 		char		file_icon[128];			//	图标路径名(type=path)
 		char		file_gfx[128];			//	完成特效路径名(type=path)
-		unsigned long	color;				//	文本颜色(type=color)
+		unsigned int	color;				//	文本颜色(type=color)
 	}list[16];
 };
 
@@ -5250,7 +5251,7 @@ struct FASHION_BEST_COLOR_CONFIG
 	struct  
 	{
 		unsigned int	id;						//	时装ID
-		unsigned long	color;					//	最佳颜色
+		unsigned int	color;					//	最佳颜色
 	}list[64];
 };
 

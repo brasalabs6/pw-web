@@ -23,6 +23,15 @@ Duas causas compunham a falha; a hipótese de alinhamento de structs ficou desme
 
 Evidência: o arquivo autorizado de 52.252.917 bytes parseia no WASM/Node (`elementdataman::load_data` rc=0; espaços de ID: addon=2945, essence=47444, config=2086 — valores pinados; fixtures negativas: versão errada, stream truncado, contagem absurda e arquivo ausente rejeitados) e no browser (MD5 `b2d5219aa1500614b28d4d1b9c0d32af` computado, boot prossegue além de `CECGame::Init`, UI de login renderiza). O `return false` original em `EC_Game.cpp` foi restaurado verbatim, com gate estrutural no configure que falha o build se o bypass retornar. Teste: `tests/client153/elements_data_parse.cpp`, incluindo a forma exata de chamada do jogo (spelling Windows relativo ao diretório de trabalho). O `itemdataman` completo (com `generate_item_for_sell`) é validado pelo boot real, que chama exatamente esse caminho.
 
+## Complemento da review 2026-10-30 15:52 — linha de base LP64 nativa estabelecida
+
+A review apontou (estático) que a contagem do `talk_proc_array` ainda era lida como `size_t` (8 bytes no LP64) e que a evidência nativa faltava. Correções e evidência:
+
+1. A contagem do `talk_proc` agora lê/grava `unsigned int` (a largura serializada de 4 bytes do exportador de 32 bits), com validação da contagem contra os bytes restantes e checagem do estado do stream por registro (`ferror`/`feof` — o detector de truncamento que o `talk_proc::load` original não tinha).
+2. Os campos `unsigned long color` das structs de dados (`exptypes.h`, 6 sites) viraram `unsigned int` — o exportador MSVC gravou 4 bytes; o `unsigned long` do LP64 tem 8 e divergia o stride dos registros no fim do arquivo.
+3. O `exptypes.h` não redeclara mais `UINT64`/`INT64` no branch Windows (o `Windows.h` do port já fornece os tipos de 8 bytes) — a TU `elementdataman.cpp` compila sob GCC nativo.
+4. **Evidência LP64 nativa**: o mesmo arquivo autorizado parseia no GCC nativo x86-64 (`rc=0`, mesmas contagens pinadas addon=2945/essence=47444/config=2086, spelling Windows relativo) e no WASM32 — o teste roda nas duas suítes (o alvo não é mais Emscripten-only). O primeiro run nativo ANTES da correção dos `unsigned long` falhou a 51,3 MB (stride divergente) e passou depois — a divergência era real, não teórica.
+
 ---
 
 ## Evidência e limite da confirmação (estado na abertura)

@@ -41,6 +41,22 @@ ULONG PW153TextureSurface::Release() { auto count = --references_; if (!count) d
 HRESULT PW153TextureSurface::LockRect(D3DLOCKED_RECT *out, const RECT *rect, DWORD flags) { return texture_->LockRect(0, out, rect, flags); }
 HRESULT PW153TextureSurface::UnlockRect() { return texture_->UnlockRect(0); }
 HRESULT PW153TextureSurface::GetDesc(void *out) { return texture_->GetLevelDesc(0, static_cast<D3DSURFACE_DESC *>(out)); }
+// The CPU-side bytes per pixel of the supported texture formats (the
+// formats the game's images and font glyphs actually use; the GL backend
+// stores RGBA8 and UnlockRect converts).
+static UINT FormatBytesPerPixel(D3DFORMAT format) {
+  switch (format) {
+    case D3DFMT_A8R8G8B8:
+    case D3DFMT_X8R8G8B8: return 4;
+    case D3DFMT_A4R4G4B4:
+    case D3DFMT_A8R3G3B2:
+    case D3DFMT_A8L8:
+    case D3DFMT_A4L4: return 2;
+    case D3DFMT_A8:
+    case D3DFMT_L8: return 1;
+    default: return 0;
+  }
+}
 HRESULT PW153Texture::LockRect(UINT level, D3DLOCKED_RECT *out, const RECT *rect, DWORD flags) {
   if (!out) return E_FAIL;
   out->pBits = nullptr; out->Pitch = 0;
@@ -52,7 +68,7 @@ HRESULT PW153Texture::LockRect(UINT level, D3DLOCKED_RECT *out, const RECT *rect
     x = rect->left; y = rect->top;
   }
   flags_ = flags; locked_ = true;
-  const UINT bytes = format_ == D3DFMT_A4R4G4B4 ? 2 : 4;
+  const UINT bytes = FormatBytesPerPixel(format_);
   out->Pitch = static_cast<INT>(width_ * bytes);
   out->pBits = pixels_ + (static_cast<size_t>(y) * width_ + x) * bytes;
   return D3D_OK;
@@ -66,14 +82,52 @@ HRESULT PW153Texture::UnlockRect(UINT level) {
   auto *rgba = static_cast<BYTE *>(std::malloc(size));
   if (!rgba) return E_FAIL;
   for (size_t i = 0; i < size; i += 4) {
-    if (format_ == D3DFMT_A4R4G4B4) {
-      const unsigned v = pixels_[i / 2] | (static_cast<unsigned>(pixels_[i / 2 + 1]) << 8);
-      rgba[i] = ((v >> 8) & 15) * 17; rgba[i + 1] = ((v >> 4) & 15) * 17;
-      rgba[i + 2] = (v & 15) * 17; rgba[i + 3] = ((v >> 12) & 15) * 17;
-    } else {
-      rgba[i] = pixels_[i + 2]; rgba[i + 1] = pixels_[i + 1]; rgba[i + 2] = pixels_[i];
-      //	X8R8G8B8 has no alpha channel: the X semantics make it opaque.
-      rgba[i + 3] = format_ == D3DFMT_X8R8G8B8 ? 255 : pixels_[i + 3];
+    switch (format_) {
+      case D3DFMT_A4R4G4B4: {
+        const unsigned v = pixels_[i / 2] | (static_cast<unsigned>(pixels_[i / 2 + 1]) << 8);
+        rgba[i] = ((v >> 8) & 15) * 17; rgba[i + 1] = ((v >> 4) & 15) * 17;
+        rgba[i + 2] = (v & 15) * 17; rgba[i + 3] = ((v >> 12) & 15) * 17;
+        break;
+      }
+      case D3DFMT_A8: {
+        // Alpha-only: D3D sampling returns (0,0,0,alpha).
+        rgba[i] = rgba[i + 1] = rgba[i + 2] = 0;
+        rgba[i + 3] = pixels_[i / 4];
+        break;
+      }
+      case D3DFMT_L8: {
+        const BYTE l = pixels_[i / 4];
+        rgba[i] = rgba[i + 1] = rgba[i + 2] = l;
+        rgba[i + 3] = 255;
+        break;
+      }
+      case D3DFMT_A8L8: {
+        const BYTE l = pixels_[i / 2], a = pixels_[i / 2 + 1];
+        rgba[i] = rgba[i + 1] = rgba[i + 2] = l;
+        rgba[i + 3] = a;
+        break;
+      }
+      case D3DFMT_A4L4: {
+        const unsigned v = pixels_[i / 2];
+        rgba[i] = rgba[i + 1] = rgba[i + 2] = (v & 15) * 17;
+        rgba[i + 3] = ((v >> 4) & 15) * 17;
+        break;
+      }
+      case D3DFMT_A8R3G3B2: {
+        // Byte 0 packs R3G3B2, byte 1 is the alpha.
+        const unsigned v = pixels_[i / 2];
+        rgba[i] = ((v >> 5) & 7) * 255 / 7;
+        rgba[i + 1] = ((v >> 2) & 7) * 255 / 7;
+        rgba[i + 2] = (v & 3) * 255 / 3;
+        rgba[i + 3] = pixels_[i / 2 + 1];
+        break;
+      }
+      default: {
+        rgba[i] = pixels_[i + 2]; rgba[i + 1] = pixels_[i + 1]; rgba[i + 2] = pixels_[i];
+        //	X8R8G8B8 has no alpha channel: the X semantics make it opaque.
+        rgba[i + 3] = format_ == D3DFMT_X8R8G8B8 ? 255 : pixels_[i + 3];
+        break;
+      }
     }
   }
   GLint previous = 0, alignment = 0, rowLength = 0, skipRows = 0, skipPixels = 0, unpackBuffer = 0;
@@ -97,15 +151,16 @@ HRESULT PW153Texture::UnlockRect(UINT level) {
   std::free(rgba);
   return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
 }
+
 PW153Texture *pw153_create_texture(IDirect3DDevice8 *device, UINT width, UINT height, UINT levels, DWORD usage, D3DFORMAT format, D3DPOOL pool) {
   auto context = emscripten_webgl_get_current_context();
-  if (!device || context <= 0 || emscripten_is_webgl_context_lost(context) || !width || !height || !levels ||
-      (format != D3DFMT_A8R8G8B8 && format != D3DFMT_X8R8G8B8 && format != D3DFMT_A4R4G4B4) ||
+  const UINT bpp = FormatBytesPerPixel(format);
+  if (!device || context <= 0 || emscripten_is_webgl_context_lost(context) || !width || !height || !levels || !bpp ||
       !((usage == 0 && pool == D3DPOOL_MANAGED) || (format == D3DFMT_A8R8G8B8 && usage == D3DUSAGE_RENDERTARGET && pool == D3DPOOL_DEFAULT)) ||
       static_cast<uint64_t>(width) * height > INT32_MAX / 4) return nullptr;
   GLint limit = 0, previous = 0, unpackBuffer = 0; glGetIntegerv(GL_MAX_TEXTURE_SIZE, &limit);
   if (limit <= 0 || width > static_cast<UINT>(limit) || height > static_cast<UINT>(limit)) return nullptr;
-  auto *pixels = usage ? nullptr : static_cast<BYTE *>(std::calloc(static_cast<size_t>(width) * height, format == D3DFMT_A4R4G4B4 ? 2 : 4));
+  auto *pixels = usage ? nullptr : static_cast<BYTE *>(std::calloc(static_cast<size_t>(width) * height, bpp));
   if (!usage && !pixels) return nullptr;
   glGetIntegerv(GL_TEXTURE_BINDING_2D, &previous);
   GLuint name = 0; glGenTextures(1, &name);

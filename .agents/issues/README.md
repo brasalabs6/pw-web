@@ -44,7 +44,7 @@
 
 | [PW23-038](PW23-038-ddraw-struct-layout-ci-regression.md) | P1 | resolved | Regressão de layout DDS 64-bit corrigida no commit 368c9da; CI #158 verde | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
 | [PW23-039](PW23-039-strmif-sal-in-macro-ci-regression.md) | P1 | resolved | Regressão SAL __in/__out corrigida no commit 7eb3f4d; CI 40773786307 nativo/WASM verde | [e03-platform-portability-v1](../epics/e03-platform-portability-v1/README.md) |
-| [PW23-040](PW23-040-elements-data-browser-parser-init-failure.md) | P0 | open | Parser de elements.data falha no boot WASM; bypass apenas diagnóstico, dados do jogo ainda não validados | [e05-asset-pipeline-v1](../epics/e05-asset-pipeline-v1/README.md) |
+| [PW23-040](PW23-040-elements-data-browser-parser-init-failure.md) | P0 | closed | Parser de elements.data corrigido (timestamps 32-bit, path VFS, larguras LP64); evidência nativa+WASM+browser | [e05-asset-pipeline-v1](../epics/e05-asset-pipeline-v1/README.md) |
 | [PW23-041](PW23-041-login-ecwld-scene-load-bypass.md) | P0 | open | Login.ecwld falha ao abrir no Chromium; bypass de LoadSceneObjects não comprova renderização da cena | [e05-asset-pipeline-v1](../epics/e05-asset-pipeline-v1/README.md) |
 | [PW23-042](PW23-042-ftdriver-test-hardcoded-clang-ci-failure.md) | P1 | open | Novo teste FTDriver invoca clang++ ausente no runner; CI do cliente falha e WASM é pulado | [e16-qa-observability-v1](../epics/e16-qa-observability-v1/README.md) |
 

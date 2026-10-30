@@ -14,6 +14,7 @@
 #define _ALOG_H_
 
 #include "ABaseDef.h"
+#include <string>
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -53,6 +54,13 @@ class ALog {
 private:
   FILE *m_pFile;
   static char m_szLogDir[260];
+  //	Consecutive-identical-message collapse: the engine logs every failed
+  //	draw each frame; without the counter the log grows unbounded and the
+  //	first real failure drowns. The first occurrence is written verbatim,
+  //	repeats are counted, and the count flushes on a different message or
+  //	at Release.
+  std::string m_lastRepeated;
+  unsigned m_repeatCount = 0;
 
 protected:
 public:
@@ -78,6 +86,9 @@ public:
 
   // Output a string as a log message;
   bool LogString(const char *szString);
+
+  // Writes the pending repeat count for the previous message, if any.
+  bool FlushRepeated();
 
   static void SetLogDir(const char *szLogDir);
   static const char *GetLogDir() { return m_szLogDir; }

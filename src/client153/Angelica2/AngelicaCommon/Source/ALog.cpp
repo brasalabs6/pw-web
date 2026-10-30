@@ -115,11 +115,29 @@ bool ALog::Init(const char *file, const char *hello, bool append) {
 bool ALog::Release() {
   if (!m_pFile)
     return true;
-  const bool wrote = LogString("Log file closing.");
+  const bool wrote = FlushRepeated() && LogString("Log file closing.");
   auto *file = m_pFile;
   m_pFile = nullptr;
   const bool closed = std::fclose(file) == 0;
   return wrote && closed;
+}
+// Writes the pending repeat count for the previous message, if any.
+bool ALog::FlushRepeated() {
+  if (!m_pFile || !m_repeatCount)
+    return true;
+  try {
+    const auto value = pw153::platform::local_calendar();
+    const bool ok = std::fprintf(m_pFile,
+                                 "[%02u:%02u:%02u.%03u] %s (repeated %u more times)\n",
+                                 unsigned(value.hour), unsigned(value.minute),
+                                 unsigned(value.second), unsigned(value.millisecond),
+                                 m_lastRepeated.c_str(), m_repeatCount) >= 0 &&
+                    std::fflush(m_pFile) == 0;
+    m_repeatCount = 0;
+    return ok;
+  } catch (const std::exception &) {
+    return false;
+  }
 }
 bool ALog::Log(const char *format, ...) {
   va_list args;
@@ -137,6 +155,18 @@ bool ALog::Log(const char *format, ...) {
 bool ALog::LogString(const char *text) {
   if (!m_pFile || !text)
     return false;
+  //	Consecutive identical messages collapse into a counter: the first
+  //	occurrence is written verbatim, repeats are counted, and the count
+  //	flushes when a different message arrives (or the log closes). The
+  //	engine logs every failed draw each frame; without this the log
+  //	grows unbounded and the first real failure drowns.
+  if (m_lastRepeated == text) {
+    ++m_repeatCount;
+    return true;
+  }
+  if (!FlushRepeated())
+    return false;
+  m_lastRepeated = text;
   try {
     const auto value = pw153::platform::local_calendar();
     return std::fprintf(m_pFile, "[%02u:%02u:%02u.%03u] %s\n",

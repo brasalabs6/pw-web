@@ -165,6 +165,12 @@ if(BUILD_TESTING)
     src/client153/Angelica2/AngelicaCommon/Header)
   target_link_libraries(client153_wide_file_reads_test PRIVATE client153_platform)
   add_test(NAME client153_wide_file_reads COMMAND client153_wide_file_reads_test)
+  # B19: the engine log collapses consecutive identical messages (the
+  # first occurrence verbatim, repeats counted) so per-frame draw
+  # failures cannot grow the log unbounded.
+  add_executable(client153_alog_dedupe_test tests/client153/alog_dedupe.cpp)
+  target_link_libraries(client153_alog_dedupe_test PRIVATE client153_common)
+  add_test(NAME client153_alog_dedupe COMMAND client153_alog_dedupe_test)
   add_executable(client153_d3d8_caps_test tests/client153/d3d8_caps.cpp)
   target_link_libraries(client153_d3d8_caps_test PRIVATE client153_math)
   add_test(NAME client153_d3d8_caps COMMAND client153_d3d8_caps_test)
@@ -282,13 +288,13 @@ if(BUILD_TESTING)
                  ${CMAKE_CURRENT_BINARY_DIR}/EC_Instance_source.cpp COPYONLY)
   add_test(NAME client153_u04_instance_parse COMMAND client153_u04_instance_parse_test)
   # PW23-040 / U05: the elements.data binary parse contract, driven through
-  # the real shipped loader TUs (elementdataman + itemdataman, compiled with
-  # the game build's TU environment — Emscripten/clang: the adapted game
-  # headers spell 64-bit types as MSVC __int64, so the TUs follow the game
-  # build target). The full byte-exact load runs when the authorized asset
-  # path is passed as the executable's argument; the ctest run (CI)
-  # exercises the crafted negative fixtures.
-  if(EMSCRIPTEN)
+  # the real shipped parser TU (elementdataman, compiled with the game
+  # build's TU environment — the port's Windows.h provides the fixed-width
+  # types, so the TU compiles under native GCC and Emscripten alike). The
+  # full byte-exact load runs when the authorized asset path is passed as
+  # the executable's argument (the native LP64 and WASM32 baselines the
+  # PW23-040 review requires); the ctest run (CI) exercises the crafted
+  # negative fixtures.
   add_executable(client153_elements_data_parse_test
     tests/client153/elements_data_parse.cpp
     src/client153/Element/CCommon/elementdataman.cpp)
@@ -299,16 +305,31 @@ if(BUILD_TESTING)
     src/client153/Element/CCommon
     src/client153/Angelica2/AngelicaCommon/Header
     src/client153/platform/common)
-  target_compile_options(client153_elements_data_parse_test PRIVATE -fms-extensions -fexceptions -w
+  target_compile_options(client153_elements_data_parse_test PRIVATE -fexceptions -w
     "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/platform/common/Windows.h"
     "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/platform/common/sdk_forward.h"
     "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/AChar.h"
     "SHELL:-include ${CMAKE_SOURCE_DIR}/src/client153/Angelica2/AngelicaCommon/Header/ATime.h")
   target_link_libraries(client153_elements_data_parse_test PRIVATE client153_common client153_platform)
-  target_link_options(client153_elements_data_parse_test PRIVATE
-    -sSTACK_SIZE=1048576 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4GB
-    -sNODERAWFS=1 -sENVIRONMENT=node)
+  if(EMSCRIPTEN)
+    target_link_options(client153_elements_data_parse_test PRIVATE
+      -sSTACK_SIZE=1048576 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4GB
+      -sNODERAWFS=1 -sENVIRONMENT=node)
+  endif()
   add_test(NAME client153_elements_data_parse COMMAND client153_elements_data_parse_test)
+  # B20: the case-folded VFS lookup preserves the caller's semantics —
+  # driven against the real Emscripten MEMFS (mismatched-case reads,
+  # creation under a folded parent, missing leaves, no-follow lstat,
+  # ".." and nested paths). Emscripten-only: the hook patches the
+  # browser MEMFS; the native seam installer is a no-op.
+  if(EMSCRIPTEN)
+  add_executable(client153_vfs_casefold_fs_test tests/client153/vfs_casefold_fs.cpp)
+  target_include_directories(client153_vfs_casefold_fs_test PRIVATE
+    src/client153/platform/web src/client153/platform/common)
+  target_link_libraries(client153_vfs_casefold_fs_test PRIVATE client153_webgl_caps)
+  target_link_options(client153_vfs_casefold_fs_test PRIVATE
+    -sSTACK_SIZE=1048576 -sENVIRONMENT=node)
+  add_test(NAME client153_vfs_casefold_fs COMMAND client153_vfs_casefold_fs_test)
   endif()
   add_executable(client153_tracks_test tests/client153/tracks.cpp)
   target_link_libraries(client153_tracks_test PRIVATE client153_animation)
