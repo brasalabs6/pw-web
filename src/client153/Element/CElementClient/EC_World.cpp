@@ -572,10 +572,8 @@ bool CECWorld::LoadWorld(const char* szFile, const A3DVECTOR3& vInitLoadPos)
 	//	Load scene objects
 	if (!LoadSceneObjects(szFile))
 	{
-		//\tThe scene file (Maps\\\\Login\\\\Login.ecwld) fails to open on
-		//\tthe browser build (package index investigation pending).
-		//\tContinue without scene objects so the login UI can render.
-		a_LogOutput(1, "CECWorld::LoadSceneObjects, Failed to load scene file (continuing for login diagnostic)");
+		glb_ErrorOutput(ECERR_FILEOPERATION, "CECWorld::LoadWorld", __LINE__);
+		return false;
 	}
 	char navigateFile[MAX_PATH];
 	sprintf(navigateFile,"%s\\navigate.dat",(const char*)m_strMapPath);	//	explicit conversion in varargs.
@@ -891,11 +889,8 @@ bool CECWorld::LoadTerrain(const char* szFile)
 	bool bMultiThread = true;
 	if (!m_pA3DTerrain->Load(szFile, 0.0f, 0.0f, bMultiThread))
 	{
-		//\tThe A3DTerrain2 loader fails on the browser build (terrain
-		//\tdata access investigation pending). Continue without terrain
-		//\tso the login UI can render — the boot diagnostic needs to see
-		//\tthe login screen.
-		a_LogOutput(1, "CECWorld::LoadTerrain, Failed to load A3DTerrain2 (continuing without terrain for login diagnostic).");
+		glb_ErrorOutput(ECERR_FILEOPERATION, "CECWorld::LoadTerrain", __LINE__);
+		return false;
 	}
 
 	CECConfigs* pConfigs = g_pGame->GetConfigs();

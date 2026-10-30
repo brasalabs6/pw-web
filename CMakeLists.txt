@@ -271,6 +271,13 @@ if(BUILD_TESTING)
   if(u05_ec_game_source MATCHES "elements.data load failed \\(continuing")
     message(FATAL_ERROR "U05 regression: the EC_Game elements.data diagnostic bypass is back in the source — the original return false rejection must stay")
   endif()
+  # Structural gate (U05 / B07): the login scene and terrain loads abort
+  # again — both load in the browser boot (case-folded VFS lookup), so the
+  # diagnostic continuations must not return.
+  file(READ ${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_World.cpp u05_ec_world_source)
+  if(u05_ec_world_source MATCHES "continuing for login diagnostic|continuing without terrain")
+    message(FATAL_ERROR "U05 regression: the EC_World scene/terrain diagnostic bypasses are back in the source — the original return false rejections must stay")
+  endif()
   configure_file(${CMAKE_SOURCE_DIR}/src/client153/Element/CElementClient/EC_Instance.cpp
                  ${CMAKE_CURRENT_BINARY_DIR}/EC_Instance_source.cpp COPYONLY)
   add_test(NAME client153_u04_instance_parse COMMAND client153_u04_instance_parse_test)

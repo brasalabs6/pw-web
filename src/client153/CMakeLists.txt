@@ -691,7 +691,7 @@ target_compile_options(client153_formats PRIVATE -Wall -Wextra -Werror -pedantic
 if(EMSCRIPTEN)
   target_compile_options(client153_formats PUBLIC -fexceptions)
   target_link_options(client153_formats INTERFACE -fexceptions)
-  add_library(client153_webgl_caps STATIC platform/web/webgl_caps.cpp platform/web/d3d8_factory.cpp platform/web/d3d8_surface.cpp platform/web/d3d8_device.cpp platform/web/d3d8_buffer.cpp platform/web/d3d8_texture.cpp)
+  add_library(client153_webgl_caps STATIC platform/web/webgl_caps.cpp platform/web/d3d8_factory.cpp platform/web/d3d8_surface.cpp platform/web/d3d8_device.cpp platform/web/d3d8_buffer.cpp platform/web/d3d8_texture.cpp platform/web/vfs_casefold.cpp)
   target_include_directories(client153_webgl_caps PRIVATE platform/common Angelica2/AngelicaCommon/Header Angelica2/Angelica3D/Header)
   target_compile_features(client153_webgl_caps PUBLIC cxx_std_17)
   add_executable(client153 platform/web/runtime.cpp)

@@ -40,6 +40,12 @@ static void pw153_track_browser_window() {
 }
 
 extern "C" int pw153_browser_probe() {
+  // The original client ran on a case-insensitive file system; the browser
+  // MEMFS is case-sensitive and the asset tree's on-disk casing does not
+  // always match the game's path constants. Install the case-folded
+  // lookup before any game file operation runs.
+  extern void pw153_vfs_install_casefold(void);
+  pw153_vfs_install_casefold();
   EmscriptenWebGLContextAttributes attributes;
   emscripten_webgl_init_context_attributes(&attributes);
   attributes.majorVersion = 2;
