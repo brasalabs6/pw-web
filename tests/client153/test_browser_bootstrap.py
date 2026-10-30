@@ -23,6 +23,7 @@ bool pw153_window_attach(void*) { return true; }
 int detached = 0, tracked = 0, result = 0;
 void pw153_window_detach() { ++detached; }
 void pw153_track_browser_window() { ++tracked; }
+void pw153_vfs_install_casefold() {}
 int wWinMain(void*, void*, wchar_t*, int) { return result; }
 ''' + source[start:] + '''
 int main() {

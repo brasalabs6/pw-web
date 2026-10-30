@@ -20,6 +20,9 @@ extern "C" bool pw153_window_attach(void *host);
 extern "C" void pw153_window_detach();
 extern "C" bool pw153_window_set_active(bool active);
 extern "C" bool pw153_window_set_focus(bool focused);
+// The platform seam's case-insensitive VFS lookup installer (the original
+// client's file-system semantic; see platform/web/vfs_casefold.cpp).
+extern "C" void pw153_vfs_install_casefold(void);
 
 static EM_BOOL pw153_focus_event(int type, const EmscriptenFocusEvent *, void *) {
   pw153_window_set_focus(type == EMSCRIPTEN_EVENT_FOCUS);
@@ -44,7 +47,6 @@ extern "C" int pw153_browser_probe() {
   // MEMFS is case-sensitive and the asset tree's on-disk casing does not
   // always match the game's path constants. Install the case-folded
   // lookup before any game file operation runs.
-  extern void pw153_vfs_install_casefold(void);
   pw153_vfs_install_casefold();
   EmscriptenWebGLContextAttributes attributes;
   emscripten_webgl_init_context_attributes(&attributes);
