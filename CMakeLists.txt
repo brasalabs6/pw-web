@@ -157,6 +157,14 @@ if(BUILD_TESTING)
     src/client153/Angelica2/AngelicaCommon/Header)
   target_link_libraries(client153_wide_sscanf_formats_test PRIVATE client153_platform)
   add_test(NAME client153_wide_sscanf_formats COMMAND client153_wide_sscanf_formats_test)
+  # B05: the wide file reads the serverlist parser uses — 16-bit unit
+  # readers over a UTF-16 LE fixture shaped like the shipped serverlist.
+  add_executable(client153_wide_file_reads_test tests/client153/wide_file_reads.cpp)
+  target_include_directories(client153_wide_file_reads_test PRIVATE
+    src/client153/platform/common
+    src/client153/Angelica2/AngelicaCommon/Header)
+  target_link_libraries(client153_wide_file_reads_test PRIVATE client153_platform)
+  add_test(NAME client153_wide_file_reads COMMAND client153_wide_file_reads_test)
   add_executable(client153_d3d8_caps_test tests/client153/d3d8_caps.cpp)
   target_link_libraries(client153_d3d8_caps_test PRIVATE client153_math)
   add_test(NAME client153_d3d8_caps COMMAND client153_d3d8_caps_test)

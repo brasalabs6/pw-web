@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cwctype>
+#include <cwchar>
 #include <cstring>
 #include <vector>
 
@@ -774,6 +775,36 @@ int wide_sscanf(const wchar_t *text, const wchar_t *format, ...) {
   const int converted = wide_vsscanf(text, format, args);
   va_end(args);
   return converted;
+}
+
+// The wide file reads: raw little-endian 16-bit units (the game's data
+// files are UTF-16 LE; the system fgetwc decodes one byte per wchar in
+// the C locale and misreads them under -fshort-wchar).
+int wide_fgetwc(FILE *file) {
+  unsigned char bytes[2];
+  if (!file || std::fread(bytes, 1, 2, file) != 2)
+    return WEOF;
+  return static_cast<int>(
+      static_cast<unsigned short>(bytes[0] | (bytes[1] << 8)));
+}
+
+wchar_t *wide_fgetws(wchar_t *buffer, int count, FILE *file) {
+  if (!buffer || count <= 0 || !file)
+    return nullptr;
+  int written = 0;
+  while (written < count - 1) {
+    const int c = wide_fgetwc(file);
+    if (c == static_cast<int>(WEOF)) {
+      if (written == 0)
+        return nullptr;
+      break;
+    }
+    buffer[written++] = static_cast<wchar_t>(c);
+    if (c == L'\n')
+      break;
+  }
+  buffer[written] = L'\0';
+  return buffer;
 }
 
 wchar_t *wide_strcpy(wchar_t *destination, const wchar_t *source) {

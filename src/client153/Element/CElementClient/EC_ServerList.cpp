@@ -57,9 +57,17 @@ void CECServerList::Init(const ACHAR *szHotGroupName)
 	};
 	for (int j = 0; j < ARRAY_SIZE(strServerLists); ++ j)
 	{
-		if (access(strServerLists[j], 0) == 0)
+		//	The port's VFS resolves forward slashes (the browser treats a
+		//	backslash as a plain character), so the Windows spelling is
+		//	normalized before the existence check and the fopen below —
+		//	the same convention AFileImage::Init established.
+		char szCandidate[MAX_PATH];
+		strncpy(szCandidate, strServerLists[j], MAX_PATH);
+		szCandidate[MAX_PATH - 1] = '\0';
+		for (char* p = szCandidate; *p; ++p) { if (*p == '\\') *p = '/'; }
+		if (access(szCandidate, 0) == 0)
 		{
-			m_strServerList = strServerLists[j];
+			m_strServerList = szCandidate;
 			break;
 		}
 	}

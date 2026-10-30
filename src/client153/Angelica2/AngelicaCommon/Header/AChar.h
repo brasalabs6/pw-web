@@ -61,8 +61,11 @@
 	#define a_puts		_putws
 
 	#define a_fputc		fputwc
-	#define	a_fgetc		fgetwc
-	#define	a_fgets		fgetws
+	//	The wide file reads route through the port's 16-bit unit readers:
+	//	the system fgetwc/fgetws decode one byte per wchar in the C locale
+	//	and misread the game's UTF-16 data files under -fshort-wchar.
+	#define	a_fgetc		pw153::platform::wide_fgetwc
+	#define	a_fgets		pw153::platform::wide_fgetws
 	#define	a_fputs		fputws
 	#define a_fscanf	fwscanf
 	#define a_fprintf	fwprintf

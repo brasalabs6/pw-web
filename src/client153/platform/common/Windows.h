@@ -1063,7 +1063,19 @@ inline int _access(const char *path, int mode) {
     errno = EINVAL;
     return -1;
   }
-  return access(path, mode);
+  // The game passes Windows spellings ("userdata\\server\\serverlist.txt");
+  // the browser VFS treats a backslash as a plain character, so the path is
+  // normalized before the POSIX access — the same convention
+  // AFileImage::Init established for its fopen. Forward-slash paths (the
+  // common case in the port's own code) skip the copy entirely.
+  if (!std::strchr(path, '\\'))
+    return access(path, mode);
+  std::string normalized(path);
+  for (char &c : normalized) {
+    if (c == '\\')
+      c = '/';
+  }
+  return access(normalized.c_str(), mode);
 }
 
 // The browser host supplies screen coordinates from pointer events.

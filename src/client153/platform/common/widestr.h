@@ -73,6 +73,13 @@ int wide_vsprintf(wchar_t *out, const wchar_t *format, va_list args);
 int wide_sscanf(const wchar_t *text, const wchar_t *format, ...);
 int wide_vsscanf(const wchar_t *text, const wchar_t *format, va_list args);
 
+// The wide file reads: the system fgetwc/fgetws decode bytes through the
+// C locale (one byte per wchar), which misreads the game's 16-bit UTF-16
+// data files under -fshort-wchar. These read raw little-endian 16-bit
+// units — the serialized width the original MSVC wide CRT used.
+int wide_fgetwc(FILE *file);
+wchar_t *wide_fgetws(wchar_t *buffer, int count, FILE *file);
+
 // _itow/_i64tow: wide int-to-string conversions (radix supported).
 wchar_t *wide_itow(int value, wchar_t *buffer, int radix);
 wchar_t *wide_i64tow(long long value, wchar_t *buffer, int radix);
