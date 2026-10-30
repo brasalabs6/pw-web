@@ -68,9 +68,10 @@ wchar_t *wide_strchr(const wchar_t *text, wchar_t character);
 int wide_sprintf(wchar_t *out, const wchar_t *format, ...);
 int wide_vsprintf(wchar_t *out, const wchar_t *format, va_list args);
 
-// swscanf for the spec set the client uses: %d %i %u %x %f %s %c with
+// swscanf for the spec set the client uses: %d %i %u %x %X %f %s %c with
 // optional width and literal separators; returns the converted count.
 int wide_sscanf(const wchar_t *text, const wchar_t *format, ...);
+int wide_vsscanf(const wchar_t *text, const wchar_t *format, va_list args);
 
 // _itow/_i64tow: wide int-to-string conversions (radix supported).
 wchar_t *wide_itow(int value, wchar_t *buffer, int radix);
@@ -127,6 +128,17 @@ inline int wcsncmp(const wchar_t *a, const wchar_t *b, std::size_t count)
 inline std::size_t wcscspn(const wchar_t *text, const wchar_t *set)
     PW153_WCS_THROW {
   return static_cast<std::size_t>(pw153::platform::wide_strcspn(text, set));
+}
+//	The scan alias: the system swscanf cannot run under -fshort-wchar
+//	(the CRT parses 32-bit wchar strings; the game builds 16-bit), so the
+//	game's swscanf call sites route through the port's 16-bit parser.
+inline int swscanf(const wchar_t *text, const wchar_t *format, ...)
+    PW153_WCS_THROW {
+  va_list args;
+  va_start(args, format);
+  const int converted = pw153::platform::wide_vsscanf(text, format, args);
+  va_end(args);
+  return converted;
 }
 } // extern "C"
 

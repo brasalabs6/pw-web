@@ -555,7 +555,8 @@ int wide_scan_core(const wchar_t *&text, const wchar_t *format, va_list args,
     case L'd':
     case L'i':
     case L'u':
-    case L'x': {
+    case L'x':
+    case L'X': {
       while (iswspace(*text))
         ++text;
       bool negative = false;
@@ -713,11 +714,15 @@ wchar_t *wide_i64tow(long long value, wchar_t *buffer, int radix) {
   return wide_itow(value, buffer, radix);
 }
 
+int wide_vsscanf(const wchar_t *text, const wchar_t *format, va_list args) {
+  bool matching = true;
+  return wide_scan_core(text, format, args, matching);
+}
+
 int wide_sscanf(const wchar_t *text, const wchar_t *format, ...) {
   va_list args;
   va_start(args, format);
-  bool matching = true;
-  const int converted = wide_scan_core(text, format, args, matching);
+  const int converted = wide_vsscanf(text, format, args);
   va_end(args);
   return converted;
 }
