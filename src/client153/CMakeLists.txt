@@ -674,7 +674,7 @@ if(EMSCRIPTEN)
     client153_freetype210 client153_platform client153_lua client153_glu_tess)
   target_link_options(client153_browser_entry PRIVATE
     -fexceptions -sUSE_ZLIB=1 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4GB
-    -sMAX_WEBGL_VERSION=2 -sMIN_WEBGL_VERSION=2
+    -sMAX_WEBGL_VERSION=2 -sMIN_WEBGL_VERSION=2 -sASYNCIFY
     "-sEXPORTED_FUNCTIONS=_malloc,_pw153_browser_probe,_pw153_asset_diag_dump,_pw153_post_message,_pw153_pop_message,_pw153_set_key_state,_pw153_set_cursor_position,_pw153_set_canvas_origin"
     "--pre-js=${CMAKE_SOURCE_DIR}/scripts/client153-entry-browser-pre.js")
 endif()

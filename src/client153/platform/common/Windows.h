@@ -41,6 +41,7 @@
 #include <thread>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/heap.h>
+#include <emscripten/eventloop.h>
 #endif
 
 inline int stricmp(const char *lhs, const char *rhs) { return ::strcasecmp(lhs, rhs); }
@@ -2871,7 +2872,15 @@ inline void GetLocalTime(SYSTEMTIME *time) {
 }
 inline void GetSystemTime(SYSTEMTIME *time) { GetLocalTime(time); }
 inline void Sleep(DWORD milliseconds) {
+#ifdef __EMSCRIPTEN__
+  // The browser event loop owns all progress (the network poll runs on
+  // an interval): the Win32 pause must unwind to it, or every
+  // Sleep-based wait (the connect thread's spin, the loading loops)
+  // blocks the very events that would end the wait.
+  emscripten_sleep(milliseconds);
+#else
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+#endif
 }
 
 
