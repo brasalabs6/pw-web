@@ -18,11 +18,14 @@
 
 namespace pw153::platform {
 
-// Assembles a vs.1.1 shader body into GLSL ES 300 source. Returns true
-// and fills glsl on success; returns false and fills error with the
-// first unparsable construct on failure (never a silent skip).
-bool AssembleVertexShader(const char *source, std::string &glsl,
-                          std::string &error);
+// Assembles a vs.1.1 shader body into GLSL ES 300 source. The source is
+// the exact srcData/srcDataLen pair the D3DXAssembleShader contract
+// carries: the parse is bounded by length (the device buffer is the
+// package's exact-size read, with no NUL terminator). Returns true and
+// fills glsl on success; returns false and fills error with the first
+// unparsable construct on failure (never a silent skip).
+bool AssembleVertexShader(const char *source, size_t length,
+                          std::string &glsl, std::string &error);
 
 }  // namespace pw153::platform
 

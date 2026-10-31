@@ -34,6 +34,28 @@ class Device final : public IDirect3DDevice8 {
     DWORD addressU = 1, addressV = 1;  // D3DTADDRESS_WRAP
     DWORD magFilter = 1, minFilter = 1;  // D3DTEXF_POINT
   } textureStages[8];
+  // The vertex-shader programs: the assembled GLSL (from
+  // D3DXAssembleShader) compiled with the shader-mode fragment shader.
+  // The handle = the index + 1 | 0x80000000 (the FVF values stay below
+  // it, which is how SetVertexShader tells the two modes apart).
+  struct VertexShaderProgram {
+    GLuint program = 0;
+    GLint cLocation = -1;
+    // The parsed declaration: per vertex register, the stream offset,
+    // the component count and the GL type the attribute setup binds.
+    struct Attribute {
+      UINT offset = 0;
+      GLint size = 0;
+      GLenum type = GL_FLOAT;
+      bool normalized = false;
+      bool bound = false;
+    };
+    Attribute attributes[16];
+  };
+  std::vector<VertexShaderProgram> vertexShaders;
+  float vertexConstants[96 * 4] = {};
+  bool vertexConstantsDirty = true;
+  DWORD activeVertexShader = 0;  // The handle, or 0 = the FVF mode.
   // The default framebuffer attachments (the canvas), created once and
   // handed out by the surface getters.
   PW153DefaultSurface *defaultColor = nullptr;
@@ -195,8 +217,20 @@ public:
     }
     return D3D_OK;
   }
-  HRESULT SetVertexShader(DWORD fvf) override {
-    currentFVF = fvf;
+  HRESULT SetVertexShader(DWORD value) override {
+    // The D3D8 dual mode: the value is either an FVF (the fixed-function
+    // vertex layout) or a shader handle from CreateVertexShader (the
+    // handles carry the 0x80000000 bit the FVF values never do).
+    if (value & 0x80000000u) {
+      const int index = (int)(value & 0x7FFFFFFFu) - 1;
+      if (index < 0 || index >= (int)vertexShaders.size() ||
+          !vertexShaders[index].program)
+        return E_FAIL;
+      activeVertexShader = value;
+    } else {
+      activeVertexShader = 0;
+      currentFVF = value;
+    }
     return D3D_OK;
   }
   HRESULT SetRenderState(DWORD state, DWORD value) override {
@@ -301,10 +335,219 @@ public:
     return D3D_OK;
   }
   HRESULT SetPixelShader(DWORD) override { return E_NOTIMPL; }
-  HRESULT SetVertexShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
+  HRESULT SetVertexShaderConstant(DWORD startRegister, const void *data,
+                                  DWORD count) override {
+    if (!data || !count || startRegister >= 96 ||
+        startRegister + count > 96)
+      return E_FAIL;
+    // The D3D8 SetVertexShaderConstant stores count 4-vectors starting at
+    // startRegister; the shader draw uploads the array.
+    std::memcpy(vertexConstants + (size_t)startRegister * 4, data,
+                (size_t)count * 4 * sizeof(float));
+    vertexConstantsDirty = true;
+    return D3D_OK;
+  }
+  HRESULT GetVertexShaderConstant(DWORD startRegister, void *data,
+                                  DWORD count) override {
+    if (!data || !count || startRegister >= 96 ||
+        startRegister + count > 96)
+      return E_FAIL;
+    std::memcpy(data, vertexConstants + (size_t)startRegister * 4,
+                (size_t)count * 4 * sizeof(float));
+    return D3D_OK;
+  }
   HRESULT SetPixelShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
-  HRESULT CreateVertexShader(const DWORD *, const DWORD *, DWORD *, DWORD) override { return E_NOTIMPL; }
-  HRESULT DeleteVertexShader(DWORD) override { return E_NOTIMPL; }
+  // The D3D8 declaration token parsing (the encoding d3dx8.h defines:
+  // the token type occupies bits 29-31 — D3DVSD_TOKENTYPESHIFT = 29 —
+  // so STREAM = 0x20000000 and the register tokens = 0x40000000, with
+  // the vertex register in bits 0-15 and the D3DVSDT data type in bits
+  // 16-23). The layout accumulates the stream offsets in declaration
+  // order (the original's contract: the registers bind in the order the
+  // declaration lists them).
+  static const DWORD D3DVSD_TOKEN_STREAM = 0x20000000u;
+  static const DWORD D3DVSD_TOKEN_STREAMDATA = 0x40000000u;
+  static const DWORD D3DVSD_END_MARKER = 0xFFFFFFFFu;
+  static const DWORD D3DVSDT_FLOAT1 = 1, D3DVSDT_FLOAT2 = 2,
+                     D3DVSDT_FLOAT3 = 3, D3DVSDT_FLOAT4 = 4,
+                     D3DVSDT_D3DCOLOR = 5, D3DVSDT_UBYTE4 = 6;
+  bool parse_vertex_declaration(const DWORD *declaration,
+                                VertexShaderProgram &shader) {
+    UINT offset = 0;
+    for (int i = 0; i < 64; ++i) {
+      const DWORD token = declaration[i];
+      if (token == D3DVSD_END_MARKER)
+        return true;
+      const DWORD type = token & (0x7u << 29);
+      if (type == D3DVSD_TOKEN_STREAM)
+        continue;  // The single-stream declarations the engine builds.
+      if (type != D3DVSD_TOKEN_STREAMDATA) {
+        std::fprintf(stderr,
+                     "pw-browser: CreateVertexShader: unsupported token %#x\n",
+                     token);
+        return false;
+      }
+      const int reg = (int)(token & 0xFFFFu);
+      const DWORD dataType = (token >> 16) & 0xFFu;
+      if (reg < 0 || reg > 15) {
+        std::fprintf(stderr,
+                     "pw-browser: CreateVertexShader: register out of range %d\n",
+                     reg);
+        return false;
+      }
+      VertexShaderProgram::Attribute &attr = shader.attributes[reg];
+      attr.offset = offset;
+      switch (dataType) {
+        case D3DVSDT_FLOAT1:
+          attr.size = 1; attr.type = GL_FLOAT; attr.normalized = false; offset += 4;
+          break;
+        case D3DVSDT_FLOAT2:
+          attr.size = 2; attr.type = GL_FLOAT; attr.normalized = false; offset += 8;
+          break;
+        case D3DVSDT_FLOAT3:
+          attr.size = 3; attr.type = GL_FLOAT; attr.normalized = false; offset += 12;
+          break;
+        case D3DVSDT_FLOAT4:
+          attr.size = 4; attr.type = GL_FLOAT; attr.normalized = false; offset += 16;
+          break;
+        case D3DVSDT_D3DCOLOR:
+          attr.size = 4; attr.type = GL_UNSIGNED_BYTE; attr.normalized = true; offset += 4;
+          break;
+        case D3DVSDT_UBYTE4:
+          attr.size = 4; attr.type = GL_UNSIGNED_BYTE; attr.normalized = false; offset += 4;
+          break;
+        default:
+          std::fprintf(stderr,
+                       "pw-browser: CreateVertexShader: unsupported data type %u\n",
+                       dataType);
+          return false;
+      }
+      attr.bound = true;
+    }
+    std::fprintf(stderr,
+                 "pw-browser: CreateVertexShader: declaration has no end token\n");
+    return false;
+  }
+
+  HRESULT CreateVertexShader(const DWORD *declaration, const DWORD *function,
+                             DWORD *handle, DWORD usage) override {
+    (void)usage;
+    if (!declaration || !function || !handle) {
+      std::fprintf(stderr, "pw-browser: CreateVertexShader: null argument\n");
+      return E_FAIL;
+    }
+    if (emscripten_webgl_get_current_context() != context ||
+        emscripten_is_webgl_context_lost(context)) {
+      std::fprintf(stderr, "pw-browser: CreateVertexShader: context lost\n");
+      return E_FAIL;
+    }
+    // Flush the GL errors the earlier failed draws left queued: the final
+    // check below must report THIS call's errors, not stale ones.
+    while (glGetError() != GL_NO_ERROR) {}
+    const char *glsl = reinterpret_cast<const char *>(function);
+    if (!glsl || !glsl[0]) {
+      std::fprintf(stderr, "pw-browser: CreateVertexShader: empty GLSL\n");
+      return E_FAIL;
+    }
+    VertexShaderProgram shader;
+    if (!parse_vertex_declaration(declaration, shader)) return E_FAIL;
+    // The shader-mode fragment shader consumes the D3D output names the
+    // assembled vertex shaders write (oD0 the color, oT0 the texcoord).
+    static const char *shaderFsSource =
+        "#version 300 es\n"
+        "precision mediump float;\n"
+        "in vec4 oD0;\n"
+        "in vec4 oT0;\n"
+        "uniform sampler2D u_texture;\n"
+        "uniform bool u_textured;\n"
+        "out vec4 fragColor;\n"
+        "void main() { fragColor = oD0 * (u_textured ? "
+        "texture(u_texture, oT0.xy) : vec4(1.0)); }\n";
+    const std::string glslText(glsl);
+    auto compile = [&glslText](GLenum type, const char *source) -> GLuint {
+      GLuint shader = glCreateShader(type);
+      glShaderSource(shader, 1, &source, nullptr);
+      glCompileShader(shader);
+      GLint status = 0;
+      glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+      if (!status) {
+        // The compile diagnostic: the GLSL the assembler emitted is the
+        // contract — a compile failure names the exact construct. The
+        // source dumps once (the first failure) with the line numbers.
+        static bool sourceDumped = false;
+        if (!sourceDumped) {
+          sourceDumped = true;
+          std::string numbered;
+          int line = 1;
+          size_t start = 0;
+          while (start < glslText.size()) {
+            const size_t eol = glslText.find('\n', start);
+            const std::string text =
+                glslText.substr(start, eol == std::string::npos
+                                       ? std::string::npos
+                                       : eol - start);
+            char prefix[16];
+            std::snprintf(prefix, sizeof(prefix), "%4d| ", line++);
+            numbered += prefix + text + "\n";
+            if (eol == std::string::npos)
+              break;
+            start = eol + 1;
+          }
+          std::fprintf(stderr, "pw-browser: vertex shader source:\n%s",
+                       numbered.c_str());
+        }
+        char infoLog[2048] = {};
+        glGetShaderInfoLog(shader, sizeof(infoLog) - 1, nullptr, infoLog);
+        std::fprintf(stderr, "pw-browser: vertex shader compile failed: %s\n",
+                     infoLog);
+        glDeleteShader(shader);
+        return 0;
+      }
+      return shader;
+    };
+    GLuint vs = compile(GL_VERTEX_SHADER, glsl);
+    if (!vs) return E_FAIL;
+    // The shared fragment shader compiles once.
+    static GLuint shaderFs = 0;
+    if (!shaderFs)
+      shaderFs = compile(GL_FRAGMENT_SHADER, shaderFsSource);
+    if (!shaderFs) { glDeleteShader(vs); return E_FAIL; }
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vs);
+    glAttachShader(program, shaderFs);
+    // The D3D vertex registers bind to the attribute slots 0-15: the
+    // vertex setup addresses the attributes by the register number.
+    for (int i = 0; i < 16; ++i) {
+      char name[8];
+      std::snprintf(name, sizeof(name), "v%d", i);
+      glBindAttribLocation(program, i, name);
+    }
+    glLinkProgram(program);
+    glDeleteShader(vs);
+    GLint linked = 0;
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+    if (!linked) {
+      char infoLog[2048] = {};
+      glGetProgramInfoLog(program, sizeof(infoLog) - 1, nullptr, infoLog);
+      std::fprintf(stderr, "pw-browser: vertex shader link failed: %s\n",
+                   infoLog);
+      glDeleteProgram(program);
+      return E_FAIL;
+    }
+    vertexShaders.push_back(shader);
+    *handle = (DWORD)(vertexShaders.size() | 0x80000000u);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT DeleteVertexShader(DWORD handle) override {
+    if (!(handle & 0x80000000u)) return E_FAIL;
+    const int index = (int)(handle & 0x7FFFFFFFu) - 1;
+    if (index < 0 || index >= (int)vertexShaders.size()) return E_FAIL;
+    if (activeVertexShader == handle)
+      activeVertexShader = 0;
+    if (vertexShaders[index].program)
+      glDeleteProgram(vertexShaders[index].program);
+    vertexShaders[index].program = 0;
+    return D3D_OK;
+  }
   HRESULT CreatePixelShader(const DWORD *, DWORD *) override { return E_NOTIMPL; }
   HRESULT DeletePixelShader(DWORD) override { return E_NOTIMPL; }
   void SetGammaRamp(DWORD, const D3DGAMMARAMP *) override {
@@ -402,9 +645,17 @@ public:
     uint64_t vertices = CountsForType(type, count);
     auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
     if (!count || vertices > INT32_MAX || (uint64_t(startVertex) + vertices) * streamOffset > buffer->size()) return E_FAIL;
-    if (!PrepareFvfDraw()) return E_FAIL;
+    if (activeVertexShader)
+    {
+      if (!PrepareShaderDraw()) return E_FAIL;
+    }
+    else if (!PrepareFvfDraw()) return E_FAIL;
     uintptr_t baseOffset = 0;
-    if (SetupFvfAttributes(currentFVF, buffer->buffer(), streamOffset, 0, baseOffset) != D3D_OK) return E_FAIL;
+    const HRESULT setup = activeVertexShader
+      ? SetupShaderAttributes(vertexShaders[(int)(activeVertexShader & 0x7FFFFFFFu) - 1],
+                              buffer->buffer(), streamOffset, 0, baseOffset)
+      : SetupFvfAttributes(currentFVF, buffer->buffer(), streamOffset, 0, baseOffset);
+    if (setup != D3D_OK) return E_FAIL;
     glDrawArrays(modes[type], startVertex, static_cast<GLsizei>(vertices));
     return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
   }
@@ -444,6 +695,67 @@ public:
     }
     return D3D_OK;
   }
+  //	The shader-draw preparation: the active vertex-shader program, the
+  //	constant array upload and the stage-0 texture with its states.
+  //	Returns false when the context, the handle or the program is
+  //	unusable.
+  bool PrepareShaderDraw() {
+    if (emscripten_webgl_get_current_context() != context) return false;
+    const int index = (int)(activeVertexShader & 0x7FFFFFFFu) - 1;
+    if (index < 0 || index >= (int)vertexShaders.size()) return false;
+    const VertexShaderProgram &shader = vertexShaders[index];
+    if (!shader.program) return false;
+    glUseProgram(shader.program);
+    if (vertexConstantsDirty && shader.cLocation >= 0) {
+      glUniform4fv(shader.cLocation, 96, vertexConstants);
+      vertexConstantsDirty = false;
+    }
+    glUniform1i(glGetUniformLocation(shader.program, "u_texture"), 0);
+    glUniform1i(glGetUniformLocation(shader.program, "u_textured"),
+                textures[0] ? 1 : 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,
+                  textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
+    if (textures[0]) {
+      const TextureStage &stage = textureStages[0];
+      static const GLenum wrapModes[] = {0, GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE};
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                      stage.addressU < 4 ? wrapModes[stage.addressU] : GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                      stage.addressV < 4 ? wrapModes[stage.addressV] : GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                      stage.magFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      stage.minFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+    }
+    return true;
+  }
+
+  //	The vertex attribute setup for the shader draws: the parsed
+  //	declaration drives the binding (the register → the offset/count/
+  //	type the declaration listed); the unbound registers read
+  //	(0,0,0,1) — the D3D8 semantics for the undeclared registers.
+  HRESULT SetupShaderAttributes(const VertexShaderProgram &shader,
+                                GLuint arrayBuffer, UINT stride,
+                                UINT baseVertexIndex, uintptr_t &baseOffset) {
+    glBindBuffer(GL_ARRAY_BUFFER, arrayBuffer);
+    baseOffset = static_cast<UINT>(baseVertexIndex) * stride;
+    for (int reg = 0; reg < 16; ++reg) {
+      const VertexShaderProgram::Attribute &attr = shader.attributes[reg];
+      if (!attr.bound) {
+        glDisableVertexAttribArray(reg);
+        glVertexAttrib4f(reg, 0.0f, 0.0f, 0.0f, 1.0f);
+        continue;
+      }
+      glEnableVertexAttribArray(reg);
+      glVertexAttribPointer(reg, attr.size, attr.type,
+                            attr.normalized ? GL_TRUE : GL_FALSE, stride,
+                            reinterpret_cast<const void *>(
+                                baseOffset + attr.offset));
+    }
+    return D3D_OK;
+  }
+
   //	Shared draw preparation: the FVF shader program, the viewport
   //	uniform, the transform matrices (for the XYZ path) and the texture
   //	binding with stage 0's address/filter states. Returns false when the
@@ -503,12 +815,20 @@ public:
     const UINT indexSize = indexData->format() == D3DFMT_INDEX32 ? 4 : 2;
     if (!count || indices > INT32_MAX ||
         uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
-    if (!PrepareFvfDraw()) return E_FAIL;
+    if (activeVertexShader)
+    {
+      if (!PrepareShaderDraw()) return E_FAIL;
+    }
+    else if (!PrepareFvfDraw()) return E_FAIL;
     //	The D3D8 SetIndices second parameter is BaseVertexIndex: every
     //	index refers to baseVertexIndex + i. WebGL cannot offset index
     //	values, so the vertex base shifts the attribute pointers instead.
     uintptr_t baseOffset = 0;
-    if (SetupFvfAttributes(currentFVF, buffer->buffer(), streamOffset, indexOffset, baseOffset) != D3D_OK) return E_FAIL;
+    const HRESULT setup = activeVertexShader
+      ? SetupShaderAttributes(vertexShaders[(int)(activeVertexShader & 0x7FFFFFFFu) - 1],
+                              buffer->buffer(), streamOffset, indexOffset, baseOffset)
+      : SetupFvfAttributes(currentFVF, buffer->buffer(), streamOffset, indexOffset, baseOffset);
+    if (setup != D3D_OK) return E_FAIL;
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexData->buffer());
     glDrawElements(modes[type], static_cast<GLsizei>(indices),
                    indexData->format() == D3DFMT_INDEX32 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT,
@@ -523,7 +843,11 @@ public:
     if (type < 1 || type > 6) return E_FAIL;
     const uint64_t vertices = CountsForType(type, count);
     if (!count || vertices > INT32_MAX || vertices * stride > UINT32_MAX) return E_FAIL;
-    if (!PrepareFvfDraw()) return E_FAIL;
+    if (activeVertexShader)
+    {
+      if (!PrepareShaderDraw()) return E_FAIL;
+    }
+    else if (!PrepareFvfDraw()) return E_FAIL;
     // Upload the user-pointer data to a temporary VBO and draw with the
     // current FVF's attribute layout.
     GLuint vbo = 0;
@@ -531,7 +855,10 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices * stride), data, GL_STREAM_DRAW);
     uintptr_t baseOffset = 0;
-    const HRESULT setup = SetupFvfAttributes(currentFVF, vbo, stride, 0, baseOffset);
+    const HRESULT setup = activeVertexShader
+      ? SetupShaderAttributes(vertexShaders[(int)(activeVertexShader & 0x7FFFFFFFu) - 1],
+                              vbo, stride, 0, baseOffset)
+      : SetupFvfAttributes(currentFVF, vbo, stride, 0, baseOffset);
     if (setup == D3D_OK)
       glDrawArrays(modes[type], 0, static_cast<GLsizei>(vertices));
     glDeleteBuffers(1, &vbo);
@@ -548,7 +875,11 @@ public:
     if (!count || !numVertices || indicesCount > INT32_MAX ||
         uint64_t(numVertices) * stride > UINT32_MAX ||
         indicesCount * (indexFormat == D3DFMT_INDEX16 ? 2 : 4) > UINT32_MAX) return E_FAIL;
-    if (!PrepareFvfDraw()) return E_FAIL;
+    if (activeVertexShader)
+    {
+      if (!PrepareShaderDraw()) return E_FAIL;
+    }
+    else if (!PrepareFvfDraw()) return E_FAIL;
     GLuint vbo = 0, ibo = 0;
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
@@ -557,7 +888,10 @@ public:
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indicesCount * (indexFormat == D3DFMT_INDEX16 ? 2 : 4)), indices, GL_STREAM_DRAW);
     uintptr_t baseOffset = 0;
-    const HRESULT setup = SetupFvfAttributes(currentFVF, vbo, stride, 0, baseOffset);
+    const HRESULT setup = activeVertexShader
+      ? SetupShaderAttributes(vertexShaders[(int)(activeVertexShader & 0x7FFFFFFFu) - 1],
+                              vbo, stride, 0, baseOffset)
+      : SetupFvfAttributes(currentFVF, vbo, stride, 0, baseOffset);
     if (setup == D3D_OK)
       glDrawElements(modes[type], static_cast<GLsizei>(indicesCount),
                      indexFormat == D3DFMT_INDEX16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, nullptr);

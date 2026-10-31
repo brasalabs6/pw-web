@@ -443,8 +443,14 @@ inline HRESULT D3DXAssembleShader(const void *srcData, UINT srcDataLen,
     return D3DERR_INVALIDCALL;
   std::string glsl, error;
   if (!pw153::platform::AssembleVertexShader(
-          static_cast<const char *>(srcData), glsl, error))
+          static_cast<const char *>(srcData), srcDataLen, glsl, error)) {
+    // The original discards the compilation-errors buffer; the port
+    // prints the assembler's diagnostic (the same contract the compile
+    // diagnostics use) so the failure is visible.
+    std::fprintf(stderr, "pw-browser: D3DXAssembleShader failed: %s\n",
+                 error.c_str());
     return D3DERR_INVALIDCALL;
+  }
   auto *buffer = new D3DXShaderBuffer();
   buffer->data_ = std::malloc(glsl.size() + 1);
   if (!buffer->data_) {

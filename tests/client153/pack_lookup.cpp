@@ -47,8 +47,11 @@ int main(int argc, char **argv) {
   af_Initialize();
   af_SetBaseDir(elementDir);
   AFilePackMan &man = g_AFilePackMan;
+  // The game opens every package in g_szPckDir (ElementClient.cpp); the
+  // face shader lives in the shaders package and the skin in models.
   check("OpenFilePackageInGame(models.pck) opens the split package",
         man.OpenFilePackageInGame("models.pck"));
+  check("OpenFilePackageInGame(shaders.pck) opens", man.OpenFilePackageInGame("shaders.pck"));
 
   // The game's exact GB18030 spelling (EC_Player.cpp's default equipment
   // skin for the wuxia male, level-1 top):
@@ -105,6 +108,30 @@ int main(int argc, char **argv) {
     check("AFileImage::Open resolves the mixed-encoding skin path", opened);
     if (opened) {
       check("mixed-path payload length matches", image.GetFileLength() == 28242);
+      image.Close();
+    }
+  }
+
+  // The face shader the CECFace::InitPartShaders loads: the same
+  // AFileImage entry against the shaders package. The shipped file is
+  // vs.1.1 TEXT ("; DESCRIPTION:" opens it); the read must return the
+  // text bytes, not binary content.
+  {
+    const char *faceShader =
+        "Shaders\\vs\\facerender\\face_skin_mesh.txt";
+    AFileImage image;
+    const bool opened = image.Open(faceShader, AFILE_OPENEXIST | AFILE_TEMPMEMORY);
+    check("AFileImage::Open resolves the face shader", opened);
+    if (opened) {
+      const BYTE *bytes = image.GetFileBuffer();
+      const int len = image.GetFileLength();
+      check("face shader payload is the vs.1.1 text",
+            len > 16 && std::memcmp(bytes, ";", 1) == 0 &&
+                std::memcmp(bytes + 2, "DESCRIPTION", 11) == 0);
+      char first8[24] = {};
+      for (int i = 0; i < 8 && i < len; ++i)
+        std::snprintf(first8 + i * 2, 3, "%02x", bytes[i]);
+      std::printf("face shader first8=%s len=%d\n", first8, len);
       image.Close();
     }
   }

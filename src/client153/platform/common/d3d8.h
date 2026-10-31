@@ -499,6 +499,8 @@ struct IDirect3DDevice8 : IUnknownD3D {
   virtual HRESULT SetPixelShader(DWORD handle) = 0;
   virtual HRESULT SetVertexShaderConstant(DWORD regIndex, const void *data,
                                           DWORD count) = 0;
+  virtual HRESULT GetVertexShaderConstant(DWORD regIndex, void *data,
+                                          DWORD count) = 0;
   virtual HRESULT SetPixelShaderConstant(DWORD regIndex, const void *data,
                                          DWORD count) = 0;
   //	Shader object creation/destruction (the documented d3d8.h

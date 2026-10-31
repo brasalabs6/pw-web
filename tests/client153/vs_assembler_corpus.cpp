@@ -108,11 +108,31 @@ int main(int argc, char **argv) {
 
     std::string glsl, error;
     const bool ok = pw153::platform::AssembleVertexShader(
-        source.c_str(), glsl, error);
+        source.data(), source.size(), glsl, error);
     if (!ok) {
       std::printf("FAIL shader %d assemble: %s\n", i, error.c_str());
       ++failures;
       continue;
+    }
+    // The device hands the assembler the package's exact-size buffer
+    // with no NUL terminator (the D3DXAssembleShader srcDataLen
+    // contract): the length bounds the parse. Regression for the
+    // browser boot where the length-blind parse ran into adjacent heap
+    // and the face shaders failed on garbage tokens. The exact-length
+    // parse of a garbage-tailed buffer must produce the same GLSL.
+    if (i == 0) {
+      std::vector<char> unterm(source.begin(), source.end());
+      const char tail[] = "ec4(0.)\nthe at# oor# dot( c[1].# 8#\n";
+      unterm.insert(unterm.end(), tail, tail + sizeof(tail) - 1);
+      std::string glsl2, error2;
+      const bool ok2 = pw153::platform::AssembleVertexShader(
+          unterm.data(), source.size(), glsl2, error2);
+      if (!ok2 || glsl2 != glsl) {
+        std::printf("FAIL shader %d length-bounded parse: %s\n", i,
+                    ok2 ? "glsl differs" : error2.c_str());
+        ++failures;
+        continue;
+      }
     }
     // The structural checks on the emitted GLSL: the header, the
     // constant array, and balanced braces.
