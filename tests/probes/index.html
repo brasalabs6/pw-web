@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Angelica — prova local de WebAssembly</title>
+<style>
+  :root { color-scheme: dark; font: 16px system-ui, sans-serif; background: #081426; color: #dcebf5; }
+  body { max-width: 1000px; margin: 3rem auto; padding: 0 1rem; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.5rem); }
+  p { line-height: 1.6; }
+  canvas { display: block; width: 100%; height: min(55vh, 480px); border: 1px solid #294557; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; background: #122236; }
+  #status[data-state="PASS"] { color: #55e4bd; }
+  #status[data-state="FAIL"] { color: #ff9f9f; }
+</style>
+<h1>Um componente da Angelica no navegador</h1>
+<p>O <code>ARandomGen</code> original é compilado em WebAssembly, executado aqui e comparado
+  com a mesma implementação nativa. Seus números geram as alturas desta malha procedural.</p>
+<p><strong>Recorte de pesquisa:</strong> o desenho usa um renderer WebGL 2 próprio desta prova.
+  Não é o renderer da Angelica, um mapa do Perfect World ou um cliente jogável.</p>
+<p id="status" role="status" data-state="RUNNING">Executando comparação nativa ↔ WASM…</p>
+<canvas id="viewport" width="960" height="480" aria-label="Malha procedural com alturas calculadas pelo ARandomGen em WebAssembly"></canvas>
+<pre id="result">Aguardando resultado.</pre>
+<script type="module" src="./app.mjs"></script>
+</html>

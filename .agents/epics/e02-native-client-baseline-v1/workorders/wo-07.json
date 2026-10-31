@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e02-native-client-baseline-v1",
+  "id": "wo-07",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Reconstruir bibliotecas Angelica/Common na ordem de dependência",
+  "objective": "Obter uma baseline Windows reproduzível e evidência suficiente para selecionar versão, SDKs, assets e realm sem misturar candidatos. Nesta workorder: Reconstruir bibliotecas Angelica/Common na ordem de dependência. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P0",
+  "risk": "Uma lib encontrada pelo nome com CRT/arquitetura incompatível é rejeitada, não reutilizada silenciosamente.",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e02-native-client-baseline-v1/wo-06"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    "docs/VALIDATION.md",
+    "docs/DECISIONS/ADR-0003-version-selection.md",
+    "docs/evidence/windows-toolchain.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: scripts/research/build-libraries-windows.ps1; docs/evidence/native-libraries.md",
+    "WI-01: Derivar ordem de build das referências entre projetos/headers/libs, sem presumir apenas ordem da solução.",
+    "WI-02: Separar bibliotecas que têm fonte das que só têm binário e contrato ABI externo.",
+    "WI-03: Compilar módulos autorizados em diretório vazio e registrar configurações Unicode/CRT correspondentes.",
+    "WI-04: Relacionar cada .lib usada pelo cliente ao output produzido ou à dependência externa verificada."
+  ],
+  "acceptance": [
+    "Mapa de linker permite identificar produtor e arquitetura de cada biblioteca consumida pelo cliente.",
+    "Caso negativo obrigatório: Uma lib encontrada pelo nome com CRT/arquitetura incompatível é rejeitada, não reutilizada silenciosamente.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "powershell -File scripts/research/build-libraries-windows.ps1",
+    "Positivo: Mapa de linker permite identificar produtor e arquitetura de cada biblioteca consumida pelo cliente.",
+    "Negativo: Uma lib encontrada pelo nome com CRT/arquitetura incompatível é rejeitada, não reutilizada silenciosamente.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "docs/evidence/",
+    "scripts/research/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: laboratório. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de scripts/research/build-libraries-windows.ps1; docs/evidence/native-libraries.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

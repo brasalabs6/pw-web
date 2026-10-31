@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Manifest contract browser proof</title>
+<pre id="result">RUNNING</pre>
+<script type="module">
+const output = document.querySelector('#result');
+const report = { status: 'RUNNING', passed: [] };
+try {
+  const repoRootProbe = await fetch('/AGENTS.md');
+  if (repoRootProbe.ok) throw new Error('repository root is exposed by the local test server');
+  if (repoRootProbe.status !== 404) throw new Error(`unexpected repo-root probe status ${repoRootProbe.status}`);
+  report.passed.push('repository root not served');
+  const {
+    canonicalBytes,
+    validateBundleReference,
+    validateCatalogReference,
+    validateContentGraph,
+    validateDocument,
+    validateReleaseContent,
+  } = await import('../../tools/contracts/manifest-validator.mjs');
+  const readBytes = async name => {
+    const response = await fetch(`../fixtures/manifests/${name}`);
+    if (!response.ok) throw new Error(`fixture ${name}: HTTP ${response.status}`);
+    return new Uint8Array(await response.arrayBuffer());
+  };
+  const indexBytes = await readBytes('content-index.json');
+  const catalogBytes = await readBytes('content-catalog-f1.json');
+  const bundleBytes = await readBytes('content-bundle-bootstrap-ui.json');
+  const releaseBytes = await readBytes('release-diagnostic.json');
+  const index = await validateDocument('index', indexBytes);
+  const catalog = await validateDocument('catalog', catalogBytes);
+  const bundle = await validateDocument('bundle', bundleBytes);
+  const release = await validateDocument('release', releaseBytes);
+  const checkedCatalog = await validateCatalogReference({ index: indexBytes, catalog: catalogBytes });
+  await validateBundleReference({ catalog: canonicalBytes(checkedCatalog), bundle: bundleBytes });
+  report.passed.push('lazy index/catalog/bundle hash chain');
+  if (!await validateContentGraph({ index, catalogs: [catalog], bundles: [bundle] })) {
+    throw new Error('content graph rejected');
+  }
+  report.passed.push('content graph and schema modules');
+  if (!await validateReleaseContent({ release, index, catalogs: [catalog], bundles: [bundle] })) {
+    throw new Error('release graph rejected');
+  }
+  report.passed.push('release pins content graph');
+  let negativeCode = '';
+  try {
+    await validateDocument('bundle', canonicalBytes({
+      ...bundle,
+      assets: [{ ...bundle.assets[0], path: '../escape' }],
+    }));
+  } catch (error) {
+    negativeCode = String(error.message).split(':')[0];
+  }
+  if (negativeCode !== 'InvalidPath') throw new Error(`negative path returned ${negativeCode}`);
+  report.passed.push('negative traversal rejected');
+  report.status = 'PASS';
+} catch (error) {
+  report.status = 'FAIL';
+  report.error = String(error?.stack || error);
+}
+output.textContent = JSON.stringify(report, null, 2);
+output.dataset.state = report.status;
+</script>

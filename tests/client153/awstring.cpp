@@ -1,0 +1,56 @@
+#include "AWString.h"
+#include "widestr.h"
+#include <cstdio>
+#include <stdexcept>
+#define CHECK(x) do { if (!(x)) throw std::runtime_error(#x); } while (false)
+int main() {
+  AWString source(L"Lobo \U0001f43a"), copy(source);
+  copy[0] = u'l';
+  CHECK(source == L"Lobo \U0001f43a");
+  CHECK(copy == L"lobo \U0001f43a");
+  CHECK(source.GetLength() == 7);
+  copy += L" 153";
+  CHECK(copy.Find(L"153") == 8);
+  auto *buffer = copy.GetBuffer(32);
+  buffer[0] = u'L';
+  copy.ReleaseBuffer();
+  CHECK(copy == L"Lobo \U0001f43a 153");
+  AWString formatted;
+  formatted.Format(L"%s %d %.2f %I64d %%", L"Lobo", 42, 1.25, 1234567890123LL);
+  CHECK(formatted == L"Lobo 42 1.25 1234567890123 %");
+  AWString font(L"Fonte");
+  wchar_t font_record[256];
+  pw153::platform::wide_sprintf(font_record, L"%s###%d###%d###%d###%d",
+                                static_cast<const wchar_t*>(font), 1, 2, 0, 1);
+  CHECK(AWString(font_record) == L"Fonte###1###2###0###1");
+  wchar_t long_text[301];
+  for (int i = 0; i < 300; ++i) long_text[i] = L'x';
+  long_text[300] = 0;
+  wchar_t long_result[400];
+  CHECK(pw153::platform::wide_sprintf(long_result, L"%s", long_text) == 300);
+  CHECK(AWString(long_result) == long_text);
+  wchar_t bounded[5] = {L'?', L'?', L'?', L'?', L'!'};
+  CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abc") == 3);
+  CHECK(bounded[3] == 0 && bounded[4] == L'!');
+  CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abcd") == 4);
+  CHECK(bounded[3] == L'd' && bounded[4] == L'!');
+  CHECK(pw153::platform::wide_snprintf(bounded, 4, L"%s", L"abcdef") == -1);
+  CHECK(bounded[3] == L'd' && bounded[4] == L'!');
+  CHECK(pw153::platform::wide_snprintf(nullptr, 0, L"%s", L"x") == -1);
+  FILE *table = std::tmpfile();
+  CHECK(table != nullptr);
+  CHECK(pw153::platform::wide_fprintf_utf16le(table, L"%d\t\"%s\"\n", 7, L"Olá") == 8);
+  CHECK(std::fseek(table, 0, SEEK_SET) == 0);
+  const unsigned char expected[] = {'7', 0, '\t', 0, '"', 0, 'O', 0, 'l', 0, 0xe1, 0, '"', 0, '\n', 0};
+  unsigned char actual[sizeof(expected)];
+  CHECK(std::fread(actual, 1, sizeof(actual), table) == sizeof(actual));
+  for (std::size_t i = 0; i < sizeof(actual); ++i) CHECK(actual[i] == expected[i]);
+  CHECK(std::fclose(table) == 0);
+  char long_narrow[301];
+  for (int i = 0; i < 300; ++i) long_narrow[i] = 'x';
+  long_narrow[300] = 0;
+  CHECK(pw153::platform::wide_sprintf(long_result, L"%S", long_narrow) == 300);
+  CHECK(AWString(long_result) == long_text);
+  AWString number(L"9223372036854775807");
+  CHECK(number.ToInt64() == 9223372036854775807LL);
+}

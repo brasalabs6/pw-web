@@ -1,0 +1,10 @@
+'use strict';
+const assert = require('node:assert/strict');
+const {classify} = require('./browser-entry-outcome.cjs');
+assert.equal(classify('starting\n{"type":"return","result":-1}'), 'failed');
+assert.equal(classify('starting\n{"type":"exception","text":"x"}'), 'failed');
+assert.equal(classify('starting\nWORKER ERROR x'), 'failed');
+assert.equal(classify('starting'), 'incomplete');
+assert.equal(classify('starting\n{"type":"return","result":0}'), 'returned');
+assert.equal(classify('starting\n{"type":"return","result":"0"}'), 'failed');
+console.log('PASS: browser entry outcomes');

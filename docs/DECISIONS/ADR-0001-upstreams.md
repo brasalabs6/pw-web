@@ -1,6 +1,6 @@
 # ADR-0001 — Referências upstream por gitlinks pinados
 
-**Status:** aceito para bootstrap, sujeito ao gate jurídico.
+**Status:** aceito; gate jurídico documentado em `docs/LEGAL.md` (2026-10-25).
 **Data:** 2026-10-24.
 
 ## Contexto
@@ -11,5 +11,5 @@ Adicionar `.gitmodules` e gitlinks com SHA fixo para 1.5.3, 1.5.2 modernizada e 
 
 ## Consequências
 - Rastreabilidade de versões e diffs; desenvolvedor pode inicializar apenas a referência necessária.
-- Submodule não dá permissão de redistribuir, licença de modificação ou ownership; gate `docs/LEGAL.md`.
+- Submodule fixa o upstream; uso/redistribuição segue a autorização registrada em `docs/LEGAL.md`.
 - Edições em submódulo precisam de fork/autorização e mudança deliberada do gitlink, não são projeto próprio automaticamente.

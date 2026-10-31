@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "epic": "e06-render-webgl2-v1",
+  "id": "wo-14",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Adaptar o primeiro draw original para o backend browser",
+  "objective": "Construir renderer WebGL2 por subconjuntos e adaptar um primeiro draw Angelica somente após closure, baseline e autorização. Nesta workorder: Adaptar o primeiro draw original para o backend browser. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P1",
+  "risk": "Qualquer símbolo sem implementação ou feature usada ausente bloqueia; não retornar sucesso falso.",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e06-render-webgl2-v1/wo-13",
+    "e06-render-webgl2-v1/wo-02",
+    "e06-render-webgl2-v1/wo-03",
+    "e00-rights-governance-v1/wo-02"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    ".agents/epics/e06-render-webgl2-v1/contracts/render-r0.md",
+    "docs/DECISIONS/ADR-0004-incremental-port-method.md",
+    "docs/evidence/first-draw-closure.md",
+    "docs/contracts/angelica-render-mapping.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: engine/angelica_port/; tests/render/angelica_draw/; docs/evidence/angelica-first-draw.md",
+    "WI-01: Confirmar autorização específica e área de port aprovada antes de incluir qualquer código de referência.",
+    "WI-02: Adaptar somente arquivos/chamadas da closure aprovada, mantendo references congeladas.",
+    "WI-03: Converter dados para a fronteira sem mudar semântica de matriz/cor e fechar acessos diretos D3D usados.",
+    "WI-04: Comparar o mesmo draw no baseline Windows e no browser, registrando capabilities ausentes."
+  ],
+  "acceptance": [
+    "Um draw executado pelo caminho original adaptado coincide com os valores/pixels da baseline.",
+    "Caso negativo obrigatório: Qualquer símbolo sem implementação ou feature usada ausente bloqueia; não retornar sucesso falso.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "Runner específico da closure definido em WO-13, com build Windows e browser.",
+    "Positivo: Um draw executado pelo caminho original adaptado coincide com os valores/pixels da baseline.",
+    "Negativo: Qualquer símbolo sem implementação ou feature usada ausente bloqueia; não retornar sucesso falso.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "docs/evidence/",
+    "engine/angelica_port/",
+    "tests/render/angelica_draw/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: integração. Prontidão: Integração bloqueada até closure, baseline e autorização; engine/angelica_port é destino proposto, não autorização de cópia. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de engine/angelica_port/; tests/render/angelica_draw/; docs/evidence/angelica-first-draw.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

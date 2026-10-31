@@ -1,0 +1,3 @@
+//	The original include <BITSET> resolved to the STL <bitset> on
+//	case-insensitive Windows; the port keeps that resolution.
+#include <bitset>

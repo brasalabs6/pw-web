@@ -16,9 +16,9 @@ Antes de contribuir, leia `AGENTS.md`, `docs/ONBOARDING.md` e `docs/LEGAL.md`. F
 - Checklist jurídico/terceiros quando aplicável.
 
 ## Política de dependências e conteúdo
-- Terceiros em submódulos com commit fixo, jamais copiar sem autorização.
-- Assets do jogo só em diretórios locais ignorados pelo Git, e somente quando seu uso estiver autorizado.
-- Nenhum binário distribuível do jogo incluído em CI/publicações até aprovação.
+- Terceiros em submódulos com commit fixo; copiar para o port somente no escopo da autorização documentada em `docs/LEGAL.md` (2026-10-25).
+- Assets do jogo: uso permitido no escopo da autorização; manter registro de proveniência e preservar headers de copyright.
+- Nenhum binário distribuível do jogo incluído em CI/publicações fora do escopo da autorização.
 - Não modificar código de referência in-place como se fosse nosso código; desenvolva adapters próprios ou forks autorizados.
 
 ## Testar

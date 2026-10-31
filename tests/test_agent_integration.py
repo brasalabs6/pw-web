@@ -60,11 +60,20 @@ class AgentIntegrationTests(unittest.TestCase):
                                 "--require", "e02-native-client-baseline-v1/wo-01")
             self.assertNotEqual(blocked.returncode, 0)
             self.assertIn("not eligible", blocked.stderr)
+            # Automated runtime work is unblocked only by the verified e01 dependency.
+            gated = self.call("backlog_pick.py", "--merged", merged,
+                              "--require", "e04-wasm-runtime-v1/wo-01")
+            self.assertNotEqual(gated.returncode, 0)
             completed = [{"title": f"agent: e01-agent-orchestration-v1 / wo-{i:02d}"} for i in range(1,6)]
             merged.write_text(json.dumps(completed))
             now = self.call("backlog_pick.py", "--merged", merged,
-                            "--require", "e02-native-client-baseline-v1/wo-01")
+                            "--require", "e04-wasm-runtime-v1/wo-01")
             self.assertEqual(now.returncode, 0, now.stderr)
+            # Manual gates never turn into automatic dispatch based on merged dependencies.
+            manual = self.call("backlog_pick.py", "--merged", merged,
+                               "--require", "e02-native-client-baseline-v1/wo-01")
+            self.assertNotEqual(manual.returncode, 0)
+            self.assertIn("not eligible", manual.stderr)
 
 if __name__ == "__main__":
     unittest.main()

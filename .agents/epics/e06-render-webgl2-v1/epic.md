@@ -1,43 +1,35 @@
-# Epic Charter: Renderer WebGL2 da engine Angelica
+# Epic — Renderer WebGL2 da engine Angelica
 
-- **Identificador:** `e06-render-webgl2-v1`
-- **Versão:** 1.0.0 (alterações semânticas exigem PR + ADR)
-- **Status:** planned
-- **Objetivo mensurável:** Substituir estado Direct3D8/9 da Angelica por backend WebGL2 verificável, com recursos, vertex formats, depth/cull/blend, fixed function em shaders e gestão de contexto.
-- **Principal dependência:** `e05-asset-pipeline-v1`, salvo workorders independentes documentados
-- **Proprietário da decisão:** Tech Lead do PW Web; gates jurídicos pelo responsável de IP.
+Construir renderer WebGL2 por subconjuntos e adaptar um primeiro draw Angelica somente após closure, baseline e autorização.
 
-## Contexto e razão de existir
-A conversão para WebAssembly requer validação progressiva de compatibilidade, direitos, API de plataforma, recursos originais, cliente e realm. Este épico reduz especificamente os riscos de **semântica D3D↔GL divergente; shaders D3DX indisponíveis; perda do contexto GPU e leaking buffers**. A execução não significa entrega do jogo inteiro: separa componentes demonstráveis de conjecturas.
+## Resultado esperado
 
-## Entradas e artefatos
-- engine/render
-- web/renderer
-- tests/render
+Backend sintético e, condicionado aos gates, primeiro draw original comparado; e07 só consome WO-05 homologada.
 
-## Contratos de saída obrigatórios
-- IRenderDevice
-- ITexture
-- IMeshBuffer
-- IPipelineState
-- IMaterial
+## Limites
 
-## Critérios executivos de sucesso
-- golden images com tolerância registrada
-- frametime e draw calls
-- recursos GPU liberados sem vazamento
+Uma workorder por patch/PR. Artefatos de laboratório ficam em artifacts; evidência
+sanitizada fica em docs/evidence. Não alterar executor, referências fixadas ou
+contratos de outros repositórios. POC e scene sintética não são gameplay real.
 
-## Fora do escopo
-- Distribuir código/assets de terceiros sem permissão documentada.
-- Substituir testes por declarações verbais ou prints sem contexto.
-- Liberar alterações diretamente em produção; workorders entram em PR, com revisão e CI.
-- Tratar fixtures sintéticas como prova da funcionalidade integral do Perfect World.
+## Estado e proveniência
 
-## Dependências e desbloqueio
-- Referência de cliente/engine/protocolo explicitamente identificada em testes.
-- Contratos e controles em `AGENTS.md` seguidos integralmente.
-- Ambientes de desenvolvimento isolados e artefatos reproduzíveis.
-- Decisões de mudança de stack, versão ou direitos documentadas em ADR.
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Definition of done
-Cinco workorders com evidência verificável; aceitação e limites documentados; matriz de riscos atualizada; testes unitários/integrados pertinentes executados; revisão técnica e, quando aplicável, revisão jurídica.
+## Riscos e incertezas
+
+- [HIGH][Confirmed] Há chamadas D3D fora de A3DDevice; closure precisa ser fechada por fatia.
+- [HIGH][Likely] Transposição, ARGB, profundidade e winding podem compilar e desenhar errado.
+- [HIGH][Possible] IDs antigos após context loss ou shader fallback silencioso criam falso sucesso visual.
+
+(HUMAN) Liberar integração do legado e recursos da baseline (WO-14/05). R0 sintético avança sem assets comerciais; paridade original não.
+
+## Contratos
+
+- [.agents/epics/e06-render-webgl2-v1/contracts/render-r0.md](../../../.agents/epics/e06-render-webgl2-v1/contracts/render-r0.md)
+- [docs/DECISIONS/ADR-0004-incremental-port-method.md](../../../docs/DECISIONS/ADR-0004-incremental-port-method.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.

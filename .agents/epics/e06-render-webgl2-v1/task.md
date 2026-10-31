@@ -1,11 +1,10 @@
 # Task master — e06-render-webgl2-v1
 
-Resumo operacional (detalhamento completo em [tasks.md](tasks.md)). A unidade de execução automatizável é uma workorder, não o épico inteiro.
+Construir renderer WebGL2 por subconjuntos e adaptar um primeiro draw Angelica somente após closure, baseline e autorização.
 
-- [ ] [WO-01](workorders/wo-01.md): Inventariar render states realmente usados na Angelica2 e dependências D3D8
-- [ ] [WO-02](workorders/wo-02.md): Definir tabelas de equivalência de vertex formats e estados blend/cull/depth
-- [ ] [WO-03](workorders/wo-03.md): Implementar backend WebGL2 incremental com shaders do subconjunto utilizado
-- [ ] [WO-04](workorders/wo-04.md): Integrar materiais, texturas, render targets, transparência e context restoration
-- [ ] [WO-05](workorders/wo-05.md): Validar paridade visual com screenshot Windows e GPU capture autorizados
+Usar [tasks.md](tasks.md) para os 64 workitems e [README](README.md) para
+a matriz de 16 workorders. IDs wo-01..05 são preservados; executar pelo
+DAG. Não interpretar este resumo como permissão para fazer todas as tarefas numa
+única alteração. Cada trabalho tem inputs, scopes, negativo e comando específico.
 
-**Regras:** validar dependências, código de terceiros/direitos e critérios de aceite antes de despachar. Configuração/execução dos agentes em `docs/AUTONOMY.md`. Revisão humana obrigatória antes de merge.
+(HUMAN) Liberar integração do legado e recursos da baseline (WO-14/05). R0 sintético avança sem assets comerciais; paridade original não.

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "epic": "e02-native-client-baseline-v1",
+  "id": "wo-06",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Provisionar matriz reproduzível de VS2005 e SDKs no laboratório",
+  "objective": "Obter uma baseline Windows reproduzível e evidência suficiente para selecionar versão, SDKs, assets e realm sem misturar candidatos. Nesta workorder: Provisionar matriz reproduzível de VS2005 e SDKs no laboratório. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P0",
+  "risk": "VS de arquitetura errada ou d3dx8 ausente bloqueia antes do build do cliente.",
+  "automation": false,
+  "requires_human_review": true,
+  "dependencies": [
+    "e02-native-client-baseline-v1/wo-02"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    "docs/VALIDATION.md",
+    "docs/DECISIONS/ADR-0003-version-selection.md",
+    "docs/evidence/client-compatibility.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: docs/evidence/windows-toolchain.md; scripts/research/check-windows-toolchain.ps1",
+    "WI-01: Identificar versões de Visual C++, Windows SDK, DirectX e SDKs middleware exigidos por Release Win32.",
+    "WI-02: Registrar origem autorizada, arquitetura e hashes dos instaladores sem redistribuí-los.",
+    "WI-03: Criar preflight que verifica ferramentas e compila um programa Win32 trivial com o SDK selecionado.",
+    "WI-04: Documentar restauração do ambiente e comando real do builder; nenhum segredo entra no relatório."
+  ],
+  "acceptance": [
+    "Preflight distingue compilador, headers e linker disponíveis e passa no laboratório usado em WO-03.",
+    "Caso negativo obrigatório: VS de arquitetura errada ou d3dx8 ausente bloqueia antes do build do cliente.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "powershell -File scripts/research/check-windows-toolchain.ps1",
+    "Positivo: Preflight distingue compilador, headers e linker disponíveis e passa no laboratório usado em WO-03.",
+    "Negativo: VS de arquitetura errada ou d3dx8 ausente bloqueia antes do build do cliente.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "docs/evidence/",
+    "scripts/research/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": true
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: laboratório. Prontidão: (HUMAN) acesso/provisionamento de Windows e SDKs autorizados. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de docs/evidence/windows-toolchain.md; scripts/research/check-windows-toolchain.ps1. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "epic": "e04-wasm-runtime-v1",
+  "id": "wo-10",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Automatizar smoke browser com cenários de sucesso e falha",
+  "objective": "Entregar toolchain reproduzível, binding, bootstrap e loop cooperativo, testados no WASM real com falhas observáveis. Nesta workorder: Automatizar smoke browser com cenários de sucesso e falha. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P0",
+  "risk": "Página que fica RUNNING para sempre termina em timeout/falha, não em teste pulado.",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e04-wasm-runtime-v1/wo-07",
+    "e04-wasm-runtime-v1/wo-08",
+    "e04-wasm-runtime-v1/wo-09",
+    "e01-agent-orchestration-v1/wo-05"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: tests/browser/runtime-smoke.mjs; scripts/test-wasm-browser.sh; docs/evidence/browser-runtime.md",
+    "WI-01: Criar runner browser local com ferramenta disponível ou dependência mínima justificada; registrar versão exata.",
+    "WI-02: Exigir import/execução WASM, resultado numérico, estado final e ausência de erros inesperados.",
+    "WI-03: Cobrir missing wasm, baseline adulterada, init duplicada, pause/resume e dispose.",
+    "WI-04: Emitir JSON de resultado e exit code !=0 para falha/timeout/ferramenta ausente; não aceitar screenshot isolada."
+  ],
+  "acceptance": [
+    "O runner falha automaticamente nos casos negativos e passa no browser com ambiente identificado.",
+    "Caso negativo obrigatório: Página que fica RUNNING para sempre termina em timeout/falha, não em teste pulado.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "./scripts/test-wasm-browser.sh (criar nesta WO); ./scripts/verify.sh",
+    "Positivo: O runner falha automaticamente nos casos negativos e passa no browser com ambiente identificado.",
+    "Negativo: Página que fica RUNNING para sempre termina em timeout/falha, não em teste pulado.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "docs/evidence/",
+    "scripts/",
+    "tests/browser/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: implementação. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de tests/browser/runtime-smoke.mjs; scripts/test-wasm-browser.sh; docs/evidence/browser-runtime.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

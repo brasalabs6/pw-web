@@ -1,0 +1,16 @@
+<!doctype html>
+<!-- The browser entry probe page (m-boot): runs on the MAIN THREAD (no
+     worker, no transferControlToOffscreen) so the WebGL2 context renders
+     directly on the visible canvas. The sync XHR for package reads works
+     on the main thread (with a deprecation warning) — this is the
+     least-effort path to verify the rendering pipeline. -->
+<canvas id="canvas" width="1024" height="768"></canvas>
+<pre id="status">starting</pre>
+<script>
+// The module's pre-js (client153-entry-browser-pre.js) defines var Module
+// and runs onRuntimeInitialized. The canvas is NOT transferred to
+// offscreen — the WebGL2 context renders directly on this canvas.
+window.pwCanvas = document.querySelector('#canvas');
+window.pwStatus = document.querySelector('#status');
+</script>
+<script src="/entry.js"></script>

@@ -1,37 +1,22 @@
 # Requisitos — Toolchain C++/Emscripten e runtime WebAssembly
 
-## Requisitos funcionais (RF)
-- **RF-01**: Fixar versão/flags da toolchain Emscripten e matriz debug/release. Deve expor contrato testável e permitir falha controlada.
-- **RF-02**: Implementar binding ABI simples com typed buffers e error codes. Deve expor contrato testável e permitir falha controlada.
-- **RF-03**: Criar loop cooperativo requestAnimationFrame com pause/resume. Deve expor contrato testável e permitir falha controlada.
-- **RF-04**: Medir memória, exceções, heap growth, threads e COOP/COEP opt-in. Deve expor contrato testável e permitir falha controlada.
-- **RF-05**: Criar testes WASM automatizados em browser e comparação nativo↔WASM. Deve expor contrato testável e permitir falha controlada.
+Cada requisito abaixo tem uma workorder proprietária. Resultado mensurável prevalece
+sobre presença de arquivos. Schema ou ambiente ausente mantém a tarefa bloqueada.
 
-## Interfaces e estados esperados
-- **API-1 module factory async:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-2 API exportada C estável:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-3 memory lifecycle:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
-- **API-4 JS↔WASM typed buffers:** contrato versionado com entrada inválida rejeitada, tipos explícitos, timeout/cancelamento quando aplicável, erros estruturados, logs correlacionados por trace e testes de backward compatibility.
+- **RF-01 / WO-01:** Com toolchain declarada, build e smoke são reproduzíveis; não exige baixar referências.
+- **RF-02 / WO-02:** Typed buffer é interpretado com layout de 32 bits acordado; o round-trip real preserva os bytes.
+- **RF-03 / WO-03:** Após pausa longa, resume não simula o tempo oculto inteiro nem agenda dois loops.
+- **RF-04 / WO-04:** Relatório contém cenário, dispositivo, limites observados e lacunas; nenhuma capacidade de thread é presumida.
+- **RF-05 / WO-05:** Gate documenta execução real WASM e rejeição de baseline errada; POC-001 sozinha não conclui a WO.
+- **RF-06 / WO-06:** Bridge/loop/bootstrap podem ser implementados sem decidir schemas ou lifetime durante o código.
+- **RF-07 / WO-07:** Dados sobrevivem ao crescimento e nenhuma view obsoleta é usada pelo consumidor.
+- **RF-08 / WO-08:** Consumidor só recebe instância pronta e uma inicialização ativa; erro não vira rótulo genérico de sucesso.
+- **RF-09 / WO-09:** Após falha/dispose não há ticks, listeners ativos nem referência retida a buffers liberados.
+- **RF-10 / WO-10:** O runner falha automaticamente nos casos negativos e passa no browser com ambiente identificado.
 
-## Requisitos não funcionais (RNF)
-- **Compatibilidade:** browser sem acesso a Win32/Direct3D/TCP raw; identificar plataforma alvo e protocolo exatos.
-- **Performance:** medir sem criar números falsos; budgets definidos e aprovados antes de otimizações. Instrumentar paridade de unit tests; tempo de inicialização medido; peak linear memory sob orçamento definido.
-- **Confiabilidade:** operação repetível, sem vazamento de recursos, retry idempotente, tratamento de dados inconsistentes, queda de contexto e timeouts.
-- **Segurança:** entrada externa não confiável, bounds checking, saneamento de caminhos, rate limiting quando houver rede, segredos só no lado apropriado.
-- **Qualidade:** testes com fixtures sintéticas/permitidas, ambiente e hash de commit anotados, evidências anexadas ao PR.
-- **Licenciamento:** conteúdo de terceiros só após gate de direitos; submódulos são referências não integradas automaticamente.
-- **Observabilidade:** telemetria com eventos de erro e performance, sem capturar senhas, tokens, chats privados ou conteúdo protegido desnecessariamente.
+## Requisitos transversais
 
-## Restrições e não objetivos
-- Mitigar risco de builds diferentes por emsdk
-- Mitigar risco de OOM e pointers inválidos
-- Mitigar risco de browser bloqueia SharedArrayBuffer
-- Não propor funcionalidades não verificadas como implementadas.
-- Não acoplar endpoints de produção a testes de laboratório.
-- Não extrapolar qualidade de WebGL procedural para cliente real.
-
-## Evidências mínimas
-- Comando de build/teste e plataforma.
-- Fixture esperada e obtida, junto ao commit exato.
-- Resultado pass/fail/blocked, logs e comparação, orçamento/limites quando relevante.
-- Lista de divergências persistentes e próximo experimento testável.
+- Sem fontes/assets proprietários no build público sem decisão documentada.
+- Mesmo caso reproduzível no ambiente declarado; todos os testes obrigatórios contam.
+- Input inválido, lifetime e limites tratados antes de efeitos irreversíveis.
+- Comandos planejados não são evidência; saída real com versão/SHA é obrigatória.

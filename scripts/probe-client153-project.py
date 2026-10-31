@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+"""Inventory the pinned VC project and check or compile its sources with Emscripten."""
+import argparse
+import hashlib
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
+import json
+import re
+from pathlib import Path
+import subprocess
+import xml.etree.ElementTree as ET
+
+
+def resolve_windows(root, relative):
+    current = root
+    for component in relative.replace('\\', '/').split('/'):
+        if component in ('', '.'):
+            continue
+        if component == '..':
+            current = current.parent
+            continue
+        exact = current / component
+        if exact.exists():
+            current = exact
+            continue
+        matches = [p for p in current.iterdir() if p.name.casefold() == component.casefold()] if current.is_dir() else []
+        if len(matches) > 1:
+            raise ValueError(f'ambiguous Windows path: {relative}')
+        current = matches[0] if matches else exact
+    return current
+
+
+def split_includes(value):
+    return [item.strip() for item in re.split(r'[;,]', value) if item.strip()]
+
+
+def uses_aui_prelude(project):
+    return project.replace('\\', '/').startswith(('Element/CElementClient/', 'Common/AUInterface2/'))
+
+
+def port_include_dirs(port_root):
+    port_root = port_root.resolve()
+    paths = [port_root / directory for directory in
+             ('AngelicaCommon/Header', 'AngelicaFile/Header', 'Angelica3D/Header')]
+    paths.append(port_root.parent / 'platform' / 'common')
+    return paths
+
+
+def source_path(root, adapted_root, relative):
+    if adapted_root:
+        adapted = adapted_root / relative
+        if adapted.is_file():
+            return adapted
+    return root / relative
+
+
+def portable_include_dirs(root, includes):
+    windows_zlib = root / 'Angelica2' / 'Output' / '3rdsdk' / 'include' / 'zlib'
+    return [path for path in includes if path != windows_zlib]
+
+
+def object_command(command, object_dir, source_path):
+    digest = hashlib.sha256(source_path.encode('utf-8')).hexdigest()
+    return [part for part in command if part != '-fsyntax-only'] + [
+        '-c', '-o', str(object_dir / (digest + '.o'))]
+
+
+def first_error(stderr):
+    for line in stderr.splitlines():
+        for marker in ('fatal error: ', 'error: '):
+            if marker in line:
+                return marker + line.split(marker, 1)[1]
+    return 'no compiler error diagnostic'
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--emxx', required=True)
+    parser.add_argument('--project', default='Element/CElementClient/ElementClient.vcproj')
+    parser.add_argument('--configuration', default='Release|Win32')
+    parser.add_argument('--entry', default='ElementClient.cpp')
+    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--all', action='store_true', help='syntax-check every non-excluded source')
+    parser.add_argument('--port-root', type=Path, help='prefer already ported Angelica headers')
+    parser.add_argument('--adapted-root', type=Path, help='compile the adapted copy of a source when one exists under this root')
+    parser.add_argument('--extra-project', type=Path, action='append', help='additional .vcproj to compile after the main project')
+    parser.add_argument('--jobs', type=int, default=4)
+    parser.add_argument('--object-dir', type=Path, help='compile the entry or, with --all, every source to WASM objects')
+    args = parser.parse_args()
+    if args.jobs < 1 or args.jobs > 16:
+        parser.error('--jobs must be between 1 and 16')
+    root = args.source.resolve()
+    adapted_root = args.adapted_root.resolve() if args.adapted_root else None
+    project = root / args.project
+    tree = ET.fromstring(project.read_bytes().decode('gb18030'))
+    config = next((c for c in tree.findall('./Configurations/Configuration') if c.attrib['Name'] == args.configuration), None)
+    if config is None:
+        parser.error('configuration not present in original project')
+    tools = {t.attrib['Name']: t.attrib for t in config.findall('Tool')}
+    cc = tools['VCCLCompilerTool']
+    includes = [resolve_windows(project.parent, p) for p in split_includes(cc['AdditionalIncludeDirectories'])]
+    includes = portable_include_dirs(root, includes)
+    if args.adapted_root:
+        #	Mirror every reference include dir that exists in the adapted
+        #	tree, ahead of the reference, so include chains stay inside the
+        #	adapted copies (prevents double-parsing the same header from both
+        #	trees).
+        mirrored = []
+        for inc in includes:
+            try:
+                rel = inc.relative_to(root)
+            except ValueError:
+                continue
+            adapted_inc = args.adapted_root.resolve() / rel
+            if adapted_inc.is_dir():
+                mirrored.append(adapted_inc)
+        includes = mirrored + includes
+    sources = []
+    for entry in tree.findall('.//File'):
+        path = resolve_windows(project.parent, entry.attrib['RelativePath'])
+        if path.suffix.lower() not in ('.cpp', '.c', '.cxx'):
+            continue
+        excluded = any(x.attrib.get('ExcludedFromBuild') == 'true' for x in [x for x in entry.findall('./FileConfiguration') if x.attrib['Name'] == args.configuration])
+        sources.append(dict(path=str(path.relative_to(root)), exists=path.is_file(), excluded=excluded))
+    seam = (args.port_root.parent / 'platform' / 'common' / 'Windows.h') if args.port_root else None
+    forced = ['-include', str(seam.resolve())] if seam and seam.is_file() else []
+    #	The original build supplied the AUI widget types through precompiled
+    #	headers; the SDK's AUIDialog.h uses AUIComboBox without including it.
+    #	The widget chain compiles against the port; the D3D font headers stay
+    #	out of this prelude (they belong to the renderer cycle).
+    #	Prefer the adapted AUI library copies (the full header set lives in
+    #	Common/AUInterface2; the prebuilt SDK include dir only carries part of
+    #	it, so its same-dir chains break).
+    for aui_dir in ((Path('Common') / 'AUInterface2', Path('Common') / 'Output' / 'include' / 'aui')
+                    if uses_aui_prelude(args.project) else ()):
+        widgets = [w for w in ('AUIListBox.h', 'AUIComboBox.h', 'AUIEditBox.h', 'AUILabel.h',
+                               'AUIStillImageButton.h', 'AUICheckBox.h', 'AUIImagePicture.h',
+                               'AUIDialog.h')
+                  if source_path(root, adapted_root, aui_dir / w).is_file()]
+        if len(widgets) == 8:
+            for widget in widgets:
+                forced += ['-include', str(source_path(root, adapted_root, aui_dir / widget))]
+            break
+    sdk_forward = args.port_root.parent / 'platform' / 'common' / 'sdk_forward.h' if args.port_root else None
+    if sdk_forward and sdk_forward.is_file():
+        forced += ['-include', str(sdk_forward.resolve())]
+    #	The original precompiled header supplied the ACHAR macro surface.
+    achar = args.port_root / 'AngelicaCommon' / 'Header' / 'AChar.h' if args.port_root else None
+    if achar and achar.is_file():
+        forced += ['-include', str(achar.resolve())]
+    #	The original precompiled header also supplied the ATime tick surface.
+    atime = args.port_root / 'AngelicaCommon' / 'Header' / 'ATime.h' if args.port_root else None
+    if atime and atime.is_file():
+        forced += ['-include', str(atime.resolve())]
+    entry = resolve_windows(project.parent, args.entry)
+    entry_path = source_path(root, adapted_root, entry.relative_to(root))
+    command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar', '-sUSE_ZLIB=1'] + forced + [str(entry_path)]
+    if args.port_root:
+        for path in port_include_dirs(args.port_root):
+            if not path.is_dir():
+                parser.error(f'port header directory missing: {path}')
+            command += ['-I', str(path)]
+    for path in includes:
+        command += ['-I', str(path)]
+    command += ['-D' + d for d in cc['PreprocessorDefinitions'].split(';') if d]
+    if args.object_dir and not args.all:
+        args.object_dir.mkdir(parents=True, exist_ok=True)
+        command = object_command(command, args.object_dir.resolve(), str(entry.relative_to(root)))
+        Path(command[-1]).unlink(missing_ok=True)
+    result = subprocess.run(command, capture_output=True, text=True)
+    report = dict(project=args.project, configuration=args.configuration, sources=sources,
+                  includes=[dict(path=str(p.relative_to(root)) if p.is_relative_to(root) else str(p), exists=p.is_dir()) for p in includes],
+                  definitions=cc['PreprocessorDefinitions'].split(';'),
+                  libraries=tools.get('VCLinkerTool', tools.get('VCLibrarianTool', {})).get('AdditionalDependencies', '').split(),
+                  probe=dict(command=command, exitCode=result.returncode, stderr=result.stderr))
+    if args.all:
+        if args.object_dir:
+            args.object_dir.mkdir(parents=True, exist_ok=True)
+        source_index = command.index(str(entry_path))
+        def compile_source(source):
+            cmd = command.copy()
+            cmd[source_index] = str(source_path(root, adapted_root, source['path']))
+            if args.object_dir:
+                cmd = object_command(cmd, args.object_dir.resolve(), source['path'])
+                Path(cmd[-1]).unlink(missing_ok=True)
+            try:
+                outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+                return dict(path=source['path'], exitCode=outcome.returncode,
+                            firstError=first_error(outcome.stderr) if outcome.returncode else None)
+            except subprocess.TimeoutExpired:
+                return dict(path=source['path'], exitCode=-1, firstError='compiler timeout after 120 seconds')
+        active = [source for source in sources if source['exists'] and not source['excluded']]
+        with ThreadPoolExecutor(max_workers=args.jobs) as executor:
+            outcomes = list(executor.map(compile_source, active))
+        groups = Counter(x['firstError'] for x in outcomes if x['firstError'])
+        report['buildMode'] = 'wasm-objects' if args.object_dir else 'syntax-only'
+        report['allSources'] = outcomes
+        report['errorGroups'] = dict(groups.most_common())
+        print(f"Checked {len(outcomes)} sources; {sum(x['exitCode'] == 0 for x in outcomes)} passed")
+        for message, count in groups.most_common(10):
+            print(f'{count:4d} {message}')
+    extra_failed = False
+    for extra in args.extra_project or []:
+        extra_project = extra.resolve()
+        extra_tree = ET.fromstring(extra_project.read_bytes().decode('gb18030'))
+        extra_config = next((c for c in extra_tree.findall('./Configurations/Configuration') if c.attrib['Name'] == args.configuration), None)
+        if extra_config is None:
+            print(f'Extra project {extra_project.name}: configuration not present, skipped')
+            extra_failed = True
+            continue
+        extra_tools = {t.attrib['Name']: t.attrib for t in extra_config.findall('Tool')}
+        extra_cc = extra_tools['VCCLCompilerTool']
+        extra_includes = [resolve_windows(extra_project.parent, p) for p in split_includes(extra_cc['AdditionalIncludeDirectories'])]
+        extra_includes = portable_include_dirs(root, extra_includes)
+        if adapted_root:
+            mirrored_extra = []
+            for inc in extra_includes:
+                try:
+                    rel = inc.relative_to(root)
+                except ValueError:
+                    continue
+                adapted_inc = adapted_root / rel
+                if adapted_inc.is_dir():
+                    mirrored_extra.append(adapted_inc)
+            extra_includes = mirrored_extra + extra_includes
+        extra_sources = []
+        for entry in extra_tree.findall('.//File'):
+            path = resolve_windows(extra_project.parent, entry.attrib['RelativePath'])
+            if path.suffix.lower() not in ('.cpp', '.c', '.cxx'):
+                continue
+            excluded = any(x.attrib.get('ExcludedFromBuild') == 'true' for x in [x for x in entry.findall('./FileConfiguration') if x.attrib['Name'] == args.configuration])
+            extra_sources.append(dict(path=str(path.relative_to(root)), exists=path.is_file(), excluded=excluded))
+        extra_command = [args.emxx, '-fsyntax-only', '-ferror-limit=5', '-fms-extensions', '-std=c++17', '-fshort-wchar', '-sUSE_ZLIB=1'] + forced
+        if args.port_root:
+            for path in port_include_dirs(args.port_root):
+                extra_command += ['-I', str(path)]
+        for path in extra_includes:
+            extra_command += ['-I', str(path)]
+        extra_command += ['-D' + d for d in extra_cc['PreprocessorDefinitions'].split(';') if d]
+        extra_index = len(extra_command)
+        extra_command.append('')
+        def compile_extra(source, _cmd=extra_command, _index=extra_index):
+            cmd = list(_cmd)
+            cmd[_index] = str(source_path(root, adapted_root, source['path']))
+            if args.object_dir:
+                cmd = object_command(cmd, args.object_dir.resolve(), source['path'])
+                Path(cmd[-1]).unlink(missing_ok=True)
+            try:
+                outcome = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+                return dict(path=source['path'], exitCode=outcome.returncode,
+                            firstError=first_error(outcome.stderr) if outcome.returncode else None)
+            except subprocess.TimeoutExpired:
+                return dict(path=source['path'], exitCode=-1, firstError='compiler timeout after 120 seconds')
+        active_extra = [s2 for s2 in extra_sources if s2['exists'] and not s2['excluded']]
+        with ThreadPoolExecutor(max_workers=args.jobs) as executor:
+            extra_outcomes = list(executor.map(compile_extra, active_extra))
+        extra_failed |= any(outcome['exitCode'] for outcome in extra_outcomes)
+        report.setdefault('extraProjects', []).append(dict(project=str(extra_project), sources=extra_outcomes))
+        print(f"Extra project {extra_project.name}: {sum(x['exitCode'] == 0 for x in extra_outcomes)}/{len(extra_outcomes)} passed")
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2) + '\n')
+    print(f'{len(sources)} translation units; {sum(not s["exists"] for s in sources)} missing after Windows case resolution')
+    print(result.stderr)
+    return 1 if extra_failed or (args.all and any(x['exitCode'] for x in outcomes)) else result.returncode
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

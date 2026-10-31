@@ -1,43 +1,33 @@
 # Arquitetura — Baseline do cliente Windows e seleção validada da Angelica
 
-## Contexto no monorepo
-- `references/client-153` — módulo de responsabilidade de implementação/controle
-- `references/client-152-modern` — módulo de responsabilidade de implementação/controle
-- `documentos de build Windows` — módulo de responsabilidade de implementação/controle
-- `testes de comparação` — módulo de responsabilidade de implementação/controle
+Solutions/configuração → inventário de fontes/SDKs → laboratório limpo → bibliotecas → linker → executável por SHA → cena/handshake → ADR. O relatório pertence ao pw-web; o laboratório fornece a evidência, e as referências continuam imutáveis.
 
-## Fluxo de dados e controles
-```text
-workorder versionado → contrato/interface → implementação isolada
-       ↓                     ↓                  ↓
-   gates direitos      testes unitários    testes integração
-       └─────────────→ relatório CI ←────────────┘
-                           ↓
-                      PR para revisão
-```
+## Donos e consumidores
 
-## Interfaces propostas e invariantes
-### 1. matriz de compiladores e SDK
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+Baseline, inventário, matriz SDK/ABI/recursos e ADR de seleção; não entrega o port browser. O pw-web é dono dos novos contratos de plataforma; o servidor
+é dono do wire format; referências são evidência, não dependências automáticas do
+build público. Recursos possuem owner/lifetime explícitos; erro não é sucesso vazio.
 
-### 2. log/sha de executável
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+## Caminhos de falha
 
-### 3. matriz client↔assets↔protocol↔server
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+- WO-01: Projeto com path ausente, macro e case diferente produz três classificações distintas; nenhum é silenciosamente descartado.
+- WO-02: A diferença DWORD Linux=8/wasm32=4 da POC permanece explícita; nome da pasta não é evidência de versão.
+- WO-03: Biblioteca ausente ou máquina incompatível produz FAIL/BLOCKED; artefato antigo não conta como build novo.
+- WO-04: Cliente que abre janela mas falha login permanece parcial e não libera seleção definitiva por suposição.
+- WO-05: Sem build ou direitos, manter BLOCKED/proposto; não marcar wo-05 concluída para liberar outros épicos.
+- WO-06: VS de arquitetura errada ou d3dx8 ausente bloqueia antes do build do cliente.
+- WO-07: Uma lib encontrada pelo nome com CRT/arquitetura incompatível é rejeitada, não reutilizada silenciosamente.
+- WO-08: Mistura acidental com Angelica2.2 ou SDK x64 é identificada na revisão.
+- WO-09: Arquivo com versão ou hash diferente bloqueia o cenário; presença de um .pck qualquer não é suficiente.
+- WO-10: Headers/libs entre versões nunca são combinados como solução para missing symbols.
 
-## Fronteiras
-- O browser só tem WebAssembly/JS/WebGL2/Web Audio/WebSocket/Storage, nunca `Windows.h` ou DirectX nativo.
-- Serviços de jogo continuam autoritativos no backend; decisões do cliente não mudam economia/sessões sem confirmação.
-- Recursos externos entram por parsers com limites; manter trilha de versão, hash e autorização.
-- A plataforma e os contratos são de código nosso; fontes upstream ficam em `references/` e não entram em CI.
+## Dependências reais
 
-## Versionamento e fallback
-- Compatibilidade entre cliente, engine, asset e realm deve constar em manifesto/matriz, não por aproximação.
-- Toda mudança pública de contrato exige teste backwards + ADR.
-- Se inviável ou sem direitos suficientes, manter contrato e substituir implementação por módulo original autorizado.
+Ver dependencies dos JSONs e o grafo em [port-program.md](../../port-program.md).
+Não há requisito global de compilar todo Windows antes de R0 sintético. Integração
+original e paridade final exigem a baseline, closure e autorização correspondentes.
 
-## Observabilidade
-- Medir reprodução com toolchain documentada por cenário, browser, commit e build, preservando a evidência
-- Medir 0 erros não documentados no build qualificado por cenário, browser, commit e build, preservando a evidência
-- Medir versão por screenshot/hash/protocolo por cenário, browser, commit e build, preservando a evidência
+## Contratos canônicos
+
+- [docs/VALIDATION.md](../../../docs/VALIDATION.md)
+- [docs/DECISIONS/ADR-0003-version-selection.md](../../../docs/DECISIONS/ADR-0003-version-selection.md)

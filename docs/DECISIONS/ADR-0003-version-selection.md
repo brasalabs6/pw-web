@@ -9,7 +9,7 @@
 - Rust server: referência de protocolo, em especial versões 1.2.6 e 1.5.5, sem presumir 1.5.3 funcional.
 
 ## Experimentos requeridos
-Build Windows limpo, rastreio de APIs/arquivos, entrada no mundo, compatibilidade assets/protocolo, prova de componente WASM, avaliação jurídica por fonte.
+Build Windows limpo, rastreio de APIs/arquivos, entrada no mundo, compatibilidade assets/protocolo, prova de componente WASM, registro de autorização por fonte conforme `docs/LEGAL.md`.
 
 ## Saída
 Registrar resultados reais em `docs/VALIDATION.md` e converter esta ADR em aceita ou rejeitada. Não escolher por opinião.

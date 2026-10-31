@@ -1,70 +1,31 @@
-# Plano de implementação — Pipeline de recursos PCK/PKX, formatos e proveniência
+# Implementação — Pipeline de recursos PCK/PKX, formatos e proveniência
 
-## Ordem das workorders (cada uma corresponde a PR/uma prova)
-### WO-01 — Catalogar magic/versionamento e limites de PCK/PKX e famílias de arquivos
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+Bytes não confiáveis → reader limitado → índice de variante confirmada → descompressão com budget → nomes lógicos → manifesto/hash → preload → bytes prontos para cena. Contrato do formato vem da evidência do produtor; consumidor não inventa layout.
 
-**Artefato esperado:** IArchiveIndex, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** arquivos >2GB e offsets truncados.
+## Ordem
 
-### WO-02 — Especificar parsing streaming e GBK→Unicode sem confiar em nomes de caminho
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+Seguir o DAG do JSON, não a ordem numérica dos arquivos. IDs antigos são estáveis;
+WO-05 continua sendo gate terminal mesmo quando depende de WO-06 ou posteriores.
+Implementação espera o contrato da dependência e ferramenta real disponível.
 
-**Artefato esperado:** AssetManifest, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** bomba de descompressão e path traversal.
+| WO | Entrega | Automação | Dependências |
+| --- | --- | --- | --- |
+| [WO-01](workorders/wo-01.md) | Catalogar versões e layouts observados dos formatos de assets | assistida | e02-native-client-baseline-v1/wo-01 |
+| [WO-02](workorders/wo-02.md) | Fechar contratos de parsing, encoding e manifesto da fatia | assistida | e05-asset-pipeline-v1/wo-01, e05-asset-pipeline-v1/wo-06 |
+| [WO-03](workorders/wo-03.md) | Integrar parsers defensivos e fuzzing da variante escolhida | sim, após gates | e05-asset-pipeline-v1/wo-07, e05-asset-pipeline-v1/wo-08, e05-asset-pipeline-v1/wo-09, e05-asset-pipeline-v1/wo-10, e01-agent-orchestration-v1/wo-05 |
+| [WO-04](workorders/wo-04.md) | Gerar manifestos determinísticos com hashes e dependências | sim, após gates | e05-asset-pipeline-v1/wo-02, e05-asset-pipeline-v1/wo-03, e01-agent-orchestration-v1/wo-05 |
+| [WO-05](workorders/wo-05.md) | Homologar pipeline com recursos reais autorizados | assistida | e05-asset-pipeline-v1/wo-04, e05-asset-pipeline-v1/wo-11, e05-asset-pipeline-v1/wo-12, e00-rights-governance-v1/wo-02 |
+| [WO-06](workorders/wo-06.md) | Definir limites de leitura e budgets para entradas binárias | sim, após gates | e01-agent-orchestration-v1/wo-05 |
+| [WO-07](workorders/wo-07.md) | Implementar byte reader com limites e endian explícitos | sim, após gates | e05-asset-pipeline-v1/wo-06, e01-agent-orchestration-v1/wo-05 |
+| [WO-08](workorders/wo-08.md) | Implementar índice de uma variante PCK/PKX confirmada | sim, após gates | e05-asset-pipeline-v1/wo-02, e05-asset-pipeline-v1/wo-07, e01-agent-orchestration-v1/wo-05 |
+| [WO-09](workorders/wo-09.md) | Implementar descompressão com tamanho de saída limitado | sim, após gates | e05-asset-pipeline-v1/wo-02, e05-asset-pipeline-v1/wo-07, e01-agent-orchestration-v1/wo-05 |
+| [WO-10](workorders/wo-10.md) | Implementar conversão de nomes e detecção de colisões | sim, após gates | e05-asset-pipeline-v1/wo-02, e03-platform-portability-v1/wo-08, e01-agent-orchestration-v1/wo-05 |
+| [WO-11](workorders/wo-11.md) | Validar manifesto e grafo de dependências no consumidor | sim, após gates | e05-asset-pipeline-v1/wo-04, e01-agent-orchestration-v1/wo-05 |
+| [WO-12](workorders/wo-12.md) | Implementar pré-carregamento assíncrono limitado da primeira cena | sim, após gates | e05-asset-pipeline-v1/wo-11, e04-wasm-runtime-v1/wo-08, e03-platform-portability-v1/wo-10, e01-agent-orchestration-v1/wo-05 |
 
-### WO-03 — Implementar parsers defensivos em fixtures sintéticas e fuzzer de entrada
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
+## Processo
 
-**Artefato esperado:** IAssetDecoder, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** incompatibilidade de versões e redistribuição.
-
-### WO-04 — Gerar manifestos versionados com hashes, tamanhos, offsets e dependências
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
-
-**Artefato esperado:** resource version map, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** arquivos >2GB e offsets truncados.
-
-### WO-05 — Validar casos reais apenas com assets autorizados e decisão de distribuição
-1. Verificar dependências e base do código; não inferir funcionamento.
-2. Definir interfaces, casos limite, erros estruturados e fixtures legítimas.
-3. Implementar menor corte vertical observável sem dependências proprietárias não autorizadas.
-4. Criar testes positivos, negativos, regressão e diagnóstico para CI.
-5. Documentar como reproduzir, comparar medições e submeter PR (sem merge automático).
-
-**Artefato esperado:** IArchiveIndex, teste correspondente e relatório de evidência.
-**Sinal de bloqueio:** bomba de descompressão e path traversal.
-
-## Estratégia de entrega incremental
-- Primeiro mocks/test doubles e formatos neutros/sintéticos; segundo interfaces; terceiro prova real autorizada; quarto comparação; quinto hardening.
-- Cada arquivo alterado precisa estar dentro do `write_scopes` da workorder; `.github`, `.agents/automation`, `references/` e secrets são áreas protegidas.
-- PR descreve explicitamente o que funciona, o que está faltando e como provar.
-- Falha em qualquer gate leva a reparo limitado (máximo 3 tentativas), depois triagem humana.
-
-## Integração entre subsistemas
-- `IArchiveIndex`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `AssetManifest`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `IAssetDecoder`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-- `resource version map`: versão declarada; validação de entrada/saída; testes cruzados com vizinhos e mensagens de erro serializáveis.
-
-## Critério de finalização
-- fixtures sintéticas com limites validados
-- 0 path escapes
-- 100% arquivos emitidos com hash e versão
-Não liberar produção nem assinalar progressão real do MMO sem teste no cliente/servidor autorizado e revisão de titularidade.
+Ler o JSON da tarefa e seus inputs; executar WI-01 a WI-04; escrever teste RED para
+comportamento novo; implementar GREEN; revisar diff e anexar evidência. Nunca alterar
+o controller/testes para fabricar sucesso. Follow @implementation-loop e @code-review.
+Apenas o mantenedor atualiza checkboxes/manifesto após homologação com evidência.

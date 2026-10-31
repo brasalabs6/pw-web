@@ -1,49 +1,24 @@
 # Arquitetura — Segurança, infraestrutura, CI/CD e entrega
 
-## Contexto no monorepo
-- `infra/` — módulo de responsabilidade de implementação/controle
-- `gateway/` — módulo de responsabilidade de implementação/controle
-- `web/` — módulo de responsabilidade de implementação/controle
-- `docs/` — módulo de responsabilidade de implementação/controle
+Estado: planejado. O desenho específico abaixo substitui interfaces genéricas
+sem alterar o estado das workorders. Cenário: candidato sintético validado sobe
+para R2, ganha Preview, passa smoke e só então pode ser promovido por humano.
 
-## Fluxo de dados e controles
-```text
-workorder versionado → contrato/interface → implementação isolada
-       ↓                     ↓                  ↓
-   gates direitos      testes unitários    testes integração
-       └─────────────→ relatório CI ←────────────┘
-                           ↓
-                      PR para revisão
-```
+App Worker detém bootstrap/pin, Static Assets detém shell; R2/CDN detém bytes
+imutáveis. Publisher é o único escritor da distribuição. CI de PR não recebe
+secrets. Realm autoritativo continua sob contratos e10/e11, sem backend inventado.
 
-## Interfaces propostas e invariantes
-### 1. ReleaseManifest
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+## Contratos
 
-### 2. DeploymentConfig
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+- [ReleaseManifest/assinatura/promoção/rollback](contracts/release-manifest.md).
+- [Build, source portada e pipeline GitHub](build-pipeline.md).
+- [Cloudflare, config, HTTP/CDN, ambientes e CLI](cloudflare.md).
+- [Conteúdo e15](../e15-assets-streaming-perf-v1/contracts/content-manifest.md).
 
-### 3. HealthCheck
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+Não há transação distribuída entre Worker/R2/realm. Publicar bytes antes do pin
+não remove sessões antigas; elas conservam sua release. Rollback do Worker não
+desfaz dados ou schema do servidor. GC remoto fica desativado até provar leases
+e retenção de versões. Negativos de hash, stale SHA, secrets e mistura de
+ambientes fazem parte do aceite de [CF-01–24](delivery-tasks.md).
 
-### 4. SecurityGate
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
-
-### 5. RollbackPlan
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
-
-## Fronteiras
-- O browser só tem WebAssembly/JS/WebGL2/Web Audio/WebSocket/Storage, nunca `Windows.h` ou DirectX nativo.
-- Serviços de jogo continuam autoritativos no backend; decisões do cliente não mudam economia/sessões sem confirmação.
-- Recursos externos entram por parsers com limites; manter trilha de versão, hash e autorização.
-- A plataforma e os contratos são de código nosso; fontes upstream ficam em `references/` e não entram em CI.
-
-## Versionamento e fallback
-- Compatibilidade entre cliente, engine, asset e realm deve constar em manifesto/matriz, não por aproximação.
-- Toda mudança pública de contrato exige teste backwards + ADR.
-- Se inviável ou sem direitos suficientes, manter contrato e substituir implementação por módulo original autorizado.
-
-## Observabilidade
-- Medir 0 portas internas expostas por cenário, browser, commit e build, preservando a evidência
-- Medir releases com SBOM/proveniência por cenário, browser, commit e build, preservando a evidência
-- Medir tempo rollback testado por cenário, browser, commit e build, preservando a evidência
+[Visão integrada](../../../docs/CLOUDFLARE-DELIVERY.md).

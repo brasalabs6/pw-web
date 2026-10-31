@@ -1,43 +1,35 @@
-# Epic Charter: Toolchain C++/Emscripten e runtime WebAssembly
+# Epic — Toolchain C++/Emscripten e runtime WebAssembly
 
-- **Identificador:** `e04-wasm-runtime-v1`
-- **Versão:** 1.0.0 (alterações semânticas exigem PR + ADR)
-- **Status:** planned
-- **Objetivo mensurável:** Compilar componentes C++ portáveis para wasm32, configurar startup, heaps, memória, tratamento de erros, frame loop e interop JavaScript com reprodução determinística.
-- **Principal dependência:** `e03-platform-portability-v1`, salvo workorders independentes documentados
-- **Proprietário da decisão:** Tech Lead do PW Web; gates jurídicos pelo responsável de IP.
+Entregar toolchain reproduzível, binding, bootstrap e loop cooperativo, testados no WASM real com falhas observáveis.
 
-## Contexto e razão de existir
-A conversão para WebAssembly requer validação progressiva de compatibilidade, direitos, API de plataforma, recursos originais, cliente e realm. Este épico reduz especificamente os riscos de **builds diferentes por emsdk; OOM e pointers inválidos; browser bloqueia SharedArrayBuffer**. A execução não significa entrega do jogo inteiro: separa componentes demonstráveis de conjecturas.
+## Resultado esperado
 
-## Entradas e artefatos
-- engine/core
-- web/wasm
-- scripts/build-wasm.sh
-- tests/
+Runtime próprio validado; POC-001 é evidência parcial, não conclusão automática de WO-05.
 
-## Contratos de saída obrigatórios
-- module factory async
-- API exportada C estável
-- memory lifecycle
-- JS↔WASM typed buffers
+## Limites
 
-## Critérios executivos de sucesso
-- paridade de unit tests
-- tempo de inicialização medido
-- peak linear memory sob orçamento definido
+Uma workorder por patch/PR. Artefatos de laboratório ficam em artifacts; evidência
+sanitizada fica em docs/evidence. Não alterar executor, referências fixadas ou
+contratos de outros repositórios. POC e scene sintética não são gameplay real.
 
-## Fora do escopo
-- Distribuir código/assets de terceiros sem permissão documentada.
-- Substituir testes por declarações verbais ou prints sem contexto.
-- Liberar alterações diretamente em produção; workorders entram em PR, com revisão e CI.
-- Tratar fixtures sintéticas como prova da funcionalidade integral do Perfect World.
+## Estado e proveniência
 
-## Dependências e desbloqueio
-- Referência de cliente/engine/protocolo explicitamente identificada em testes.
-- Contratos e controles em `AGENTS.md` seguidos integralmente.
-- Ambientes de desenvolvimento isolados e artefatos reproduzíveis.
-- Decisões de mudança de stack, versão ou direitos documentadas em ADR.
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Definition of done
-Cinco workorders com evidência verificável; aceitação e limites documentados; matriz de riscos atualizada; testes unitários/integrados pertinentes executados; revisão técnica e, quando aplicável, revisão jurídica.
+## Riscos e incertezas
+
+- [HIGH][Confirmed] Build .wasm não prova import, execução ou lifecycle no browser.
+- [HIGH][Likely] memory.grow invalida views retidas; dispose com callback tardio pode reativar módulo.
+- [MEDIUM][Confirmed] POC rodou em SwiftShader, não comprova desempenho em GPU física.
+
+(HUMAN) Provisionar ferramentas no ambiente de execução se ausentes; mudanças de workflow/provider continuam fora das scopes destes jobs.
+
+## Contratos
+
+- [docs/POC-ANGELICA.md](../../../docs/POC-ANGELICA.md)
+- [docs/ANGELICA-PORTING-METHOD.md](../../../docs/ANGELICA-PORTING-METHOD.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.

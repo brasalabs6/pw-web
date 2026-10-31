@@ -1,0 +1,384 @@
+{
+  "schema": 1,
+  "sourceClient": "1.5.3-v145-pwbr",
+  "packages": [
+    {
+      "package": "building.pck",
+      "version": 131074,
+      "entryCount": 15187,
+      "extensions": {
+        ".bmp": 10,
+        ".dds": 14899,
+        ".jpg": 1,
+        ".mox": 242,
+        ".sw": 1,
+        ".tga": 34
+      },
+      "files": [
+        {
+          "name": "building.pck",
+          "bytes": 1785970418,
+          "sha256": "0c7a6d812906bb5e53826ef5ed5f781b3676a325fdbd7a76337075f978726eab"
+        }
+      ]
+    },
+    {
+      "package": "configs.pck",
+      "version": 131074,
+      "entryCount": 107,
+      "extensions": {
+        ".action": 1,
+        ".ani": 2,
+        ".border": 1,
+        ".cfg": 12,
+        ".conf": 1,
+        ".cur": 6,
+        ".data": 1,
+        ".ini": 22,
+        ".lst": 12,
+        ".lua": 4,
+        ".scc": 8,
+        ".sw": 1,
+        ".txt": 35,
+        ".xml": 1
+      },
+      "files": [
+        {
+          "name": "configs.pck",
+          "bytes": 4903126,
+          "sha256": "c89104cad17befc68b4db246ba1f823eb2b3e8b4ab9e17f688d6a2cf454de443"
+        }
+      ]
+    },
+    {
+      "package": "facedata.pck",
+      "version": 131074,
+      "entryCount": 2005,
+      "extensions": {
+        ".action": 1,
+        ".dds": 924,
+        ".eface": 181,
+        ".ini": 412,
+        ".pll": 40,
+        ".ski": 440,
+        ".sw": 1,
+        ".tga": 6
+      },
+      "files": [
+        {
+          "name": "facedata.pck",
+          "bytes": 200396402,
+          "sha256": "b156bdd5a52261041bba40738fd1976d38c8e01e3834e4348d93a97a6a5c5f8e"
+        }
+      ]
+    },
+    {
+      "package": "fonts.pck",
+      "version": 131074,
+      "entryCount": 2,
+      "extensions": {
+        ".ttf": 2
+      },
+      "files": [
+        {
+          "name": "fonts.pck",
+          "bytes": 4650236,
+          "sha256": "c85084c126d268cd6af2eeb2b88f0c964a2d2a11b171c87023ad634e8b898d56"
+        }
+      ]
+    },
+    {
+      "package": "gfx.pck",
+      "version": 131074,
+      "entryCount": 25249,
+      "extensions": {
+        "": 26,
+        ".att": 210,
+        ".bmp": 428,
+        ".bon": 565,
+        ".db": 24,
+        ".dds": 3223,
+        ".dir": 2,
+        ".ecm": 87,
+        ".fw": 193,
+        ".gfx": 15298,
+        ".gfx_err": 1,
+        ".his": 1,
+        ".ini": 103,
+        ".jpg": 9,
+        ".log": 26,
+        ".mca": 1,
+        ".mphy": 29,
+        ".png": 2,
+        ".rar": 1,
+        ".sgc": 1780,
+        ".ski": 439,
+        ".smd": 409,
+        ".stck": 2050,
+        ".sw": 1,
+        ".tga": 327,
+        ".txt": 13,
+        ".xls": 1
+      },
+      "files": [
+        {
+          "name": "gfx.pck",
+          "bytes": 338725803,
+          "sha256": "d9169d2e478265f7e77edb6fd426219731749674260ed8d8caf911488cc5a4f7"
+        }
+      ]
+    },
+    {
+      "package": "grasses.pck",
+      "version": 131074,
+      "entryCount": 2810,
+      "extensions": {
+        ".bon": 2,
+        ".dds": 321,
+        ".ecm": 2,
+        ".ecp": 1844,
+        ".grs": 1,
+        ".mod": 241,
+        ".mox": 368,
+        ".pxd": 23,
+        ".ski": 2,
+        ".smd": 2,
+        ".sw": 1,
+        ".tga": 3
+      },
+      "files": [
+        {
+          "name": "grasses.pck",
+          "bytes": 29235633,
+          "sha256": "840e239cf7a2e44795bf101d109775aa98152098d06820f9801878886467d523"
+        }
+      ]
+    },
+    {
+      "package": "interfaces.pck",
+      "version": 131074,
+      "entryCount": 2517,
+      "extensions": {
+        ".dat": 9,
+        ".dcf": 5,
+        ".dds": 1,
+        ".dtf": 467,
+        ".gcf": 2,
+        ".htf": 180,
+        ".log": 2,
+        ".lua": 1,
+        ".rar": 1,
+        ".scc": 4,
+        ".stf": 472,
+        ".sw": 1,
+        ".txt": 1,
+        ".xml": 1371
+      },
+      "files": [
+        {
+          "name": "interfaces.pck",
+          "bytes": 7336475,
+          "sha256": "2480be5a8174a089cab3712429490e798ce7966c3b901406396f1aaeda9f86e8"
+        }
+      ]
+    },
+    {
+      "package": "litmodels.pck",
+      "version": 131074,
+      "entryCount": 111372,
+      "extensions": {
+        ".bmd": 111371,
+        ".sw": 1
+      },
+      "files": [
+        {
+          "name": "litmodels.pck",
+          "bytes": 2147483392,
+          "sha256": "5f3927e4187725f7eae7cc9922a78a2aac2bf68ea584caa6d1f6fca1c9256169"
+        },
+        {
+          "name": "litmodels.pkx",
+          "bytes": 785893027,
+          "sha256": "f561009f4b5e53877e871b273236e1e831b0a91d1cad54e8e70a0fcade7a4e56"
+        }
+      ]
+    },
+    {
+      "package": "loddata.pck",
+      "version": 131074,
+      "entryCount": 4016,
+      "extensions": {
+        ".dds": 3684,
+        ".olm": 331,
+        ".sw": 1
+      },
+      "files": [
+        {
+          "name": "loddata.pck",
+          "bytes": 367827591,
+          "sha256": "f864c73b73caaac309aa5b26ef3ed63f206e9b9663249586f241e7f4507a57f4"
+        }
+      ]
+    },
+    {
+      "package": "models.pck",
+      "version": 131074,
+      "entryCount": 126812,
+      "extensions": {
+        "": 1,
+        ".bin": 1,
+        ".bip": 2,
+        ".bmp": 18,
+        ".bon": 8988,
+        ".chf": 101,
+        ".chp": 101,
+        ".db": 6,
+        ".dds": 13823,
+        ".dll": 2,
+        ".ecm": 7354,
+        ".ecp": 6,
+        ".env": 1,
+        ".eps": 15,
+        ".his": 13,
+        ".ini": 9,
+        ".jpg": 3,
+        ".lnk": 1,
+        ".log": 241,
+        ".mca": 3,
+        ".mod": 102,
+        ".mox": 101,
+        ".mphy": 248,
+        ".rar": 5,
+        ".ski": 22759,
+        ".smd": 4325,
+        ".stck": 68517,
+        ".sw": 1,
+        ".tga": 4,
+        ".tmp": 3,
+        ".tree": 1,
+        ".txt": 57
+      },
+      "files": [
+        {
+          "name": "models.pck",
+          "bytes": 2147483392,
+          "sha256": "d9e862eaa6ffd711ff536d6557cdfacad13e1ecfd0b591c12f0c734ec45c726a"
+        },
+        {
+          "name": "models.pkx",
+          "bytes": 799913865,
+          "sha256": "4ec6bf763a8cb5905db345344577a753a55beaa8070a8bc7ebd3294c87cec9e7"
+        }
+      ]
+    },
+    {
+      "package": "sfx.pck",
+      "version": 131074,
+      "entryCount": 2878,
+      "extensions": {
+        "": 8,
+        ".mp3": 1,
+        ".ogg": 9,
+        ".pk": 28,
+        ".sfk": 5,
+        ".sw": 1,
+        ".txt": 2,
+        ".wav": 2824
+      },
+      "files": [
+        {
+          "name": "sfx.pck",
+          "bytes": 418939378,
+          "sha256": "9da3194e7a4d27783cb8a119ec5dc300c5fd9d11481233715c9c2d98bafa222e"
+        }
+      ]
+    },
+    {
+      "package": "shaders.pck",
+      "version": 131074,
+      "entryCount": 520,
+      "extensions": {
+        ".bmp": 23,
+        ".exe": 5,
+        ".scc": 2,
+        ".sdr": 98,
+        ".sw": 1,
+        ".tga": 51,
+        ".txt": 326,
+        ".vso": 14
+      },
+      "files": [
+        {
+          "name": "shaders.pck",
+          "bytes": 11804026,
+          "sha256": "7a83b2b83610b3b9730a058bd8418d531c808309b215487f41b45e9a70e5a9f5"
+        }
+      ]
+    },
+    {
+      "package": "surfaces.pck",
+      "version": 131074,
+      "entryCount": 9103,
+      "extensions": {
+        ".bmp": 308,
+        ".cmf": 1,
+        ".db": 30,
+        ".dds": 4814,
+        ".ini": 2,
+        ".jpg": 113,
+        ".png": 9,
+        ".rar": 2,
+        ".shs": 1,
+        ".sw": 1,
+        ".tga": 3790,
+        ".txt": 32
+      },
+      "files": [
+        {
+          "name": "surfaces.pck",
+          "bytes": 274710754,
+          "sha256": "410a2ca90ea1342fee7807b5d27192c7b93d54ea415e27f3cea2a91e469e7938"
+        }
+      ]
+    },
+    {
+      "package": "textures.pck",
+      "version": 131074,
+      "entryCount": 1732,
+      "extensions": {
+        ".bmp": 302,
+        ".dds": 1252,
+        ".jpg": 1,
+        ".rar": 1,
+        ".sw": 1,
+        ".tga": 175
+      },
+      "files": [
+        {
+          "name": "textures.pck",
+          "bytes": 259972979,
+          "sha256": "d4b3771879de8547d06f09a08f9bb65f870dbec71a09ff71616c86583cb023fd"
+        }
+      ]
+    },
+    {
+      "package": "trees.pck",
+      "version": 131074,
+      "entryCount": 326,
+      "extensions": {
+        ".cfg": 2,
+        ".dds": 127,
+        ".spt": 100,
+        ".sw": 1,
+        ".tbh": 96
+      },
+      "files": [
+        {
+          "name": "trees.pck",
+          "bytes": 22724635,
+          "sha256": "f504a2d8e5e41dcd3c748448c8824a2917715f4eccae08bca63316d96d3a872a"
+        }
+      ]
+    }
+  ]
+}

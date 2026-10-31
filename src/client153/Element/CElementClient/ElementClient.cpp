@@ -1,0 +1,1503 @@
+/*
+ * FILE: ElementClient.cpp
+ *
+ * DESCRIPTION: ElementClient, Main file of game
+ *
+ * CREATED BY: Duyuxin, 2003/12/11
+ *
+ * HISTORY:
+ *
+ * Copyright (c) 2001 Archosaur Studio, All Rights Reserved.
+ */
+
+#define _WIN32_WINDOWS 0x0410 
+
+#include "EC_Global.h"
+#include "EC_Configs.h"
+#include "EC_Game.h"
+#include "EC_SceneLoader.h"
+#include "EC_Utility.h"
+#include "EC_GameRun.h"
+#include "EC_InputCtrl.h"
+#include "ACSWrapper.h"
+#include "defence/defence.h"
+#include "defence/infocollection.h"
+#include "defence/APILoader.h"
+#include "defence/cheaterkiller.h"
+#include "defence/stackchecker.h"
+#include "defence/imagechecker.h"
+#include "defence/pwacp.h"
+#include "EC_GameUIMan.h"
+#include "EC_UIManager.h"
+#include "EC_Model.h"
+#include "EC_CommandLine.h"
+#include "GT/gt_overlay.h"
+
+#ifdef ARC
+#include "Arc/arc_overlay.h"
+#include "Arc/Asia/EC_ArcAsia.h"
+#endif
+
+#include "EC_TimeSafeChecker.h"
+#include "EC_WinAPI.h"
+#include "log_cleanup.h"
+#ifdef __EMSCRIPTEN__
+#include "../../platform/web/webgl_caps.h"
+#include <emscripten/emscripten.h>
+#endif
+
+#ifdef _PROFILE_MEMORY
+#include "Memory\EC_HookMemory.h"
+#include <DbgHelp.h>
+#endif
+
+#include "AUIEditBox.h"
+
+#include <A3DPlatform.h>
+#include <A3DTypes.h>
+#include <AF.h>
+#include <ddraw.h>
+#include "iolib.h"
+#include <A3DDevice.h>
+#include <A3DCursor.h>
+
+#include "elementpckdir.h"
+#include "resource.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "LuaBind.h"
+#include "LuaState.h"
+#include "LuaUtil.h"
+#include "LuaScript.h"
+#include "ScriptValue.h"
+#include "LuaDlgApi.h"
+#include <AFilePackMan.h>
+
+#define new A_DEBUG_NEW
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	Define and Macro
+//
+///////////////////////////////////////////////////////////////////////////
+#ifdef ANGELICA_2_2
+D3DCAPS9		g_d3dcaps;
+#else
+D3DCAPS8		g_d3dcaps;
+#endif
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	Reference to External variables and functions
+//
+///////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	Local Types and Variables and Global variables
+//
+///////////////////////////////////////////////////////////////////////////
+
+//	Parameters can be provided using program command line
+struct s_CMDLINEPARAMS
+{
+	int		iFullScreen;	//	1: fullscreen; 0: windowed
+	int		iRenderWid;		//	Render size
+	int		iRenderHei;
+	ACHAR	szIPAddr[256];	//	Link server IP address
+	int		iPort;			//	Link server port
+	int		iConsole;		//	Console enable flag
+};
+
+static s_CMDLINEPARAMS l_CmdParams;
+
+static HINSTANCE l_hInstance = NULL;
+static HWND	l_hMainWnd = NULL;
+static const ACHAR* l_szClassName = _AL("ElementClient Window");
+
+static CECGame l_theGame;
+#ifdef __EMSCRIPTEN__
+extern "C" void pw153_window_detach();
+static void pw153_browser_frame()
+{
+	static unsigned frames = 0;
+	++frames;
+	if (frames == 1) printf("pw153: first browser frame\n");
+	if (frames == 60) printf("pw153: 60 browser frames\n");
+	//	Periodic liveness marker: the probe returns 0 as soon as wWinMain
+	//	hands off to this rAF loop, so a silent return does NOT mean the
+	//	game exited ‚Äî these markers prove continuous frames.
+	if (frames % 300 == 0) printf("pw153: %u browser frames\n", frames);
+	if (!l_theGame.RunInMainThread()) {
+		printf("pw153: main loop exit at frame %u\n", frames);
+		emscripten_cancel_main_loop();
+		pw153_window_detach();
+	}
+}
+#endif
+
+CECConfigs g_GameCfgs;
+
+static bool l_bHasAntiHackerMsg = false;
+ACString	l_AntiHackerMsg;
+BOOL		g_bHookExitProcess = TRUE;
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	Local functions
+//
+///////////////////////////////////////////////////////////////////////////
+
+static void _ParseCommandLine(ACHAR* szCmdLine);
+static void _DefaultCmdParams();
+static bool _InitGameApp();
+static void _OutputSystemVersion();
+static void _FinalizeGameApp();
+static ATOM _RegisterWndClass(HINSTANCE hInstance);
+static bool _CreateMainWnd(HINSTANCE hInstance, int nCmdShow, bool bFullScreen);
+static LRESULT CALLBACK _WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static bool _InitNetwork();
+static void _FinalizeNetwork();
+
+#define ENABLE_UNKNOWN_EXIT_CHECK 
+#ifdef ENABLE_UNKNOWN_EXIT_CHECK
+	static bool l_bEnableExitCheck = false;
+	void on_unknown_exit(void)
+	{
+		if( l_bEnableExitCheck )
+		{
+			const char * szErr = "abcdefghijklmn";
+			memset((void *)szErr, 0, 4);
+		}
+	}
+#endif
+
+//	Get command line parameters
+bool glb_IsConsoleEnable() { return l_CmdParams.iConsole ? true : false; }
+void glb_EnableConsole(bool bEnable){ l_CmdParams.iConsole = bEnable ? 1 : 0; }
+
+//	clear files in log folder
+bool prepare_file_structures()
+{
+	const char * szCachePath = "cache";
+	// now try to create a cache dir
+	if( _access(szCachePath, 0) == -1 )
+	{
+		if( !CreateDirectoryA(szCachePath, NULL) )
+		{
+			MessageBoxA(NULL, "Œﬁ∑®¥¥Ω®cacheƒø¬º£¨”Œœ∑Œﬁ∑®‘À––£°\n«Î»∑±£”≤≈Ã”–◊„πªµƒ £”‡ø’º‰‘Ÿ‘À––±æ”Œœ∑£°", "¥ÌŒÛ", MB_OK | MB_ICONSTOP);
+			return false;
+		}
+	}
+
+	const char * szScreenShotsPath = "screenshots";
+	// now try to create a cache dir
+	if( _access(szScreenShotsPath, 0) == -1 )
+	{
+		if( !CreateDirectoryA(szScreenShotsPath, NULL) )
+		{
+			MessageBoxA(NULL, "Œﬁ∑®¥¥Ω®screenshotsƒø¬º£¨”Œœ∑Œﬁ∑®‘À––£°\n«Î»∑±£”≤≈Ã”–◊„πªµƒ £”‡ø’º‰‘Ÿ‘À––±æ”Œœ∑£°", "¥ÌŒÛ", MB_OK | MB_ICONSTOP);
+			return false;
+		}
+	}
+
+	const char * szLogPath = "logs";
+	// now try to create a cache dir
+	if( _access(szLogPath, 0) == -1 )
+	{
+		if( !CreateDirectoryA(szLogPath, NULL) )
+		{
+			MessageBoxA(NULL, "Œﬁ∑®¥¥Ω®logsƒø¬º£¨”Œœ∑Œﬁ∑®‘À––£°\n«Î»∑±£”≤≈Ã”–◊„πªµƒ £”‡ø’º‰‘Ÿ‘À––±æ”Œœ∑£°", "¥ÌŒÛ", MB_OK | MB_ICONSTOP);
+			return false;
+		}
+	}
+
+	// now remove logs generated in last game run
+	WIN32_FIND_DATAA fd;
+	HANDLE hFind = FindFirstFileA("logs\\*.*", &fd);
+	if( INVALID_HANDLE_VALUE == hFind )
+		return true;
+
+	do
+	{
+		char szFileName[MAX_PATH];
+		
+		sprintf(szFileName, "logs\\%s", fd.cFileName);
+		if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+		    pw153_is_transient_log(fd.cFileName))
+			DeleteFileA(szFileName);
+
+	} while( FindNextFileA(hFind, &fd) );
+	FindClose(hFind);
+
+	if( af_IsFileExist("logs\\dumpfile") )
+		g_bTrojanDumpLastTime = true;
+	
+	return true;
+}
+
+bool CheckHardwareCaps(const char *& pszInfo)
+{
+#ifdef __EMSCRIPTEN__
+	return pw153_check_webgl_capabilities(&pszInfo);
+#else
+	pszInfo = "Œ¥÷™µƒ¥ÌŒÛ";
+
+	// first see if NetMeeting is running, if so just pop up a warning.
+	if( FindWindow(_AL("MPWClass"), NULL) )
+	{
+		MessageBoxA(NULL, "”Œœ∑≥Ã–ÚºÏ≤‚µΩƒ˙µƒª˙∆˜…œ”–NetMeeting’˝‘⁄‘À––£°\n"
+			"”…”⁄NetMeeting‘À–– ±∆‰À˚≥Ã–ÚŒﬁ∑® π”√œ‘ø®µƒ»˝Œ¨º”ÀŸπ¶ƒ‹£¨À˘“‘«Îœ»πÿ±’NetMeeting ∫Û‘ŸΩ¯––”Œœ∑£°", 
+			"æØ∏Ê", MB_OK | MB_ICONINFORMATION);
+	}
+
+	HRESULT hval;
+
+	// first get vertex shader version to determine whether or not create sw vp device
+#ifdef ANGELICA_2_2
+	IDirect3D9 *	pD3D;
+	pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+#else
+	IDirect3D8 *	pD3D;
+	pD3D = Direct3DCreate8(D3D_SDK_VERSION);
+#endif // ANGELICA_2_2
+	if( pD3D == NULL )
+	{
+		pszInfo = "Œﬁ∑®¥¥Ω®Direct3D∂‘œÛ£¨«ÎºÏ≤ÈDirectX∞Ê±æ";
+		return false;
+	}
+	pD3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &g_d3dcaps);
+	if( g_d3dcaps.MaxSimultaneousTextures < 2 || g_d3dcaps.MaxTextureBlendStages < 2 )
+	{
+		pszInfo = "œ‘ø®÷¡…Ÿ“™÷ß≥÷¡Ω≤„Œ∆¿Ìµƒ∂‡≤„Œ∆¿Ì”≥…‰£°";
+		return false;
+	}
+
+	D3DFORMAT fmtTarget16 = D3DFMT_UNKNOWN;
+	D3DFORMAT fmtTarget32 = D3DFMT_UNKNOWN;
+	hval = pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_R5G6B5, D3DFMT_R5G6B5, false);
+	if( D3D_OK != hval )
+	{
+		hval = pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X1R5G5B5, D3DFMT_X1R5G5B5, false);
+		if( D3D_OK != hval )
+		{
+			pszInfo = "Œﬁ∑®ªÒµ√16Œªƒ£ Ωµƒœ‘ æ∏Ò Ω£¨«ÎºÏ≤Èƒ˙µƒœ‘ø®«˝∂Ø“‘º∞DirectXµƒ∞Ê±æ";
+			return false;
+		}
+		else
+			fmtTarget16 = D3DFMT_X1R5G5B5;
+	}
+	else
+		fmtTarget16 = D3DFMT_R5G6B5;
+
+	hval = pD3D->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_X8R8G8B8, false);
+	if( D3D_OK == hval )
+		fmtTarget32 = D3DFMT_X8R8G8B8;
+
+	D3DFORMAT fmtTarget = fmtTarget16;
+	if( fmtTarget32 != D3DFMT_UNKNOWN )
+		fmtTarget = fmtTarget32;
+	
+	/*
+	// first check if DXT1 and DXT3 is supported;
+	hval = pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, fmtTarget, 0, D3DRTYPE_TEXTURE, D3DFMT_DXT1);
+	if( D3D_OK != hval )
+	{
+		pszInfo = "Ë¥¥ÂõæÊ†ºÂºèDXT1‰∏çË¢´ÊîØÊåÅÔºåÊòæÂç°Á°¨‰ª∂ÊÄßËÉΩ‰∏çÁ¨¶ÂêàË¶ÅÊ±Ç";
+		return false;
+	}
+
+	hval = pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, fmtTarget, 0, D3DRTYPE_TEXTURE, D3DFMT_DXT3);
+	if( D3D_OK != hval )
+	{
+		pszInfo = "Ë¥¥ÂõæÊ†ºÂºèDXT3‰∏çË¢´ÊîØÊåÅÔºåÊòæÂç°Á°¨‰ª∂ÊÄßËÉΩ‰∏çÁ¨¶ÂêàË¶ÅÊ±Ç";
+		return false;
+	}*/
+	
+	pD3D->Release(); 
+
+	// now query video memory through ddraw interface
+	IDirectDraw * pDD;
+	IDirectDraw2 * pDD2;
+	DirectDrawCreate(NULL, &pDD, NULL);
+	hval = pDD->QueryInterface(IID_IDirectDraw2, (LPVOID *) &pDD2);
+	if( DD_OK != hval )
+	{
+		pszInfo = "Œﬁ∑®¥¥Ω®DirectDraw2∂‘œÛ£¨«ÎºÏ≤ÈDirectX∞Ê±æ";
+		return false;
+	}
+	pDD->Release();
+
+	DDSCAPS		ddscaps;
+	ddscaps.dwCaps = DDSCAPS_LOCALVIDMEM;
+	DWORD dwLocalTotal, dwLocalFree;
+    hval = pDD2->GetAvailableVidMem(&ddscaps, &dwLocalTotal, &dwLocalFree);
+	if( DD_OK != hval )
+	{
+		pszInfo = "Œﬁ∑®ªÒ»°œ‘¥Ê¥Û–°£¨«ÎºÏ≤ÈDirectX∞Ê±æ";
+		return false;
+	}
+	ddscaps.dwCaps = DDSCAPS_TEXTURE;
+	DWORD dwTextureTotal, dwTextureFree;
+    hval = pDD2->GetAvailableVidMem(&ddscaps, &dwTextureTotal, &dwTextureFree);
+	if( DD_OK != hval )
+	{
+		pszInfo = "Œﬁ∑®ªÒ»°œ‘¥Ê¥Û–°£¨«ÎºÏ≤ÈDirectX∞Ê±æ";
+		return false;
+	}
+
+	pDD2->Release();
+
+	const char * szTexQuality[] = {"∏ﬂ", "÷–", "µÕ"};
+	char  szInfo[256];
+
+	int iTexDetail = g_GameCfgs.GetSystemSettings().iTexDetail;
+	iTexDetail = min(iTexDetail, 2);
+	iTexDetail = max(iTexDetail, 0);
+	if( dwLocalTotal < 16 * 1024 * 1024 )
+	{
+		if( iTexDetail != 2 )
+		{
+			sprintf(szInfo, "ƒ˙µƒœ‘ø®µƒœ‘¥Ê–°”⁄16M£¨∂¯ƒ˙µƒÃ˘Õºæ´∂»—°‘Ò¡À[%s]£¨’‚Ω´ πƒ˙‘⁄”Œœ∑÷–∫‹ø®£°Ω®“Èƒ˙Ω´Ã˘Õºæ´∂»µ˜µÕ∫Û‘ŸΩ¯––”Œœ∑£°\n\n «∑Ò»√œµÕ≥◊‘∂Ø—°‘Ò∫œ  µƒÃ˘Õºæ´∂»¿¥Ω¯––”Œœ∑£ø", szTexQuality[iTexDetail]);
+			if( IDYES == MessageBoxA(NULL, szInfo, "Ã˘Õºæ´∂»π˝∏ﬂ", MB_YESNO | MB_ICONQUESTION) )
+			{
+				g_GameCfgs.GetSystemSettingsPtr()->iTexDetail = 2;
+			}
+		}
+	}
+	else if( dwLocalTotal < 32 * 1024 * 1024 )
+	{
+		if( iTexDetail != 2 )
+		{
+			sprintf(szInfo, "ƒ˙µƒœ‘ø®÷ª”–32Mœ‘¥Ê£¨∂¯ƒ˙µƒÃ˘Õºæ´∂»—°‘Ò¡À[%s]£¨’‚Ω´ πƒ˙‘⁄”Œœ∑÷–∫‹ø®£°Ω®“Èƒ˙Ω´Ã˘Õºæ´∂»µ˜µÕ∫Û‘ŸΩ¯––”Œœ∑£°\n\n «∑Ò»√œµÕ≥◊‘∂Ø—°‘Ò∫œ  µƒÃ˘Õºæ´∂»¿¥Ω¯––”Œœ∑£ø", szTexQuality[iTexDetail]);
+			if( IDYES == MessageBoxA(NULL, szInfo, "Ã˘Õºæ´∂»π˝∏ﬂ", MB_YESNO | MB_ICONQUESTION) )
+			{
+				g_GameCfgs.GetSystemSettingsPtr()->iTexDetail = 2;
+			}
+		}
+	}
+	else if( dwLocalTotal < 64 * 1024 * 1024 )
+	{
+		if( iTexDetail == 0 )
+		{
+			sprintf(szInfo, "ƒ˙µƒœ‘ø®”–64Mœ‘¥Ê£¨∂¯ƒ˙µƒÃ˘Õºæ´∂»—°‘Ò¡À[%s]£¨’‚Ω´ πƒ˙‘⁄”Œœ∑÷–∫‹ø®£°Ω®“Èƒ˙Ω´Ã˘Õºæ´∂»µ˜µÕ∫Û‘ŸΩ¯––”Œœ∑£°\n\n «∑Ò»√œµÕ≥◊‘∂Ø—°‘Ò∫œ  µƒÃ˘Õºæ´∂»¿¥Ω¯––”Œœ∑£ø", szTexQuality[iTexDetail]);
+			if( IDYES == MessageBoxA(NULL, szInfo, "Ã˘Õºæ´∂»π˝∏ﬂ", MB_YESNO | MB_ICONQUESTION) )
+			{
+				g_GameCfgs.GetSystemSettingsPtr()->iTexDetail = 1;
+			}
+		}
+	}
+
+	DWORD dwMaxTextureNeeded = (DWORD)(16 * 1024 * 1024 * pow(2.0, 2 - g_GameCfgs.GetSystemSettingsPtr()->iTexDetail));
+	if( dwTextureFree < dwMaxTextureNeeded )
+	{
+		sprintf(szInfo, "ƒ˙µƒœµÕ≥ £”‡µƒø…”√”⁄Ã˘Õºµƒœ‘¥Ê–°”⁄16M£¨‘⁄”Œœ∑µƒπ˝≥Ã÷–ø…ƒ‹ª·µº÷¬ª®∆¡°¢À¿ª˙µ»—œ÷ÿµƒ¥ÌŒÛ£°ƒ˙ «∑Òªπ“™Ω¯»Î”Œœ∑£ø");
+		if( IDYES != MessageBoxA(NULL, szInfo, "Ã˘Õºæ´∂»π˝∏ﬂ", MB_YESNO | MB_ICONQUESTION) )
+		{
+			pszInfo = "œµÕ≥ £”‡µƒø…”√”⁄Ã˘Õºµƒœ‘¥Ê–°”⁄16M£¨”√ªß»°œ˚¡À”Œœ∑‘À––°£";
+			return false;		
+		}		
+	}
+
+	glb_RepairExeInMemory();
+	return true;
+#endif
+}
+
+bool CheckImportantFiles(const char *& pszInfo)
+{
+	const char * szImportantFiles[] = {
+		"Models\\Players\\–ŒœÛ\\∞◊ª¢\\∞◊ª¢.ecm",
+		"Models\\Players\\–ŒœÛ\\Œ‰œ¿ƒ–\\«˚∏…\\Œ‰œ¿ƒ–.ecm",
+		"Models\\Players\\–ŒœÛ\\Œ‰œ¿≈Æ\\«˚∏…\\Œ‰œ¿≈Æ.ecm",
+		"Models\\Players\\–ŒœÛ\\∑® ¶ƒ–\\«˚∏…\\∑® ¶ƒ–.ecm",
+		"Models\\Players\\–ŒœÛ\\∑® ¶≈Æ\\«˚∏…\\∑® ¶≈Æ.ecm",
+		"Models\\Players\\–ŒœÛ\\”¡Èƒ–\\«˚∏…\\”¡Èƒ–.ecm",
+		"Models\\Players\\–ŒœÛ\\”¡È≈Æ\\«˚∏…\\”¡È≈Æ.ecm",
+		"Models\\Players\\–ŒœÛ\\—˝ ﬁƒ–\\«˚∏…\\—˝ ﬁƒ–.ecm",
+		"Models\\Players\\–ŒœÛ\\Ω£¡Èƒ–\\«˚∏…\\Ω£¡Èƒ–.ecm",
+		"Models\\Players\\–ŒœÛ\\˜»¡È≈Æ\\«˚∏…\\˜»¡È≈Æ.ecm",
+		"font\\FZL2JW.ttf",
+		"font\\FZLBJW.ttf",
+		"font\\FZXH1JW.ttf",
+	};
+
+	for(int i=0; i<sizeof(szImportantFiles) / sizeof(const char *); i++)
+	{
+		AFileImage file;
+
+		if( !file.Open(szImportantFiles[i], AFILE_OPENEXIST | AFILE_TEMPMEMORY) )
+		{
+			printf("BOOT_CHECK_FILES_FAILED: index=%d AFileImage::Open returned false\n", i);
+			pszInfo = szImportantFiles[i];
+			return false;
+		}
+
+		file.Close();
+	}
+
+	printf("BOOT_CHECK_FILES_OK: all important files opened\n");
+
+	glb_RepairExeInMemory();
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	Implement 
+//
+///////////////////////////////////////////////////////////////////////////
+
+HANDLE g_hMainThread					= NULL;
+HANDLE g_hRenderThread					= NULL;
+HANDLE g_hDefenceThread					= NULL;
+HANDLE g_hExitGame						= NULL;
+HANDLE g_hRenderEvent					= NULL;
+HANDLE g_hToSuspendMain					= NULL;
+DWORD g_dwMainThreadId					= 0;
+volatile bool g_bMainSuspened			= false;
+volatile bool g_bRenderSuspended		= true;
+volatile bool g_bMultiThreadRenderMode	= true;
+bool g_bIsWin98							= false;
+static bool _defence_thread_init		= false;
+extern volatile DWORD g_DenfenceTimeMark;
+extern volatile bool g_bHostInGame;
+extern DWORD defence_max_check_interval;
+
+CRITICAL_SECTION g_csRenderThread;
+CRITICAL_SECTION g_csDefence;
+extern CRITICAL_SECTION	locker;
+
+static DWORD WINAPI DefenceThreadFunc(LPVOID lpParam)
+{
+	// Do nothing on defence thread
+	try
+	{
+		g_pGame->GetGameRun()->CheckDefenceCode();
+	}
+	catch (...)//(EXCEPTION_EXECUTE_HANDLER)
+	{
+		a_LogOutput(1, "exception occured in defence thread (@CECGameRun::CheckDefenceCode)!");
+	}
+
+	return 0;
+}
+
+void VerifyDefenceThread()
+{
+	if (!_defence_thread_init)
+		return;
+
+	if (::WaitForSingleObject(g_hExitGame, 0) != WAIT_OBJECT_0)
+	{
+		if (g_hDefenceThread && ::WaitForSingleObject(g_hDefenceThread, 0) == WAIT_OBJECT_0)
+		{
+			a_LogOutput(1, "want to terminte by will 1");
+			g_bHookExitProcess = FALSE;
+			::ExitProcess(0);
+		}
+	}
+	
+	if (!g_bHostInGame || g_bExceptionOccured)
+		return;
+	
+	if (g_DenfenceTimeMark == 0)
+		return;
+
+	DWORD t = CECTimeSafeChecker::ElapsedTimeFor(g_DenfenceTimeMark);
+
+#ifndef _DEBUG
+	if (t > defence_max_check_interval)
+	{
+		a_LogOutput(1, "want to terminte by will 2");
+		g_bHookExitProcess = FALSE;
+		::ExitProcess(-4);
+	}
+#endif
+}
+
+static DWORD WINAPI RenderThreadFunc(LPVOID lpParam)
+{
+	::CoInitialize(NULL);		//	For SHOpenFolderAndSelectItems
+
+	int iRet = -1;
+
+#ifndef _NOMINIDUMP	
+	try
+	{
+#endif
+
+		iRet = l_theGame.RunInRenderThread();
+
+#ifndef _NOMINIDUMP	
+	}
+	catch (...)
+	{
+		::OutputDebugString(_AL("Exception occurred...\n"));
+		a_LogOutput(1, "Exception occurred in render thread... mini dumped!");
+		::ExitProcess(-1);
+	}
+#endif
+
+	g_hRenderThread = NULL;
+	::ResumeThread(g_hMainThread);
+
+	::CoUninitialize();
+	return iRet;
+}
+
+inline void SuspendRenderThread()
+{
+	if (!g_hRenderThread)
+		return;
+
+	if (!g_bRenderSuspended)
+	{
+		::EnterCriticalSection(&g_csRenderThread);
+		::SuspendThread(g_hRenderThread);
+		g_bRenderSuspended = true;
+		::LeaveCriticalSection(&g_csRenderThread);
+	}
+}
+
+inline void ResumeRenderThread()
+{
+	if (!g_hRenderThread || !g_bMultiThreadRenderMode)
+		return;
+
+	if (g_bRenderSuspended)
+	{
+		g_bRenderSuspended = false;
+		::ResumeThread(g_hRenderThread);
+	}
+}
+
+void SwitchRenderThreadMode(bool bMultiThread)
+{
+	if (g_bIsWin98)
+		return;
+
+	g_bMultiThreadRenderMode = bMultiThread;
+
+	// alien multithread
+	if (bMultiThread)
+		::SetThreadPriority(g_hMainThread, THREAD_PRIORITY_HIGHEST);
+	else
+		::SetThreadPriority(g_hMainThread, THREAD_PRIORITY_NORMAL);
+	
+}
+
+static void WINAPI ShowAntiHackerMsg(WORD id)
+{
+	const char* szMsg = NetDLL::GetString(id);
+	if (szMsg == NULL) return;
+
+	l_AntiHackerMsg = AS2AC(szMsg);
+	l_bHasAntiHackerMsg = true;
+}
+
+extern DWORD WINAPI GetCodeSegment(char * buffer, unsigned int& size);
+DWORD WINAPI GetCodeSegment(char * buffer, unsigned int& size)
+{
+	// method 1
+	unsigned int buffer_len = size;
+	size = 0;
+
+	AFileImage file;
+	if( file.Open("interfaces\\IconList_Guild.dds", AFILE_OPENEXIST | AFILE_BINARY | AFILE_TEMPMEMORY) )
+	{
+		//glb_RepairExeInMemory();
+
+		if( buffer_len < file.GetFileLength() )
+			return 0;
+
+		memcpy(buffer, file.GetFileBuffer(), file.GetFileLength());
+		size = file.GetFileLength();
+	}
+
+	return 0;
+
+	/*
+	// method 2
+	unsigned int buffer_len = size;
+	size = 0;
+
+	//glb_RepairExeInMemory();
+
+	AFileImage file;
+	if( !file.Open("interfaces\\IconList_Guild.dds", AFILE_OPENEXIST | AFILE_BINARY | AFILE_TEMPMEMORY) )
+		return;
+	
+	if( buffer_len < file.GetFileLength() )
+		return;
+
+	memcpy(buffer, file.GetFileBuffer(), file.GetFileLength());
+	size = file.GetFileLength();
+	*/
+}
+
+extern void stack_trace(LPCVOID sv0, LPCVOID sv1);
+static void WINAPI StackTrace(LPCVOID sv0, LPCVOID sv1)
+{
+	stack_trace(sv0, sv1);
+}
+extern DWORD WINAPI connect_tcpudp(DWORD ip, DWORD param1);
+extern DWORD WINAPI send_tcpudp(SOCKET s, const char* buff, int size);
+extern DWORD WINAPI recv_tcpudp(SOCKET s, char* buff, int size);
+extern DWORD WINAPI close_tcpudp(SOCKET s);
+extern DWORD WINAPI ioctl_tcpudp(SOCKET s, long p1, u_long* p2);
+extern DWORD WINAPI ip_socket();
+extern DWORD WINAPI send_ip(DWORD s, DWORD packet, DWORD size);
+extern DWORD WINAPI send_tcp(DWORD s, DWORD packet, DWORD size);
+extern DWORD WINAPI send_udp(DWORD s, DWORD packet, DWORD size);
+extern DWORD WINAPI send_sync(DWORD ip, DWORD p);
+extern DWORD WINAPI send_ping(DWORD ip, DWORD p);
+extern DWORD WINAPI GetBestSourceIP( DWORD dst_ip);
+extern DWORD WINAPI alloc_mem(void ** buffer, int size_to_alloc);
+extern DWORD WINAPI free_mem(void * buffer);
+
+DWORD WINAPI alloc_mem(void ** buffer, int size_to_alloc)
+{
+	*buffer = a_malloc(size_to_alloc);
+	return 0;
+}
+
+DWORD WINAPI free_mem(void * buffer)
+{
+	a_free(buffer);
+	return 0;
+}
+
+int lua_glb_CalcFileMd5(lua_State * L)
+{
+	AString strFileName;
+	unsigned char md5[16];
+	memset(md5, 0, sizeof(md5));
+	AString strMd5;
+
+	if (!LuaBind::CheckValue(LuaBind::TypeWrapper<const char*>(), L, 1, strFileName))
+		goto RET;
+
+	if( !glb_CalcFileMD5(strFileName, md5) )
+		goto RET;
+	
+RET:
+	for(int i=0; i<16; i++)
+	{
+		AString a;
+		a.Format("%02x", md5[i]);
+		strMd5 += a;
+	}
+	LuaBind::Push(LuaBind::TypeWrapper<const char *>(), L, (const char*)strMd5);
+	return 1;
+}
+
+const struct luaL_reg GlobalApi[]	=
+{
+	REG_API(lua_glb_CalcFileMd5),
+	{NULL, NULL}
+};
+
+void InitGlobalApi(lua_State * L)
+{
+	luaL_register(L, "GlobalApi", GlobalApi);
+	lua_pop(L, 1);
+
+	// now preload the global lua file
+	g_LuaStateMan.GetConfigState()->Lock();
+
+	AString strText = "";
+	AIniFile iniFile;
+	if(iniFile.Open("configs\\loginpage.ini"))
+	{
+		strText = iniFile.GetValueAsString("CONFIG", "global_api", "");
+		iniFile.Close();
+	}
+	CLuaScript * pScript = g_LuaStateMan.GetConfigState()->RegisterFile(strText);
+
+	
+	g_LuaStateMan.GetConfigState()->Unlock();
+}
+
+bool CheckMapMD5(const char * szMap)
+{
+	abase::vector<CScriptValue> args;
+	abase::vector<CScriptValue> results;
+	CScriptString str;
+	str.SetAString(szMap);
+	args.push_back(CScriptValue(str));
+	LuaBind::Call(g_LuaStateMan.GetConfigState()->GetVM(), "lua_glb", "check_md5", args, results);
+	if( results.size() != 1 || !results[0].GetBool() )
+		return false;
+
+	return true;
+}
+
+//	WinMain
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, ACHAR* lpCmdLine, int nCmdShow)
+{
+	InitializeWindowsAPI();
+
+	bool bStartPatcher = false;
+	bool bFirstInstance = true;
+	HANDLE hInstMutex = NULL;
+#ifndef __EMSCRIPTEN__
+	while (true)
+	{
+		//	‰∏äÊ¨°Êõ¥Êñ∞Ë¢´‰∏≠Êñ≠
+		if (GetPrivateProfileIntA("Patcher", "Updated", 1, ".\\patcher.ini") == 0){
+			bStartPatcher = true;
+			break;
+		}
+
+		hInstMutex = CreateMutexA(NULL, FALSE, "WMGJ_ElementClient");
+		DWORD dwLastError = GetLastError();
+		//	ÂàõÂª∫‰∫íÊñ• Mutex Â§±Ë¥•
+		if (!hInstMutex){
+			char szErrorInfo[128] = {0};
+			_snprintf(szErrorInfo, ARRAY_SIZE(szErrorInfo), "GetLastError()=%d", dwLastError);
+			::MessageBoxA(NULL, szErrorInfo, "ElementClient Error!", MB_OK | MB_ICONSTOP);
+			return -1;
+		}
+
+		//	Á¨¨‰∏Ä‰∏™ÂÆû‰æãÂ∫îÁî± patcher ÂêØÂä®
+		if (dwLastError != ERROR_ALREADY_EXISTS && !CECCommandLine::GetBriefConfig(_AL("startbypatcher"))){
+			bStartPatcher = true;
+			break;
+		}
+		if (dwLastError == ERROR_ALREADY_EXISTS){
+			bFirstInstance = false;
+		}
+		break;
+	}
+	if (bStartPatcher){
+		ACHAR path[1000];
+		GetCurrentDirectory(1000, path);
+		a_strcat(path, _AL("\\..\\patcher\\patcher.exe"));
+		ShellExecute(NULL,_AL("open"),path,NULL,_AL("..\\patcher"),SW_SHOWNORMAL);
+		return 0;
+	}
+#endif // Native Windows patcher and instance mutex.
+#ifdef _PROFILE_MEMORY
+	if (!bFirstInstance){
+		return 0;
+	}
+#endif
+	
+#ifdef _PROFILE_MEMORY
+	{
+		char szExeDir[MAX_PATH] = {0};
+		glb_GetExeDirectory(szExeDir, ARRAY_SIZE(szExeDir));
+		::SymInitialize(GetCurrentProcess(), szExeDir, TRUE);
+		g_EnableMemoryHistory();
+	}
+#endif
+
+	STARTUPINFO si;
+	memset(&si, 0, sizeof(si));
+	si.cb = sizeof(si);
+	PROCESS_INFORMATION  pi;
+	memset(&pi, 0, sizeof(pi));
+	CreateProcess(L"reportbugs\\pwprotector.exe", NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+
+	StackChecker::ACStackCheckInit();
+	ImageChecker::ACImageCheckerInit();
+
+	// first of all, make the file structures prepared
+	if( !prepare_file_structures() )
+		return -1;
+
+#ifdef ENABLE_UNKNOWN_EXIT_CHECK
+	l_bEnableExitCheck = true;
+	atexit(on_unknown_exit);
+#endif
+
+	//	Initialize critical section
+	InitializeCriticalSection(&g_csException);
+	InitializeCriticalSection(&g_csSession);
+	InitializeCriticalSection(&g_csRTDebug);
+	InitializeCriticalSection(&g_csRenderThread);
+	InitializeCriticalSection(&g_csDefence);
+	
+#ifndef _NOMINIDUMP
+
+	try
+	{
+
+#endif
+
+	//	Parse command line
+	_ParseCommandLine(lpCmdLine);
+
+	//	Initialize game, create main window
+	if (!_InitGameApp())
+	{
+		glb_ErrorOutput(ECERR_FAILEDTOCALL, "wWinMain", __LINE__);
+		return -1;
+	}
+
+	// then check hardware requirements.
+	const char * szInfo = "";
+	if (!CheckHardwareCaps(szInfo))
+	{
+		MessageBoxA(NULL, szInfo, "∂‘≤ª∆£¨”…”⁄ƒ˙µƒœµÕ≥”≤º˛ªÚœµÕ≥»Ìº˛µƒŒ Ã‚£¨Œﬁ∑®‘À––±æ”Œœ∑!", MB_OK | MB_ICONSTOP);
+#ifdef ENABLE_UNKNOWN_EXIT_CHECK
+		l_bEnableExitCheck = false;
+#endif
+		return -1;
+	}
+
+	const char * szMissedFile = "";
+	if (!CheckImportantFiles(szMissedFile))
+	{
+		MessageBoxA(NULL, "∂‘≤ª∆£¨”…”⁄ƒ˙ª˙∆˜…œ∞≤◊∞µƒ”Œœ∑◊ ‘¥»±…Ÿ¡À“ª∏ˆ÷ÿ“™µƒŒƒº˛£¨”Œœ∑Œﬁ∑®‘À––£°«Î÷ÿ–¬∞≤◊∞”Œœ∑øÕªß∂À£°", szMissedFile, MB_OK | MB_ICONSTOP);
+#ifdef ENABLE_UNKNOWN_EXIT_CHECK
+		l_bEnableExitCheck = false;
+#endif
+		printf("BOOT_WWINMAIN_CHECK_FILES_FAILED: returning -1\n");
+		return -1;
+	}
+	printf("BOOT_WWINMAIN_CHECK_FILES_PASSED\n");
+
+	//	Build Game initialize structure
+	CECGame::GAMEINIT GameInit;
+	memset(&GameInit, 0, sizeof (GameInit));
+
+	if( l_CmdParams.iFullScreen == -1 )
+		GameInit.bFullscreen	= g_GameCfgs.GetSystemSettings().bFullScreen;
+	else
+		GameInit.bFullscreen	= l_CmdParams.iFullScreen ? true : false;
+	if( l_CmdParams.iRenderWid == -1 )
+		GameInit.iRenderWid		= g_GameCfgs.GetSystemSettings().iRndWidth;
+	else
+		GameInit.iRenderWid		= l_CmdParams.iRenderWid;
+	if( l_CmdParams.iRenderHei == -1 )
+		GameInit.iRenderHei		= g_GameCfgs.GetSystemSettings().iRndHeight;
+	else
+		GameInit.iRenderHei		= l_CmdParams.iRenderHei;
+
+	if (LOBYTE(LOWORD(GetVersion())) < 5)
+		g_bIsWin98 = true;
+
+	::DuplicateHandle(
+		GetCurrentProcess(),
+		GetCurrentThread(),
+		GetCurrentProcess(),
+		&g_hMainThread,
+		0,
+		FALSE,
+		DUPLICATE_SAME_ACCESS
+		);
+
+	g_hToSuspendMain = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+
+	g_dwMainThreadId = ::GetCurrentThreadId();
+	//SwitchRenderThreadMode(!GameInit.bFullscreen);
+	SwitchRenderThreadMode(true);
+
+	//	Register window class
+	if (!_RegisterWndClass(hInstance))
+	{
+		glb_ErrorOutput(ECERR_FAILEDTOCALL, "wWinMain", __LINE__);
+		return -1;
+	}
+
+	//	Create main window
+	if (!_CreateMainWnd(hInstance, nCmdShow, GameInit.bFullscreen))
+	{
+		glb_ErrorOutput(ECERR_FAILEDTOCALL, "wWinMain", __LINE__);
+		return -1;
+	}
+
+	GameInit.hInstance		= l_hInstance;
+	GameInit.hWnd			= l_hMainWnd;	
+	
+#ifdef ARC
+	//	Âä†ËΩΩ Arc SDK ËøõË°åÈÉ®ÂàÜÁΩëÈ°µÂØºËà™
+	if (g_GameCfgs.GetEnableArc()){
+		using namespace CC_SDK;
+		ArcOverlay::Instance().Init();
+		a_LogOutput(1, "Load CoreClient %s", ArcOverlay::Instance().IsLoaded() ? "success" : "failure");
+	}
+
+	if (g_GameCfgs.GetEnableArcAsia())
+		CECArcAsia::GetSingleton().Init();
+#endif
+
+	glb_RepairExeInMemory();
+
+	if (l_CmdParams.szIPAddr[0])
+	{
+	#ifdef UNICODE
+		a_WideCharToMultiByte(l_CmdParams.szIPAddr, 256, GameInit.szIP, 256);
+	#else
+		strcpy(GameInit.szIP, l_CmdParams.szIPAddr);
+	#endif
+
+		GameInit.iPort = l_CmdParams.iPort;
+	}
+
+	//init lua
+	LuaBind::Init(); //never fail
+
+	// init ecm lua api
+	InitECMApi(g_LuaStateMan.GetConfigState());
+	InitGlobalApi(g_LuaStateMan.GetConfigState()->GetVM());
+	if (g_GameCfgs.GetRegisterScriptFunc())
+		InitDlgApi(g_LuaStateMan.GetAIState());
+
+	//	Initialize game
+	if (!l_theGame.Init(GameInit))
+	{
+		glb_ErrorOutput(ECERR_FAILEDTOCALL, "wWinMain", __LINE__);
+		g_bHookExitProcess = FALSE;
+		return -1;
+	}
+
+	glb_RepairExeInMemory();
+
+	if (!l_theGame.GetGameRun()->StartLogin())
+	{
+		g_bHookExitProcess = FALSE;
+		return -2;
+	}
+
+#ifdef __EMSCRIPTEN__
+	// Browser frames run on the event loop; native defence threads are unavailable.
+	g_bMultiThreadRenderMode = false;
+	g_hExitGame = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_hRenderEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	emscripten_set_main_loop(pw153_browser_frame, 0, 0);
+	return 0;
+#endif
+
+	DWORD dwThreadID;
+	g_hRenderThread = ::CreateThread(NULL, 0, RenderThreadFunc, NULL, CREATE_SUSPENDED, &dwThreadID);
+	g_hDefenceThread = ::CreateThread(NULL, 0, DefenceThreadFunc, NULL, CREATE_SUSPENDED, &dwThreadID);
+	g_hExitGame = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_hRenderEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+
+	NetDLL::Register(-1, reinterpret_cast<LPVOID>(ShowAntiHackerMsg));
+	NetDLL::Register(-2, reinterpret_cast<LPVOID>(StackTrace));
+	NetDLL::Register(-3, reinterpret_cast<LPVOID>(connect_tcpudp));
+	NetDLL::Register(-4, reinterpret_cast<LPVOID>(send_tcpudp));
+	NetDLL::Register(-5, reinterpret_cast<LPVOID>(recv_tcpudp));
+	NetDLL::Register(-6, reinterpret_cast<LPVOID>(close_tcpudp));
+	NetDLL::Register(-7, reinterpret_cast<LPVOID>(ioctl_tcpudp));
+	NetDLL::Register(-8, reinterpret_cast<LPVOID>(ip_socket));
+	NetDLL::Register(-9, reinterpret_cast<LPVOID>(send_ip));
+	NetDLL::Register(-10, reinterpret_cast<LPVOID>(send_tcp));
+	NetDLL::Register(-11, reinterpret_cast<LPVOID>(send_udp));
+	NetDLL::Register(-12, reinterpret_cast<LPVOID>(send_sync));
+	NetDLL::Register(-13, reinterpret_cast<LPVOID>(send_ping));
+	NetDLL::Register(-14, reinterpret_cast<LPVOID>(GetBestSourceIP));
+	NetDLL::Register(-15, reinterpret_cast<LPVOID>(GetCodeSegment));
+	NetDLL::Register(-16, reinterpret_cast<LPVOID>(alloc_mem));
+	NetDLL::Register(-17, reinterpret_cast<LPVOID>(free_mem));
+	NetDLL::Register(-18, reinterpret_cast<LPVOID>(NetDLL::AppendSpyInfo));
+	NetDLL::Register(-19, reinterpret_cast<LPVOID>(CheaterKiller::AppendCheatInfo));
+	NetDLL::Register(-20, reinterpret_cast<LPVOID>(StackChecker::GetStackCheckData));
+	NetDLL::Register(-21, reinterpret_cast<LPVOID>(StackChecker::UpdateStackCheckCode));
+	NetDLL::Register(-22, reinterpret_cast<LPVOID>(ImageChecker::UpdateImageChecker));
+
+#ifdef USING_DEFENCE
+#ifdef ANGELICA_2_2
+	D3DADAPTER_IDENTIFIER9 idAdapter;
+	l_theGame.GetA3DEngine()->GetD3D()->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &idAdapter);
+#else
+	D3DADAPTER_IDENTIFIER8 idAdapter;
+	l_theGame.GetA3DEngine()->GetD3D()->GetAdapterIdentifier(D3DADAPTER_DEFAULT, D3DENUM_NO_WHQL_LEVEL, &idAdapter);
+#endif // ANGELICA_2_2
+	Collector::Engine::GetInstance().SetAdpaterDescription(idAdapter.Description);
+	::ResumeThread(g_hDefenceThread);
+	_defence_thread_init = true;
+#endif
+
+	while (1)
+	{
+		if (g_dwFatalErrorFlag == FATAL_ERROR_LOAD_BUILDING)
+		{
+			MessageBoxA(g_pGame->GetGameInit().hWnd, "º”‘ÿΩ®÷˛ ß∞‹£¨≥Ã–Úº¥Ω´ÕÀ≥ˆ£°", NULL, MB_OK | MB_ICONERROR);
+			a_LogOutput(1, "exit process because failed to load building");
+			g_bHookExitProcess = FALSE;
+			::ExitProcess(-2);
+		}
+		else if(g_dwFatalErrorFlag == FATAL_ERROR_WRONG_CONFIGDATA)
+		{
+			MessageBoxA(g_pGame->GetGameInit().hWnd, "∂¡»°◊ ‘¥ ˝æ›≥ˆ¥Ì£¨≥Ã–Úº¥Ω´ÕÀ≥ˆ£°", NULL, MB_OK | MB_ICONERROR);
+			a_LogOutput(1, "exit process because wrong config data");
+			g_bHookExitProcess = FALSE;
+			::ExitProcess(-3);
+		}
+
+		if (g_bExceptionOccured)
+		{
+			a_LogOutput(1, "exception has occured, handled or not handled by others, so I have to quit now in ElementClient.cpp");
+			::ExitProcess(-1);
+		}
+
+		SuspendRenderThread();
+
+		// toggle ime state in main thread
+		AUIEditBox::ToggleIME();
+
+		if (::WaitForSingleObject(g_hToSuspendMain, 0) == WAIT_OBJECT_0)
+			::SuspendThread(::GetCurrentThread());
+
+		// see if need popup an antihacker message
+		if( l_bHasAntiHackerMsg )
+		{
+			CECUIManager* pUI = g_pGame->GetGameRun()->GetUIManager();
+			if (pUI)
+			{
+				CECGameUIMan* pGameUI = pUI->GetInGameUIMan();
+				if (pGameUI) pGameUI->ShowErrorMsg(l_AntiHackerMsg);
+			}
+			l_bHasAntiHackerMsg = false;
+		}
+
+		if (g_bMultiThreadRenderMode)
+		{
+			MSG msg;
+			while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+			{
+				if (msg.message == WM_QUIT)
+					goto _exit;
+
+				if (g_pGame->PreTranslateMessage(msg))
+					continue;
+
+				::TranslateMessage(&msg);
+				::DispatchMessage(&msg);
+			}
+
+			if (!g_pGame->GetA3DDevice()->GetAutoResetFlag() && g_pGame->GetA3DDevice()->GetNeedResetFlag())
+			{
+				SuspendLoadThread();
+				SuspendRenderThread();
+
+				if (!g_pGame->GetA3DDevice()->Reset())
+					a_LogOutput(1, "CECGame::Run(), need reset the device, but we fail to call it!");
+
+				StartLoaderThread();
+			}
+
+			if (!g_bMultiThreadRenderMode)
+				continue;
+
+			ResumeRenderThread();
+			g_bMainSuspened = true;
+			::SetEvent(g_hRenderEvent);
+			::SuspendThread(::GetCurrentThread());
+			g_bMainSuspened = false;
+		}
+		else if (!l_theGame.RunInMainThread())
+			break;
+	}
+
+_exit:
+
+	_defence_thread_init = false;
+	::SetEvent(g_hExitGame);
+
+	if (g_hDefenceThread){
+		::WaitForSingleObject(g_hDefenceThread,5000);	//	2014-12-9 ÂæêÊñáÂΩ¨ÔºöÁ≠âÂæÖÊó∂Èó¥Áî±INFINITE‰øÆÊîπ‰∏∫5000ÔºåÁõÆÁöÑÊòØÈÅøÂÖçÊ≠ªÂæ™ÁéØÔºå
+														//	Ê≠ªÂæ™ÁéØÊù•Ê∫ê‰∫ég_hDefenceThreadÈÄöËøáGetWindowTextAËøô‰∏™Windows APIÁöÑË∞ÉÁî®Ôºå
+														//	GetWindowTextAËé∑ÂèñÂΩìÂâçËøõÁ®ãÁöÑÁ™óÂè£Êó∂‰ºöÂêëÂÖ∂ÂèëÈÄÅWM_GETTEXTÊ∂àÊÅØÔºå
+														//	‰ΩÜÊ≠§Êó∂‰∏ªÁ∫øÁ®ãÂ∑≤Áªè‰∏çÂÜçÂ§ÑÁêÜÊ∂àÊÅØÂæ™ÁéØ
+	}
+
+	if (g_hRenderThread)
+	{
+		::SetEvent(g_hRenderEvent);
+		g_bMultiThreadRenderMode = true;
+		ResumeRenderThread();
+		::WaitForSingleObject(g_hRenderThread, INFINITE);
+	}
+
+	l_theGame.Release();
+
+	LuaBind::Release();
+
+	//	Finalize game
+	_FinalizeGameApp();
+
+#ifndef _NOMINIDUMP
+
+	}	//	try
+
+	catch (...)
+	{
+		::OutputDebugString(_AL("Exception occurred...\n"));
+		a_LogOutput(1, "Exception occurred... mini dumped!");
+		::ExitProcess(-1);
+	}
+
+#endif
+
+	DeleteCriticalSection(&g_csException);
+	DeleteCriticalSection(&g_csSession);
+	DeleteCriticalSection(&g_csRTDebug);
+	DeleteCriticalSection(&g_csRenderThread);
+	DeleteCriticalSection(&g_csDefence);
+	CloseHandle(g_hMainThread);
+	CloseHandle(g_hExitGame);
+	CloseHandle(g_hRenderEvent);
+	CloseHandle(g_hToSuspendMain);
+
+#ifdef ENABLE_UNKNOWN_EXIT_CHECK
+	l_bEnableExitCheck = false;
+#endif
+
+	g_bHookExitProcess = FALSE;
+	CloseHandle(hInstMutex);
+
+#ifdef _PROFILE_MEMORY
+	g_DisableMemoryHistory();
+	::SymCleanup(GetCurrentProcess());
+#endif
+
+	return 0;
+}
+
+void _ParseCommandLine(ACHAR* szCmdLine)
+{
+	ACString strCmd;
+
+	//	Set default value for command line parameters
+	_DefaultCmdParams();
+
+#ifdef _DEBUG
+	strCmd = CECCommandLine::GetStandardConfig(_AL("fullscreen"));
+	if (!strCmd.IsEmpty())
+		a_sscanf((const ACHAR *)strCmd, _AL("%d"), &l_CmdParams.iFullScreen);
+#endif
+	
+	strCmd = CECCommandLine::GetStandardConfig(_AL("rendersize"));
+	if (!strCmd.IsEmpty())
+		a_sscanf((const ACHAR *)strCmd, _AL("%dx%d"), &l_CmdParams.iRenderWid, &l_CmdParams.iRenderHei);
+
+	strCmd = CECCommandLine::GetStandardConfig(_AL("ip"));
+	if (!strCmd.IsEmpty())
+		a_sscanf((const ACHAR *)strCmd, _AL("%d:%s"), &l_CmdParams.iPort, l_CmdParams.szIPAddr);
+	
+	strCmd = CECCommandLine::GetStandardConfig(_AL("console"));
+	if (!strCmd.IsEmpty())
+		a_sscanf((const ACHAR *)strCmd, _AL("%d"), &l_CmdParams.iConsole);
+}
+
+void _DefaultCmdParams()
+{
+	memset(&l_CmdParams, 0, sizeof (l_CmdParams));
+
+	l_CmdParams.iFullScreen	= -1;
+	l_CmdParams.iRenderWid	= -1;
+	l_CmdParams.iRenderHei	= -1;
+	l_CmdParams.iConsole	= 0;
+
+	l_CmdParams.szIPAddr[0]	= '\0';
+	l_CmdParams.iPort		= 0;
+}
+
+static void _OutputSystemVersion()
+{
+	OSVERSIONINFOEX osvi;
+	ZeroMemory(&osvi, sizeof(osvi));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (GetVersionEx((OSVERSIONINFO *)&osvi))
+	{
+		AString str;
+		str.Format("OS=%u.%u.%u, Platform=%u", osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber, osvi.dwPlatformId);
+		if (wcslen(osvi.szCSDVersion) > 0)
+			str += AString().Format(", CSDVersion=%s", (const char*)AC2AS(ACString(osvi.szCSDVersion)));	//	explicit conversion in varargs.
+		a_LogOutput(1, str);
+	}
+}
+
+bool _InitGameApp()
+{
+	af_Initialize();
+
+	//	Initialize log system
+	glb_InitLogSystem("EC.log");
+
+	_OutputSystemVersion();
+
+	char szFile[MAX_PATH];
+
+	//	Set current directory as work directory
+	GetCurrentDirectoryA(MAX_PATH, g_szWorkDir);
+
+	strcpy(g_szIniFile, g_szWorkDir);
+	strcat(g_szIniFile, "\\ElementClient.ini");
+
+	af_SetBaseDir(g_szWorkDir);
+
+	// now open all file packages
+	for(int i=0; i<sizeof(g_szPckDir) / sizeof(const char*); i++)
+	{
+		char szPckFile[MAX_PATH];
+		sprintf(szPckFile, "%s.pck", g_szPckDir[i]);
+		if( !g_AFilePackMan.OpenFilePackageInGame(szPckFile) )
+		{
+			if (!CECCommandLine::GetSupportSeperateFile())
+			{
+				char szInfo[1024];
+				sprintf(szInfo, "Œƒº˛∞¸ [%s] ±ªÀªµ£¨Œﬁ∑®¥Úø™£¨«Î÷ÿ–¬∞≤◊∞”Œœ∑øÕªß∂À£°", szPckFile);
+				MessageBoxA(NULL, szInfo, "Œƒº˛∞¸¥Úø™ ß∞‹", MB_ICONSTOP | MB_OK);
+				return false;
+			}
+		}
+	}
+
+	//	Open file package if it exists
+	GetPrivateProfileStringA("PathFile", "PackageFile", "null", szFile, MAX_PATH, g_szIniFile);
+
+	/*
+	if (stricmp(szFile, "null"))
+	{
+		if (!af_OpenFilePackage(szFile))
+		{
+			MessageBox(NULL, _AL("Failed to open file package"), _AL("Error"), MB_OK);
+			return false;
+		}
+	}*/
+
+	//	Initlaize network module
+	if (!_InitNetwork())
+	{
+		MessageBox(NULL, _AL("Failed initialize network module"), _AL("Error"), MB_OK);
+		return false;
+	}
+
+	//	Load game configs
+	if (!g_GameCfgs.Init("Configs\\element_client.cfg", "client_id.cfg", "userdata\\SystemSettings.ini"))
+	{
+		a_LogOutput(1, "_InitGameApp(), Failed to load configs file");
+		return false;
+	}
+
+	//	Set language code page
+	a_SetCharCodePage((DWORD)g_GameCfgs.GetLanCodePage());	
+
+	//	Âä†ËΩΩ GT Ê®°Âùó
+	if (g_GameCfgs.GetEnableGT())
+	{
+		using namespace overlay;
+		GTOverlay::Instance().EnterMain(overlay::kGameRenderDX81);
+		a_LogOutput(1, "_InitGameApp, Load GT %s", GTOverlay::Instance().IsLoaded() ? "success" : "failure");
+	}
+
+	return true;
+}
+
+void _FinalizeGameApp()
+{
+	using namespace overlay;
+	if (GTOverlay::Instance().IsLoaded())
+		GTOverlay::Instance().LeaveDestroyGameWindow();
+	if (g_GameCfgs.GetEnableGT())
+		GTOverlay::Instance().LeaveMain();
+
+#ifdef ARC
+	using namespace CC_SDK;
+	ArcOverlay::Instance().UnInit();
+#endif
+
+	//	Close network module
+	_FinalizeNetwork();
+
+	//	Close log system
+	glb_CloseLogSystem();
+
+	af_Finalize();
+}
+
+ATOM _RegisterWndClass(HINSTANCE hInstance)
+{
+	WNDCLASSEX wcex;
+
+	wcex.cbSize = sizeof (WNDCLASSEX); 
+
+	wcex.style			= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+	wcex.lpfnWndProc	= (WNDPROC)_WndProc;
+	wcex.cbClsExtra		= 0;
+	wcex.cbWndExtra		= 0;
+	wcex.hInstance		= hInstance;
+	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MAINICON));
+	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wcex.lpszMenuName	= NULL;
+	wcex.lpszClassName	= l_szClassName;
+	wcex.hIconSm		= NULL;
+
+	return RegisterClassEx(&wcex);
+}
+
+bool _CreateMainWnd(HINSTANCE hInstance, int nCmdShow, bool bFullScreen)
+{
+	l_hInstance = hInstance;
+	int iRenderWid = g_GameCfgs.GetSystemSettings().iRndWidth;
+	int iRenderHei = g_GameCfgs.GetSystemSettings().iRndHeight;
+
+	DWORD dwStyles = WS_POPUP;
+	if (!bFullScreen)
+	{
+		dwStyles |= WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME;
+	}
+
+	DWORD dwExStyle = 0;
+	if( bFullScreen )
+		dwExStyle = WS_EX_TOPMOST;
+
+	if(g_GameCfgs.GetMultiClient() == 0)	// Check if we enable multi-client. by SunXuewei 2009-10-20
+	{
+		HWND hOldWnd = ::FindWindow(l_szClassName, g_GameCfgs.GetWindowsTitle());
+		if(hOldWnd!=NULL)
+		{
+			MessageBoxA(NULL, "Game is currently running. You can't start another process!", "ERROR", MB_OK | MB_ICONSTOP);
+			return false;
+		}
+	}
+
+	HWND hWnd = CreateWindowEx(dwExStyle, l_szClassName, g_GameCfgs.GetWindowsTitle(), dwStyles,
+					0, 0, iRenderWid, iRenderHei, NULL, NULL, hInstance, NULL);
+	if (!hWnd)						    
+		return false;
+	
+	l_hMainWnd = hWnd;
+
+	if (!bFullScreen)
+	{
+		//	Adjust window position
+		RECT rcWnd = {0, 0, iRenderWid, iRenderHei};
+		AdjustWindowRect(&rcWnd, dwStyles, FALSE);
+	
+		int w = rcWnd.right - rcWnd.left;
+		int h = rcWnd.bottom - rcWnd.top;
+		int x = (GetSystemMetrics(SM_CXFULLSCREEN) - w) / 2;
+		int y = (GetSystemMetrics(SM_CYFULLSCREEN) - h) / 2;
+
+		MoveWindow(l_hMainWnd, x, y, w, h, FALSE);
+	}
+
+	//	Show main window
+	ShowWindow(l_hMainWnd, nCmdShow);
+	UpdateWindow(l_hMainWnd);
+
+	//	we force set foreground window to ensure our main window is activated
+	SetForegroundWindow(l_hMainWnd);
+	return true;
+}
+
+LRESULT CALLBACK _WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	static bool bCaptured = false;
+
+	if (message == WM_CREATE)
+	{
+		LPCREATESTRUCT lpCreate = (LPCREATESTRUCT)lParam;
+		if (lpCreate && lpCreate->lpszClass && !wcscmp(lpCreate->lpszClass, l_szClassName))
+		{
+			using namespace overlay;
+			if (GTOverlay::Instance().IsLoaded())
+				GTOverlay::Instance().EnterCreateGameWindow(hWnd);
+		}
+	}
+
+	if (message == WM_RBUTTONDOWN)
+	{
+		::SetCapture(l_hMainWnd);
+		bCaptured = true;
+	}
+	else if (message == WM_RBUTTONUP && bCaptured)
+	{
+		::ReleaseCapture();
+		bCaptured = false;
+	}
+
+	if (bCaptured && message == WM_MOUSEMOVE)
+	{
+		A3DDevice* pDev = g_pGame->GetA3DDevice();
+
+		if (pDev->GetShowCursor())
+		{
+			A3DCursor* pCursor = pDev->GetCursor();
+			if (pCursor) pCursor->OnSysSetCursor();
+		}
+		else
+			SetCursor(NULL);
+	}
+
+	SuspendRenderThread();
+
+	::EnterCriticalSection(&g_csRenderThread);
+	bool b = false;
+	if( g_pGame )
+	{
+		b = g_pGame->WndProc(hWnd, message, wParam, lParam);
+		if (hWnd == g_pGame->GetGameInit().hWnd &&
+			message == WM_NCACTIVATE &&
+			b)
+		{
+			//	‰øÆÊîπ wParam ‰ª•‰Ωø DefWndProc ÊòæÁ§∫‰∏∫Êú™Â§±ÂéªÁÑ¶ÁÇπ
+			//	Áî®‰∫éÂ§ÑÁêÜÊ∏∏ÊàèÂÜÖÁΩÆ WebBrowser Êéß‰ª∂Êä¢Âç†ÁÑ¶ÁÇπÂØºËá¥Ê∏∏Êàè‰∏ªÁ™óÂè£ÊòæÁ§∫‰∏∫Â§±ÂéªÁÑ¶ÁÇπÁöÑÈóÆÈ¢ò
+			b = false;
+			wParam = TRUE;
+		}
+	}
+	::LeaveCriticalSection(&g_csRenderThread);
+
+	if (g_bMultiThreadRenderMode)
+		ResumeRenderThread();
+
+	return b ? 0 : DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+//	Initlaize network module
+bool _InitNetwork()
+{
+	using namespace GNET;
+
+	//	Initialize windows socket module
+#ifdef USING_DEFENCE
+	Collector::Startup();
+#endif
+
+#ifndef USING_TRACER
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	{
+		a_LogOutput(1, "_InitNetwork, Cannot initialize Windows Sockets !");
+    	return false;
+	}
+#endif
+
+	AString strFile = g_szWorkDir;
+	strFile += "\\dbserver.conf";
+	GNET::Conf::GetInstance(strFile);
+
+	GNET::PollIO::Init();
+
+	return true;
+}
+
+//	Finalize network module
+void _FinalizeNetwork()
+{
+	using namespace GNET;
+
+	PollIO::Close();
+	Sleep(1000);
+
+#ifdef USING_DEFENCE
+	Collector::Cleanup();
+#endif
+
+#ifndef USING_TRACER
+	WSACleanup();
+#endif
+}

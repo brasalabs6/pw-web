@@ -1,46 +1,35 @@
 # Arquitetura — Pipeline de recursos PCK/PKX, formatos e proveniência
 
-## Contexto no monorepo
-- `engine/formats` — módulo de responsabilidade de implementação/controle
-- `tools/assets` — módulo de responsabilidade de implementação/controle
-- `web/storage` — módulo de responsabilidade de implementação/controle
-- `tests/fixtures` — módulo de responsabilidade de implementação/controle
+Bytes não confiáveis → reader limitado → índice de variante confirmada → descompressão com budget → nomes lógicos → manifesto/hash → preload → bytes prontos para cena. Contrato do formato vem da evidência do produtor; consumidor não inventa layout.
 
-## Fluxo de dados e controles
-```text
-workorder versionado → contrato/interface → implementação isolada
-       ↓                     ↓                  ↓
-   gates direitos      testes unitários    testes integração
-       └─────────────→ relatório CI ←────────────┘
-                           ↓
-                      PR para revisão
-```
+## Donos e consumidores
 
-## Interfaces propostas e invariantes
-### 1. IArchiveIndex
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+Parser de uma variante, manifesto e preload limitados; OPFS/CDN completo continua em e15. O pw-web é dono dos novos contratos de plataforma; o servidor
+é dono do wire format; referências são evidência, não dependências automáticas do
+build público. Recursos possuem owner/lifetime explícitos; erro não é sucesso vazio.
 
-### 2. AssetManifest
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+## Caminhos de falha
 
-### 3. IAssetDecoder
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+- WO-01: Nome de extensão ou versão aproximada não determina layout binário.
+- WO-02: Schema incompleto impede aprovação; não se cria contrato no consumidor para preencher ausência de evidência.
+- WO-03: Bombas de descompressão e offsets além do arquivo são rejeitados antes de exceder os limites.
+- WO-04: Dependência ausente/cíclica ou mesmo ID com conteúdos diferentes falha sem manifesto parcialmente válido.
+- WO-05: Asset de outra versão ou sem autorização não integra o corpus válido.
+- WO-06: offset+length que transborda ou tamanho descomprimido além do budget não permite alocação.
+- WO-07: Arquivo de 3 bytes não permite read_u32; erro não avança cursor.
+- WO-08: Magic desconhecido, registro truncado e intervalo cruzando arquivo sem regra definida são rejeitados.
+- WO-09: Stream curto e saída anunciada acima do budget retornam erro controlado.
+- WO-10: Duas entradas que convergem para o mesmo nome e encoding inválido falham explicitamente.
+- WO-11: Hash diferente ou dependência ausente impede READY mesmo se HTTP retornou 200.
+- WO-12: Cancelamento não deixa recursos half-ready nem conserva referências a buffers descartados.
 
-### 4. resource version map
-Entrada tipada e validada antes de mutações; saída determinística sempre que possível, com estado explícito para sucesso/erro/cancelamento. Conservar versão, fonte do dado, correlação e ordem de operações. Invariantes devem ser traduzidas em testes de contrato: não emitir buffers fora de limite, não vazar recursos, não confirmar operação sem ack quando aplicável.
+## Dependências reais
 
-## Fronteiras
-- O browser só tem WebAssembly/JS/WebGL2/Web Audio/WebSocket/Storage, nunca `Windows.h` ou DirectX nativo.
-- Serviços de jogo continuam autoritativos no backend; decisões do cliente não mudam economia/sessões sem confirmação.
-- Recursos externos entram por parsers com limites; manter trilha de versão, hash e autorização.
-- A plataforma e os contratos são de código nosso; fontes upstream ficam em `references/` e não entram em CI.
+Ver dependencies dos JSONs e o grafo em [port-program.md](../../port-program.md).
+Não há requisito global de compilar todo Windows antes de R0 sintético. Integração
+original e paridade final exigem a baseline, closure e autorização correspondentes.
 
-## Versionamento e fallback
-- Compatibilidade entre cliente, engine, asset e realm deve constar em manifesto/matriz, não por aproximação.
-- Toda mudança pública de contrato exige teste backwards + ADR.
-- Se inviável ou sem direitos suficientes, manter contrato e substituir implementação por módulo original autorizado.
+## Contratos canônicos
 
-## Observabilidade
-- Medir fixtures sintéticas com limites validados por cenário, browser, commit e build, preservando a evidência
-- Medir 0 path escapes por cenário, browser, commit e build, preservando a evidência
-- Medir 100% arquivos emitidos com hash e versão por cenário, browser, commit e build, preservando a evidência
+- [docs/LEGAL.md](../../../docs/LEGAL.md)
+- [docs/ANGELICA-PORTING-METHOD.md](../../../docs/ANGELICA-PORTING-METHOD.md)

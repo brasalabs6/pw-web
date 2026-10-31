@@ -4,7 +4,7 @@
 O MCP está configurado em [`.grok/config.toml`](../.grok/config.toml):
 `[mcp_servers.chrome-devtools]` -> `bash scripts/chrome-mcp-launch.sh`.
 
-O wrapper invoca **`chrome-devtools-mcp@1.12.0`** instalado previamente, sem `npx @latest`. O navegador é Chrome for Testing, headless e isolado. São permitidas apenas páginas em `127.0.0.1:8080` e `localhost:8080`; serviços externos não estão dentro do escopo de browser testing.
+O wrapper invoca **`chrome-devtools-mcp@1.12.0`** instalado previamente, sem `npx @latest`. O navegador é Chrome for Testing, headless e isolado. São permitidas apenas páginas em `127.0.0.1:8480` e `localhost:8480`; serviços externos não estão dentro do escopo de browser testing.
 
 - Chrome é instalado no GitHub Actions por `browser-actions/setup-chrome@v2`.
 - `CHROME_BIN` aponta ao Chrome da sessão.
@@ -12,7 +12,7 @@ O wrapper invoca **`chrome-devtools-mcp@1.12.0`** instalado previamente, sem `np
 - O servidor `python3 -m http.server` executa apenas o conteúdo sintético do nosso diretório `web/`, na interface `127.0.0.1`.
 - O código do projeto ainda **não** renderiza o Perfect World real. Uma captura do triângulo procedural não constitui teste de terreno, personagens, servidor nem assets originais.
 
-## Prova independente
+O host de testes usa por padrão **8480** (`PW_WEB_PORT=8480`), configurável localmente via variável de ambiente; o experimento Angelica/POC-001 reserva **8481**. Nenhum deles tenta usar a porta 8080.\n\n## Prova independente
 O job `Chrome Rendering Smoke` abre as dimensões desktop (1366×768) e mobile (390×844) com `playwright-core`, verifica HTTP 200, estado WebGL2 ATIVO, canvas não vazio, FPS calculado e ausência de erros JS de página. Produz:
 - `artifacts/browser/desktop.png`
 - `artifacts/browser/mobile.png`

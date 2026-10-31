@@ -1,6 +1,13 @@
 # Planejamento executável do PW Web
 
-**20 épicos** versionados em `.agents/epics/<slug>-v1/`, cada um com charter, requisitos, arquitetura, implementação, testes, riscos, `tasks.md`, `task.md` e cinco workorders em JSON e Markdown. **Total: 100 workorders.**
+## Método técnico para portar a Angelica
+
+Antes de executar e02–e06, consultar [POC-001](../docs/POC-ANGELICA.md) e
+[método de port com contratos e tarefas](../docs/ANGELICA-PORTING-METHOD.md).
+P1 é o próximo pacote autocontido para Grok/GLM. As workorders genéricas abaixo
+não substituem seus contratos; o catálogo/scheduler não foi alterado por esta prova.
+
+**20 épicos** versionados em `.agents/epics/<slug>-v1/`, cada um com charter, requisitos, arquitetura, implementação, testes, riscos, `tasks.md`, `task.md` workorders em JSON e Markdown, conforme o catálogo de cada épico. **Total: 135 workorders após a expansão e02–e06 do PR #15 (WIP).**
 
 Use `python3 .agents/automation/epic_check.py` para validar contratos/dependências. Use `docs/AUTONOMY.md` para runbook Grok Build/GitHub Actions. Somente workorders com `automation: true` são elegíveis para disparo automático; todos os PRs exigem revisão humana. Direitos de terceiros são gate independente.
 
@@ -32,3 +39,17 @@ Use `python3 .agents/automation/epic_check.py` para validar contratos/dependênc
 3. Criar workorders JSON com scopes, dependências e testes; Markdown com execução.
 4. Checar `epic_check.py`, adicionar ADR se afetar versões ou arquitetura.
 5. Evitar marcar tarefas sem CI e prova apropriada (o scaffold não testa o MMORPG).
+
+## Build/deploy Cloudflare e streaming
+
+[Plano de entrega Cloudflare](../docs/CLOUDFLARE-DELIVERY.md), ADR-0005 e tarefas
+CF-01–24 detalham e15/e17 com contratos novos. Planejado, não implantado; não altera
+catálogo nem conclui workorders. Source portada será mantida em src/client153.
+
+
+## Separação entre port e otimização
+
+- [`issues/README.md`](issues/README.md): correções e lacunas que impedem ou comprometem o cliente WebAssembly funcional no navegador desktop/mobile.
+- [`optimization/README.md`](optimization/README.md): candidatos de performance/Angelica/mobile/hardening para depois do baseline jogável, sem desviar a equipe do port.
+
+Vulnerabilidades ou crashes efetivamente comprovados devem ser classificados como issues do port mesmo se descobertos em auditoria de performance.

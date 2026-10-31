@@ -20,35 +20,35 @@
       "order": 2,
       "slug": "e02-native-client-baseline-v1",
       "title": "Baseline do cliente Windows e seleção validada da Angelica",
-      "workorders": 5,
+      "workorders": 10,
       "priority": "P0"
     },
     {
       "order": 3,
       "slug": "e03-platform-portability-v1",
       "title": "Desacoplamento de Win32, SDK e Direct3D",
-      "workorders": 5,
+      "workorders": 12,
       "priority": "P0"
     },
     {
       "order": 4,
       "slug": "e04-wasm-runtime-v1",
       "title": "Toolchain C++/Emscripten e runtime WebAssembly",
-      "workorders": 5,
+      "workorders": 10,
       "priority": "P0"
     },
     {
       "order": 5,
       "slug": "e05-asset-pipeline-v1",
       "title": "Pipeline de recursos PCK/PKX, formatos e proveniência",
-      "workorders": 5,
+      "workorders": 12,
       "priority": "P1"
     },
     {
       "order": 6,
       "slug": "e06-render-webgl2-v1",
       "title": "Renderer WebGL2 da engine Angelica",
-      "workorders": 5,
+      "workorders": 16,
       "priority": "P1"
     },
     {

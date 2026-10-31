@@ -2,68 +2,74 @@
   "schema_version": 1,
   "epic": "e02-native-client-baseline-v1",
   "id": "wo-05",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "planned",
-  "title": "Registrar ADR de seleção final, fallback e bloqueios por componente",
-  "objective": "Medir build real do cliente 1.5.3 D3D8 versus alternativa 1.5.2 D3D9, registrar dependências, inicialização, cena, login e decisão por evidência técnica e direitos. Nesta workorder: Registrar ADR de seleção final, fallback e bloqueios por componente. Definir, implementar e provar o recorte sem inventar paridade com cliente comercial.",
+  "title": "Decidir seleção de versão com evidência, fallback e bloqueios",
+  "objective": "Obter uma baseline Windows reproduzível e evidência suficiente para selecionar versão, SDKs, assets e realm sem misturar candidatos. Nesta workorder: Decidir seleção de versão com evidência, fallback e bloqueios. Concluir somente este recorte e registrar a evidência específica.",
   "priority": "P0",
-  "risk": "SDK legado indisponível",
-  "automation": true,
+  "risk": "Sem build ou direitos, manter BLOCKED/proposto; não marcar wo-05 concluída para liberar outros épicos.",
+  "automation": false,
   "requires_human_review": true,
   "dependencies": [
-    "e02-native-client-baseline-v1/wo-04"
+    "e02-native-client-baseline-v1/wo-04",
+    "e02-native-client-baseline-v1/wo-10",
+    "e00-rights-governance-v1/wo-02"
   ],
   "inputs": [
-    "references/client-153",
-    "references/client-152-modern",
-    "documentos de build Windows",
-    "testes de comparação",
-    "docs/ARCHITECTURE.md",
-    "Contrato log/sha de executável"
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    "docs/VALIDATION.md",
+    "docs/DECISIONS/ADR-0003-version-selection.md",
+    "docs/evidence/native-client-runtime.md",
+    "docs/evidence/client-152-comparison.md"
   ],
   "deliverables": [
-    "Contrato e implementação rastreáveis para registrar adr de seleção final, fallback e bloqueios por componente",
-    "Teste positivo e negativo para log/sha de executável com fixture sintética ou autorizada",
-    "Documento de decisões, limitações e instruções de reprodução com commit/ferramentas",
-    "Relatório CI e evidência adicional de validação específica, sem alegar jogo pronto"
+    "Arquivos/áreas desta entrega: docs/DECISIONS/ADR-0003-version-selection.md; docs/VALIDATION.md",
+    "WI-01: Consolidar inventários, build, runtime e comparação do candidato alternativo.",
+    "WI-02: Preencher a matriz ponderada de VALIDATION sem substituir campos não verificados por pontuação presumida.",
+    "WI-03: Submeter decisão de versão e autorização ao responsável; manter proposta se falta prova.",
+    "WI-04: Registrar versão/configuração/SDK/assets/realm selecionados e atualizar somente estados demonstrados."
   ],
   "acceptance": [
-    "Demonstrar registrar adr de seleção final, fallback e bloqueios por componente dentro dos limites licenciados",
-    "Explicitar tipos de entrada/saída, versões, erros e recursos consumidos por log/sha de executável",
-    "Executar teste unitário determinístico verificando log/sha de executável com entrada válida e anexar log",
-    "Executar teste de rejeição de dados inválidos, limites e fallback seguro para log/sha de executável e anexar log",
-    "Submeter PR isolado, alterações apenas em docs/, tests/, nenhuma alteração em workflows ou segredos"
+    "ADR aceita ou rejeitada contém evidências e decisão identificada; o gate terminal continua significando seleção validada.",
+    "Caso negativo obrigatório: Sem build ou direitos, manter BLOCKED/proposto; não marcar wo-05 concluída para liberar outros épicos.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
   ],
   "tests": [
-    "Teste unitário determinístico verificando log/sha de executável com entrada válida",
-    "Teste de rejeição de dados inválidos, limites e fallback seguro para log/sha de executável",
-    "Integração isolada: validar registrar adr de seleção final, fallback e bloqueios por componente com mocks locais e regressão",
-    "Smoke no ambiente alvo apropriado: reportar pass/fail/blocked, não fabricar resultado"
+    "Revisão humana da ADR e matriz; ./scripts/verify.sh",
+    "Positivo: ADR aceita ou rejeitada contém evidências e decisão identificada; o gate terminal continua significando seleção validada.",
+    "Negativo: Sem build ou direitos, manter BLOCKED/proposto; não marcar wo-05 concluída para liberar outros épicos.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
   ],
   "write_scopes": [
     "docs/",
-    "tests/"
+    "docs/DECISIONS/",
+    "docs/evidence/"
   ],
   "forbidden": [
     ".github/",
-    ".agents/automation/",
+    ".agents/",
     "references/",
-    "assets originais",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
     "segredos",
     "produção"
   ],
   "evidence": {
     "requires_ci": true,
     "requires_local_test": true,
-    "requires_browser_e2e": false,
+    "requires_browser_e2e": true,
     "requires_rights_review": true
   },
-  "rollback": "Reverter apenas a branch de trabalho; preservar logs e retomar após ADR/triagem. Nunca forçar atualização de main.",
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
   "execution": {
     "max_attempts": 3,
     "max_changed_files": 24,
     "max_patch_bytes": 256000,
     "merge_policy": "manual"
   },
-  "notes": "Não confundir ambiente sintético com teste funcional do Perfect World; quando dependência real estiver indisponível, marcar blocked."
+  "notes": "Tipo: decisão. Prontidão: (HUMAN) decisão de versão e direitos. Gate não satisfeito pela POC-001. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de docs/DECISIONS/ADR-0003-version-selection.md; docs/VALIDATION.md. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
 }

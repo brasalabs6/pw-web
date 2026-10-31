@@ -1,25 +1,30 @@
-# Registro de riscos — Renderer WebGL2 da engine Angelica
+# Riscos — Renderer WebGL2 da engine Angelica
 
-## Riscos específicos
+## Estado e proveniência
 
-| ID | Risco | Gravidade | Como identificar | Primeira mitigação | Plano de contingência |
-| --- | --- | --- | --- | --- | --- |
-| R-1 | semântica D3D↔GL divergente | Alto / validar gravidade | Expor cenário negativo e observável | Inventariar render states realmente usados na Angelica2 e dependências D3D8 | Bloquear trabalho dependente, ADR ou fallback |
-| R-2 | shaders D3DX indisponíveis | Alto / validar gravidade | Expor cenário negativo e observável | Definir tabelas de equivalência de vertex formats e estados blend/cull/depth | Bloquear trabalho dependente, ADR ou fallback |
-| R-3 | perda do contexto GPU e leaking buffers | Alto / validar gravidade | Expor cenário negativo e observável | Implementar backend WebGL2 incremental com shaders do subconjunto utilizado | Bloquear trabalho dependente, ADR ou fallback |
+Revisão 1.1.0 do plano, 2026-10-24. Nenhuma destas workorders foi concluída por
+esta atualização. POC-001 é evidência local restrita; não equivale à homologação
+dos gates de cliente/renderer. [provenance: user-input, doc-tree, code]
 
-## Legenda da tabela
-Formato: ID | risco | gravidade inicial | sinal de falha | primeira mitigação | contingency.
+## Riscos e incertezas
 
-## Riscos transversais
-| Categoria | Sinal | Tratamento |
-| --- | --- | --- |
-| Direitos | licença titular desconhecido | manter fora de artefatos distribuídos |
-| Integridade | checks verdes sem funcionalidade real | evidência E2E específica e gate humano |
-| Segurança do agente | mudança em workflows/segredos | rejeitar patch antes de write-token |
-| Compatibilidade | assets/protocolos de versões diferentes | matriz de versão e validação por commit |
-| Performance | stutter/memória e download excessivo | perf budgets, tracing e opções de fallback |
-| Operação | falta de credenciais/servidor/SDK | bloquear honestamente, não simular sucesso |
+- [HIGH][Confirmed] Há chamadas D3D fora de A3DDevice; closure precisa ser fechada por fatia.
+- [HIGH][Likely] Transposição, ARGB, profundidade e winding podem compilar e desenhar errado.
+- [HIGH][Possible] IDs antigos após context loss ou shader fallback silencioso criam falso sucesso visual.
 
-## Registro de incidente e decisão
-Cada risco precisa de dono, impacto, likelihood revisada, evidência, mitigação, prazo de revisão e critério de encerramento. Erros críticos exigem suspensão de release e workorder de correção.
+(HUMAN) Liberar integração do legado e recursos da baseline (WO-14/05). R0 sintético avança sem assets comerciais; paridade original não.
+
+## Contratos
+
+- [.agents/epics/e06-render-webgl2-v1/contracts/render-r0.md](../../../.agents/epics/e06-render-webgl2-v1/contracts/render-r0.md)
+- [docs/DECISIONS/ADR-0004-incremental-port-method.md](../../../docs/DECISIONS/ADR-0004-incremental-port-method.md)
+
+Contratos futuros em `docs/contracts/` são entregáveis das WOs de especificação.
+Sua ausência bloqueia os consumidores; o agente não deve inventar um substituto.
+
+
+## Condições de parada
+
+Não inferir schema, autorização ou paridade. Manter as tarefas independentes
+executáveis enquanto a parte dependente fica BLOCKED. Retomar com evidência da
+pré-condição; não remover gates apenas para alimentar o scheduler.

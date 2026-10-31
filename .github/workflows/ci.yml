@@ -22,6 +22,16 @@ jobs:
         run: |
           python3 -m compileall -q .agents/automation tests
           python3 .agents/automation/epic_check.py
+      - name: Setup Node for manifest contracts
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test Angelica POC comparison logic without upstream code or assets
+        run: |
+          node --test tests/probes/compare.test.mjs
+          node --test tests/probes/render-proof-utils.test.cjs
+          node --check tests/probes/browser-proof.cjs
+          node --check tests/probes/render-browser-proof.cjs
       - name: Verify bootstrap, tests and portable C++ (capture evidence)
         id: checks
         shell: bash
@@ -90,6 +100,7 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           PW_BROWSER_MODULE_DIR: ${{ runner.temp }}/pw-browser
           PW_BROWSER_ARTIFACTS: artifacts/browser
+          PW_WEB_PORT: '8480'
         run: bash scripts/browser-smoke.sh
       - name: Upload independent browser screenshot and measurements
         if: always()

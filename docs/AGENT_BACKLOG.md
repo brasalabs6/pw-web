@@ -33,7 +33,7 @@ Para etapas que demandem direitos, ambiente Windows, assets ou aprovação human
 }
 ```
 
-A alteração dessa lista requer revisão de maintainer; declarar manualmente trabalho concluído sem evidência é proibido. A fila não substitui validação de licença.
+A alteração dessa lista requer revisão de maintainer; declarar manualmente trabalho concluído sem evidência é proibido. A fila não substitui o registro de proveniência/autorização de `docs/LEGAL.md`.
 
 ## Dependências e escopo
 Workorders são descritas em `.agents/epics/<epic>/workorders/<wo>.json` e validadas por `.agents/automation/catalog.py`. O scheduler usa `backlog_pick.py`. Código gerado só pode alterar pastas permitidas e nunca `.agents/`, `.github/`, `references/`, scripts de verificação protegidos ou arquivos originais. Mudanças do próprio sistema de agentes sempre via PR humano.

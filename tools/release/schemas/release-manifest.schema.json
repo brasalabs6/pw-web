@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pw-release-manifest-v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "mode", "sourceClient", "sourceCommit", "upstreamCommit", "sourceManifestSha256", "toolchainLockSha256", "buildProfileSha256", "assetSetSha256", "assetsSchema", "protocolProfile", "requiredBrowserFeatures", "runtime", "entryBundles"],
+  "properties": {
+    "schema": { "const": 1 },
+    "mode": { "enum": ["diagnostic", "game"] },
+    "sourceClient": { "const": "1.5.3" },
+    "sourceCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "upstreamCommit": { "const": "e3d6d0075d0a745c9f9859f2cb25b01d71dec045" },
+    "sourceManifestSha256": { "$ref": "#/$defs/sha256" },
+    "toolchainLockSha256": { "$ref": "#/$defs/sha256" },
+    "buildProfileSha256": { "$ref": "#/$defs/sha256" },
+    "assetSetSha256": { "$ref": "#/$defs/sha256" },
+    "assetsSchema": { "const": 1 },
+    "protocolProfile": { "type": ["string", "null"], "minLength": 1 },
+    "requiredBrowserFeatures": {
+      "type": "array", "uniqueItems": true,
+      "items": { "enum": ["webgl2", "wasm", "webaudio"] }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entryModule", "wasmModule", "files"],
+      "properties": {
+        "entryModule": { "$ref": "#/$defs/id" },
+        "wasmModule": { "$ref": "#/$defs/id" },
+        "files": {
+          "type": "array", "minItems": 2,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["id", "sha256", "bytes", "mediaType"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "sha256": { "$ref": "#/$defs/sha256" },
+              "bytes": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+              "mediaType": { "enum": ["text/javascript", "application/wasm"] }
+            }
+          }
+        }
+      }
+    },
+    "entryBundles": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "game" } }, "required": ["mode"] },
+      "then": { "properties": { "protocolProfile": { "type": "string", "minLength": 1 } } }
+    },
+    {
+      "if": { "properties": { "mode": { "const": "diagnostic" } }, "required": ["mode"] },
+      "then": { "properties": { "protocolProfile": { "type": "null" } } }
+    }
+  ],
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._/-]{0,127}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

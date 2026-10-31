@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "epic": "e06-render-webgl2-v1",
+  "id": "wo-09",
+  "version": "1.1.0",
+  "status": "planned",
+  "title": "Implementar blend, alpha test, cull e depth do subconjunto aprovado",
+  "objective": "Construir renderer WebGL2 por subconjuntos e adaptar um primeiro draw Angelica somente após closure, baseline e autorização. Nesta workorder: Implementar blend, alpha test, cull e depth do subconjunto aprovado. Concluir somente este recorte e registrar a evidência específica.",
+  "priority": "P1",
+  "risk": "Enum desconhecido retorna UnsupportedFeature; alpha-test não é tratado como blend equivalente.",
+  "automation": true,
+  "requires_human_review": true,
+  "dependencies": [
+    "e06-render-webgl2-v1/wo-02",
+    "e06-render-webgl2-v1/wo-06",
+    "e06-render-webgl2-v1/wo-08",
+    "e01-agent-orchestration-v1/wo-05"
+  ],
+  "inputs": [
+    "AGENTS.md",
+    "docs/LEGAL.md",
+    "docs/POC-ANGELICA.md",
+    "docs/ANGELICA-PORTING-METHOD.md",
+    ".agents/epics/e06-render-webgl2-v1/contracts/render-r0.md",
+    "docs/DECISIONS/ADR-0004-incremental-port-method.md",
+    "docs/contracts/angelica-render-mapping.md",
+    "docs/contracts/render-capabilities.md"
+  ],
+  "deliverables": [
+    "Arquivos/áreas desta entrega: engine/render/pipeline_state.h; engine/platform/web/pipeline_state.cpp; tests/render/pipeline.cpp; scripts/test-render-states.sh",
+    "WI-01: Implementar apenas combinações enumeradas no mapping de WO-02, incluindo defaults explícitos.",
+    "WI-02: Traduzir alpha test para shader quando definido e manter transparência separada de depth write.",
+    "WI-03: Desenhar fixtures de ordem, winding, recorte alpha e profundidade com resultados numéricos/pixel.",
+    "WI-04: Testar troca de estados entre draws e rejeição de enums/combinações fora da tabela."
+  ],
+  "acceptance": [
+    "Estados mapeados reproduzem a semântica aprovada sem vazamento entre draws.",
+    "Caso negativo obrigatório: Enum desconhecido retorna UnsupportedFeature; alpha-test não é tratado como blend equivalente.",
+    "Ferramenta ausente, zero casos ou pré-condição ausente não são PASS; registrar FAIL/BLOCKED e o motivo."
+  ],
+  "tests": [
+    "./scripts/test-render-states.sh (criar; autoteste browser)",
+    "Positivo: Estados mapeados reproduzem a semântica aprovada sem vazamento entre draws.",
+    "Negativo: Enum desconhecido retorna UnsupportedFeature; alpha-test não é tratado como blend equivalente.",
+    "./scripts/verify.sh (existente; não substitui o teste específico)"
+  ],
+  "write_scopes": [
+    "engine/platform/web/",
+    "engine/render/",
+    "scripts/",
+    "tests/render/",
+    "docs/evidence/"
+  ],
+  "forbidden": [
+    ".github/",
+    ".agents/",
+    "references/",
+    "scripts/verify.sh",
+    "scripts/dev.sh",
+    "assets originais sem autorização",
+    "segredos",
+    "produção"
+  ],
+  "evidence": {
+    "requires_ci": true,
+    "requires_local_test": true,
+    "requires_browser_e2e": true,
+    "requires_rights_review": false
+  },
+  "rollback": "Reverter somente o patch da workorder; preservar evidências e alterações de outros autores. Não atualizar submódulos, apagar assets ou alterar produção.",
+  "execution": {
+    "max_attempts": 3,
+    "max_changed_files": 24,
+    "max_patch_bytes": 256000,
+    "merge_policy": "manual"
+  },
+  "notes": "Tipo: implementação. Prontidão: Dependências concluídas e ferramentas disponíveis; contrato indicado nos inputs é obrigatório. Comandos/arquivos marcados criar são entregáveis futuros, não ferramentas existentes. Execute os WI em ordem; não implemente fora de engine/render/pipeline_state.h; engine/platform/web/pipeline_state.cpp; tests/render/pipeline.cpp; scripts/test-render-states.sh. Mudanças em .agents são feitas pelo mantenedor fora do job. Após duas tentativas no mesmo erro sem progresso, diagnosticar antes da terceira. Follow @implementation-loop para código; @architecture-spec-authoring para contratos; @code-review para revisão. JSON schema v1 preservado; não adicionar estados que o scheduler desconhece."
+}

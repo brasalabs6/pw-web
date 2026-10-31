@@ -6,6 +6,9 @@ const path = require("node:path");
 const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR || "", "node_modules/playwright-core"));
 (async () => {
   const dir = process.env.PW_BROWSER_ARTIFACTS || "artifacts/browser";
+  const baseUrl = process.env.PW_BROWSER_URL || "http://127.0.0.1:8480/";
+  const parsed = new URL(baseUrl);
+  assert.ok(["127.0.0.1","localhost"].includes(parsed.hostname) && parsed.protocol==="http:", "Browser test URL must be local");
   fs.mkdirSync(dir, { recursive: true });
   const browser = await chromium.launch({
     executablePath: process.env.CHROME_BIN,
@@ -20,7 +23,7 @@ const { chromium } = require(path.join(process.env.PW_BROWSER_MODULE_DIR || "", 
       page.on("pageerror", e => issues.push(String(e)));
       const errors=[];
       page.on("console", m => { if (m.type()==="error") errors.push(m.text()); });
-      const response = await page.goto("http://127.0.0.1:8080/", {waitUntil:"networkidle"});
+      const response = await page.goto(baseUrl, {waitUntil:"networkidle"});
       assert.equal(response.status(),200,"Local demo did not respond");
       await page.waitForFunction(() => {
         const s=document.querySelector("#graphics-state");
