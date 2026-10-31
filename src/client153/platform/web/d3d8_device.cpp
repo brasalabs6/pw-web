@@ -1,11 +1,22 @@
 #include "d3d8_surface.h"
 #include "d3d8_buffer.h"
 #include "d3d8_texture.h"
+#include "ps_assembler.h"
 #include <emscripten/html5.h>
 #include <new>
 #include <cstdio>
+#include <cstring>
+#include <map>
+#include <utility>
 
 namespace {
+// The D3D8 texture-stage float states (the bump-environment matrix)
+// arrive as the float's bit pattern inside the DWORD value.
+float bit_cast_float(DWORD value) {
+  float result = 0.0f;
+  std::memcpy(&result, &value, sizeof(result));
+  return result;
+}
 // This first device owns real color/depth buffers and supports full clears.
 // Unsupported device operations return E_NOTIMPL; it is not a full renderer.
 class Device final : public IDirect3DDevice8 {
@@ -33,14 +44,18 @@ class Device final : public IDirect3DDevice8 {
   struct TextureStage {
     DWORD addressU = 1, addressV = 1;  // D3DTADDRESS_WRAP
     DWORD magFilter = 1, minFilter = 1;  // D3DTEXF_POINT
+    // The bump-environment matrix the texbem/texbeml shaders consume
+    // (D3DTSS_BUMPENVMAT00/01/10/11 and the luminance scale).
+    float bump00 = 0.0f, bump01 = 0.0f, bump10 = 0.0f, bump11 = 0.0f;
+    float bumpL = 0.0f;
   } textureStages[8];
   // The vertex-shader programs: the assembled GLSL (from
   // D3DXAssembleShader) compiled with the shader-mode fragment shader.
   // The handle = the index + 1 | 0x80000000 (the FVF values stay below
   // it, which is how SetVertexShader tells the two modes apart).
   struct VertexShaderProgram {
-    GLuint program = 0;
-    GLint cLocation = -1;
+    GLuint shaderObj = 0;  // The compiled vertex shader object (kept for
+                           // the (vertex, pixel) program pairs).
     // The parsed declaration: per vertex register, the stream offset,
     // the component count and the GL type the attribute setup binds.
     struct Attribute {
@@ -56,6 +71,38 @@ class Device final : public IDirect3DDevice8 {
   float vertexConstants[96 * 4] = {};
   bool vertexConstantsDirty = true;
   DWORD activeVertexShader = 0;  // The handle, or 0 = the FVF mode.
+  // The pixel-shader programs: the assembled GLSL (from
+  // D3DXAssembleShader) compiled as fragment shaders. The handle =
+  // the index + 1 | 0x40000000 (distinct from the vertex handles'
+  // 0x80000000 bit and the FVF range).
+  struct PixelShaderProgram {
+    GLuint shaderObj = 0;
+    std::string glsl;
+    std::vector<pw153::platform::PixelShaderDef> defs;
+  };
+  std::vector<PixelShaderProgram> pixelShaders;
+  float pixelConstants[8 * 4] = {};
+  bool pixelConstantsDirty = false;
+  DWORD activePixelShader = 0;  // The handle, or 0 = fixed-function.
+  // The linked (vertex, pixel) program pairs: GL links a vertex and a
+  // fragment shader into one program, so each combination the engine
+  // sets gets its own program, created on first use.
+  struct ShaderProgramEntry {
+    GLuint program = 0;
+    GLint cLocation = -1;    // vec4 c[96] (the vertex constants)
+    GLint pLocation = -1;    // vec4 c[8] (the pixel constants)
+    GLint samplerLocation[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+    GLint bumpLocation = -1;   // vec4 u_bump[8]
+    GLint bumpLLocation = -1;  // float u_bumpL[8]
+  };
+  std::map<std::pair<int, int>, ShaderProgramEntry> shaderPrograms;
+  // The shared fixed-function fragment shader object (the FVF draws'
+  // fragment stage; attached to every vertex-shader program without a
+  // pixel shader).
+  GLuint sharedFragmentShader = 0;
+  // The fixed-function vertex shader object (the FVF program's vertex
+  // stage; kept alive so pixel shaders can pair with FVF layouts).
+  GLuint fixedVertexShader = 0;
   // The default framebuffer attachments (the canvas), created once and
   // handed out by the surface getters.
   PW153DefaultSurface *defaultColor = nullptr;
@@ -224,7 +271,7 @@ public:
     if (value & 0x80000000u) {
       const int index = (int)(value & 0x7FFFFFFFu) - 1;
       if (index < 0 || index >= (int)vertexShaders.size() ||
-          !vertexShaders[index].program)
+          !vertexShaders[index].shaderObj)
         return E_FAIL;
       activeVertexShader = value;
     } else {
@@ -276,6 +323,11 @@ public:
       case D3DTSS_ADDRESSV: s.addressV = value; return D3D_OK;
       case D3DTSS_MAGFILTER: s.magFilter = value; return D3D_OK;
       case D3DTSS_MINFILTER: s.minFilter = value; return D3D_OK;
+      case D3DTSS_BUMPENVMAT00: s.bump00 = bit_cast_float(value); return D3D_OK;
+      case D3DTSS_BUMPENVMAT01: s.bump01 = bit_cast_float(value); return D3D_OK;
+      case D3DTSS_BUMPENVMAT10: s.bump10 = bit_cast_float(value); return D3D_OK;
+      case D3DTSS_BUMPENVMAT11: s.bump11 = bit_cast_float(value); return D3D_OK;
+      case D3DTSS_BUMPENVMATL: s.bumpL = bit_cast_float(value); return D3D_OK;
       default: return E_NOTIMPL;
     }
   }
@@ -287,6 +339,11 @@ public:
       case D3DTSS_ADDRESSV: *value = s.addressV; return D3D_OK;
       case D3DTSS_MAGFILTER: *value = s.magFilter; return D3D_OK;
       case D3DTSS_MINFILTER: *value = s.minFilter; return D3D_OK;
+      case D3DTSS_BUMPENVMAT00: std::memcpy(value, &s.bump00, sizeof(float)); return D3D_OK;
+      case D3DTSS_BUMPENVMAT01: std::memcpy(value, &s.bump01, sizeof(float)); return D3D_OK;
+      case D3DTSS_BUMPENVMAT10: std::memcpy(value, &s.bump10, sizeof(float)); return D3D_OK;
+      case D3DTSS_BUMPENVMAT11: std::memcpy(value, &s.bump11, sizeof(float)); return D3D_OK;
+      case D3DTSS_BUMPENVMATL: std::memcpy(value, &s.bumpL, sizeof(float)); return D3D_OK;
       default: return E_NOTIMPL;
     }
   }
@@ -334,7 +391,29 @@ public:
     indexOffset = baseVertexIndex;
     return D3D_OK;
   }
-  HRESULT SetPixelShader(DWORD) override { return E_NOTIMPL; }
+  HRESULT SetPixelShader(DWORD value) override {
+    // 0 = the fixed-function fragment stage; otherwise the handle
+    // carries the 0x40000000 tag (the vertex handles use 0x80000000).
+    if (value == 0) {
+      activePixelShader = 0;
+      return D3D_OK;
+    }
+    if (!(value & 0x40000000u) || (value & 0x80000000u)) return E_FAIL;
+    const int index = (int)(value & 0x3FFFFFFFu) - 1;
+    if (index < 0 || index >= (int)pixelShaders.size() ||
+        !pixelShaders[index].shaderObj)
+      return E_FAIL;
+    activePixelShader = value;
+    // The def instructions set their constants when the shader is set
+    // (the D3D def semantics); the app's SetPixelShaderConstant calls
+    // afterwards override them.
+    for (const auto &def : pixelShaders[index].defs) {
+      std::memcpy(pixelConstants + (size_t)def.reg * 4, def.value,
+                  sizeof(def.value));
+    }
+    pixelConstantsDirty = true;
+    return D3D_OK;
+  }
   HRESULT SetVertexShaderConstant(DWORD startRegister, const void *data,
                                   DWORD count) override {
     if (!data || !count || startRegister >= 96 ||
@@ -356,7 +435,17 @@ public:
                 (size_t)count * 4 * sizeof(float));
     return D3D_OK;
   }
-  HRESULT SetPixelShaderConstant(DWORD, const void *, DWORD) override { return E_NOTIMPL; }
+  HRESULT SetPixelShaderConstant(DWORD startRegister, const void *data,
+                                 DWORD count) override {
+    if (!data || !count || startRegister >= 8 || startRegister + count > 8)
+      return E_FAIL;
+    // The D3D8 SetPixelShaderConstant stores count 4-vectors starting
+    // at startRegister; the shader draw uploads the array.
+    std::memcpy(pixelConstants + (size_t)startRegister * 4, data,
+                (size_t)count * 4 * sizeof(float));
+    pixelConstantsDirty = true;
+    return D3D_OK;
+  }
   // The D3D8 declaration token parsing (the encoding d3dx8.h defines:
   // the token type occupies bits 29-31 — D3DVSD_TOKENTYPESHIFT = 29 —
   // so STREAM = 0x20000000 and the register tokens = 0x40000000, with
@@ -506,36 +595,96 @@ public:
     };
     GLuint vs = compile(GL_VERTEX_SHADER, glsl);
     if (!vs) return E_FAIL;
-    // The shared fragment shader compiles once.
-    static GLuint shaderFs = 0;
-    if (!shaderFs)
-      shaderFs = compile(GL_FRAGMENT_SHADER, shaderFsSource);
-    if (!shaderFs) { glDeleteShader(vs); return E_FAIL; }
+    // The shared fragment shader object compiles once and stays alive:
+    // every (vertex, pixel) program pair attaches it.
+    if (!sharedFragmentShader)
+      sharedFragmentShader = compile(GL_FRAGMENT_SHADER, shaderFsSource);
+    if (!sharedFragmentShader) { glDeleteShader(vs); return E_FAIL; }
+    shader.shaderObj = vs;
+    vertexShaders.push_back(shader);
+    const int index = (int)vertexShaders.size() - 1;
+    // The (vertex, no-pixel) program links now: the create-time failure
+    // reports a broken shader exactly like the original device did.
+    if (!GetShaderProgram(index, -1).program) {
+      vertexShaders.pop_back();
+      glDeleteShader(vs);
+      return E_FAIL;
+    }
+    *handle = (DWORD)(vertexShaders.size() | 0x80000000u);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  // The (vertex, pixel) program pair: GL links one vertex and one
+  // fragment shader per program, so each combination the engine sets
+  // gets its own program, created on first use. The D3D vertex
+  // registers bind to the attribute slots 0-15 (the vertex setup
+  // addresses the attributes by the register number). A failed link
+  // caches an entry with program 0 (the draw reports it once).
+  ShaderProgramEntry &GetShaderProgram(int vsIndex, int psIndex) {
+    const std::pair<int, int> key(vsIndex, psIndex);
+    auto it = shaderPrograms.find(key);
+    if (it != shaderPrograms.end())
+      return it->second;
+    ShaderProgramEntry entry;
+    if (vsIndex < -1 || (vsIndex >= 0 && (vsIndex >= (int)vertexShaders.size() ||
+                                          !vertexShaders[vsIndex].shaderObj))) {
+      std::fprintf(stderr,
+                   "pw-browser: pixel-shader draw without a vertex shader\n");
+      return shaderPrograms.emplace(key, entry).first->second;
+    }
+    if (vsIndex == -1) {
+      // The FVF vertex layout pairs with a pixel shader through the
+      // fixed-function vertex stage (it writes oD0/oT0 under the same
+      // names the assembled vertex shaders use).
+      if (!fixedVertexShader)
+        ensureShaderProgram();
+      if (!fixedVertexShader) {
+        return shaderPrograms.emplace(key, entry).first->second;
+      }
+    }
+    GLuint fs = 0;
+    const char *fsLabel = "shared fragment";
+    if (psIndex >= 0) {
+      if (psIndex >= (int)pixelShaders.size() ||
+          !pixelShaders[psIndex].shaderObj) {
+        std::fprintf(stderr, "pw-browser: invalid pixel shader handle\n");
+        return shaderPrograms.emplace(key, entry).first->second;
+      }
+      fs = pixelShaders[psIndex].shaderObj;
+      fsLabel = "pixel shader";
+    } else {
+      fs = sharedFragmentShader;
+    }
     GLuint program = glCreateProgram();
-    glAttachShader(program, vs);
-    glAttachShader(program, shaderFs);
-    // The D3D vertex registers bind to the attribute slots 0-15: the
-    // vertex setup addresses the attributes by the register number.
+    glAttachShader(program, vsIndex == -1 ? fixedVertexShader
+                                          : vertexShaders[vsIndex].shaderObj);
+    glAttachShader(program, fs);
     for (int i = 0; i < 16; ++i) {
       char name[8];
       std::snprintf(name, sizeof(name), "v%d", i);
       glBindAttribLocation(program, i, name);
     }
     glLinkProgram(program);
-    glDeleteShader(vs);
     GLint linked = 0;
     glGetProgramiv(program, GL_LINK_STATUS, &linked);
     if (!linked) {
       char infoLog[2048] = {};
       glGetProgramInfoLog(program, sizeof(infoLog) - 1, nullptr, infoLog);
-      std::fprintf(stderr, "pw-browser: vertex shader link failed: %s\n",
+      std::fprintf(stderr, "pw-browser: vertex/%s link failed: %s\n", fsLabel,
                    infoLog);
       glDeleteProgram(program);
-      return E_FAIL;
+    } else {
+      entry.program = program;
+      entry.cLocation = glGetUniformLocation(program, "c");
+      entry.pLocation = glGetUniformLocation(program, "pc");
+      for (int i = 0; i < 8; ++i) {
+        char name[8];
+        std::snprintf(name, sizeof(name), "s%d", i);
+        entry.samplerLocation[i] = glGetUniformLocation(program, name);
+      }
+      entry.bumpLocation = glGetUniformLocation(program, "u_bump");
+      entry.bumpLLocation = glGetUniformLocation(program, "u_bumpL");
     }
-    vertexShaders.push_back(shader);
-    *handle = (DWORD)(vertexShaders.size() | 0x80000000u);
-    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+    return shaderPrograms.emplace(key, entry).first->second;
   }
   HRESULT DeleteVertexShader(DWORD handle) override {
     if (!(handle & 0x80000000u)) return E_FAIL;
@@ -543,13 +692,77 @@ public:
     if (index < 0 || index >= (int)vertexShaders.size()) return E_FAIL;
     if (activeVertexShader == handle)
       activeVertexShader = 0;
-    if (vertexShaders[index].program)
-      glDeleteProgram(vertexShaders[index].program);
-    vertexShaders[index].program = 0;
+    if (vertexShaders[index].shaderObj)
+      glDeleteShader(vertexShaders[index].shaderObj);
+    vertexShaders[index].shaderObj = 0;
+    // The programs pairing this vertex stage are dead: drop them.
+    for (auto it = shaderPrograms.begin(); it != shaderPrograms.end();) {
+      if (it->first.first == index) {
+        if (it->second.program)
+          glDeleteProgram(it->second.program);
+        it = shaderPrograms.erase(it);
+      } else {
+        ++it;
+      }
+    }
     return D3D_OK;
   }
-  HRESULT CreatePixelShader(const DWORD *, DWORD *) override { return E_NOTIMPL; }
-  HRESULT DeletePixelShader(DWORD) override { return E_NOTIMPL; }
+  HRESULT CreatePixelShader(const DWORD *function, DWORD *handle) override {
+    if (!function || !handle) {
+      std::fprintf(stderr, "pw-browser: CreatePixelShader: null argument\n");
+      return E_FAIL;
+    }
+    if (emscripten_webgl_get_current_context() != context ||
+        emscripten_is_webgl_context_lost(context)) {
+      std::fprintf(stderr, "pw-browser: CreatePixelShader: context lost\n");
+      return E_FAIL;
+    }
+    while (glGetError() != GL_NO_ERROR) {}
+    const char *glsl = reinterpret_cast<const char *>(function);
+    if (!glsl || !glsl[0]) {
+      std::fprintf(stderr, "pw-browser: CreatePixelShader: empty GLSL\n");
+      return E_FAIL;
+    }
+    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &glsl, nullptr);
+    glCompileShader(fs);
+    GLint status = 0;
+    glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
+    if (!status) {
+      char infoLog[2048] = {};
+      glGetShaderInfoLog(fs, sizeof(infoLog) - 1, nullptr, infoLog);
+      std::fprintf(stderr, "pw-browser: pixel shader compile failed: %s\n",
+                   infoLog);
+      glDeleteShader(fs);
+      return E_FAIL;
+    }
+    PixelShaderProgram shader;
+    shader.shaderObj = fs;
+    shader.glsl = glsl;
+    pixelShaders.push_back(std::move(shader));
+    *handle = (DWORD)(pixelShaders.size() | 0x40000000u);
+    return glGetError() == GL_NO_ERROR ? D3D_OK : E_FAIL;
+  }
+  HRESULT DeletePixelShader(DWORD handle) override {
+    if (!(handle & 0x40000000u) || (handle & 0x80000000u)) return E_FAIL;
+    const int index = (int)(handle & 0x3FFFFFFFu) - 1;
+    if (index < 0 || index >= (int)pixelShaders.size()) return E_FAIL;
+    if (activePixelShader == handle)
+      activePixelShader = 0;
+    if (pixelShaders[index].shaderObj)
+      glDeleteShader(pixelShaders[index].shaderObj);
+    pixelShaders[index].shaderObj = 0;
+    for (auto it = shaderPrograms.begin(); it != shaderPrograms.end();) {
+      if (it->first.second == index) {
+        if (it->second.program)
+          glDeleteProgram(it->second.program);
+        it = shaderPrograms.erase(it);
+      } else {
+        ++it;
+      }
+    }
+    return D3D_OK;
+  }
   void SetGammaRamp(DWORD, const D3DGAMMARAMP *) override {
     static bool warned = false;
     if (!warned) { std::fputs("pw-browser: D3D gamma ramp is not implemented\n", stderr); warned = true; }
@@ -587,12 +800,19 @@ public:
         "uniform mat4 u_projection;\n"
         "out vec4 v_color;\n"
         "out vec2 v_texcoord;\n"
+        // The D3D8 fixed-function vertex stage's outputs under the same
+        // names the assembled vertex shaders use: a pixel shader paired
+        // with an FVF vertex layout reads the diffuse color and the
+        // stage-0 texcoords through them.
+        "out vec4 oD0;\n"
+        "out vec4 oT0;\n"
         "void main() { if (u_transformed) { float w=1.0/a_position.w; "
         "vec2 p=(a_position.xy-u_viewport.xy)/u_viewport.zw; "
         "gl_Position=vec4((p.x*2.0-1.0)*w,(1.0-p.y*2.0)*w,(a_position.z*2.0-1.0)*w,w); } "
         "else { vec4 clip=u_projection*u_view*u_world*vec4(a_position.xyz,1.0); "
         "gl_Position=vec4(clip.x,clip.y,2.0*clip.z-clip.w,clip.w); } "
-        "v_color=a_color.bgra; v_texcoord=a_texcoord; }\n";
+        "v_color=a_color.bgra; v_texcoord=a_texcoord; "
+        "oD0=a_color.bgra; oT0=vec4(a_texcoord,0.0,1.0); }\n";
     static const char *fsSource =
         "#version 300 es\n"
         "precision mediump float;\n"
@@ -614,11 +834,11 @@ public:
     GLuint vs = compile(GL_VERTEX_SHADER, vsSource);
     GLuint fs = compile(GL_FRAGMENT_SHADER, fsSource);
     if (!vs || !fs) { if (vs) glDeleteShader(vs); if (fs) glDeleteShader(fs); return; }
+    fixedVertexShader = vs;
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vs);
     glAttachShader(shaderProgram, fs);
     glLinkProgram(shaderProgram);
-    glDeleteShader(vs);
     glDeleteShader(fs);
     GLint linked = 0;
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
@@ -645,7 +865,7 @@ public:
     uint64_t vertices = CountsForType(type, count);
     auto *buffer = static_cast<PW153VertexBuffer *>(streamSource);
     if (!count || vertices > INT32_MAX || (uint64_t(startVertex) + vertices) * streamOffset > buffer->size()) return E_FAIL;
-    if (activeVertexShader)
+    if (activeVertexShader || activePixelShader)
     {
       if (!PrepareShaderDraw()) return E_FAIL;
     }
@@ -695,39 +915,80 @@ public:
     }
     return D3D_OK;
   }
-  //	The shader-draw preparation: the active vertex-shader program, the
-  //	constant array upload and the stage-0 texture with its states.
+  //	The shader-draw preparation: the (vertex, pixel) program pair, the
+  //	constant array uploads and the stage textures with their states.
   //	Returns false when the context, the handle or the program is
   //	unusable.
   bool PrepareShaderDraw() {
     if (emscripten_webgl_get_current_context() != context) return false;
-    const int index = (int)(activeVertexShader & 0x7FFFFFFFu) - 1;
-    if (index < 0 || index >= (int)vertexShaders.size()) return false;
-    const VertexShaderProgram &shader = vertexShaders[index];
-    if (!shader.program) return false;
-    glUseProgram(shader.program);
-    if (vertexConstantsDirty && shader.cLocation >= 0) {
-      glUniform4fv(shader.cLocation, 96, vertexConstants);
+    const int vsIndex = activeVertexShader
+                            ? (int)(activeVertexShader & 0x7FFFFFFFu) - 1
+                            : -1;
+    const int psIndex = activePixelShader
+                            ? (int)(activePixelShader & 0x3FFFFFFFu) - 1
+                            : -1;
+    if (vsIndex < 0 && psIndex < 0) return false;
+    if (vsIndex >= (int)vertexShaders.size()) return false;
+    const ShaderProgramEntry &entry =
+        GetShaderProgram(vsIndex, psIndex);
+    if (!entry.program) return false;
+    glUseProgram(entry.program);
+    if (vertexConstantsDirty && entry.cLocation >= 0) {
+      glUniform4fv(entry.cLocation, 96, vertexConstants);
       vertexConstantsDirty = false;
     }
-    glUniform1i(glGetUniformLocation(shader.program, "u_texture"), 0);
-    glUniform1i(glGetUniformLocation(shader.program, "u_textured"),
-                textures[0] ? 1 : 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,
-                  textures[0] ? static_cast<PW153Texture *>(textures[0])->texture() : 0);
-    if (textures[0]) {
-      const TextureStage &stage = textureStages[0];
-      static const GLenum wrapModes[] = {0, GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE};
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                      stage.addressU < 4 ? wrapModes[stage.addressU] : GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                      stage.addressV < 4 ? wrapModes[stage.addressV] : GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                      stage.magFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                      stage.minFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+    if (entry.pLocation >= 0) {
+      if (pixelConstantsDirty) {
+        glUniform4fv(entry.pLocation, 8, pixelConstants);
+        pixelConstantsDirty = false;
+      }
+      if (entry.bumpLocation >= 0) {
+        float bump[8 * 4];
+        for (int i = 0; i < 8; ++i) {
+          bump[i * 4 + 0] = textureStages[i].bump00;
+          bump[i * 4 + 1] = textureStages[i].bump01;
+          bump[i * 4 + 2] = textureStages[i].bump10;
+          bump[i * 4 + 3] = textureStages[i].bump11;
+        }
+        glUniform4fv(entry.bumpLocation, 8, bump);
+      }
+      if (entry.bumpLLocation >= 0) {
+        float bumpL[8];
+        for (int i = 0; i < 8; ++i)
+          bumpL[i] = textureStages[i].bumpL;
+        glUniform1fv(entry.bumpLLocation, 8, bumpL);
+      }
     }
+    // The stage textures: the pixel-shader samplers bind their own
+    // stage; the shared fragment shader samples stage 0.
+    static const GLenum wrapModes[] = {0, GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE};
+    const int lastStage = psIndex >= 0 ? 8 : 1;
+    for (int i = 0; i < lastStage; ++i) {
+      const GLint loc = psIndex >= 0 ? entry.samplerLocation[i]
+                                     : (i == 0 ? glGetUniformLocation(entry.program, "u_texture") : -1);
+      if (loc >= 0) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D,
+                      textures[i] ? static_cast<PW153Texture *>(textures[i])->texture() : 0);
+        glUniform1i(loc, i);
+        if (textures[i]) {
+          const TextureStage &stage = textureStages[i];
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                          stage.addressU < 4 ? wrapModes[stage.addressU] : GL_REPEAT);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                          stage.addressV < 4 ? wrapModes[stage.addressV] : GL_REPEAT);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                          stage.magFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                          stage.minFilter == D3DTEXF_LINEAR ? GL_LINEAR : GL_NEAREST);
+        }
+      }
+    }
+    if (psIndex < 0) {
+      glUniform1i(glGetUniformLocation(entry.program, "u_textured"),
+                  textures[0] ? 1 : 0);
+    }
+    glActiveTexture(GL_TEXTURE0);
     return true;
   }
 
@@ -815,7 +1076,7 @@ public:
     const UINT indexSize = indexData->format() == D3DFMT_INDEX32 ? 4 : 2;
     if (!count || indices > INT32_MAX ||
         uint64_t(startIndex) * indexSize + indices * indexSize > UINT32_MAX) return E_FAIL;
-    if (activeVertexShader)
+    if (activeVertexShader || activePixelShader)
     {
       if (!PrepareShaderDraw()) return E_FAIL;
     }
@@ -843,7 +1104,7 @@ public:
     if (type < 1 || type > 6) return E_FAIL;
     const uint64_t vertices = CountsForType(type, count);
     if (!count || vertices > INT32_MAX || vertices * stride > UINT32_MAX) return E_FAIL;
-    if (activeVertexShader)
+    if (activeVertexShader || activePixelShader)
     {
       if (!PrepareShaderDraw()) return E_FAIL;
     }
@@ -875,7 +1136,7 @@ public:
     if (!count || !numVertices || indicesCount > INT32_MAX ||
         uint64_t(numVertices) * stride > UINT32_MAX ||
         indicesCount * (indexFormat == D3DFMT_INDEX16 ? 2 : 4) > UINT32_MAX) return E_FAIL;
-    if (activeVertexShader)
+    if (activeVertexShader || activePixelShader)
     {
       if (!PrepareShaderDraw()) return E_FAIL;
     }

@@ -281,6 +281,7 @@ constexpr DWORD D3DTSS_BUMPENVMAT01 = 8;
 constexpr DWORD D3DTSS_BUMPENVMAT10 = 9;
 constexpr DWORD D3DTSS_BUMPENVMAT11 = 10;
 constexpr DWORD D3DTSS_TEXCOORDINDEX = 11;
+constexpr DWORD D3DTSS_BUMPENVMATL = 12;
 //	Texture coordinate index modes used with D3DTSS_TEXCOORDINDEX
 //	(d3d8types.h documented values).
 constexpr DWORD D3DTSS_TCI_PASSTHRU = 0x00000000;

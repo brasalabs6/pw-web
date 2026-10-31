@@ -11,6 +11,7 @@
 #ifndef PW153_PLATFORM_D3DX8_H
 #define PW153_PLATFORM_D3DX8_H
 #include "d3d8.h"
+#include "ps_assembler.h"
 #include "vs_assembler.h"
 #include <cmath>
 #include <cstdlib>
@@ -441,9 +442,53 @@ inline HRESULT D3DXAssembleShader(const void *srcData, UINT srcDataLen,
   // tokens — CreateVertexShader consumes it through the same contract.
   if (!srcData || !srcDataLen || !compiledShader)
     return D3DERR_INVALIDCALL;
+  // The version line selects the translator: the shipped shaders.pck
+  // carries vs.1.1 vertex shaders and ps.1.1/ps.1.4 pixel shaders (the
+  // ps_2_0 gfx effects fail with the assembler's honest classification).
+  const char *text = static_cast<const char *>(srcData);
+  std::string versionLine;
+  {
+    const char *cursor = text;
+    const char *const end = text + srcDataLen;
+    while (cursor < end) {
+      const char *eol = static_cast<const char *>(
+          std::memchr(cursor, '\n', static_cast<size_t>(end - cursor)));
+      const size_t len = eol ? (size_t)(eol - cursor)
+                             : static_cast<size_t>(end - cursor);
+      std::string line(cursor, len);
+      cursor = eol ? eol + 1 : end;
+      const size_t semi = line.find(';');
+      if (semi != std::string::npos)
+        line.erase(semi);
+      const size_t slash = line.find("//");
+      if (slash != std::string::npos)
+        line.erase(slash);
+      size_t start = 0;
+      while (start < line.size() &&
+             std::isspace(static_cast<unsigned char>(line[start])))
+        ++start;
+      size_t stop = line.size();
+      while (stop > start &&
+             std::isspace(static_cast<unsigned char>(line[stop - 1])))
+        --stop;
+      if (stop > start) {
+        versionLine = line.substr(start, stop - start);
+        break;
+      }
+    }
+  }
+  std::string lowerVersion;
+  for (const char c : versionLine)
+    lowerVersion.push_back(
+        static_cast<char>(std::tolower(static_cast<unsigned char>(c))));
   std::string glsl, error;
-  if (!pw153::platform::AssembleVertexShader(
-          static_cast<const char *>(srcData), srcDataLen, glsl, error)) {
+  bool ok = false;
+  if (lowerVersion.rfind("ps.", 0) == 0 || lowerVersion.rfind("ps_2", 0) == 0) {
+    ok = pw153::platform::AssemblePixelShader(text, srcDataLen, glsl, error);
+  } else {
+    ok = pw153::platform::AssembleVertexShader(text, srcDataLen, glsl, error);
+  }
+  if (!ok) {
     // The original discards the compilation-errors buffer; the port
     // prints the assembler's diagnostic (the same contract the compile
     // diagnostics use) so the failure is visible.
