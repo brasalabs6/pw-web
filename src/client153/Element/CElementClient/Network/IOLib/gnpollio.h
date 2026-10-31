@@ -9,6 +9,7 @@
 
 #include "gnthread.h"
 #include "gntimer.h"
+#include "net_trace.h"
 
 #define IO_POLLIN  0x0001
 #define IO_POLLOUT 0x0004
@@ -64,6 +65,11 @@ class PollIO
 
 	static void TriggerEvent(PollIO *io)
 	{
+#ifdef __EMSCRIPTEN__
+		pw153::nettrace::push("PollIO trigger fd=%d r=%d w=%d e=%d", (int)io->fd,
+			FD_ISSET(io->fd, &rfds) ? 1 : 0, FD_ISSET(io->fd, &wfds) ? 1 : 0,
+			FD_ISSET(io->fd, &efds) ? 1 : 0);
+#endif
 		if (FD_ISSET(io->fd, &rfds))
 			io->PollIn();
 		if (FD_ISSET(io->fd, &wfds))
@@ -83,6 +89,9 @@ protected:
 		unsigned long n = 1;
 		ioctlsocket(fd, FIONBIO , &n);
 		ionew[fd] = this;
+#ifdef __EMSCRIPTEN__
+		pw153::nettrace::push("PollIO register fd=%d", (int)fd);
+#endif
 	}
 
 public:	

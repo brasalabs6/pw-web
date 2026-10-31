@@ -80,7 +80,12 @@ async def main():
         target_port = int(sys.argv[3])
     BRIDGE_TARGET = (target_host, target_port)
     globals()['BRIDGE_TARGET'] = BRIDGE_TARGET
+    # The browser's socket layer (Emscripten SOCKFS) offers the
+    # "binary" subprotocol in its handshake; the server must select it
+    # or the browser fails the handshake right after connect and the
+    # client's first recv returns 0 (the peer-closed read).
     async with websockets.serve(handle, '0.0.0.0', listen_port,
+                                subprotocols=['binary'],
                                 max_size=None):
         print(f'bridge: ws listen 0.0.0.0:{listen_port} -> tcp '
               f'{target_host}:{target_port}', flush=True)

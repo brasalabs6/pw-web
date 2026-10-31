@@ -566,8 +566,17 @@ bool AUIImagePicture::Render(void)
 						bval = m_pA2DSprite->DrawToBack(ptPos.x+m_imageRotate.iOffsetX, ptPos.y+m_imageRotate.iOffsetY);
 					else
 						bval = m_pA2DSprite->DrawToInternalBuffer(ptPos.x+m_imageRotate.iOffsetX, ptPos.y+m_imageRotate.iOffsetY);
-					if( !bval ) 
-						return AUI_ReportError(__LINE__, 1, "AUIImagePicture::Render(), failed to call m_pA2DSpriteCover->DrawToBack() or m_pA2DSpriteCover->DrawToInternalBuffer()");
+					if( !bval ) {
+						// The draw fails once per picture (the asset-gap
+						// sprites fail every frame; the per-frame log
+						// floods the console and hides real errors).
+						static bool s_drawFailLogged = false;
+						if (!s_drawFailLogged) {
+							s_drawFailLogged = true;
+							return AUI_ReportError(__LINE__, 1, "AUIImagePicture::Render(), failed to call m_pA2DSpriteCover->DrawToBack() or m_pA2DSpriteCover->DrawToInternalBuffer() (further failures silent)");
+						}
+						return false;
+					}
 
 					m_pA2DSprite->SetColor(A3DCOLORRGB(255, 255, 255));
 

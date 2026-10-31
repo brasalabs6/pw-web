@@ -176,3 +176,14 @@ namespace GNET
 	}
 
 };
+
+extern "C" int pw153_net_trace_dump(void) {
+  const int begin = pw153::nettrace::total > pw153::nettrace::kCapacity
+                        ? pw153::nettrace::total - pw153::nettrace::kCapacity
+                        : 0;
+  for (int i = begin; i < pw153::nettrace::total; ++i)
+    printf("PWDBG NET[%d] %s\n", i,
+           pw153::nettrace::lines[i % pw153::nettrace::kCapacity]);
+  printf("PWDBG NET total=%d\n", pw153::nettrace::total);
+  return pw153::nettrace::total;
+}

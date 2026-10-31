@@ -139,14 +139,21 @@ protected:
 class StreamIO : public NetIO
 {
 	void PollIn()
-	{		
+	{
 		int recv_bytes;
 		if ((recv_bytes = recv(fd, (char*)ibuf->end(), static_cast<int>(std::min(ibuf->capacity() - ibuf->size(), static_cast<size_t>(INT_MAX))), 0)) > 0)
 		{
+#ifdef __EMSCRIPTEN__
+			pw153::nettrace::push("StreamIO::PollIn fd=%d recv=%d", (int)fd, recv_bytes);
+#endif
 			ibuf->resize(ibuf->size() + recv_bytes);
 			return;
 		}
 		int err = WSAGetLastError();
+#ifdef __EMSCRIPTEN__
+		pw153::nettrace::push("StreamIO::PollIn fd=%d recv=%d err=%d closing=%d", (int)fd,
+			recv_bytes, err, session->closing ? 1 : 0);
+#endif
 		if(recv_bytes!=SOCKET_ERROR || err!=WSAEWOULDBLOCK)
 		{
 			obuf->clear();

@@ -2038,7 +2038,16 @@ bool AUIDialog::RenderOnce(void)
 	}
 
 	bval = RenderControls();
-	if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIDialog::Render(), Failed to call RenderControls()");
+	if( !bval ) {
+		// The per-frame render-failure spam hides real errors; the first
+		// failure names the dialog, the rest stay silent.
+		static bool s_renderFailLogged = false;
+		if (!s_renderFailLogged) {
+			s_renderFailLogged = true;
+			return AUI_ReportError(__LINE__, 1, "AUIDialog::Render(), Failed to call RenderControls() (further failures silent)");
+		}
+		return false;
+	}
 
 	m_pA3DEngine->GetA3DFlatCollector()->Flush_2D();
 
@@ -2098,7 +2107,15 @@ bool AUIDialog::RenderControls(void)
 			pElement->pThis->SetViewportParam(nOffX, nOffY, nVPW, nVPH);
 
 			bval = pElement->pThis->Render();
-			if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIDialog::RenderControls(), Failed to call pElement->pThis->Render()");
+			if( !bval ) {
+				// The per-frame render-failure spam hides real errors.
+				static bool s_controlFailLogged = false;
+				if (!s_controlFailLogged) {
+					s_controlFailLogged = true;
+					return AUI_ReportError(__LINE__, 1, "AUIDialog::RenderControls(), Failed to call pElement->pThis->Render() (further failures silent)");
+				}
+				return false;
+			}
 		}
 		pElement = pElement->pNext;
 	}
@@ -2150,7 +2167,15 @@ bool AUIDialog::RenderControls(void)
 			pElement->pThis->SetViewportParam(nOffX, nOffY, nVPW, nVPH);
 
 			bval = pElement->pThis->Render();
-			if( !bval ) return AUI_ReportError(__LINE__, 1, "AUIDialog::RenderControls(), Failed to call pElement->pThis->Render()");
+			if( !bval ) {
+				// The per-frame render-failure spam hides real errors.
+				static bool s_controlFailLogged = false;
+				if (!s_controlFailLogged) {
+					s_controlFailLogged = true;
+					return AUI_ReportError(__LINE__, 1, "AUIDialog::RenderControls(), Failed to call pElement->pThis->Render() (further failures silent)");
+				}
+				return false;
+			}
 		}
 		pElement = pElement->pNext;
 	}
