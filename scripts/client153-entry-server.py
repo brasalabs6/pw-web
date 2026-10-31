@@ -166,6 +166,15 @@ window.pwStatus = document.getElementById('status');
 class ProbeHandler(SimpleHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    # Optional local server list override (the login-chain integration):
+    # when set, the client's userdata\server\serverlist.txt VFS file is
+    # served from this path instead of the installed client's patcher
+    # copy, pointing the login UI at the local WebSocket bridge. The
+    # authorized client assets stay untouched.
+    serverlist_override = None
+    SERVERLIST_DISK = '../patcher/server/serverlist.txt'
+    SERVERLIST_VFS = 'userdata\\server\\serverlist.txt'
+
     def send_bytes(self, data, content_type):
         self.send_response(200)
         self.send_header('Content-Type', content_type)
@@ -305,7 +314,11 @@ class ProbeHandler(SimpleHTTPRequestHandler):
                 })
             # Loose files (fonts etc.) that live outside any .pck package.
             for disk_path, vfs_name in loose_files():
-                source = os.path.join(ELEMENT_DIR, disk_path)
+                if (self.serverlist_override and
+                        disk_path == self.SERVERLIST_DISK):
+                    source = self.serverlist_override
+                else:
+                    source = os.path.join(ELEMENT_DIR, disk_path)
                 if not os.path.isfile(source) or vfs_name in seen_vfs:
                     continue
                 seen_vfs.add(vfs_name)
@@ -322,7 +335,11 @@ class ProbeHandler(SimpleHTTPRequestHandler):
             if disk_name not in {disk for disk, _ in loose_files()}:
                 self.send_error(404)
                 return
-            target = os.path.normpath(os.path.join(ELEMENT_DIR, disk_name))
+            if (self.serverlist_override and
+                    disk_name == self.SERVERLIST_DISK):
+                target = self.serverlist_override
+            else:
+                target = os.path.normpath(os.path.join(ELEMENT_DIR, disk_name))
             if not os.path.isfile(target):
                 self.send_error(404)
                 return
@@ -371,9 +388,17 @@ def main():
     parser.add_argument('--root', default='build/client153-entry-browser')
     parser.add_argument('--pair-dir', default='build/client153-wasm/src/client153',
                         help='the build output dir with the matched entry pair')
+    parser.add_argument('--serverlist', default=None,
+                        help='serve this file as the client\'s '
+                             'userdata\\server\\serverlist.txt (the local '
+                             'login-chain override; the client assets stay '
+                             'untouched)')
     args = parser.parse_args()
     ProbeHandler.root = os.path.abspath(args.root)
     ProbeHandler.pair_dir = os.path.abspath(args.pair_dir)
+    if args.serverlist:
+        ProbeHandler.serverlist_override = os.path.abspath(args.serverlist)
+        print(f'serverlist override: {ProbeHandler.serverlist_override}')
     for url_name, (disk_path, _vfs) in sorted(PACKAGE_ROUTES.items()):
         source = os.path.join(ELEMENT_DIR, disk_path)
         if not os.path.isfile(source):

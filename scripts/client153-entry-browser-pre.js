@@ -126,7 +126,10 @@ var Module = {
       // must exist with FullScreen=0: the browser device only supports
       // windowed mode, and the client's default is fullscreen.
       try { FS.mkdir('/userdata'); } catch(e) { /* already exists */ }
-      FS.writeFile('/userdata/SystemSettings.ini', '[Video]\nFullScreen=0\n');
+      // RenderWid/RenderHei match the canvas (1024x768): the device
+      // backbuffer, the AUI window rect and the browser canvas stay 1:1
+      // so the cursor coordinates and the UI hit-testing line up.
+      FS.writeFile('/userdata/SystemSettings.ini', '[Video]\nFullScreen=0\nRenderWid=1024\nRenderHei=768\n');
       try { FS.writeFile('/client_id.cfg', '[Default]\nclient_id=1\n'); } catch (e) { log('client_id.cfg write failed: ' + e.message); }
       // The ALog system creates a "Logs" directory for the log files. The
       // MEMFS needs this directory to exist before the client boots.
@@ -159,6 +162,15 @@ var Module = {
       const canvasInput = globalThis.pwCanvas;
       const post = (msg, wp, lp) => { try { Module._pw153_post_message(msg, wp, lp); } catch (e) {} };
       const setKey = (vk, down) => { try { Module._pw153_set_key_state(vk, down ? 1 : 0); } catch (e) {} };
+      // The AUI hit-testing reads the cursor through GetCursorPos +
+      // ScreenToClient (not the message queue): the browser host feeds
+      // the adapter's recorded screen position and the canvas origin.
+      const setCursor = (x, y) => { try { Module._pw153_set_cursor_position(x, y); } catch (e) {} };
+      let lastClick = null;
+      const setOrigin = () => { try { const r = canvasInput.getBoundingClientRect(); Module._pw153_set_canvas_origin(Math.round(r.left), Math.round(r.top)); } catch (e) {} };
+      setOrigin();
+      window.addEventListener('resize', setOrigin);
+      window.addEventListener('scroll', setOrigin, true);
       // Browser KeyboardEvent.code → Win32 VK (the subset the client uses).
       const VK = { 'KeyW': 0x57, 'KeyA': 0x41, 'KeyS': 0x53, 'KeyD': 0x44,
                    'KeyQ': 0x51, 'KeyE': 0x45, 'KeyR': 0x52, 'KeyT': 0x54,
@@ -170,14 +182,46 @@ var Module = {
                    'ArrowUp': 0x26, 'ArrowDown': 0x28, 'ArrowLeft': 0x25, 'ArrowRight': 0x27,
                    'PageUp': 0x21, 'PageDown': 0x22, 'Home': 0x24, 'End': 0x23,
                    'Insert': 0x2D, 'Delete': 0x2E };
-      canvasInput.addEventListener('keydown', e => { const vk = VK[e.code]; if (vk) { setKey(vk, true); post(0x100, vk, 0); e.preventDefault(); } });
+      canvasInput.addEventListener('keydown', e => {
+        const vk = VK[e.code];
+        if (vk) { setKey(vk, true); post(0x100, vk, 0); }
+        // The text input: the AUI edit boxes consume WM_CHAR (the
+        // AUIEditBox OnChar path); printable characters post it after
+        // the keydown, matching the Win32 message order.
+        if (e.key && e.key.length === 1 && e.key.charCodeAt(0) >= 0x20)
+          post(0x102, e.key.charCodeAt(0), 0);
+        if (vk) e.preventDefault();
+      });
       canvasInput.addEventListener('keyup', e => { const vk = VK[e.code]; if (vk) { setKey(vk, false); post(0x101, vk, 0); e.preventDefault(); } });
       // Mouse: client coordinates in lParam (y << 16 | x), button state in wParam.
       const mouseButtons = e => (e.button === 0 ? 1 : 0) | (e.button === 2 ? 2 : 0) | (e.button === 1 ? 4 : 0);
       const mouseLp = e => { const r = canvasInput.getBoundingClientRect(); return ((e.clientY - r.top) << 16) | (Math.max(0, e.clientX - r.left) & 0xFFFF); };
-      canvasInput.addEventListener('mousemove', e => post(0x0200, mouseButtons(e), mouseLp(e)));
-      canvasInput.addEventListener('mousedown', e => { post(e.button === 2 ? 0x0204 : 0x0201, mouseButtons(e), mouseLp(e)); e.preventDefault(); });
-      canvasInput.addEventListener('mouseup', e => { post(e.button === 2 ? 0x0205 : 0x0202, mouseButtons(e), mouseLp(e)); e.preventDefault(); });
+      canvasInput.addEventListener('mousemove', e => { setCursor(e.clientX, e.clientY); post(0x0200, mouseButtons(e), mouseLp(e)); });
+      canvasInput.addEventListener('mousedown', e => {
+        setCursor(e.clientX, e.clientY);
+        // The button state backs GetAsyncKeyState (AUI_PRESS reads it).
+        if (e.button === 0) setKey(0x01, true);
+        else if (e.button === 2) setKey(0x02, true);
+        // The double-click: Windows replaces the second click of a pair
+        // (within the double-click time, near the first) with
+        // WM_L/RBUTTONDBLCLK; the AUI lists fire their confirm command
+        // on it.
+        const now = performance.now();
+        const dbl = lastClick && now - lastClick.t < 500 &&
+                    Math.abs(e.clientX - lastClick.x) < 8 &&
+                    Math.abs(e.clientY - lastClick.y) < 8;
+        lastClick = dbl ? null : {t: now, x: e.clientX, y: e.clientY};
+        const msg = e.button === 2 ? (dbl ? 0x0206 : 0x0204)
+                                   : (dbl ? 0x0203 : 0x0201);
+        post(msg, mouseButtons(e), mouseLp(e));
+        e.preventDefault();
+      });
+      canvasInput.addEventListener('mouseup', e => {
+        setCursor(e.clientX, e.clientY);
+        if (e.button === 0) setKey(0x01, false);
+        else if (e.button === 2) setKey(0x02, false);
+        post(e.button === 2 ? 0x0205 : 0x0202, mouseButtons(e), mouseLp(e)); e.preventDefault();
+      });
       canvasInput.addEventListener('contextmenu', e => e.preventDefault());
       canvasInput.addEventListener('wheel', e => { post(0x020A, mouseButtons(e), (Math.sign(e.deltaY) << 16) | mouseLp(e)); e.preventDefault(); }, {passive: false});
       const result = Module._pw153_browser_probe();

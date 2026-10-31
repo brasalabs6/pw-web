@@ -74,8 +74,14 @@ public:
 	inline int GetHeight()					{ return m_nHeight; }
 
 	inline int GetTextureNum()				{ return m_nTextureNum; }
-	inline A3DTexture* GetTexture(int n)	{ return m_aTextures[n]->pA3DTexture; }
-	inline TEXTURE_RECT * GetTextureRect(int n) { return m_aTextures[n]; }
+	//	The port's asset gaps (the texture-load failures the browser
+	//	build records) can leave a sprite whose slice texture ids exceed
+	//	the loaded array; the original never sees an invalid index with
+	//	complete assets. The bounds check keeps the original contract for
+	//	valid ids and fails soft (the callers' null path skips the draw)
+	//	instead of crashing the client on a gap.
+	inline A3DTexture* GetTexture(int n)	{ return (n >= 0 && n < m_nTextureNum) ? m_aTextures[n]->pA3DTexture : NULL; }
+	inline TEXTURE_RECT * GetTextureRect(int n) { return (n >= 0 && n < m_nTextureNum) ? m_aTextures[n] : NULL; }
 	inline A2DSpriteBuffer * GetSpriteBuffer() { return m_pSpriteBuffer; }
 
 	int GetUserRef() const { return m_nUserRef; }
